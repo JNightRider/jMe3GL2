@@ -12,7 +12,7 @@ asi como el motor de física dyn4j(https://dyn4j.org/) para crear mundos maravil
 4. Controles para la aplicación de la física y animaciones: AbstractAnimatedControl, BodyControl
 
 # Dyn4j
-Como se ha mencionado jMe3GL2 utiliza dun4j como motor de física, si usted no tiene conocimiento sobre este 
+Como se ha mencionado jMe3GL2 utiliza dyn4j como motor de física, si usted no tiene conocimiento sobre este 
 tema, le aconsejamos ver:
 
 - **Documentación dyn4j**
