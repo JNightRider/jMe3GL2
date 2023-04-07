@@ -33,31 +33,38 @@ package jMe3GL2.physics.control;
 
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
+import com.jme3.util.TempVars;
 
 import jMe3GL2.physics.PhysicsSpace;
+import jMe3GL2.physics.collision.AbstractCollisionShape;
+import jMe3GL2.util.Converter;
 import java.io.IOException;
 
 import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.Convex;
+import org.dyn4j.geometry.Transform;
 
 /**
  * Una implementación abstracta de la interfaz {@code PhysicsControl}.
  * <p>
- * Un objeto de la clase <code>AbstractBody</code> se puede utilizar como
+ * Un objeto de la clase <code>PhysicsBody2D</code> se puede utilizar como
  * el cuerpo físico de un objeto así como el mismo control de ese modelo</p>.
  * <p>
- * Para utilizarlo, extienda de esta clase <code>AbstractBody</code> o bien
+ * Para utilizarlo, extienda de esta clase <code>PhysicsBody2D</code> o bien
  * extender de una clase que ya implemente la lógica de control.</p>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.2-SNAPSHOT
  *
  * @since 1.0.0
  */
-public abstract class AbstractBody extends Body implements PhysicsControl, Control {
+public abstract class PhysicsBody2D extends Body implements PhysicsControl, Control {
     
     /** Espacio físico. */
     protected PhysicsSpace physicsSpace;
@@ -78,7 +85,18 @@ public abstract class AbstractBody extends Body implements PhysicsControl, Contr
      * Instancie un nuevo objeto utilizadon el contructor de esta clase
      * <code>AbstractBody</code> con los valores predeterminados.
      */
-    public AbstractBody() { }
+    public PhysicsBody2D() { }
+    
+    /**
+     * Otra forma de como agregar una forma física.
+     * @param shape forma física.  
+     * @see RigidBody2D#addFixture(org.dyn4j.geometry.Convex) 
+     * @see RigidBody2D#addFixture(org.dyn4j.collision.Fixture) 
+     * @see RigidBody2D#addFixture(org.dyn4j.geometry.Convex, double, double, double) 
+     */
+    public void addCollisionShape(AbstractCollisionShape<? extends Convex> shape) {
+        this.addFixture(shape.getCollisionShape());
+    } 
     
     /**
      * (non-JavaDoc)
@@ -106,7 +124,7 @@ public abstract class AbstractBody extends Body implements PhysicsControl, Contr
      * @return {@code org.dyn4j.dynamics.Body}
      */
     @Override
-    public AbstractBody getBody() {
+    public PhysicsBody2D getBody() {
         return this;
     }
 
@@ -197,6 +215,37 @@ public abstract class AbstractBody extends Body implements PhysicsControl, Contr
      * @param vp el ViewPort que se representa (no nulo)
      */
     protected abstract void controlRender(RenderManager rm, ViewPort vp);
+    
+    /**
+     * Método encargado de aplicar una rotación física.
+     * @param physicBody cuerpo físico.
+     */
+    protected void setPhysicsRotation(final PhysicsBody2D physicBody) {
+        final Transform trans = physicBody.getTransform();
+
+        final float rotation = Converter.toFloat(trans.getRotationAngle());
+
+        final TempVars tempVars = TempVars.get();
+        final Quaternion quaternion = tempVars.quat1;
+        quaternion.fromAngleAxis(rotation, new Vector3f(0, 0, 1));
+
+        this.spatial.setLocalRotation(quaternion);
+
+        tempVars.release();
+    }
+
+    /**
+     * Método encargado de aplicar una traslación físico.
+     * @param physicBody cuerpo físico.
+     */
+    protected void setPhysicsLocation(final PhysicsBody2D physicBody) {
+        final Transform trans = physicBody.getTransform();
+
+        final float posX = Converter.toFloat(trans.getTranslationX());
+        final float posY = Converter.toFloat(trans.getTranslationY());
+
+        this.spatial.setLocalTranslation(posX, posY, this.spatial.getLocalTranslation().z);
+    }
     
     /**
      * (non-JavaDoc)

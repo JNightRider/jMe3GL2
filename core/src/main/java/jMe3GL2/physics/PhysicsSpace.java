@@ -34,9 +34,10 @@ package jMe3GL2.physics;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 
-import jMe3GL2.physics.control.AbstractBody;
+import jMe3GL2.physics.control.PhysicsBody2D;
 import jMe3GL2.physics.control.PhysicsControl;
 import jMe3GL2.util.Converter;
+import java.util.Iterator;
 
 import java.util.List;
 
@@ -51,13 +52,13 @@ import org.dyn4j.world.World;
  * preparar el espacio(<code>org.dyn4j.world.World</code>) para la física.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1-SNAPSHOT
  * 
  * @since 1.0.0
  * @param <E> el tipo {@code PhysicsBody}.
  */
 @SuppressWarnings(value = {"unchecked"})
-public class PhysicsSpace<E extends AbstractBody> {
+public class PhysicsSpace<E extends PhysicsBody2D> {
 
     /**
      * Velocidad predeterminada de la física.
@@ -135,6 +136,13 @@ public class PhysicsSpace<E extends AbstractBody> {
      * @param joint Joint
      */
     public void addJoint(final Joint joint) {
+        Iterator<E> it = joint.getBodyIterator();
+        while (it.hasNext()) {
+            E next = it.next();
+            if ( next != null && (next instanceof PhysicsControl)) {
+                ((PhysicsControl) next).setPhysicsSpace(this);
+            }
+        }
         this.physicsWorld.addJoint(joint);
     }
     
@@ -144,6 +152,13 @@ public class PhysicsSpace<E extends AbstractBody> {
      * @return Boolean
      */
     public boolean removeJoint(final Joint joint) {
+        Iterator<E> it = joint.getBodyIterator();
+        while (it.hasNext()) {
+            E next = it.next();
+            if ( next != null && (next instanceof PhysicsControl)) {
+                ((PhysicsControl) next).setPhysicsSpace(null);
+            }
+        }
         return this.physicsWorld.removeJoint(joint);
     }
 

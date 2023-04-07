@@ -31,39 +31,42 @@
  */
 package jMe3GL2.physics.control;
 
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 
 import jMe3GL2.physics.collision.AbstractCollisionShape;
-import jMe3GL2.util.Converter;
 
 import org.dyn4j.geometry.Convex;
 
 /**
- * Un objeto de la clase <code>RigidBody2D</code> se encarga de controlar y
- * aplicar la física en el <code>Spatial</code> (modelo 2D) con un cuerpo
- * rigido.
+ * Los cuerpos <code>KinematicBody2D</code> son tipos especiales de cuerpos
+ * destinados a ser controlados por el usuario.
+ *
+ * <p>
+ * No se ven afectados por la física en absoluto; a comparación de otros tipo de
+ * cuerpos, como un personaje o un cuerpo rígido, estos son lo mismo que un
+ * cuerpo estático.</p>
  *
  * @author wil
- * @version 1.0.1-SNAPSHOT
+ * @version 1.0-SNAPSHOT
  *
- * @since 1.0.0
+ * @since 1.2.0
  */
-public class RigidBody2D extends PhysicsBody2D {
+public class KinematicBody2D extends PhysicsBody2D {
 
     /**
-     * Constructor de la clase <code>RigidBody2D</code>.
+     * Constructor de la clase <code>KinematicBody2D</code>.
      */
-    public RigidBody2D() { }
+    public KinematicBody2D() {
+    }
     
     /**
-     * Constructor de la clase <code>RigidBody2D</code>.
+     * Constructor de la clase <code>KinematicBody2D</code>.
      * @param collisionShape forma físico.
      */
-    public RigidBody2D(AbstractCollisionShape<? extends Convex> collisionShape) {
+    public KinematicBody2D(AbstractCollisionShape<? extends Convex> collisionShape) {
         this.addFixture(collisionShape.getCollisionShape());
-    } 
+    }
     
     /**
      * (non-JavaDoc).
@@ -72,47 +75,23 @@ public class RigidBody2D extends PhysicsBody2D {
      */
     @Override
     protected void controlUpdate(float tpf) {
+        setGravityScale(0);        
+        if (angularVelocity != 0) {
+            angularVelocity = 0;
+        }
+        
+        if (!linearVelocity.isZero()) {
+            linearVelocity.zero();
+        }
+        
+        if (transform.getRotationAngle() != 0) {
+            transform.setRotation(0);
+        }
+        
         setPhysicsLocation(this);
         setPhysicsRotation(this);
     }
 
-    /**
-     * Detecta si este cuerpo contiene mas de un {@code Fixture}.
-     * @return {@code true} si tiene mas de un {@code Fixture}, de lo contrario
-     *              devolverá {@code false}.
-     */
-    public boolean hasMultipleBodies() {
-        return this.getFixtureCount() > 1;
-    }
-    
-    /**
-     * Método encaegado de devolver la posición actual.
-     * @return posición actual.
-     */
-    public Vector3f getPhysicsLocation() {
-        return new Vector3f(Converter.toFloat(getTransform().getTranslationX()), Converter.toFloat(getTransform().getTranslationY()), this.spatial.getLocalTranslation().z);
-    }
-
-    /**
-     * Método encargado de devolver la posición mundial de este cuerpo.
-     * @return posición mundial.
-     */
-    public Vector3f getWorldLocation() {
-        return new Vector3f(Converter.toFloat(getWorldCenter().x), Converter.toFloat(getWorldCenter().y), this.spatial.getWorldTranslation().z);
-    }
-
-    /**
-     * Limpia las fuerzas.
-     */
-    public void clearForces() {
-        this.clearForce();
-        this.clearAccumulatedForce();
-        this.clearTorque();
-        this.clearAccumulatedTorque();
-        this.setAngularVelocity(0);
-        this.setLinearVelocity(0, 0);
-    }
-    
     /**
      * (non-JavaDoc).
      * @param rm RenderManager

@@ -36,7 +36,7 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.RenderManager;
 
-import jMe3GL2.physics.control.AbstractBody;
+import jMe3GL2.physics.control.PhysicsBody2D;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -56,13 +56,13 @@ import org.dyn4j.dynamics.Settings;
  * por lo cual debe tener conociminetos para manejos de ambos. </p>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1-SNAPSHOT
  * 
  * @since 1.0.0
  * @param <E> el tipo {@code PhysicsBody}.
  */
 @SuppressWarnings(value = {"unchecked"})
-public class Dyn4jAppState<E extends AbstractBody> extends AbstractAppState {
+public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
 
     /** Tiempo de espera en microsefundos. */
     private static final long TIME_STEP_IN_MICROSECONDS = (long) (Settings.DEFAULT_STEP_FREQUENCY * 1000);

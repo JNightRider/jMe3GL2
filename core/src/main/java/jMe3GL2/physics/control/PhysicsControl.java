@@ -40,7 +40,7 @@ import jMe3GL2.physics.PhysicsSpace;
  * motor de física <code>Dyn4j</code>.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1-SNAPSHOT
  * 
  * @since 1.0.0
  */
@@ -62,7 +62,7 @@ public interface PhysicsControl extends Control {
      * Devuelve el cuerpo que gestiona este control.
      * @return cuerpo físico.
      */
-    public AbstractBody getBody();
+    public PhysicsBody2D getBody();
     
     /**
      * Método encargado de habilidat ó deshabilitar el control.
