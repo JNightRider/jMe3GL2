@@ -206,7 +206,7 @@ class TimerAppState extends AbstractAppState {
                 continue;
             }
             
-            timer.getTimer().pause(enabled);
+            timer.getTimer().pause(!enabled);
         }
         super.setEnabled(enabled);
     }
