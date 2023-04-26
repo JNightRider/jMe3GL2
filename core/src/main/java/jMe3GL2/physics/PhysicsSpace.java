@@ -179,7 +179,7 @@ public class PhysicsSpace<E extends PhysicsBody2D> {
     
     /**
      * Establece una nueva velocidad para el mundo de la física.
-     * @param speed nueva velocidad.s
+     * @param speed nueva velocidad.
      */
     public void setSpeed(final float speed) {
         this.speed = speed;
