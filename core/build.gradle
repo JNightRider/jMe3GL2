@@ -12,7 +12,7 @@ plugins {
 }
 
 group 'jMe3GL2'
-version '1.2-SNAPSHOT'
+version '1.5-SNAPSHOT'
 
 project.ext {
     jmeVer = '3.5.2-stable'
