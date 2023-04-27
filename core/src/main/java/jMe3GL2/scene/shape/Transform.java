@@ -52,7 +52,7 @@ import java.io.IOException;
  * clase, utilice los métodos proprocionados por la malla<code>Sprite</code></p>.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.5-SNAPSHOT
  * 
  * @since 1.0.0
  */
@@ -105,6 +105,10 @@ class Transform implements Savable, Cloneable {
     private Vector2f position 
             = new Vector2f(0.0F, 0.0F);
     
+    /** Vector encargado de almacenar el valor de escala. */
+    private Vector2f scale 
+            = new Vector2f(1.0F, 1.0F);
+    
     /**
      * Tipo de volteo.
      * 
@@ -142,7 +146,7 @@ class Transform implements Savable, Cloneable {
      * @param rowPosition posición de fila.
      */
     public Transform(float width, float height, int columns, int rows, int colPosition, int rowPosition) {
-        this.size.set(width, height);
+        this.size.set(width, height);                
         this.columnsAndRows.set(columns, rows);
         this.position.set(colPosition, rowPosition);
     }
@@ -159,6 +163,7 @@ class Transform implements Savable, Cloneable {
             clon.columnsAndRows = columnsAndRows.clone();
             clon.position       = position.clone();
             clon.size           = size.clone();
+            clon.scale          = scale.clone();
             clon.flipType       = flipType;
             return clon;
         } catch (CloneNotSupportedException e) {
@@ -172,8 +177,13 @@ class Transform implements Savable, Cloneable {
      */
     public Vector3f[] getVertices() {
         Vector3f[] vertices = new Vector3f[4];
-        float width  = size.getX(), 
-              height = size.getY();
+        
+        /*
+         * Establecemos los valore del ancho y la altura de la malla, luego
+         * se escala con los valores respectivos (x, y).
+        */
+        float width  = size.getX() * scale.getX(), 
+              height = size.getY() * scale.getY();
         
         // Posiciones de los vértices en el espacio
         vertices[0] = new Vector3f(-width * 0.5f, -height * 0.5f, 0f);
@@ -231,6 +241,17 @@ class Transform implements Savable, Cloneable {
     }
 
     /**
+     * Establece una nueva escala para el ancho y largo de la malla.
+     * @param scale nueva escala.
+     */
+    public void setScale(Vector2f scale) {
+        if (scale == null) {
+            throw new NullPointerException("Null scale vector.");
+        }
+        this.scale = scale;
+    }
+
+    /**
      * Establece un nuevo <code>FlipType</code> para la malla.
      * @param flipType Un nuevo tipo de volteo.
      */
@@ -257,6 +278,14 @@ class Transform implements Savable, Cloneable {
      */
     void setSize(float width, float height) {
         this.size.set(width, height);
+    }
+    
+    /**
+     * Devuelve la escala actual.
+     * @return Vector escala.
+     */
+    public Vector2f getScale() {
+        return scale;
     }
     
     /**
@@ -327,6 +356,7 @@ class Transform implements Savable, Cloneable {
     public void write(JmeExporter ex) throws IOException {
         OutputCapsule out = ex.getCapsule(this);
         out.write(size, "size", new Vector2f(0, 0));
+        out.write(scale, "scale", new Vector2f(1.0F, 1.0F));
         out.write(columnsAndRows, "columnsAndRows", new Vector2f(1, 1));
         out.write(position, "position", new Vector2f(0, 0));
         out.write(flipType, "flipType", null);
@@ -344,6 +374,7 @@ class Transform implements Savable, Cloneable {
     public void read(JmeImporter im) throws IOException {
         InputCapsule in = im.getCapsule(this);
         size = (Vector2f) in.readSavable("size", new Vector2f(0, 0));
+        scale = (Vector2f) in.readSavable("scale", new Vector2f(1.0F, 1.0F));
         columnsAndRows = (Vector2f) in.readSavable("columnsAndRows", new Vector2f(1, 1));
         position = (Vector2f) in.readSavable("position", new Vector2f(0, 0));
         flipType = in.readEnum("flipType", FlipType.class, FlipType.NonFlip);

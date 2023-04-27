@@ -35,6 +35,7 @@ import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
+import com.jme3.math.Vector2f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
@@ -49,7 +50,7 @@ import java.io.IOException;
  * como verticalmente o una combinación de ambas.</p>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.5-SNAPSHOT
  * 
  * @since 1.0.0
  */
@@ -217,8 +218,10 @@ public class Sprite extends Mesh implements Cloneable {
      * @param flipH {@code true} o {@code false} para voltear.
      */
     public void flipH(boolean flipH) {
-        this.flipH = flipH;
-        this.updateTextureCoords();
+        if (this.flipH != flipH) {
+            this.flipH = flipH;
+            this.updateTextureCoords();
+        }
     }
 
     /**
@@ -226,8 +229,40 @@ public class Sprite extends Mesh implements Cloneable {
      * @param flipV {@code true} o {@code false} para voltear.
      */
     public void flipV(boolean flipV) {
-        this.flipV = flipV;
-        this.updateTextureCoords();
+        if (this.flipV != flipV) {
+            this.flipV = flipV;
+            this.updateTextureCoords();
+        }
+    }
+    
+    /**
+     * Método encargado de escalar las dimensiones de esta malla.
+     * @param scale nueva escala.
+     */
+    public void scale(float scale) {
+        this.scale(scale, scale);
+    }
+    
+    /**
+     * Método encargado de escalar las dimensiones de esta malla.
+     * @param scaleX escala en el eje {@code x}.
+     * @param scaleY escala en el eje {@code y}.
+     */
+    public void scale(float scaleX, float scaleY) {
+        final Vector2f newVs = new Vector2f(scaleX, scaleY);
+        if (this.transform.getScale()
+                .equals(newVs)) {
+            return;
+        }
+        
+        this.transform.setScale(newVs);
+        
+        // Se establece nuevas vertices para la malla.
+        setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(transform.getVertices()));
+        
+        // Actualizamos las coordenadas.
+        updateTextureCoords();
+        updateBound();
     }
 
     /**
@@ -290,6 +325,15 @@ public class Sprite extends Mesh implements Cloneable {
      */
     public float getHeight() {
         return transform.getHeight();
+    }
+
+    /**
+     * (non-JavaDoc).
+     * @see Transform#getScale() 
+     * @return Vector.
+     */
+    public Vector2f getScale() {
+        return transform.getScale();
     }
 
     /**
