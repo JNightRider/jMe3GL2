@@ -78,9 +78,9 @@ import java.io.IOException;
  * </p>
  * 
  * @author wil
- * @version 1.5-SNAPSHOT
+ * @version 1.6-SNAPSHOT
  * 
- * @since 1.0.1
+ * @since 1.0.0
  */
 public class Sprite extends Mesh implements Cloneable {
     
