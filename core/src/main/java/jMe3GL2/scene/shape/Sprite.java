@@ -49,6 +49,34 @@ import java.io.IOException;
  * Con un <code>Sprite</code> puede voltear una imagen horizontalmente, así 
  * como verticalmente o una combinación de ambas.</p>
  * 
+ * <p>
+ * Esta malla utiliza una escala de <code>0.0-1.0</code> que se puede traducir 
+ * como 0% y 100%, ten encuenta esta escala al cargar la textura de un modelo 2D.
+ * </p>
+ * 
+ * <p>
+ * <b>Ejemplo:</b>
+ * <pre><code>
+ * Si una textura tiene los siguiente datos:
+ * 
+ * Anchura: 100px;
+ * Largo  :  50px;
+ * 
+ * Tenemos que tomar una medida como referencia al 100% de las dimensiones para
+ * poder definir y así evitar deformar la textura de la geometría.
+ * 
+ * En este caso tomaremos la anchura, con este dato referenciado las dimensiones
+ * de esta malla serían:
+ * 
+ * width:  1.0F; // Equivalente al 100%.
+ * height: 0.5F; // Equivalente al 50%
+ * 
+ * Este análisis equivale a decir que la anchura es el 100%, mientras que el largo
+ * es quivalente al 50% de la anchura. Si se hubiera tomado los datos de manera
+ * inversa, seria que ahora la anchura es el 50% del largo que es el 100%.
+ * </code></pre>
+ * </p>
+ * 
  * @author wil
  * @version 1.5-SNAPSHOT
  * 
