@@ -148,7 +148,7 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
             if ( this.elapsedeTime >= this.animationFrameTime ) {
                 this.currentIndex++;
                 
-                if ( this.currentIndex >= this.currentAnimation.length ) {
+                if ( this.currentIndex >= this.currentAnimation[0].getFrames().length ) {
                     this.currentIndex = 0;
                 }
                 
