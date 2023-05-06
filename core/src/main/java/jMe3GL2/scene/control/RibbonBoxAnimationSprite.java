@@ -34,6 +34,7 @@ package jMe3GL2.scene.control;
 import com.jme3.material.Material;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -124,6 +125,7 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
                 this.mat.setTexture("ColorMap", rb[0].getTexture());
             }
             
+            this.sprite.updateMeshCoords(rb[0].getColumns(), rb[0].getRows());
             this.sprite.showIndex(rb[0].getFrames()[0]);
             
             this.currentAnimation   = rb;

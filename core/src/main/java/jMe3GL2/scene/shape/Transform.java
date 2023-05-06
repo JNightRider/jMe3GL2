@@ -281,6 +281,16 @@ class Transform implements Savable, Cloneable {
     }
     
     /**
+     * (non-JavaDoc)
+     * @param columns Float.
+     * @param rows float
+     * @see Transform#columnsAndRows
+     */
+    void setCoords(int columns, int rows) {
+        this.columnsAndRows.set(columns, rows);
+    }
+    
+    /**
      * Devuelve la escala actual.
      * @return Vector escala.
      */

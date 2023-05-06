@@ -36,6 +36,7 @@ import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.export.Savable;
+import com.jme3.math.Vector2f;
 import com.jme3.texture.Texture;
 
 import java.io.IOException;
@@ -56,6 +57,10 @@ public class RibbonBox implements Savable, Cloneable {
 
     /** Logger de la clase. */
     private static final Logger LOG = Logger.getLogger(RibbonBox.class.getName());
+
+    /** Vector encargado de almacenar las columnas y files de la malla. */
+    private Vector2f columnsAndRows 
+            = new Vector2f(1.0F, 1.0F);
     
     /** Textura de esta cinta. */
     private Texture texture;
@@ -73,7 +78,7 @@ public class RibbonBox implements Savable, Cloneable {
      * Constructor predeterminado.
      */
     protected RibbonBox() {
-        this(null, new int[0]);
+        this(null, new int[0], 0, 0);
     }
     
     /**
@@ -82,8 +87,11 @@ public class RibbonBox implements Savable, Cloneable {
      * 
      * @param texture textura animada.
      * @param frames cuadro de animación.
+     * @param columns número de columnas para la nueva cinta.
+     * @param rows número de filas para la nueva cinta.
      */
-    public RibbonBox(Texture texture, int[] frames) {
+    public RibbonBox(Texture texture, int[] frames, int columns, int rows) {
+        this.columnsAndRows.set(columns, rows);
         this.texture = texture;
         this.frames = frames;
     }
@@ -162,6 +170,22 @@ public class RibbonBox implements Savable, Cloneable {
     public boolean inAction() {
         return inAction;
     }
+    
+    /**
+     * Devuelve el número de columnas.
+     * @return Columnas.
+     */
+    public int getColumns() {
+        return (int) columnsAndRows.x;
+    }
+    
+    /**
+     * Devuelve el número de filas.
+     * @return Filas.
+     */
+    public int getRows() {
+        return (int) columnsAndRows.y;
+    }
 
     /**
      * (non-JavaDoc).
@@ -176,6 +200,7 @@ public class RibbonBox implements Savable, Cloneable {
         OutputCapsule out = ex.getCapsule(this);
         out.write(texture, "texture", null);
         out.write(frames, "frames", null);
+        out.write(columnsAndRows , "columnsAndRows ", null);
     }
 
     /**
@@ -189,6 +214,7 @@ public class RibbonBox implements Savable, Cloneable {
     @Override
     public void read(JmeImporter im) throws IOException {
         InputCapsule in = im.getCapsule(this);
+        columnsAndRows  = (Vector2f) in.readSavable("columnsAndRows ", columnsAndRows);
         texture = (Texture) in.readSavable("texture", texture);
         frames  = in.readIntArray("frames", frames);
     }

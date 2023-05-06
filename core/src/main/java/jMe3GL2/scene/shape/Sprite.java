@@ -209,6 +209,40 @@ public class Sprite extends Mesh implements Cloneable {
         updateBound();
     }
 
+    /**
+     * Método encargado de actualizar las coordenadas de esta malla.
+     * @param columns nuevo número de columnas.
+     * @param rows nuevo número de filas.
+     */
+    public void updateMeshCoords(int columns, int rows) {
+        updateMeshCoords(columns, rows, 0, 0);
+    }
+    
+    /**
+     * Método encargado de actualizar las coordenadas de esta malla.
+     * @param columns nuevo número de columnas.
+     * @param rows nuevo número de filas.
+     * @param colPosition posición inicial de las nuevas columnas.
+     * @param rowPosition posición inicial de las nuevas filas.
+     */
+    public void updateMeshCoords(int columns, int rows, int colPosition, int rowPosition) {
+        int update = 0;
+        if (transform.getColumns() != columns || transform.getRows() != rows) {
+            transform.setCoords(columns, rows);
+            update++;
+        }
+        
+        if (transform.getColPosition() != colPosition 
+                || transform.getRowPosition() != rowPosition) {
+            update++;
+        }
+        
+        if (update > 0) {
+            setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(transform.getVertices()));
+            updateTextureCoords(colPosition, rowPosition);
+            updateBound();
+        }
+    }
     
     /**
      * Actualiza las coordenadas de la textura.
