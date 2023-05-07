@@ -106,7 +106,7 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
     }
 
     /** Entradas y salidas de datos. */
-    protected final CustomKeyListener keyAdapter;
+    private final CustomKeyListener keyAdapter;
     
     /** Tipo de entrada. */
     protected InputHandlerType type;

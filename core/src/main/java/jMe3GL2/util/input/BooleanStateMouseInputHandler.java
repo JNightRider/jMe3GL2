@@ -31,90 +31,150 @@
  */
 package jMe3GL2.util.input;
 
+import com.jme3.math.Vector2f;
+
 /**
- * Clase <code>BooleanStateKeyboardInputHandler</code> que exitiene de la clase
- * padre {@link AbstractKeyboardInputHandler} en donde gestiona el estado 
+ * Clase <code>BooleanStateMouseInputHandler</code> que exitiene de la clase
+ * padre {@link bstractMouseInputHandler} en donde gestiona el estado 
  * lógico de una entrada, activo o no.
  * 
  * @author wil
  * @version 1.0-SNAPSHOT
  * @since 2.0.0
  */
-public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandler {
+public class BooleanStateMouseInputHandler extends AbstractMouseInputHandler {
 
     /** Si el estado de la tecla está activo (presionado)  */
     private boolean active;
-
+    
+    /** Posición del cursor. */
+    private Vector2f location;
+    
     /** {@code true} si se ha manejado el estado activo */
     private boolean hasBeenHandled;
 
     /**
      * Instancie un nuevo objeto de la clase 
-     * <code>BooleanStateKeyboardInputHandler</code>.
-     * 
-     * @param keys clave de las entradas(las entradas por teclado).
+     * <code>BooleanStateMouseInputHandler</code>.
+     * @param mouseTrigger entrada de dato.
      */
-    public BooleanStateKeyboardInputHandler(Key... keys) {
-        super(InputHandlerType.Action, keys);
+    public BooleanStateMouseInputHandler(MouseTrigger mouseTrigger) {
+        super(mouseTrigger);
+    }
+
+    /**
+     * (non-JavaDoc)
+     * @param point vector2f
+     * @see AbstractMouseInputHandler#onMousePressed(com.jme3.math.Vector2f) 
+     */
+    @Override
+    protected void onMousePressed(Vector2f point) {
+        boolean active0 = this.active;
+
+        this.active = true;
+        this.location = point;
+
+        // si el estado pasó de inactivo a activo
+        // marca que necesita ser manejado
+        if (!active0) {
+            this.hasBeenHandled = false;
+        }
+    }
+
+    /**
+     * (non-JavaDoc)
+     * @see AbstractMouseInputHandler#onMouseRelease() 
+     */
+    @Override
+    protected void onMouseRelease() {
         this.active = false;
+    }
+
+    /**
+     * (non-JavaDoc)
+     * @param flag boolean
+     * @see AbstractMouseInputHandler#setEnabled(boolean) 
+     */
+    @Override
+    public void setEnabled(boolean flag) {
+        super.setEnabled(flag);
+        if (!flag) {
+            this.clearState();
+        }
+    }
+
+    /**
+     * (non-JavaDoc)
+     * @see AbstractMouseInputHandler#uninstall() 
+     */
+    @Override
+    public void uninstall() {
+        super.uninstall();
+        this.clearState();
+    }
+
+    /**
+     * Limpia los estados de esta entrada de dato.
+     */
+    private void clearState() {
+        this.active = false;
+        this.location = null;
         this.hasBeenHandled = false;
     }
 
     /**
-     * (non-JavaDoc)
-     * @see AbstractKeyboardInputHandler#onKeyPressed() 
+     * Devuelve la posición actual del cursor.
+     * @return posición.
      */
-    @Override
-    protected void onKeyPressed() {		
-	// salvar el antiguo estado
-	boolean active0 = this.active;
-	
-	// establecer el estado en activo
-	this.active = true;
-	
-	// si el estado pasó de inactivo a activo
-        // marca que necesita ser manejado
-	if (!active0) {
-            this.hasBeenHandled = false;
-	}
+    public Vector2f getMouseLocation() {
+        return this.location;
     }
 
     /**
      * (non-JavaDoc)
-     * @see AbstractKeyboardInputHandler#onKeyReleased() 
-     */
-    @Override
-    protected void onKeyReleased() {
-        this.active = false;
-    }
-
-    /**
-     * (non-JavaDoc)
-     * @see AbstractKeyboardInputHandler#isActive() 
+     * @see AbstractMouseInputHandler#isActive() 
      * @return boolean
      */
     @Override
     public boolean isActive() {
         return this.active;
     }
-    
+
     /**
      * Método encargado de gestionar si la entrada esta activa y no ha sido
      * manejado.
      * @return boolean.
      */
     public boolean isActiveButNotHandled() {
-    	if (this.hasBeenHandled) {
+        if (this.hasBeenHandled) {
             return false;
         }
-    	return this.active;
+
+        return this.active;
     }
-	
+
     /**
      * Establece el estado de la entrada.
      * @param hasBeenHandled estado.
      */
     public void setHasBeenHandled(boolean hasBeenHandled) {
-    	this.hasBeenHandled = hasBeenHandled;
+        this.hasBeenHandled = hasBeenHandled;
     }
+
+    /**
+     * (non-JavaDoc)
+     * @param start vector2f
+     * @param current vector2f
+     * @see AbstractMouseInputHandler#onMouseDrag(com.jme3.math.Vector2f, com.jme3.math.Vector2f) 
+     */
+    @Override
+    protected void onMouseDrag(Vector2f start, Vector2f current) { }
+
+    /**
+     * (non-JavaDoc)
+     * @param rotation float
+     * @see AbstractMouseInputHandler#onMouseWheel(double) 
+     */
+    @Override
+    protected void onMouseWheel(double rotation) { }
 }

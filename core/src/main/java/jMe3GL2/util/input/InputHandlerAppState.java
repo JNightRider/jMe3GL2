@@ -40,20 +40,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Un objeto de la clase <code>InputHandlerAppState</code> se encarga de 
+ * administrar todas las entradas a tarvez de la interfaz {@link InputHandler}
+ * que se generen.
+ * <p>
+ * Se encarga de inicializarlas o destruirlas.
+ * </p>
+ * 
  * @author wil
  * @version 1.0-SNAPSHOT
  * @since 2.0.0
  */
+@SuppressWarnings(value = {"unchecked"})
 public class InputHandlerAppState extends AbstractAppState {
 
+    /**
+     * Listas de entradas entrantes.
+     */
     private final List<InputHandler> inputHandlers 
             = new ArrayList<>();
     
+    /** Administrador de entradas {@code jme3}. */
     private InputManager inputManager;
-    
+
+    /**
+     * (non-JavaDoc)
+     * @param stateManager AppStateManager
+     * @see AbstractAppState#stateAttached(com.jme3.app.state.AppStateManager) 
+     */
     @Override
-    public void initialize(AppStateManager stateManager, Application app) {
+    public void stateAttached(AppStateManager stateManager) {
+        Application app = stateManager.getApplication();
         for (final InputHandler handler : this.inputHandlers) {
             if (handler == null) {
                 continue;
@@ -63,27 +80,53 @@ public class InputHandlerAppState extends AbstractAppState {
             }
         }
         this.inputManager = app.getInputManager();
-        super.initialize(stateManager, app);
     }
     
-    public void addInputHandler(InputHandler inputHandler) {
+    /**
+     * Método encargado de agregar e inicializar una entrada que implemente la
+     * interfaz {@link InputHandler}.
+     * 
+     * @param <T> tipo de entrada.
+     * @param inputHandler nueva entrada a registrar.
+     * @return entrada registrada.
+     */
+    public <T extends InputHandler> T addInputHandler(T inputHandler) {
         if (!inputHandler.isInitialized()) {
             inputHandler.initialize(inputManager);
         }
         this.inputHandlers.add(inputHandler);
+        return inputHandler;
     }
     
-    public InputHandler getInputHandler(int index) {
-        return this.inputHandlers.get(index);
+    /**
+     * Devuelve una entrada a traves de un índice.
+     * @param <T> tipo de entrada.
+     * @param index índice de la entrada.
+     * @return entrada registrada.
+     */
+    public <T extends InputHandler> T getInputHandler(int index) {
+        return (T) this.inputHandlers.get(index);
     }
     
-    public void removeInputHandler(InputHandler inputHandler) {
+    /**
+     * Elimina una entrada.
+     * @param <T> tipo de entrada.
+     * @param inputHandler entrada a eliminar.
+     * @return entrada eliminada.
+     */
+    public <T extends InputHandler> T removeInputHandler(T inputHandler) {
         if (inputHandler.isInitialized()) {
             inputHandler.initialize(null);
         }
         this.inputHandlers.remove(inputHandler);
+        return inputHandler;
     }
     
+    /**
+     * (non-JavaDoc)
+     * @param enabled boolean
+     * @see AbstractAppState#setEnabled(boolean) 
+     */
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -95,6 +138,10 @@ public class InputHandlerAppState extends AbstractAppState {
         }
     }
     
+    /**
+     * (non-JavaDoc)
+     * @see AbstractAppState#cleanup() 
+     */
     @Override
     public void cleanup() {
         super.cleanup();
