@@ -172,6 +172,7 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl, Cont
         }
         this.spatial = spatial;
         this.setUserData(spatial);
+        this._ready();
     }
 
     /**
@@ -185,6 +186,7 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl, Cont
             return;
         
         controlUpdate(tpf);
+        _physics_process(tpf);
     }
 
     /**
@@ -201,6 +203,17 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl, Cont
         controlRender(rm, vp);
     }
 
+    /**
+     * Inicializacion de los datos para este cuerpo.
+     */
+    protected void _ready() {}
+    
+    /**
+     * Actualización de procesos físicos.
+     * @param delta lapso de tiempo por fps.
+     */
+    protected void _physics_process(float delta) {}
+    
     /**
      * Para ser implementado en la subclase.
      *
