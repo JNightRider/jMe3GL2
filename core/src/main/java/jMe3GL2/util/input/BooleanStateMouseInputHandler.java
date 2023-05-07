@@ -35,7 +35,7 @@ import com.jme3.math.Vector2f;
 
 /**
  * Clase <code>BooleanStateMouseInputHandler</code> que exitiene de la clase
- * padre {@link bstractMouseInputHandler} en donde gestiona el estado 
+ * padre {@link AbstractMouseInputHandler} en donde gestiona el estado 
  * lógico de una entrada, activo o no.
  * 
  * @author wil
