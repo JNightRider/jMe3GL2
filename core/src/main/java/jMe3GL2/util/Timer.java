@@ -167,6 +167,15 @@ public class Timer {
     }
     
     /**
+     * Método encargado de gestionar el estado de este temporizador.
+     * @return {@code true} si esta en ejecución, de lo contrario devolvería
+     *          {@code false} si esta detenido o muero.
+     */
+    public boolean isRun() {
+        return !paused;
+    }
+    
+    /**
      * Hace que finalize el temporizador de manera forzada.
      */
     public void forceFinished() {
