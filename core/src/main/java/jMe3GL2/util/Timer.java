@@ -159,7 +159,7 @@ public class Timer {
      * Determina si a finalizado ó alcanzado el tiempo maximo esperado.
      * @return un valor lógico.
      */
-    private boolean finished() {
+    public boolean finished() {
         if (paused) {
             return false;
         }
