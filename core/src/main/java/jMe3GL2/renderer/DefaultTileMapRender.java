@@ -120,6 +120,8 @@ public class DefaultTileMapRender implements TileMapRender {
         PhysicsBody2D rbd = geo.getControl(PhysicsBody2D.class);
         if (rbd != null) {
             rbd.getTransform().setTranslation(position.getA(), position.getB());
+        } else {
+            geo.setLocalTranslation(position.getA(), position.getB(), geo.getLocalTranslation().z);
         }
     }
 }
