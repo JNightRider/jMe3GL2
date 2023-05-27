@@ -29,41 +29,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jMe3GL2.renderer;
-
-import com.jme3.asset.AssetManager;
-import com.jme3.scene.Geometry;
-
-import jMe3GL2.scene.TilesHeet;
+package jMe3GL2.scene.tile;
 
 /**
- * Interfaz <code>TileMapRender</code> encargado de renderizar las geometrías
- * de un {@link jMe3GL2.scene.TileMap}.
+ * Un <code>TilesHeet</code> es una interfaz con método que devuelve los
+ * administradores encargados de la creación y gestionamiento del espacio
+ * de los modelos 2D de un {@link TileMap}.
  * 
  * @author wil
  * @version 1.0-SNAPSHOT
  * 
  * @since 1.5.0
  */
-public interface TileMapRender {
+public interface TilesHeet {
     
     /**
-     * Método encargado de crera la geometría del {@link jMe3GL2.scene.TileMap}
-     * con las características personalizadas.
-     * 
-     * @param tile azulejo.
-     * @param tilesHeet administrador azulejo.
-     * @param assetManager administrador de recursos <code>jme</code>.
-     * @return una nueva {@code Geometry}.
+     * Devuelve un {@link TileModel} para el nodo de mapas.
+     * @return tile-model
      */
-    public Geometry render(TilesHeet.Tile tile, TilesHeet tilesHeet, AssetManager assetManager);
+    public TileModel getTileModel();
     
     /**
-     * Método encargado de actualizar los datos de un {@code Geometry}.
-     * @param geom geometría a gestionar.
-     * @param tile azulejo.
-     * @param tilesHeet administrador azulejo.
-     * @param assetManager administrador de recursos <code>jme</code>.
+     * Devuelve un {@link TileSpace} para el nodo de mapas.
+     * @return tile-space
      */
-    public void update(Geometry geom, TilesHeet.Tile tile, TilesHeet tilesHeet, AssetManager assetManager);
+    public TileSpace getTileSpace();
 }

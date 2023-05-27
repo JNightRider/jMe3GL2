@@ -29,12 +29,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jMe3GL2.scene;
+package jMe3GL2.scene.tile;
 
 import com.jme3.scene.Geometry;
+import jMe3GL2.physics.PhysicsSpace;
+import jMe3GL2.physics.control.PhysicsBody2D;
 
 /**
- * Interfaz <code>TileMapManager</code> es el encargado de administrar los
+ * Interfaz <code>TileSpace</code> es el encargado de administrar los
  * cambios de un {@link TileMap}.
  * <p>
  * Con esta interfaz podemos saber y administrar cada cambio que hagan las
@@ -47,49 +49,49 @@ import com.jme3.scene.Geometry;
  * padre de la clase {@link TileMap}</p>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- * 
- * @since 1.5.0
  */
-public interface TileMapManager {
+public interface TileSpace {
     
     /**
-     * Se activa cuando una neva geometría es agregada al nodo padre.
-     * @param geom nueva geometría;
+     * Método encargado de establecer el espacio físico de los cuerpos
+     * rigidos del mapa de azulejos.
+     * @param physicsSpace espacio-físico.
      */
-    public void onAttachChild(Geometry geom);
+    public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace);
     
     /**
      * Se activa cuando de elimina una geometría del nodo padre.
      * @param geom geometría liminada.
      */
-    public void onDetachChild(Geometry geom);
+    public void onDetachTile(Geometry geom);
     
     /**
-     * Se activa cuando se aplica un cambio a una geometría.
-     * @param geom geometría
-     * @param map mapa de azulejos.
+     * Se activa cuando una neva geometría es agregada al nodo padre.
+     * @param geom nueva geometría;
      */
-    public void onTransformChange(Geometry geom, TileMap map);
-    
-    /**
-     * Se activa cuando se aplica un cambio en el materia de una geometría.
-     * @param geom geometría
-     * @param map mapa de azulejos.
-     */
-    public void onMaterialChange(Geometry geom, TileMap map);
-    
-    /**
-     * Se activa cuando se cambia la malla o el nivel de una geometría.
-     * @param geom geometría
-     * @param map mapa de azulejos.
-     */
-    public void onMeshChange(Geometry geom, TileMap map);
+    public void onAttachTile(Geometry geom);
     
     /**
      * Se activa la geometría ya no esta asociada con el nodo padre.
      * @param geom geometría
-     * @param map mapa de azulejos.
      */
-    public void onGeometryUnassociated(Geometry geom, TileMap map);
+    public void onTileUnassociated(Geometry geom);
+    
+    /**
+     * Se activa cuando se aplica un cambio a una geometría.
+     * @param geom geometría
+     */
+    public void onTransformChange(Geometry geom);
+    
+    /**
+     * Se activa cuando se aplica un cambio en el materia de una geometría.
+     * @param geom geometría
+     */
+    public void onMaterialChange(Geometry geom);
+    
+    /**
+     * Se activa cuando se cambia la malla o el nivel de una geometría.
+     * @param geom geometría
+     */
+    public void onMeshChange(Geometry geom);
 }

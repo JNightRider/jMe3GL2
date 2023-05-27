@@ -39,7 +39,7 @@
  *  <b>TileMap:</b> Gestiona un mapa de azulejos.
  * </li>
  * <li>
- *  <b>Sprite:</b> Malla de azulejos.
+ *  <b>Tile:</b> Azulejos de la escena.
  * </li>
  * </ul>
  * </p>
@@ -48,4 +48,4 @@
  * @version 1.0-SNAPSHOT
  * @since 1.5.0
  */
-package jMe3GL2.scene;
+package jMe3GL2.scene.tile;
