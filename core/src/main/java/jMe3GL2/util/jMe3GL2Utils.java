@@ -52,7 +52,7 @@ import org.dyn4j.geometry.MassType;
  * Clase encargado de proporcionar métodos de utilidad para la creación
  * de materiales y texturas 2D.
  * 
- * @version 1.0-SNAPSHOT
+ * @version 1.5-SNAPSHOT
  * @since 1.0.0
  */
 public final 
