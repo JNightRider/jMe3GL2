@@ -36,7 +36,17 @@ import com.jme3.asset.TextureKey;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.texture.Texture;
+
+import jMe3GL2.physics.collision.RectangleCollisionShape;
+import jMe3GL2.scene.tile.Properties;
+import jMe3GL2.scene.tile.Tile;
+import jMe3GL2.scene.tile.TileMap;
+
+import java.util.Objects;
+
+import org.dyn4j.geometry.MassType;
 
 /**
  * Clase encargado de proporcionar métodos de utilidad para la creación
@@ -52,6 +62,114 @@ class jMe3GL2Utils {
      * Constructor privado de la clase.
      */
     private jMe3GL2Utils() {}
+    
+    /**
+     * Genera un {@link TileMap} con las propiedades mas importante y utilizadas
+     * por el objeto {@link jMe3GL2.scene.tile.TileMap} predeterminado que
+     * utiliza {@link TileMap} al instanciarlo.
+     * @param tilemap nombre o ruta de la textura que contiene los azulejos.
+     * @param rows número maximo de filas.
+     * @param columns número maximo de columnas.
+     * @param assetManager administrador de recursoso jme.
+     * @return Un mapa de azulejos generado.
+     */
+    public static TileMap newInstanceTileMap(String tilemap, int rows, int columns, AssetManager assetManager) {
+        return newInstanceTileMap(tilemap + '@' + Objects.hashCode(tilemap), tilemap, rows, columns, assetManager);
+    }
+    
+    /**
+     * Genera un {@link TileMap} con las propiedades mas importante y utilizadas
+     * por el objeto {@link jMe3GL2.scene.tile.TileMap} predeterminado que
+     * utiliza {@link TileMap} al instanciarlo.
+     * @param id identificador 'unico'.
+     * @param tilemap nombre o ruta de la textura que contiene los azulejos.
+     * @param rows número maximo de filas.
+     * @param columns número maximo de columnas.
+     * @param assetManager administrador de recursoso jme.
+     * @return Un mapa de azulejos generado.
+     */
+    public static TileMap newInstanceTileMap(String id, String tilemap, int rows, int columns, AssetManager assetManager) {
+        TileMap myMap = new TileMap(assetManager, id);
+        Properties properties = new Properties();
+        properties.setProperty("Texture", tilemap);
+        properties.setProperty("Rows", rows);
+        properties.setProperty("Columns", columns);
+        myMap.setProperties(properties);
+        return myMap;
+    }
+    
+    /**
+     * Método auxiliar en donde se prepara un objeto de la clase {@link Tile}
+     * con las propiedades del azulejo, utilizadas por el 
+     * {@link jMe3GL2.scene.tile.TilesHeet} predeterminado de la clase
+     * {@link jMe3GL2.scene.tile.TileMap}.
+     * 
+     * @param id ideintificador unico del azulejo.
+     * @param colPos columna de la textura.
+     * @param rowPos fila de la textura.
+     * @param x posición en el eje {@code x} en escena.
+     * @param y posición en el eje {@code y} en escena.
+     * @return azulejo generado.
+     */
+    public static Tile newIstanceTile(String id, int colPos, int rowPos, float x, float y) {
+        return newIstanceTile(id, colPos, rowPos, x, y, false);
+    }
+    
+    /**
+     * Método auxiliar en donde se prepara un objeto de la clase {@link Tile}
+     * con las propiedades del azulejo, utilizadas por el 
+     * {@link jMe3GL2.scene.tile.TilesHeet} predeterminado de la clase
+     * {@link jMe3GL2.scene.tile.TileMap}.
+     * 
+     * @param id ideintificador unico del azulejo.
+     * @param colPos columna de la textura.
+     * @param rowPos fila de la textura.
+     * @param x posición en el eje {@code x} en escena.
+     * @param y posición en el eje {@code y} en escena.
+     * @param collide {@code true} si se desea color un cuerpo físico con forma
+     *                  de un rectamgulo de acuerdo a las dimensiones dadas.
+     * @return azulejo generado.
+     */
+    public static Tile newIstanceTile(String id, int colPos, int rowPos, float x, float y, boolean collide) {
+        return newIstanceTile(id, colPos, rowPos, 1.0F, 1.0F, x, y, 0.0F, collide);
+    }
+    
+    /**
+     * Método auxiliar en donde se prepara un objeto de la clase {@link Tile}
+     * con las propiedades del azulejo, utilizadas por el 
+     * {@link jMe3GL2.scene.tile.TilesHeet} predeterminado de la clase
+     * {@link jMe3GL2.scene.tile.TileMap}.
+     * 
+     * @param id ideintificador unico del azulejo.
+     * @param colPos columna de la textura.
+     * @param rowPos fila de la textura.
+     * @param width ancho del modelo.
+     * @param height largo del modelo.
+     * @param x posición en el eje {@code x} en escena.
+     * @param y posición en el eje {@code y} en escena.
+     * @param z posición en el eje {@code xz} en escena(esta coordena se utiliza
+     *          para tener una perspectiva de alejanida o cercania en 2D).
+     * @param collide {@code true} si se desea color un cuerpo físico con forma
+     *                  de un rectamgulo de acuerdo a las dimensiones dadas.
+     * @return azulejo generado.
+     */
+    public static Tile newIstanceTile(String id, int colPos, int rowPos, float width, float height, float x, float y, float z, boolean collide) {
+        Tile tile = new Tile();        
+        Properties properties = new Properties();
+        properties.setProperty("Id", id);
+        properties.setProperty("Row", rowPos);
+        properties.setProperty("Column", colPos);
+        properties.setProperty("Width", width);
+        properties.setProperty("Height", height);
+        properties.setProperty("Translation", new Vector3f(x, y, z));        
+        if ( collide ) {
+            properties.setProperty("RigidBody2D", true);
+            properties.setProperty("CollisionShape", new RectangleCollisionShape(width, height));
+            properties.setProperty("MassType", MassType.INFINITE);
+        }        
+        tile.setProperties(properties);
+        return tile;
+    }
     
     /**
      * Método local para reutilizar la carga de una textura como material

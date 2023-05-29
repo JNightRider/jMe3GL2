@@ -75,7 +75,7 @@ class jMe3GLDefTilesHeet implements TilesHeet {
             geom.setMaterial(mat);
             geom.setQueueBucket(RenderQueue.Bucket.Transparent);
                 
-            Vector3f translation = property.getProperty("Translation", new Vector3f());
+            Vector3f translation = tile.getTranslation();
             if (property.getProperty("RigidBody2D", false)) {
                 RigidBody2D rbd = new RigidBody2D();
                 
@@ -86,6 +86,7 @@ class jMe3GLDefTilesHeet implements TilesHeet {
                 
                 rbd.setMass(property.getProperty("MassType", MassType.INFINITE));
                 rbd.translate(Converter.toVector2(translation));
+                geom.addControl(rbd);
             } else {
                 geom.setLocalTranslation(translation);
             }

@@ -71,8 +71,8 @@ public class Tile implements Savable, Cloneable {
      * Devuelve un vector con las coordenadas de traslación.
      * @return posición.
      */
-    public Vector3f getTraslation() {
-        return properties.getProperty("Traslation", new Vector3f());
+    public Vector3f getTranslation() {
+        return properties.getProperty("Translation", new Vector3f());
     }
     
     /**
