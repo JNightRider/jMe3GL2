@@ -55,7 +55,6 @@ final class jMe3GL2DesktopDisplaySystem implements jMe3GL2DisplaySystem {
     public jMe3GL2DesktopDisplaySystem() {
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         modes  = device.getDisplayModes();
-        device.isDisplayChangeSupported();
         Arrays.sort(modes, new DisplayModeSorter());
     }
         
