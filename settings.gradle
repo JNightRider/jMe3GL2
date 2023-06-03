@@ -12,3 +12,5 @@ include('core')
 
 // More sensible sub-project names for jars an dstuff
 project(":core").name = "jMe3GL2-core"
+include 'awt'
+
