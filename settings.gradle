@@ -9,8 +9,9 @@
 
 rootProject.name = 'jMe3GL2'
 include('core')
+include('awt')
 
 // More sensible sub-project names for jars an dstuff
 project(":core").name = "jMe3GL2-core"
-include 'awt'
+project(":awt").name  = "jMe3GL2-awt"
 
