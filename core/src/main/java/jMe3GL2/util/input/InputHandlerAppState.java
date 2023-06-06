@@ -99,6 +99,25 @@ public class InputHandlerAppState extends AbstractAppState {
     }
     
     /**
+     * Devuelve el primer {@link InputHandler} que es una instancia de subclase 
+     * de la clase especificada.
+     * 
+     * @param <T> el tipo deseado de {@link InputHandler}
+     * @param inputClass clase del tipo deseado.
+     * @return Primer estado adjunto que es una instancia de {@code inputClass}.
+     */
+    public <T extends InputHandler> T getInputHandler(Class<T> inputClass) {
+        synchronized (inputHandlers) {
+            for (InputHandler handler : inputHandlers) {
+                if (inputClass.isAssignableFrom(handler.getClass())) {
+                    return (T) handler;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Devuelve una entrada a traves de un índice.
      * @param <T> tipo de entrada.
      * @param index índice de la entrada.
