@@ -41,7 +41,7 @@ import com.jme3.scene.Node;
  * @author wil
  * @param <T> tipo de dato.
  * @version 1.0-SNAPSHOT
- * @since 1.5.0
+ * @since 2.0.0
  */
 public class TileMapGroupNode<T extends TileMap> extends Node {
     /* CODE */

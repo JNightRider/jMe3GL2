@@ -38,7 +38,7 @@ package jMe3GL2.scene.tile;
  * @author wil
  * @version 1.0-SNAPSHOT
  * 
- * @since 1.5.0
+ * @since 2.0.0
  */
 enum Type {
     

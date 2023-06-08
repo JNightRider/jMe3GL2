@@ -49,6 +49,9 @@ import jMe3GL2.physics.control.PhysicsBody2D;
  * padre de la clase {@link TileMap}</p>
  * 
  * @author wil
+ * @version 1.0-SNAPSHOT
+ * 
+ * @since 2.0.0
  */
 public interface TileSpace {
     

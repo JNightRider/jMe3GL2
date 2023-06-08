@@ -41,7 +41,7 @@ import com.jme3.scene.Geometry;
  * @author wil
  * @version 1.0-SNAPSHOT
  * 
- * @since 1.5.0
+ * @since 2.0.0
  */
 public interface TileModel {
     

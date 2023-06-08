@@ -80,7 +80,7 @@ import java.util.Iterator;
  * </p>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.5-SNAPSHOT
  * @since 1.5.0
  */
 public class TileMap extends GeometryGroupNode {

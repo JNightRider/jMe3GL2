@@ -53,7 +53,7 @@ import org.dyn4j.geometry.MassType;
  * @author wil
  * @version 1.0-SNAPSHOT
  * 
- * @since 1.5.0
+ * @since 2.0.0
  */
 class jMe3GLDefTilesHeet implements TilesHeet {
     
