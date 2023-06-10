@@ -119,6 +119,14 @@ class AbstractAnimatedControl<E extends Object> extends AbstractControl {
     }
 
     /**
+     * Devuelve el nombre actiaul de la anicación actual aplicada.
+     * @return nombre-animación.
+     */
+    public String getCurrentAnimationName() {
+        return currentAnimationName;
+    }
+
+    /**
      * Devuelve una {@code Set} con los nombres de las animaciones.
      * @return Lista de nombres.
      */
