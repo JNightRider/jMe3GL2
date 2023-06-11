@@ -44,7 +44,7 @@ import java.util.List;
  * @author wil
  * @version 1.0-SNAPSHOT
  *
- * @since 1.0.0
+ * @since 1.2.0
  */
 public class Timer {
     
@@ -85,12 +85,101 @@ public class Timer {
     }
     
     /**
+     * Agrega una nueva tarea.
+     * @param task tarea nueva.
+     * @return {@link Timer} de lo contrario <code>null</code> si sucede un
+     *          erro al agregarlo.
+     */
+    public Timer attachTask(TimerTask task) {
+        if (this.addTask(task)) {
+            return this;
+        }
+        return null;
+    }
+     /**
+      * Método encargado de agregar varias tareas para este temporizador.
+      * @param tasks nuevas tareas.
+      * @return {@link Timer} de lo contrario <code>null</code> si sucede un
+     *          erro al agregarlos.
+      */
+    public Timer attachAllTask(TimerTask... tasks) {
+        if (tasks == null)
+            return null;
+        
+        for (final TimerTask element : tasks) {
+            if (element == null)
+                continue;
+            
+            if (attachAllTask(tasks) == null) {
+                return null;
+            }
+        }
+        return this;
+    }
+    
+    /**
      * Elimina una tarea.
      * @param task tarea a eliminar.
      * @return estado.
      */
     public boolean removeTask(TimerTask task) {
         return this.tasks.remove(task);
+    }
+    
+    /**
+     * Elimina una tarea.
+     * @param task tarea a eliminar.
+     * @return este temporizador.
+     */
+    public Timer detachTask(TimerTask task) {
+        if (this.removeTask(task)) {
+            return this;
+        }
+        return null;
+    }
+    
+   /**
+     * Elimina el primer {@link TimerTask} que es una instancia de subclase 
+     * de la clase especificada.
+     * 
+     * @param <T> el tipo deseado de {@link TimerTask}
+     * @param taskClass clase del tipo deseado.
+     * @return este temporizador.
+     */
+    public <T extends TimerTask> Timer detachTask(Class<T> taskClass) {
+        if (this.detachTask(this.getTask(taskClass)) != null) {
+            return this;
+        }
+        return null;
+    }
+    
+    /**
+     * Devuelve un {@link TimerTask} según su índice o posición en la lista de 
+     * de tareas de este temporizador.
+     * @param index índice.
+     * @return tarera.
+     */
+    public TimerTask getTask(int index) {
+        return this.tasks.get(index);
+    }
+    
+    /**
+     * Devuelve el primer {@link TimerTask} que es una instancia de subclase 
+     * de la clase especificada.
+     * 
+     * @param <T> el tipo deseado de {@link TimerTask}
+     * @param taskClass clase del tipo deseado.
+     * @return Primer estado adjunto que es una instancia de {@code taskClass}.
+     */
+    public <T extends TimerTask> T getTask(Class<T> taskClass) {
+        synchronized (tasks) {
+            for (TimerTask task : tasks) {
+                if (taskClass.isAssignableFrom(task.getClass())) {
+                    return (T) task;
+                }
+            }
+        }
+        return null;
     }
     
     /**

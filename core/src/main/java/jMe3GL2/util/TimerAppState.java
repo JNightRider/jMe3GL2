@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  * @author wil
  * @version 1.0-SNAPSHOT
  *
- * @since 1.2.0
+ * @since 1.3.0
  */
 public final 
 class TimerAppState extends AbstractAppState {
@@ -81,6 +81,40 @@ class TimerAppState extends AbstractAppState {
      */
     public void setDefaultDelay(float defaultDelay) {
         this.defaultDelay = defaultDelay;
+    }
+    
+    /**
+     * Método encargado de establecer un estador a un {@link Timer} en 
+     * especifico.
+     * @param name nombre-clave del temporizador.
+     * @param state estado que tomará.
+     * @return {@code true} si se aplico los cambios, de lo contrario {@code false}.
+     */
+    public boolean setState(String name, TimerState state) {
+        EntryTimer entryTimer = this.timerMap.get(name);
+        if ( entryTimer == null ) {
+            LOG.log(Level.WARNING, "[ {0} ] Nonexistent timer.", name);
+            return false;
+        }
+        
+        Timer timer = entryTimer.getTimer();
+        switch (state) {
+            case Pause:
+                timer.pause(true);
+                break;
+            case Resume:
+                timer.pause(false);
+                break;
+            case Start:
+                timer.start();
+                break;
+            case Stop:
+                timer.stop();
+                break;
+            default:
+                throw new AssertionError();
+        }
+        return true;
     }
     
     /**
