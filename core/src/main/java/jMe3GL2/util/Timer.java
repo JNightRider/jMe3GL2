@@ -46,6 +46,7 @@ import java.util.List;
  *
  * @since 1.2.0
  */
+@SuppressWarnings(value = {"unchecked"})
 public class Timer {
     
     /** Tiempo maximo del temporizador. */
