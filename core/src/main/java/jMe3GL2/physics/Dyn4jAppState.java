@@ -38,8 +38,6 @@ import com.jme3.renderer.RenderManager;
 
 import jMe3GL2.physics.control.PhysicsBody2D;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -68,9 +66,6 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
 
     /** Tiempo de espera en microsefundos. */
     private static final long TIME_STEP_IN_MICROSECONDS = (long) (Settings.DEFAULT_STEP_FREQUENCY * 1000);
-    
-    /** Lista de inicializadores de cuerpos {@code dyn4j}. */
-    private final List<Dyn4jInitializer<E>> dyn4jInitializers = new ArrayList<>();
     
     /**
      * Consulte {@link Application} para obtener más información.
@@ -104,11 +99,8 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     /** fps acumulado para el motor. */
     protected float tpfSum = 0;
     
-    // Campos MultiTreading //
-    
-    /**
-     * Consulte {@link ThreadingType} para obtener más información.
-     */
+    // Campos MultiTreading //    
+    /** Consulte {@link ThreadingType} para obtener más información. */
     protected ThreadingType threadingType = null;
     
     /** (non-javadoc) */
@@ -122,7 +114,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
          Dyn4jAppState.this.physicsSpace.updateFixed(Dyn4jAppState.this.tpfSum);
          Dyn4jAppState.this.tpfSum = 0;
     };
-
+    
     /**
      * Instancia un nuevo objeto <code>Dyn4jAppState</code> con los valores
      * predeterminados.
@@ -242,22 +234,9 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             startPhysicsOnExecutor();
         } else {
             this.physicsSpace = new PhysicsSpace<>(initialCapacity, initialJointCapacity, bounds);
-            this.startDyn4jInitializer();
         }
 
         this.initialized = true;
-    }
-
-    /**
-     * Inicializa los {@link Dyn4jInitializer}.
-     */
-    private void startDyn4jInitializer() {
-        for (final Dyn4jInitializer<E> initializer : this.dyn4jInitializers) {
-            if (initializer == null) {
-                continue;
-            }
-            initializer.ready(this.physicsSpace);
-        }
     }
     
     /**
@@ -273,8 +252,6 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
         final Callable<Boolean> call = () -> {
             Dyn4jAppState.this.physicsSpace = new PhysicsSpace(Dyn4jAppState.this.initialCapacity, Dyn4jAppState.this.initialJointCapacity,
                     Dyn4jAppState.this.bounds);
-            
-            Dyn4jAppState.this.startDyn4jInitializer();
             return true;
         };
 
@@ -323,7 +300,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
         if (!isEnabled()) {
             return;
         }
-
+        
         this.tpf = tpf;
         this.tpfSum += tpf;
     }
@@ -388,21 +365,5 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      */
     public PhysicsSpace<E> getPhysicsSpace() {
         return this.physicsSpace;
-    }
-    
-    /**
-     * Agrega un nuevo inicializador.
-     * @param initializer inicializador.
-     */
-    public void addDyn4jInitializer(Dyn4jInitializer<E> initializer) {
-        this.dyn4jInitializers.add(initializer);
-    }
-    
-    /**
-     * Elimina un inicializador registrado.
-     * @param initializer inicializador a eliminar.
-     */
-    public void removeDyn4jInitializer(Dyn4jInitializer<E> initializer) {
-        this.dyn4jInitializers.remove(initializer);
     }
 }
