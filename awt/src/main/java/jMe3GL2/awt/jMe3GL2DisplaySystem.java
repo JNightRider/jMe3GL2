@@ -53,7 +53,8 @@ public interface jMe3GL2DisplaySystem {
     public AWTResolution[] getResolutions();
     
     /**
-     * Genera la resolucion de la pantalla completa.
+     * Genera la resolucion de la pantalla completa, dicha resolucion será
+     * de la pantalla en donde se está corriendo el juego.
      * 
      * @return {@link AWTResolution}.
      */

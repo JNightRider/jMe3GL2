@@ -65,17 +65,23 @@ final class jMe3GL2DesktopDisplaySystem implements jMe3GL2DisplaySystem {
 
     @Override
     public AWTResolution getFullScreenResolution() {
-        AWTResolution resolution = new AWTResolution();
+        //AWTResolution resolution = new AWTResolution();
+        //
+        //final AWTResolution[] resAll;
+        //resAll = getWindowedResolutions();
+        //        
+        //for (final AWTResolution res : resAll) {
+        //    if (resolution.getWidth() < res.getWidth() 
+        //            && resolution.getHeight() < res.getHeight()) {
+        //        resolution = res.clone();
+        //    }
+        //}
         
-        final AWTResolution[] resAll;
-        resAll = getWindowedResolutions();
-                
-        for (final AWTResolution res : resAll) {
-            if (resolution.getWidth() < res.getWidth() 
-                    && resolution.getHeight() < res.getHeight()) {
-                resolution = res.clone();
-            }
-        }
+        DisplayMode mode = device.getDisplayMode();
+        AWTResolution resolution = new AWTResolution(mode.getWidth(), mode.getHeight());
+        
+        resolution.setBitDepth(mode.getBitDepth());
+        resolution.setRefreshRate(mode.getRefreshRate());
         return resolution;
     }
 
@@ -109,7 +115,8 @@ final class jMe3GL2DesktopDisplaySystem implements jMe3GL2DisplaySystem {
                 maxHeight = element.getHeight();
             }
         }
-        return getResolutions(maxWidth, maxHeight);
+        
+        return getResolutions(maxHeight, maxWidth);
     }
     
     private AWTResolution[] getResolutions(int heightLimit, int widthLimit) {
@@ -132,7 +139,7 @@ final class jMe3GL2DesktopDisplaySystem implements jMe3GL2DisplaySystem {
                 if (width >= widthLimit) {
                     width = widthLimit;
                 }
-                
+                                
                 AWTResolution resolution = new AWTResolution(width, height);
                 resolution.setBitDepth(element.getBitDepth());
                 resolution.setRefreshRate(element.getRefreshRate());
