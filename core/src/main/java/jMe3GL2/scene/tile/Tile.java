@@ -65,6 +65,7 @@ public class Tile implements Savable, Cloneable {
      * 
      * @return clon objeto.
      */
+    @Override
     public Tile clone() {
         try {
             Tile clon = (Tile) super.clone();
