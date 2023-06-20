@@ -160,12 +160,26 @@ public class TileMap extends GeometryGroupNode {
      * @param tile nuvo dato a agregar.
      */
     public void addTile(final Tile tile) {
+        addTile(tile, true);
+    }
+    
+    /**
+     * Agrega un nuevo {@link Tile} a este nodo de azulejos.
+     * <p>
+     * <b>NOTA:</b> Utilizar este método unicamente si se tiene el control
+     * total del manejo de azulejos, de lo contrario no los toque</p>
+     * 
+     * @param tile nuvo dato a agregar.
+     * @param verifID {@code true} si se desea tener un identiricador unico,
+     *                  de lo contrario {@code false}.
+     */
+    protected void addTile(final Tile tile, boolean verifID) {
         if (!tiles.contains(tile)) {
             for (final Tile element : this.tiles) {
                 if (element == null)
                     continue;
                 
-                if (element.getId().equals(tile.getId())) {
+                if (verifID && (element.getId().equals(tile.getId()))) {
                     throw new IllegalArgumentException("[" + tile.getId() + "] existing tile.");
                 }
             }
