@@ -37,6 +37,7 @@ import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.export.Savable;
 import com.jme3.util.BufferUtils;
+import com.jme3.util.clone.Cloner;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -125,6 +126,12 @@ final class Property implements Savable, Cloneable {
             case ShortBuffer:  return BufferUtils.clone((ShortBuffer) obj);            
             case ByteBuffer:   return BufferUtils.clone((ByteBuffer) obj);
             case IntBuffer:    return BufferUtils.clone((IntBuffer) obj);
+            case Savable:
+                final Cloner cloner = new Cloner();
+                if (obj instanceof Cloneable) {
+                    return cloner.clone(obj);
+                }
+                return obj;
             default:
                 return obj;
         }

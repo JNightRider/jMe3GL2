@@ -60,6 +60,22 @@ public class Tile implements Savable, Cloneable {
     }
     
     /**
+     * Método encargado de clonar este objeto.
+     * @see Object#clone() 
+     * 
+     * @return clon objeto.
+     */
+    public Tile clone() {
+        try {
+            Tile clon = (Tile) super.clone();
+            clon.properties = properties.clone();
+            return clon;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
+    }
+    
+    /**
      * Devuelve el id unico para este {@link Tile}.
      * @return id.
      */

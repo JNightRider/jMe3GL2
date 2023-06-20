@@ -54,7 +54,7 @@ import java.util.Map;
 public class Properties implements Savable, Cloneable {
     
     /** Mapa de propiedades. */
-    private Map<String, Property> properties;
+    private HashMap<String, Property> properties;
     
     /**
      * Constructor predeterminado.
@@ -71,6 +71,13 @@ public class Properties implements Savable, Cloneable {
     public Properties clone() {
         try {
             Properties clon = (Properties) super.clone();
+            clon.properties = (HashMap<String, Property>) properties.clone();
+            for (final Map.Entry<String, Property> entry : clon.properties.entrySet()) {
+                if (entry == null) 
+                    continue;
+                
+                clon.properties.put(entry.getKey(), entry.getValue().clone());
+            }
             return clon;
         } catch (CloneNotSupportedException e) {
             throw new InternalError(e);
@@ -180,6 +187,6 @@ public class Properties implements Savable, Cloneable {
     @Override
     public void read(JmeImporter im) throws IOException {
         InputCapsule in = im.getCapsule(this);        
-        properties = (Map<String, Property>) in.readStringSavableMap("Properties", properties);
+        properties = (HashMap<String, Property>) in.readStringSavableMap("Properties", properties);
     }
 }
