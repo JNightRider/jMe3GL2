@@ -52,6 +52,7 @@ import java.util.logging.Logger;
  * @version 1.0-SNAPSHOT
  * @since 1.0.0
  */
+@Deprecated(since = "2.0.0")
 public class Camera2DState extends BaseAppState {
     
     /** Logger de la clase. */
@@ -121,7 +122,7 @@ public class Camera2DState extends BaseAppState {
             simpleApplication.getFlyByCamera().unregisterInput();
             LOG.info("PlatformerCameraState is removing default fly camera");
         }
-
+        
         // A continuación, debemos cambiar la 
         // proyección de la cámara.
         camera.setParallelProjection(true);

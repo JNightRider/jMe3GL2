@@ -45,6 +45,7 @@ import com.jme3.scene.Spatial;
  * 
  * @since 1.0
  */
+@Deprecated(since = "2.0.0")
 public class TargetCamera<E extends Spatial> {
 
     /** Coordinates of the last target. */

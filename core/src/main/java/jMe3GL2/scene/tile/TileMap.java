@@ -63,7 +63,7 @@ import java.util.Iterator;
  * <b>EJEMPLO:</b>
  * 
  * float width = 20, height = 20;   // ancho y largo de la imagen.
- * float quadrant = 16;             // cada azulejo que integra la imagen mide
+ * float quadrant = 16;             // cada azulejo que integra la imagén mide
  *                                  // 16px * 16px
  * 
  * // Esto nos daria un valor de 20px * 20px, es decir
@@ -86,7 +86,7 @@ import java.util.Iterator;
 public class TileMap extends GeometryGroupNode {
 
     /** Administrador de recursos. */
-    private AssetManager assetManager;
+    private final AssetManager assetManager;
     
     /**
      * Administrador de azulejos.
@@ -218,6 +218,29 @@ public class TileMap extends GeometryGroupNode {
             if (element.getId().equals(id)) {                
                 tiles.set(i, tile);
                 tilesHeet.getTileModel().updateModel(this, tile, assetManager, (Geometry) getChild(id));
+                break;
+            }
+        }
+    }
+    
+    /**
+     * Método encargado de establecer nuevas propiedades a un azulejo.
+     * <p>
+     * Para localizar dicho {@link Tile} se utiliza su identificador {@code id}.
+     * </p>
+     * 
+     * @param id identificador unico.
+     * @param p nuevas propiedades.
+     */
+    public void setTileProperties(String id, Properties p) {
+        for (int i = 0; i < tiles.size(); i++) {
+            Tile element = tiles.get(i);
+            if (element == null)
+                continue;
+            
+            if (element.getId().equals(id)) {                
+                element.setProperties(p);
+                tilesHeet.getTileModel().updateModel(this, element, assetManager, (Geometry) getChild(id));
                 break;
             }
         }
