@@ -50,11 +50,5 @@ public enum InputHandlerType {
      * Entrada analógico utilizando la interfaz {@code AnalogListener} que jme3
      * proprociona.
      */
-    Analog,
-    
-    /**
-     * Entrada analógico utilizando la interfaz {@code TouchListener} que jme3
-     * proprociona.
-     */
-    Touch;   
+    Analog;
 }
