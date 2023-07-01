@@ -31,27 +31,38 @@
  */
 package jMe3GL2.scene.tile;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.scene.Geometry;
+
 /**
- * Un <code>TilesHeet</code> es una interfaz con método que devuelve los
- * administradores encargados de la creación y gestionamiento del espacio
- * de los modelos 2D de un {@link TileMap}.
- * 
+ * Clase de conveniencia para implementar la interfaz {@link Spritesheet}. 
  * @author wil
- * @version 1.0-SNAPSHOT
- * 
+ * @version 1.0.1
  * @since 2.0.0
  */
-public interface TilesHeet {
-    
+public abstract class SpritesheetAdapter implements Spritesheet {
+
     /**
-     * Devuelve un {@link TileModel} para el nodo de mapas.
-     * @return tile-model
+     * (non-JavaDoc)
+     * @see Spritesheet#render(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager) 
+     * 
+     * @param tileMap Tile-Map
+     * @param tile Tile
+     * @param assetManager Asset-Manager
+     * @return Modelo.
      */
-    public TileModel getTileModel();
-    
+    @Override
+    public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager) { return null; }
+
     /**
-     * Devuelve un {@link TileSpace} para el nodo de mapas.
-     * @return tile-space
+     * (non-JavaDoc)
+     * @see Spritesheet#update(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager, com.jme3.scene.Geometry) 
+     * 
+     * @param tileMap Tile-Map
+     * @param tile Tile
+     * @param assetManager Asset-Manager
+     * @param geom Geometry
      */
-    public TileSpace getTileSpace();
+    @Override
+    public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) { }
 }

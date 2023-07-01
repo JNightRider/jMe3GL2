@@ -31,72 +31,42 @@
  */
 package jMe3GL2.scene.tile;
 
+import com.jme3.asset.AssetManager;
 import com.jme3.scene.Geometry;
 
-import jMe3GL2.physics.PhysicsSpace;
-import jMe3GL2.physics.control.PhysicsBody2D;
-
 /**
- * Clase de conveniencia para implementar la interfaz {@link TileModel}. 
+ * Un <code>Spritesheet</code> es una interfaz encargado de gestionar la creación
+ * de modelos 2D para un {@link TileMap}.
+ * <p>
+ * Cada {@link Tile} que se agrega al nodo escena cuenta con una lista de 
+ * propiedades con que personalizar el modelo 2D que se genere.
+ * </p>
+ * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
+ * 
  * @since 2.0.0
  */
-public abstract class TileSpaceAdapter implements TileSpace {
-
+public interface Spritesheet {
+    
     /**
-     * (non-JavaDoc)
-     * @see TileSpace#setPhysicsSpace(jMe3GL2.physics.PhysicsSpace) 
-     * @param physicsSpace Physics-Space
+     * Método encargado de crear un modelo en una geometría para agregarlo en
+     * una escena. Cada {@link TileMap} que se genere utiliza este método para
+     * crear su nodos hijos.
+     * 
+     * @param tileMap nodo padre de mapas.
+     * @param tile información del azulejo a crear.
+     * @param assetManager admnistrador de recursos
+     * @return modelo 2d.
      */
-    @Override
-    public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) { }
-
+    public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager);
+    
     /**
-     * (non-JavaDoc)
-     * @see TileSpace#onDetachTile(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
+     * Método encargado de actualizar un modelo con nuevas propiedades.
+     * @param tileMap nodo padre de mapas.
+     * @param tile información del azulejo a crear.
+     * @param assetManager admnistrador de recursos
+     * @param geom geometrya a modificar.
      */
-    @Override
-    public void onDetachTile(Geometry geom) { }
-
-    /**
-     * (non-JavaDoc)
-     * @see TileSpace#onAttachTile(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
-     */
-    @Override
-    public void onAttachTile(Geometry geom) { }
-
-    /**
-     * (non-JavaDoc)
-     * @see TileSpace#onTileUnassociated(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
-     */
-    @Override
-    public void onTileUnassociated(Geometry geom) { }
-
-    /**
-     * (non-JavaDoc)
-     * @see TileSpace#onTransformChange(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
-     */
-    @Override
-    public void onTransformChange(Geometry geom) { }
-
-    /**
-     * (non-JavaDoc)
-     * @see TileSpace#onMaterialChange(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
-     */
-    @Override
-    public void onMaterialChange(Geometry geom) { }
-
-    /**
-     * (non-JavaDoc)
-     * @see TileSpace#onMeshChange(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
-     */
-    @Override
-    public void onMeshChange(Geometry geom) { }    
+    public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom);
 }

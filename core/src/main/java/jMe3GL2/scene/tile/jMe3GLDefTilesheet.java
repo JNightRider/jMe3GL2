@@ -37,6 +37,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
+
 import jMe3GL2.physics.PhysicsSpace;
 import jMe3GL2.physics.collision.AbstractCollisionShape;
 import jMe3GL2.physics.control.PhysicsBody2D;
@@ -44,6 +45,7 @@ import jMe3GL2.physics.control.RigidBody2D;
 import jMe3GL2.scene.shape.Sprite;
 import jMe3GL2.util.Converter;
 import jMe3GL2.util.jMe3GL2Utils;
+
 import org.dyn4j.geometry.MassType;
 
 /**
@@ -51,16 +53,16 @@ import org.dyn4j.geometry.MassType;
  * {@link TileMap} como valores predeterminados.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * 
  * @since 2.0.0
  */
-class jMe3GLDefTilesHeet implements TilesHeet {
+class jMe3GLDefTilesheet implements Tilesheet {
     
-    class jMe3GLDefTileModel implements TileModel {
+    class jMe3GLDefTileModel implements Spritesheet {
 
         @Override
-        public Geometry tileModel(TileMap tileMap, Tile tile, AssetManager assetManager) {
+        public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager) {
             Properties property = tile.getProperties();
             
             Sprite sprite = new Sprite(property.getProperty("Width"), 
@@ -69,7 +71,7 @@ class jMe3GLDefTilesHeet implements TilesHeet {
                                        tile.getColumn(),     tile.getRow());
             
             final Material mat = jMe3GL2Utils.loadMaterial(assetManager, tileMap.getProperties().getProperty("Texture", (String)null));
-            mat.setFloat("AlphaDiscardThreshold", 0.0F);
+            mat.setFloat("AlphaDiscardThreshold", property.getProperty("AlphaDiscardThreshold", 0.0F));
         
             final Geometry geom = new Geometry(tile.getId(), sprite);
             geom.setMaterial(mat);
@@ -95,7 +97,7 @@ class jMe3GLDefTilesHeet implements TilesHeet {
         }
 
         @Override
-        public void updateModel(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) {
+        public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) {
              Mesh mesh = geom.getMesh();
              if ( !(mesh instanceof Sprite) ) {
                  throw new UnsupportedOperationException("Not supported yet.");
@@ -116,7 +118,7 @@ class jMe3GLDefTilesHeet implements TilesHeet {
         }
     }
     
-    class jMe3GLDefTileSpace implements TileSpace {
+    class jMe3GLDefTileSpace implements SpritesheetPhysics {
 
         PhysicsSpace<PhysicsBody2D> physicsSpace;
         
@@ -155,21 +157,31 @@ class jMe3GLDefTilesHeet implements TilesHeet {
         }
     }
 
-    private final TileModel tileModel;
-    private final TileSpace tileSpace;
+    private static final Tilesheet TILESHEET;
     
-    public jMe3GLDefTilesHeet() {
-        tileModel = new jMe3GLDefTileModel();
-        tileSpace = new jMe3GLDefTileSpace();
+    static {
+        TILESHEET = new jMe3GLDefTilesheet();
+    }
+    
+    public static Tilesheet getInstance() {
+        return jMe3GLDefTilesheet.TILESHEET;
+    }
+    
+    private final Spritesheet spritesheet;
+    private final SpritesheetPhysics spritesheetPhysics;
+    
+    private jMe3GLDefTilesheet() {
+        spritesheet = new jMe3GLDefTileModel();
+        spritesheetPhysics = new jMe3GLDefTileSpace();
     }
 
     @Override
-    public TileModel getTileModel() {
-        return tileModel;
+    public Spritesheet getSpritesheet() {
+        return spritesheet;
     }
 
     @Override
-    public TileSpace getTileSpace() {
-        return tileSpace;
+    public SpritesheetPhysics getSpritesheetPhysics() {
+        return spritesheetPhysics;
     }
 }

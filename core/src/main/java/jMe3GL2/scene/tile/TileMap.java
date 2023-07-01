@@ -52,25 +52,31 @@ import java.util.Iterator;
  * </p>
  * <p>
  * Esta clase pide la cantidad en la horizontal y vertical de los azulejos que
- * contienen nuetro imagen. Es decir, cuantos iconos/azujeos contiene nuestro
- * image map.
+ * contienen nuestro imagen. Es decir, cuantos iconos/azujeos contiene nuestro
+ * image-map.
  * 
  * <p>
- * Una manera de averiguarlo, es sabiendo el tamaño exata de cada azulejo en
+ * Una manera de averiguarlo, es sabiendo el tamaño exacta de cada azulejo en
  * piexele. Dividiendo el ancho de la imagen con el tamaño de los azulejos
  * obtenemos la cantidad de columna, y con el largo las files.
  * <pre><code>
  * <b>EJEMPLO:</b>
  * 
- * float width = 20, height = 20;   // ancho y largo de la imagen.
- * float quadrant = 16;             // cada azulejo que integra la imagén mide
- *                                  // 16px * 16px
+ * Si se tiene una imagen que mida:
+ * ancho: 1152 píxeles
+ * largo: 1280 píxeles
  * 
- * // Esto nos daria un valor de 20px * 20px, es decir
- * // que tenemos 20 azulejos en la horizontal y 20 en
- * // la vertical.
- * int cols = width  * quadrant,
- *     rows = height * quadrant;
+ * y que cada azulejos miden:
+ * 128px x 128px.
+ * 
+ * Podemos decir que tenemos 9 columnas y 10 filas dado que si se divide
+ * el ancho total con el ancho que cada azulejo: 
+ * 
+ * 1152/128 = 9  # columnas
+ * 1280/128 = 10 #filas
+ * 
+ * NOTA: Claro que este calculo solo se aplica si los azulejos estan pegados 
+ * uno a la par del otro o distribuidos de manera simétrica.
  * </code></pre>
  * </p>
  * </p>
@@ -80,7 +86,7 @@ import java.util.Iterator;
  * </p>
  * 
  * @author wil
- * @version 1.5-SNAPSHOT
+ * @version 1.6-SNAPSHOT
  * @since 1.5.0
  */
 public class TileMap extends GeometryGroupNode {
@@ -91,7 +97,7 @@ public class TileMap extends GeometryGroupNode {
     /**
      * Administrador de azulejos.
      */
-    private TilesHeet tilesHeet;
+    private Tilesheet tilesHeet;
     
     /** Propiedades de mapa secena. */
     private Properties properties;
@@ -107,16 +113,16 @@ public class TileMap extends GeometryGroupNode {
     public TileMap(AssetManager assetManager, String name) {
         super(name);
         this.assetManager = assetManager;        
-        this.tilesHeet  = new jMe3GLDefTilesHeet();
+        this.tilesHeet  = jMe3GLDefTilesheet.getInstance();
         this.properties = new Properties();
         this.tiles      = new ArrayList<>();
     }
 
     /**
-     * Establece un {@link TilesHeet} nuevo para este mapa de datos.
-     * @param tilesHeet nuevo {@link TilesHeet}.
+     * Establece un {@link Tilesheet} nuevo para este mapa de datos.
+     * @param tilesHeet nuevo {@link Tilesheet}.
      */
-    public void setTilesHeet(TilesHeet tilesHeet) {
+    public void setTilesHeet(Tilesheet tilesHeet) {
         this.tilesHeet = tilesHeet;
     }
 
@@ -137,7 +143,7 @@ public class TileMap extends GeometryGroupNode {
      * @param physicsSpace espacio físico.
      */
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
-        tilesHeet.getTileSpace().setPhysicsSpace(physicsSpace);
+        tilesHeet.getSpritesheetPhysics().setPhysicsSpace(physicsSpace);
     }
     
     /**
@@ -185,7 +191,7 @@ public class TileMap extends GeometryGroupNode {
             }
             
             tiles.add(tile);
-            attachChild(tilesHeet.getTileModel().tileModel(this, tile, assetManager));
+            attachChild(tilesHeet.getSpritesheet().render(this, tile, assetManager));
         }
     }
     
@@ -217,7 +223,7 @@ public class TileMap extends GeometryGroupNode {
             
             if (element.getId().equals(id)) {                
                 tiles.set(i, tile);
-                tilesHeet.getTileModel().updateModel(this, tile, assetManager, (Geometry) getChild(id));
+                tilesHeet.getSpritesheet().update(this, tile, assetManager, (Geometry) getChild(id));
                 break;
             }
         }
@@ -240,7 +246,7 @@ public class TileMap extends GeometryGroupNode {
             
             if (element.getId().equals(id)) {                
                 element.setProperties(p);
-                tilesHeet.getTileModel().updateModel(this, element, assetManager, (Geometry) getChild(id));
+                tilesHeet.getSpritesheet().update(this, element, assetManager, (Geometry) getChild(id));
                 break;
             }
         }
@@ -302,7 +308,7 @@ public class TileMap extends GeometryGroupNode {
      */
     @Override
     public void onTransformChange(Geometry geom) {
-        tilesHeet.getTileSpace().onTransformChange(geom);
+        tilesHeet.getSpritesheetPhysics().onTransformChange(geom);
     }
 
     /**
@@ -311,7 +317,7 @@ public class TileMap extends GeometryGroupNode {
      */
     @Override
     public void onMaterialChange(Geometry geom) {
-        tilesHeet.getTileSpace().onMaterialChange(geom);
+        tilesHeet.getSpritesheetPhysics().onMaterialChange(geom);
     }
 
     /**
@@ -320,7 +326,7 @@ public class TileMap extends GeometryGroupNode {
      */
     @Override
     public void onMeshChange(Geometry geom) {
-        tilesHeet.getTileSpace().onMeshChange(geom);
+        tilesHeet.getSpritesheetPhysics().onMeshChange(geom);
     }
 
     /**
@@ -329,7 +335,7 @@ public class TileMap extends GeometryGroupNode {
      */
     @Override
     public void onGeometryUnassociated(Geometry geom) {
-        tilesHeet.getTileSpace().onTileUnassociated(geom);
+        tilesHeet.getSpritesheetPhysics().onTileUnassociated(geom);
     }
     
     /**
@@ -343,7 +349,7 @@ public class TileMap extends GeometryGroupNode {
     public Spatial detachChildAt(int index) {
         Spatial child = super.detachChildAt(index);
         if ( child instanceof Geometry ) {
-            tilesHeet.getTileSpace().onDetachTile((Geometry) child);
+            tilesHeet.getSpritesheetPhysics().onDetachTile((Geometry) child);
         }
         return child;
     }
@@ -360,7 +366,7 @@ public class TileMap extends GeometryGroupNode {
     public int attachChildAt(Spatial child, int index) {
         int i =  super.attachChildAt(child, index);
         if ( child instanceof Geometry ) {
-            tilesHeet.getTileSpace().onAttachTile((Geometry) child);
+            tilesHeet.getSpritesheetPhysics().onAttachTile((Geometry) child);
         }
         return i;
     }

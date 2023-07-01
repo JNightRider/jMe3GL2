@@ -32,11 +32,12 @@
 package jMe3GL2.scene.tile;
 
 import com.jme3.scene.Geometry;
+
 import jMe3GL2.physics.PhysicsSpace;
 import jMe3GL2.physics.control.PhysicsBody2D;
 
 /**
- * Interfaz <code>TileSpace</code> es el encargado de administrar los
+ * Interfaz <code>SpritesheetPhysics</code> es el encargado de administrar los
  * cambios de un {@link TileMap}.
  * <p>
  * Con esta interfaz podemos saber y administrar cada cambio que hagan las
@@ -49,11 +50,11 @@ import jMe3GL2.physics.control.PhysicsBody2D;
  * padre de la clase {@link TileMap}</p>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * 
  * @since 2.0.0
  */
-public interface TileSpace {
+public interface SpritesheetPhysics {
     
     /**
      * Método encargado de establecer el espacio físico de los cuerpos

@@ -31,38 +31,27 @@
  */
 package jMe3GL2.scene.tile;
 
-import com.jme3.asset.AssetManager;
-import com.jme3.scene.Geometry;
-
 /**
- * Un <code>TileModel</code> es una interfaz encargado de gestionar la creación
- * de modelos 2D para un {@link TileMap}.
+ * Un <code>Tilesheet</code> es una interfaz con método que devuelve los
+ * administradores encargados de la creación y gestionamiento del espacio
+ * de los modelos 2D de un {@link TileMap}.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * 
  * @since 2.0.0
  */
-public interface TileModel {
+public interface Tilesheet {
     
     /**
-     * Método encargado de crear un modelo en una geometría para agregarlo en
-     * una escena. Cada {@link TileMap} que se genere utiliza este método para
-     * crear su nodos hijos.
-     * 
-     * @param tileMap nodo padre de mapas.
-     * @param tile información del azulejo a crear.
-     * @param assetManager admnistrador de recursos
-     * @return modelo 2d.
+     * Devuelve un {@link Spritesheet} para el nodo de mapas.
+     * @return tile-model
      */
-    public Geometry tileModel(TileMap tileMap, Tile tile, AssetManager assetManager);
+    public Spritesheet getSpritesheet();
     
     /**
-     * Método encargado de actualizar un modelo con nuevas propiedades.
-     * @param tileMap nodo padre de mapas.
-     * @param tile información del azulejo a crear.
-     * @param assetManager admnistrador de recursos
-     * @param geom geometrya a modificar.
+     * Devuelve un {@link SpritesheetPhysics} para el nodo de mapas.
+     * @return tile-space
      */
-    public void updateModel(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom);
+    public SpritesheetPhysics getSpritesheetPhysics();
 }

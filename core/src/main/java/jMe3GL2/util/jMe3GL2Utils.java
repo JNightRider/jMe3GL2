@@ -101,7 +101,7 @@ class jMe3GL2Utils {
     /**
      * Método auxiliar en donde se prepara un objeto de la clase {@link Tile}
      * con las propiedades del azulejo, utilizadas por el 
-     * {@link jMe3GL2.scene.tile.TilesHeet} predeterminado de la clase
+     * {@link jMe3GL2.scene.tile.Tilesheet} predeterminado de la clase
      * {@link jMe3GL2.scene.tile.TileMap}.
      * 
      * @param id ideintificador unico del azulejo.
@@ -118,7 +118,7 @@ class jMe3GL2Utils {
     /**
      * Método auxiliar en donde se prepara un objeto de la clase {@link Tile}
      * con las propiedades del azulejo, utilizadas por el 
-     * {@link jMe3GL2.scene.tile.TilesHeet} predeterminado de la clase
+     * {@link jMe3GL2.scene.tile.Tilesheet} predeterminado de la clase
      * {@link jMe3GL2.scene.tile.TileMap}.
      * 
      * @param id ideintificador unico del azulejo.
@@ -137,7 +137,7 @@ class jMe3GL2Utils {
     /**
      * Método auxiliar en donde se prepara un objeto de la clase {@link Tile}
      * con las propiedades del azulejo, utilizadas por el 
-     * {@link jMe3GL2.scene.tile.TilesHeet} predeterminado de la clase
+     * {@link jMe3GL2.scene.tile.Tilesheet} predeterminado de la clase
      * {@link jMe3GL2.scene.tile.TileMap}.
      * 
      * @param id ideintificador unico del azulejo.
