@@ -185,7 +185,7 @@ public class Camera2D {
         float aspect = (float) camera3D.getWidth() / camera3D.getHeight();
         float cameraDistanceFrustum = getAttribute("CameraDistanceFrustum", 10.0F);
         
-        camera3D.setFrustum(-500, 500, -aspect * cameraDistanceFrustum, aspect * cameraDistanceFrustum, cameraDistanceFrustum, -cameraDistanceFrustum);
+        camera3D.setFrustum(-1000, 1000, -aspect * cameraDistanceFrustum, aspect * cameraDistanceFrustum, cameraDistanceFrustum, -cameraDistanceFrustum);
         camera3D.setLocation(new Vector3f(0, 0, 0));
         
         LOG.log(Level.INFO, "2D camera initialized:"
@@ -204,7 +204,7 @@ public class Camera2D {
         Vector2f pos = clipping.clamp(translation.x, translation.y);
         
         position.set(pos.x, pos.y, getAttribute("CameraDistanceFrustum", 10.0F));
-        camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F)));
+        camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F) * tpf));
     }
     
     /**
