@@ -51,3 +51,7 @@ tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+task myJavadocs(type: Javadoc) {
+  source = sourceSets.main.allJava
+}

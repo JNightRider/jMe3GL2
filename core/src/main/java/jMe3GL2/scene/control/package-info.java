@@ -33,7 +33,7 @@
 /**
  * Paquete encargado de proprocionar controles para las animaciones 2D(Sprites).
  * 
- * <p>
+ * <div>
  * <ul>
  * <li>
  *  <b>AnimatedSprite:</b> Control de animaciones individuales.
@@ -42,7 +42,7 @@
  *  <b>IndexAnimatedSprite:</b> Contro para un mapa de animaciones.
  * </li>
  * </ul>
- * </p>
+ * </div>
  * 
  * @author wil
  * @version 1.0-SNAPSHOT

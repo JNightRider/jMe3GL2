@@ -34,13 +34,13 @@ package jMe3GL2.util;
 /**
  * Un objeto de la clase <code>TimerState</code> se encarga de enumerar los
  * 3 estados posibles de un {@link Timer}:
- * <p>
+ * <div>
  * <ul>
  * <li><b>Start:</b> inicializando.</li>
  * <li><b>Pause:</b> pausa momentanea.</li>
  * <li><b>Stop:</b> estador muerto.</li>
  * </ul>
- * </p>
+ * </div>
  * 
  * @author wil
  * @version 1.0-SNAPSHOT

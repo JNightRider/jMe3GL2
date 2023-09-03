@@ -55,7 +55,6 @@ import java.util.logging.Logger;
  * Cada cuadro corresponde a un movimineto de la animación, por medio de los
  * cuadros podemos animar un modelo 2D, es como una cinta de película
  * </code></pre>
- * </p>
  * 
  * @author wil
  * @version 1.0-SNAPSHOT

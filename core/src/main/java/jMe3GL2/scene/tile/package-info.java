@@ -42,7 +42,6 @@
  *  <b>Tile:</b> Azulejos de la escena.
  * </li>
  * </ul>
- * </p>
  * 
  * @author wil
  * @version 1.0-SNAPSHOT

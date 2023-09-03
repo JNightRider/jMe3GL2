@@ -75,7 +75,6 @@ import java.io.IOException;
  * es quivalente al 50% de la anchura. Si se hubiera tomado los datos de manera
  * inversa, seria que ahora la anchura es el 50% del largo que es el 100%.
  * </code></pre>
- * </p>
  * 
  * @author wil
  * @version 1.6-SNAPSHOT

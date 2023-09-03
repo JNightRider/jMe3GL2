@@ -204,7 +204,10 @@ public class Camera2D {
         Vector2f pos = clipping.clamp(translation.x, translation.y);
         
         position.set(pos.x, pos.y, getAttribute("CameraDistanceFrustum", 10.0F));
-        camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F) * tpf));
+        if (getAttribute("InterpolationByTPF", true)) {
+            camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F) * tpf));
+        }
+        camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F)));
     }
     
     /**

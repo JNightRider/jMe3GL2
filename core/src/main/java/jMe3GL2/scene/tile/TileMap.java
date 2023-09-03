@@ -78,8 +78,6 @@ import java.util.Iterator;
  * NOTA: Claro que este calculo solo se aplica si los azulejos estan pegados 
  * uno a la par del otro o distribuidos de manera simétrica.
  * </code></pre>
- * </p>
- * </p>
  * <p>
  * Para agregar los azulejos a nuetro nodo escena, solo se tiene que utilizar el
  * siguiente método: <code>addTile()</code>.
