@@ -206,8 +206,9 @@ public class Camera2D {
         position.set(pos.x, pos.y, getAttribute("CameraDistanceFrustum", 10.0F));
         if (getAttribute("InterpolationByTPF", true)) {
             camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F) * tpf));
+        } else {
+            camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F)));
         }
-        camera3D.setLocation(camera3D.getLocation().interpolateLocal(position, getAttribute("FollowInterpolationAmount", 0.2F)));
     }
     
     /**
