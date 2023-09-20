@@ -35,7 +35,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
 
 /**
- * Un objeto de la clase <code>Clipping</code> se encarga de gestionar los
+ * Un objeto de la clase <code>jMe3GL2Clipping</code> se encarga de gestionar los
  * cortes de la cámara 2D.
  * <p>
  * En esta clase es donde se define el corte minimo y maxima, tanto un atrazo
@@ -47,7 +47,7 @@ import com.jme3.math.Vector2f;
  * 
  * @since 2.0.0
  */
-public class Clipping {
+public class jMe3GL2Clipping {
     
     /** Recorte minimo. */
     private Vector2f minimum;
@@ -67,7 +67,7 @@ public class Clipping {
      * Constructor de la clase <code>Clipping</code> donde se inicializa los
      * objetos de recorte y desface.
      */
-    public Clipping() {
+    public jMe3GL2Clipping() {
         this.maximum = new Vector2f(0.0F, 0.0F);
         this.maximum = new Vector2f(0.0F, 0.0F);
         this.offset  = new Vector2f(0.0F, 0.0F);
