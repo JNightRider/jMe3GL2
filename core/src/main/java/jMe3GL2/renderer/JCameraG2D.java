@@ -86,6 +86,7 @@ public class JCameraG2D extends AbstractjMe3GL2camera {
     @Override
     public void initialize(Camera cam) {
         // Debemos cambiar la proyección de la cámara.
+        camera3D = cam;
         camera3D.setParallelProjection(true);
         
         float aspect = (float) camera3D.getWidth() / camera3D.getHeight();
