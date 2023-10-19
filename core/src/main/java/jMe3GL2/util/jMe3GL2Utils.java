@@ -188,6 +188,30 @@ class jMe3GL2Utils {
         mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         return mat;
     }
+    
+    /**
+     * Método local para reutilizar la carga de una textura con un material que
+     * requiera una fuente de luz.
+     * 
+     * @param assetManager administrador de recursos {@code jme3}.
+     * @param texture nombre de la textura a usar.
+     * @return material generado.
+     */
+    public static Material loadMaterialLight(AssetManager assetManager, String texture) {        
+        Texture tex = assetManager.loadTexture(new TextureKey(texture, false));
+        tex.setMagFilter(Texture.MagFilter.Nearest);
+        tex.setWrap(Texture.WrapMode.Repeat);
+        
+        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat.setTexture("DiffuseMap", tex);
+        mat.setFloat("Shininess", 32f);
+        mat.setBoolean("UseMaterialColors", true);
+        mat.setColor("Ambient", new ColorRGBA(0, 0, 0, 1));
+        mat.setColor("Diffuse", new ColorRGBA(1, 1, 1, 1));
+        mat.setColor("Specular", new ColorRGBA(1, 1, 1, 1));
+        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        return mat;
+    }
 
     /**
      * Método local en donde genera un material con un color.
