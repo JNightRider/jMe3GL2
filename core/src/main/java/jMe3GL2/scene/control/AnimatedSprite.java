@@ -78,6 +78,14 @@ public class AnimatedSprite extends AbstractAnimatedControl<Texture> {
     }
 
     /**
+     * Construcor de la clase <code>AnimatedSprite</code>.
+     * @param lighting un valor boolean.
+     */
+    public AnimatedSprite(boolean lighting) {
+        super(lighting);
+    }
+
+    /**
      * (non-JavaDoc)
      * @param spatial Spatial
      * @see AbstractAnimatedControl#setSpatial(com.jme3.scene.Spatial) 
@@ -124,7 +132,7 @@ public class AnimatedSprite extends AbstractAnimatedControl<Texture> {
                     sprite.updateVertexSize(newSize.x, newSize.y);
                 }
                 
-                this.mat.setTexture("ColorMap", text[0]);
+                this.mat.setTexture(getNameParam(), text[0]);
             }
 
             this.currentAnimation = text;
@@ -214,7 +222,7 @@ public class AnimatedSprite extends AbstractAnimatedControl<Texture> {
                 }
                 
                 this.elapsedeTime = 0f;
-                this.mat.setTexture("ColorMap", this.currentAnimation[this.currentIndex]);
+                this.mat.setTexture(getNameParam(), this.currentAnimation[this.currentIndex]);
             }
         }
     }

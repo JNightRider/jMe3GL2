@@ -90,11 +90,28 @@ class AbstractAnimatedControl<E extends Object> extends AbstractControl {
     
     /** El lapso de tiempo transcurrido. */
     protected float elapsedeTime = 0f;
+    
+    /**
+     * <code>true</code> si se esta utilizando un meterial del tipo: <code>
+     * Common/MatDefs/Light/Lighting.j3md</code> o que herede del mismo, de 
+     * lo contrario sera <code>false</code>.
+     */
+    protected boolean lighting;
 
     /**
-     * Solo serialización. No utilice.
+     * Constructor predeterminado.
      */
     public AbstractAnimatedControl() {
+        this(false);
+    }
+
+    /**
+     * Constructor de la clase <code>AbstractAnimatedControl</code> donde se
+     * puede especificar el tipo de material que se esta utilizando.
+     * @param lighting un valor boolean.
+     */
+    public AbstractAnimatedControl(boolean lighting){
+        this.lighting = lighting;
     }
     
     /**
@@ -172,4 +189,18 @@ class AbstractAnimatedControl<E extends Object> extends AbstractControl {
      * @param timePerFrame Tiempo por cuadro.
      */
     public abstract void playAnimation(String name, float timePerFrame);
+    
+    /**
+     * Método encargado de gestionar el nombre del párametro que se utiliza
+     * para establecer la textura de un material.
+     * <p>
+     * Si {@code lighting} es como valor <code>true</code>, en valor devuelto
+     * es: <b>DiffuseMap</b> para establecer una textura, de lo contrario
+     * <b>ColorMap</b>.
+     * 
+     * @return nombre clave para establecer la textira.
+     */
+    protected String getNameParam() {
+        return lighting ? "DiffuseMap" : "ColorMap";
+    }
 }

@@ -54,6 +54,7 @@ public class IndexAnimatedSprite extends AbstractAnimatedControl<Integer>{
      * Constructor predeterminado de la clase {@code IndexAnimatedSprite}.
      */
     public IndexAnimatedSprite() {
+        super(false);
     }
     
     /**

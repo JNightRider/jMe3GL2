@@ -74,7 +74,15 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
      */
     public RibbonBoxAnimationSprite() {
     }
-    
+
+    /**
+     * Construcor de la clase <code>ibbonBoxAnimationSprite</code>.
+     * @param lighting un valor boolean.
+     */
+    public RibbonBoxAnimationSprite(boolean lighting) {
+        super(lighting);
+    }
+        
     /**
      * (non-JavaDoc)
      * @param spatial Spatial
@@ -121,7 +129,7 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
             this.currentAnimationName = name;
             
             if ( this.mat != null ) {
-                this.mat.setTexture("ColorMap", rb[0].getTexture());
+                this.mat.setTexture(getNameParam(), rb[0].getTexture());
             }
             
             this.sprite.updateMeshCoords(rb[0].getColumns(), rb[0].getRows());
@@ -156,7 +164,7 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
                 
                 this.elapsedeTime = 0f;
                 this.sprite.showIndex(this.currentAnimation[0].getFrames()[this.currentIndex]);
-                this.mat.setTexture("ColorMap", this.currentAnimation[0].getTexture());
+                this.mat.setTexture(getNameParam(), this.currentAnimation[0].getTexture());
             }
         }
     }
