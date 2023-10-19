@@ -41,6 +41,7 @@ import jMe3GL2.physics.control.PhysicsBody2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * Un objeto de la clase <code>TileMap</code> es un nodo que hereda de la clase
@@ -84,10 +85,35 @@ import java.util.Iterator;
  * </p>
  * 
  * @author wil
- * @version 1.6-SNAPSHOT
+ * @version 1.8-SNAPSHOT
  * @since 1.5.0
  */
 public class TileMap extends GeometryGroupNode {
+
+    /** Looger de la clase. */
+    private static final Logger LOG = Logger.getLogger(TileMap.class.getName());
+    
+    /**
+     * Clase interna encargado de gestionar las reglas al agregar o eliminar
+     * un {@code Tile} del mapa de azulejos.
+     */
+    class TileRule {
+        // modelos del azulejo.
+        Geometry model;
+        
+        // azulejo-modelo.
+        Tile tileModel;
+
+        /**
+         * Constructor predeterminado de la clase <code>TileRule</code>.
+         * @param model mode a gestionar.
+         * @param tileModel azulejos del modelo.
+         */
+        public TileRule(Geometry model, Tile tileModel) {
+            this.model     = model;
+            this.tileModel = tileModel;
+        }
+    }
 
     /** Administrador de recursos. */
     private final AssetManager assetManager;
@@ -101,7 +127,13 @@ public class TileMap extends GeometryGroupNode {
     private Properties properties;
     
     /** Lista de azulejos. */
-    private final ArrayList<Tile> tiles;
+    private final ArrayList<TileRule> tiles;
+    
+    /**
+     * <code>true</code> si se verifica la lista de azulejos al eliminar un
+     * nodo hijo de este mapa, de lo contrario será <code>false</code>.
+     */
+    boolean checkRemove = true;
     
     /**
      * Genere un <code>TileMap</code> utilizando este constructor.
@@ -178,18 +210,28 @@ public class TileMap extends GeometryGroupNode {
      *                  de lo contrario {@code false}.
      */
     protected void addTile(final Tile tile, boolean verifID) {
-        if (!tiles.contains(tile)) {
-            for (final Tile element : this.tiles) {
-                if (element == null)
-                    continue;
-                
-                if (verifID && (element.getId().equals(tile.getId()))) {
-                    throw new IllegalArgumentException("[" + tile.getId() + "] existing tile.");
-                }
+        boolean exists = false;
+        for (final TileRule rule : this.tiles) {
+            Tile element = rule.tileModel;
+            if (element == null) {
+                continue;
+            }            
+            if (element.equals(tile)) {
+                exists = true;
+                break;
+            }            
+            if (verifID && (element.getId().equals(tile.getId()))) {
+                throw new IllegalArgumentException("[" + tile.getId() + "] existing tile.");
             }
-            
-            tiles.add(tile);
-            attachChild(tilesHeet.getSpritesheet().render(this, tile, assetManager));
+        }
+
+        if (!exists) {
+            final Geometry model = tilesHeet.getSpritesheet()
+                                            .render(this, tile, assetManager);            
+            tiles.add(new TileRule(model, tile));
+            attachChild(model);
+        } else {
+            LOG.warning("It was not possible to add the tile because there is already an identical one on the map.");
         }
     }
     
@@ -215,12 +257,13 @@ public class TileMap extends GeometryGroupNode {
         }
         
         for (int i = 0; i < tiles.size(); i++) {
-            Tile element = tiles.get(i);
+            TileRule rule = tiles.get(i);
+            Tile element  = rule.tileModel;
             if (element == null)
                 continue;
             
-            if (element.getId().equals(id)) {                
-                tiles.set(i, tile);
+            if (element.getId().equals(id)) {
+                rule.tileModel = tile;
                 tilesHeet.getSpritesheet().update(this, tile, assetManager, (Geometry) getChild(id));
                 break;
             }
@@ -238,7 +281,8 @@ public class TileMap extends GeometryGroupNode {
      */
     public void setTileProperties(String id, Properties p) {
         for (int i = 0; i < tiles.size(); i++) {
-            Tile element = tiles.get(i);
+            TileRule rule = tiles.get(i);
+            Tile element  = rule.tileModel;
             if (element == null)
                 continue;
             
@@ -256,12 +300,14 @@ public class TileMap extends GeometryGroupNode {
      */
     public void removeTile(String id) {
         for (int i = 0; i < tiles.size(); i++) {
-            Tile element = tiles.get(i);
+            TileRule rule = tiles.get(i);
+            Tile element  = rule.tileModel;
             if (element == null)
                 continue;
             
             if (element.getId().equals(id)) {
                 tiles.remove(i);
+                checkRemove = false;
                 detachChildNamed(id);
                 break;
             }
@@ -273,7 +319,15 @@ public class TileMap extends GeometryGroupNode {
      * @return iterador.
      */
     public Iterator<Tile> iteratorTile() {
-        return tiles.iterator();
+        final Iterator<TileRule> it = this.tiles.iterator();
+        return new Iterator<Tile>() {
+            @Override public boolean hasNext() {
+                return it.hasNext();
+            }
+            @Override public Tile next() {
+                return it.next().tileModel;
+            }
+        };
     }
     
     /**
@@ -347,8 +401,18 @@ public class TileMap extends GeometryGroupNode {
     public Spatial detachChildAt(int index) {
         Spatial child = super.detachChildAt(index);
         if ( child instanceof Geometry ) {
-            tilesHeet.getSpritesheetPhysics().onDetachTile((Geometry) child);
+            tilesHeet.getSpritesheetPhysics()
+                     .onDetachTile((Geometry) child);            
+            if (checkRemove) {
+                for (int i = 0; i < tiles.size(); i++) {
+                    if (tiles.get(i).model == child) {
+                        this.tiles.remove(index);
+                        break;
+                    }
+                }
+            }
         }
+        checkRemove = true;
         return child;
     }
 
