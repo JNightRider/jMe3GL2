@@ -168,7 +168,9 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
         }
         
         InputManager im = getInputManager();
-        im.deleteTrigger(mouseTrigger.getInputName(), mouseTrigger);
+        if (im.hasMapping(mouseTrigger.getInputName())) {
+            im.deleteTrigger(mouseTrigger.getInputName(), mouseTrigger);
+        }
         im.removeListener(mouseAdapter);
     }
     

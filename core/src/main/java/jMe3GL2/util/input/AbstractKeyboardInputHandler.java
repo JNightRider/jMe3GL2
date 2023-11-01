@@ -177,7 +177,9 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
         
         InputManager im = getInputManager();
         for (final Key key : this.keys) {
-            im.deleteTrigger(key.getKeyName(), key);
+            if (im.hasMapping(key.getKeyName())) {
+                im.deleteTrigger(key.getKeyName(), key);
+            }
         }
         im.removeListener(keyAdapter);
     }

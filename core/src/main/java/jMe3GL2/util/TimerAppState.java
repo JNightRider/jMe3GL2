@@ -246,6 +246,14 @@ class TimerAppState extends AbstractAppState {
     }
     
     /**
+     * Método encargado de eliminar todo los temporizadores registrados en 
+     * este gestor-administrador de tiempos.
+     */
+    public void detachAllTimer() {
+        this.timerMap.clear();
+    }
+    
+    /**
      * Clase interna encargado de almacenar en memoria el temporizador, así como
      * su retardo.
      */

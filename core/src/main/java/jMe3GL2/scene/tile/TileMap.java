@@ -157,6 +157,22 @@ public class TileMap extends GeometryGroupNode {
     }
 
     /**
+     * Devuelve el administrdor de recursos.
+     * @return admin-recuros
+     */
+    public AssetManager getAssetManager() {
+        return assetManager;
+    }
+
+    /**
+     * Devuelve el gestor de azulejos.
+     * @return gestor.
+     */
+    public Tilesheet getTilesHeet() {
+        return tilesHeet;
+    }
+
+    /**
      * Establece las propiedades de este nodo de mapas.
      * <p>
      * <b>NOTA:</b> Antes de agregar nuevos {@link Tile} al este mapa de escena,
