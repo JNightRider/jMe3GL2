@@ -21,8 +21,7 @@ import java.util.Map;
  */
 @SuppressWarnings(value = {"unchecked"})
 public abstract 
-class AbstractjMe3GL2camera implements Jme3GL2Camera {
-    
+class AbstractJme3GL2camera implements Jme3GL2Camera {
     
     /**
      * Clase interna <code>Target</code> encargado de administrar el objetivo
@@ -114,7 +113,7 @@ class AbstractjMe3GL2camera implements Jme3GL2Camera {
      * Constructor de la clase <code>AbstractjMe3GL2camera</code> donde se
      * inicializar las propiedades-atributos de este objeto instanciado.
      */
-    public AbstractjMe3GL2camera() {
+    public AbstractJme3GL2camera() {
         this.attributes = new HashMap<>();
         this.target     = new Target<>();
     }

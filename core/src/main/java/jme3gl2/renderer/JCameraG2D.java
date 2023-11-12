@@ -44,8 +44,18 @@ import java.util.logging.Logger;
  * comportamiento de la cámara predeterminada de los juegos <code>JME</code>
  * en 2D.
  * <p>
- * Con esta clase podemos simular un mundo en dos dimensiones.
- * </p>
+ * Con esta clase podemos simular un mundo en dos dimensiones, para manejar las
+ * propiedades del gestor de la cámara se pueden utilizar lo siguiente:
+ * Lista de propiedades:
+ * <ul>
+ * <li><b>FollowInterpolationAmount</b>: Define la velociad de interpolación con
+ * que se mueve la cámara</li>
+ * <li><b>CameraDistanceFrustum</b>: Define la distancia de la cámra con los
+ * objetos de la escena.</li>
+ * <li><b>InterpolationByTPF</b>: <code>true</code> si se utiliza una transición
+ * ademas de la interpolación normal, es decir el valor de interpolación es
+ * multiplicado por los fps</li>
+ * </ul>
  * 
  * @author wil
  * @version 2.0
@@ -53,7 +63,7 @@ import java.util.logging.Logger;
  * @since 2.0.0
  */
 @SuppressWarnings("unchecked")
-public class JCameraG2D extends AbstractjMe3GL2camera {
+public class JCameraG2D extends AbstractJme3GL2camera {
     
     /** Logger de la clase. */
     private static final Logger LOG = Logger.getLogger(JCameraG2D.class.getName());

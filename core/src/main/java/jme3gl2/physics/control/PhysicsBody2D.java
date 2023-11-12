@@ -33,22 +33,18 @@ package jme3gl2.physics.control;
 
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
-import com.jme3.util.TempVars;
 
 import jme3gl2.physics.PhysicsSpace;
 import jme3gl2.physics.collision.AbstractCollisionShape;
-import jme3gl2.util.Converter;
+
 import java.io.IOException;
 
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Convex;
-import org.dyn4j.geometry.Transform;
 
 /**
  * Una implementación abstracta de la interfaz {@code PhysicsControl}.
@@ -60,14 +56,15 @@ import org.dyn4j.geometry.Transform;
  * extender de una clase que ya implemente la lógica de control.</p>
  * 
  * @author wil
- * @version 1.2-SNAPSHOT
+ * @version 1.5.0
  *
  * @since 1.0.0
  */
-public abstract class PhysicsBody2D extends Body implements PhysicsControl, Control {
+public abstract class PhysicsBody2D extends Body implements PhysicsControl<PhysicsBody2D>, 
+                                                            BasePhysicsControl<PhysicsBody2D>, Control {
     
     /** Espacio físico. */
-    protected PhysicsSpace physicsSpace;
+    protected PhysicsSpace<PhysicsBody2D> physicsSpace;
     
     /**
      * {@code true} si el control físico esta deshabilitado, de lo contrario
@@ -104,7 +101,7 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl, Cont
      * @param physicsSpace {@link PhysicsSpace}
      */
     @Override
-    public void setPhysicsSpace(PhysicsSpace physicsSpace) {
+    public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
         this.physicsSpace = physicsSpace;
     }
 
@@ -114,7 +111,7 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl, Cont
      * @return {@link PhysicsSpace}
      */
     @Override
-    public PhysicsSpace getPhysicsSpace() {
+    public PhysicsSpace<PhysicsBody2D> getPhysicsSpace() {
         return physicsSpace;
     }
 
@@ -208,8 +205,9 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl, Cont
      * @param <T> tipo-spatial
      * @return <code>Spatial</code> JME.
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public <T extends Spatial> T getGLObject() {
+    public <T extends Spatial> T getJmeObject() {
         return (T) spatial;
     }
 
@@ -240,34 +238,23 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl, Cont
     protected abstract void controlRender(RenderManager rm, ViewPort vp);
     
     /**
-     * Método encargado de aplicar una rotación física.
+     * (non-JavaDoc)
      * @param physicBody cuerpo físico.
+     * @deprecated Utilize <code>applyPhysicsRotation</code>.
      */
+    @Deprecated(since = "2.5.0")
     protected void setPhysicsRotation(final PhysicsBody2D physicBody) {
-        final Transform trans = physicBody.getTransform();
-
-        final float rotation = Converter.toFloat(trans.getRotationAngle());
-
-        final TempVars tempVars = TempVars.get();
-        final Quaternion quaternion = tempVars.quat1;
-        quaternion.fromAngleAxis(rotation, new Vector3f(0, 0, 1));
-
-        this.spatial.setLocalRotation(quaternion);
-
-        tempVars.release();
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
-     * Método encargado de aplicar una traslación físico.
+     * (non-JavaDoc)
      * @param physicBody cuerpo físico.
+     * @deprecated Utilize <code>applyPhysicsLocation()</code>.
      */
+    @Deprecated(since = "2.5.0")
     protected void setPhysicsLocation(final PhysicsBody2D physicBody) {
-        final Transform trans = physicBody.getTransform();
-
-        final float posX = Converter.toFloat(trans.getTranslationX());
-        final float posY = Converter.toFloat(trans.getTranslationY());
-
-        this.spatial.setLocalTranslation(posX, posY, this.spatial.getLocalTranslation().z);
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
     /**

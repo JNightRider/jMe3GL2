@@ -39,6 +39,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Arrow;
 
+import jme3gl2.physics.debug.control.AbstractConvexDebugControl;
 import jme3gl2.physics.debug.shape.Capsule2D;
 import jme3gl2.physics.debug.shape.Circle2D;
 import jme3gl2.physics.debug.shape.Ellipse2D;
@@ -179,6 +180,7 @@ class Graphics2DRenderer {
                     new Circle2D(Circle2D.COUNT, radius, 0, 0);
             
             geom = new Geometry(uid, circleDebug);
+            geom.addControl(new AbstractConvexDebugControl.CircleDebugControl(circle));
         } else if (shape instanceof Capsule) {
             final Capsule capsule = (Capsule) shape;
 
@@ -188,6 +190,7 @@ class Graphics2DRenderer {
             final Capsule2D capsuleDebug = 
                     new Capsule2D(Capsule2D.COUNT, width, height, 0);
             geom = new Geometry(uid, capsuleDebug);
+            geom.addControl(new AbstractConvexDebugControl.CapsuleDebugControl(capsule));
         } else if (shape instanceof Ellipse) {
             final Ellipse ellipse = (Ellipse) shape;
 
@@ -197,6 +200,7 @@ class Graphics2DRenderer {
             final Ellipse2D ellipseDebug = 
                     new Ellipse2D(Ellipse2D.COUNT, width, height, height);
             geom = new Geometry(uid, ellipseDebug);
+            geom.addControl(new AbstractConvexDebugControl.EllipseDebugControl(ellipse));
         } else if (shape instanceof HalfEllipse) {
             final HalfEllipse halfEllipse = (HalfEllipse) shape;
 
@@ -206,6 +210,7 @@ class Graphics2DRenderer {
             final HalfEllipse2D halfEllipseDebug = 
                     new HalfEllipse2D(HalfEllipse2D.COUNT, width, height, 0);
             geom = new Geometry(uid, halfEllipseDebug);
+            geom.addControl(new AbstractConvexDebugControl.HalfEllipseDebugControl(halfEllipse));
         } else if (shape instanceof Slice) {
             final Slice slice = (Slice) shape;
             
@@ -215,6 +220,7 @@ class Graphics2DRenderer {
             final Slice2D sliceDebug = 
                     new Slice2D(Slice2D.COUNT, radius, angle, 0);
             geom = new Geometry(uid, sliceDebug);
+            geom.addControl(new AbstractConvexDebugControl.SliceDebugControl(slice));
         } else {
             LOGGER.log(Level.WARNING, "#### Shape ''{0}'' not supported. ####", 
                     shape.getClass().getSimpleName());

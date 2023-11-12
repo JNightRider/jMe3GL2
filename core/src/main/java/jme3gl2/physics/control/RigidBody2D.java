@@ -72,8 +72,8 @@ public class RigidBody2D extends PhysicsBody2D {
      */
     @Override
     protected void controlUpdate(float tpf) {
-        setPhysicsLocation(this);
-        setPhysicsRotation(this);
+        applyPhysicsLocation(this);
+        applyPhysicsRotation(this);
     }
 
     /**

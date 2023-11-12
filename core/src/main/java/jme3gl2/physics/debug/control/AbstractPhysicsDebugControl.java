@@ -31,17 +31,13 @@
  */
 package jme3gl2.physics.debug.control;
 
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
-import com.jme3.util.TempVars;
 
+import jme3gl2.physics.control.BasePhysicsControl;
 import jme3gl2.physics.control.PhysicsBody2D;
-import jme3gl2.util.Converter;
-
-import org.dyn4j.geometry.Transform;
 
 /**
  * Clase abstracta <code>AbstractPhysicsDebugControl</code> encargado de controlar la
@@ -54,7 +50,7 @@ import org.dyn4j.geometry.Transform;
  * @param <E> tipo-cuerpo.
  */
 public abstract 
-class AbstractPhysicsDebugControl<E extends PhysicsBody2D> extends AbstractControl {
+class AbstractPhysicsDebugControl<E extends PhysicsBody2D> extends AbstractControl implements BasePhysicsControl<E> {
 
     /** Cuerpo físico. */
     protected final E body;
@@ -75,8 +71,21 @@ class AbstractPhysicsDebugControl<E extends PhysicsBody2D> extends AbstractContr
      */
     @Override
     protected void controlUpdate(float tpf) {
-        setPhysicsLocation(this.body);
-        setPhysicsRotation(this.body);
+        applyPhysicsLocation(this.body);
+        applyPhysicsRotation(this.body);
+    }
+
+    /**
+     * (non-JavaDoc)
+     * @see BasePhysicsControl#getJmeObject() 
+     * 
+     * @param <T> tipo-spatial
+     * @return Spatial.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Spatial> T getJmeObject() {
+        return (T) spatial;
     }
 
     /**
@@ -88,36 +97,5 @@ class AbstractPhysicsDebugControl<E extends PhysicsBody2D> extends AbstractContr
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
         /* NADA. */
-    }
-    
-    /**
-     * Método encargado de aplicar una rotación física.
-     * @param physicBody cuerpo físico.
-     */
-    protected void setPhysicsRotation(final E physicBody) {
-        final Transform trans = physicBody.getTransform();
-
-        final float rotation = Converter.toFloat(trans.getRotationAngle());
-
-        final TempVars tempVars = TempVars.get();
-        final Quaternion quaternion = tempVars.quat1;
-        quaternion.fromAngleAxis(rotation, new Vector3f(0, 0, 1));
-
-        this.spatial.setLocalRotation(quaternion);
-
-        tempVars.release();
-    }
-
-    /**
-     * Método encargado de aplicar una traslación físico.
-     * @param physicBody cuerpo físico.
-     */
-    protected void setPhysicsLocation(final E physicBody) {
-        final Transform trans = physicBody.getTransform();
-
-        final float posX = Converter.toFloat(trans.getTranslationX());
-        final float posY = Converter.toFloat(trans.getTranslationY());
-
-        this.spatial.setLocalTranslation(posX, posY, this.spatial.getLocalTranslation().z);
     }
 }

@@ -52,6 +52,14 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task myJavadocs(type: Javadoc) {
-  source = sourceSets.main.allJava
+tasks.register('myJavadocs', Javadoc) {
+    source = sourceSets.main.allJava
+}
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs << "-Xlint:unchecked"
+        }
+    }
 }

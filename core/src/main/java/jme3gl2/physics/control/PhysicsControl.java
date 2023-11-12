@@ -40,29 +40,30 @@ import jme3gl2.physics.PhysicsSpace;
  * motor de física <code>Dyn4j</code>.
  * 
  * @author wil
- * @version 1.0.1-SNAPSHOT
+ * @version 1.5.0
+ * @param <E> tipo-cuerpo
  * 
  * @since 1.0.0
  */
-public interface PhysicsControl extends Control {
+public interface PhysicsControl<E extends PhysicsBody2D> extends BasePhysicsControl<E> ,Control {
     
     /**
      * Método encargado de establecer el espacio de la física.
      * @param physicsSpace espacio física.
      */
-    public void setPhysicsSpace(PhysicsSpace physicsSpace);
+    public void setPhysicsSpace(PhysicsSpace<E> physicsSpace);
     
     /**
      * Devuelve el espacio de la física del cuerpo rigido.
      * @return espacio física.
      */
-    public PhysicsSpace getPhysicsSpace();
+    public PhysicsSpace<E> getPhysicsSpace();
     
     /**
      * Devuelve el cuerpo que gestiona este control.
      * @return cuerpo físico.
      */
-    public PhysicsBody2D getBody();
+    public E getBody();
     
     /**
      * Método encargado de habilidat ó deshabilitar el control.

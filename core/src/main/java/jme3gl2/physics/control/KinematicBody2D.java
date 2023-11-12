@@ -78,8 +78,8 @@ public class KinematicBody2D extends PhysicsBody2D {
         setGravityScale(0);        
         setAtRest(true);
         
-        setPhysicsLocation(this);
-        setPhysicsRotation(this);
+        applyPhysicsLocation(this);
+        applyPhysicsRotation(this);
     }
 
     /**

@@ -14,13 +14,30 @@ import java.util.logging.Logger;
  * Con este gestor de cámara podemos crera escenas minimalistas, es decir que
  * podemos acercar los sprites a la cámara lo mas que podemos para tener varias
  * perspectivas de la escena-mundo.
+ * <p>
+ * Para manejar las
+ * propiedades del gestor de la cámara se pueden utilizar lo siguiente:
+ * Lista de propiedades:
+ * <ul>
+ * <li><b>FollowInterpolationAmount</b>: Define la velociad de interpolación con
+ * que se mueve la cámara</li>
+ * <li><b>CameraDistanceFrustum</b>: Define la distancia de la cámra con los
+ * objetos de la escena.</li>
+ * <li><b>InterpolationByTPF</b>: <code>true</code> si se utiliza una transición
+ * ademas de la interpolación normal, es decir el valor de interpolación es
+ * multiplicado por los fps</li>
+ * <li><b>SmoothingDepth</b>: <code>true</code> si se aplica la distancia sin
+ * ninguna interpolación, de lo contrario <code>false</code> donde la distancia
+ * de la cámara tiene una trancición. Esto es valído si <code>InterpolationByTPF</code>
+ * no esta activa(<code>false</code>)</li>
+ * </ul>
  * 
  * @author wil
  * @version 1.0-SNAPSHOT 
  * 
  * @since 2.0.5
  */
-public class JCameraG3D extends AbstractjMe3GL2camera {
+public class JCameraG3D extends AbstractJme3GL2camera {
 
     /** Logger de la clase. */
     private static final Logger LOG = Logger.getLogger(JCameraG3D.class.getName());
