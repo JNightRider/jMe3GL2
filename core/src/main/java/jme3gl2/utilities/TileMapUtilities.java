@@ -37,6 +37,7 @@ import com.jme3.math.Vector3f;
 import java.util.UUID;
 
 import jme3gl2.physics.collision.AbstractCollisionShape;
+import jme3gl2.physics.collision.RectangleCollisionShape;
 import jme3gl2.scene.tile.Properties;
 import jme3gl2.scene.tile.Tile;
 import jme3gl2.scene.tile.TileMap;
@@ -125,6 +126,26 @@ public final class TileMapUtilities {
      * @param x posición en escena: <code>x</code>
      * @param y posición en escena: <code>y</code>
      * @param z posición en escena: <code>y</code>
+     * @param coll <code>true</code> para agregar una forma rectangular, de lo
+     * contrario <code>false</code>
+     * @return Tile
+     */
+    public static <T extends Convex> Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
+        return getTile(cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(2, h) : null);
+    }
+    
+    /**
+     * Devuelve un <code>Tile</code> con las propiedades mínimas inicializadas
+     * listas para ser gestionadas por un <code>TileMap</code>.
+     * 
+     * @param <T> tipo de colición
+     * @param cp número de columna (posición: x)
+     * @param rp número de fila (posición: y)
+     * @param w largo del Tile
+     * @param h ancho del Tile
+     * @param x posición en escena: <code>x</code>
+     * @param y posición en escena: <code>y</code>
+     * @param z posición en escena: <code>y</code>
      * @param acs forma física
      * @return Tile
      */
@@ -163,6 +184,27 @@ public final class TileMapUtilities {
      * @param x posición en escena: <code>x</code>
      * @param y posición en escena: <code>y</code>
      * @param z posición en escena: <code>y</code>
+     * @param coll <code>true</code> para agregar una forma rectangular, de lo
+     * contrario <code>false</code>
+     * @return Tile
+     */
+    public static <T extends Convex> Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
+        return getTile(id, cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(w, h) : null);
+    }
+    
+    /**
+     * Devuelve un <code>Tile</code> con las propiedades mínimas inicializadas
+     * listas para ser gestionadas por un <code>TileMap</code>.
+     * 
+     * @param <T> tipo de colición
+     * @param id identificador unico
+     * @param cp número de columna (posición: x)
+     * @param rp número de fila (posición: y)
+     * @param w largo del Tile
+     * @param h ancho del Tile
+     * @param x posición en escena: <code>x</code>
+     * @param y posición en escena: <code>y</code>
+     * @param z posición en escena: <code>y</code>
      * @param acs forma física
      * @return Tile
      */
@@ -181,6 +223,6 @@ public final class TileMapUtilities {
             properties.put("MassType", MassType.INFINITE);
         }        
         tile.setProperties(properties);
-        return null;
+        return tile;
     }
 }

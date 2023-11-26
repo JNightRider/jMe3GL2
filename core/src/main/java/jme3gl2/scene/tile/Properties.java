@@ -1525,7 +1525,7 @@ public class Properties implements Savable, Cloneable {
     }
 
     /**
-     * Genera el codigo hahs de la clase u objeto {@link JmeProperties}.
+     * Genera el codigo hahs de la clase u objeto {@link Properties}.
      * 
      * @return codigo hahs del objeto.
      */
@@ -1537,7 +1537,7 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Un objeto {@link JmeProperties} es igual a sí mismo.
+     * Un objeto {@link Properties} es igual a sí mismo.
      *
      * @param obj
      *            Un objeto para probar la nulidad.
@@ -1760,7 +1760,7 @@ public class Properties implements Savable, Cloneable {
      * @return Representación numérica del valor.
      * @throws NumberFormatException 
      *                  lanzado si el valor no es un número válido. La persona
-     *                  que llama debe captar esto y envolverlo en una {@link JmeException} si corresponde.
+     *                  que llama debe captar esto y envolverlo en una {@link RuntimeException} si corresponde.
      */
     protected static Number stringToNumber(final String val) throws NumberFormatException {
         char initial = val.charAt(0);

@@ -200,8 +200,8 @@ public class TileMap extends GeometryGroupNode {
      */
     public void addTile(int c, int r, Properties properties) {
         final Tile tile = new Tile();
-        properties.setProperty("Column", c);
-        properties.setProperty("Row", r);
+        properties.put("Column", c);
+        properties.put("Row", r);
         
         tile.setProperties(properties);
         addTile(tile);
@@ -243,7 +243,7 @@ public class TileMap extends GeometryGroupNode {
 
         if (!exists) {
             final Geometry model = tilesHeet.getSpritesheet()
-                                            .render(this, tile, assetManager);            
+                                            .render(this, tile, assetManager);
             tiles.add(new TileRule(model, tile));
             attachChild(model);
         } else {

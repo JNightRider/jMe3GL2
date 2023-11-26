@@ -32,11 +32,9 @@
 package jme3gl2.physics.debug;
 
 import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
+import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -62,7 +60,7 @@ import java.util.logging.Logger;
  * 
  * @since 2.5.0
  */
-public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends AbstractAppState {
+public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
 
     /** Logger de la clase. */
     private static final Logger LOGGER = Logger.getLogger(Dyn4JDebugAppState.class.getName());
@@ -85,12 +83,12 @@ public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends AbstractAppStat
      */
     private Node debugNode;
     
-    /** Vista depuración. */
-    private ViewPort devugViewPort;
+    ///** Vista depuración. */
+    //private ViewPort devugViewPort;
     
     /* Administrador de renderizado. */
     private Graphics2DRenderer renderer;    // deuprador.
-    private RenderManager renderManager;    // renderizador jme.
+    //private RenderManager renderManager;    // renderizador jme.
     
     /*
         Cuerpos físicos y articulaciones.
@@ -112,12 +110,10 @@ public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends AbstractAppStat
     /**
      * (non-JavaDoc)
      * @see com.jme3.app.state.AbstractAppState#initialize(com.jme3.app.state.AppStateManager, com.jme3.app.Application) 
-     * @param stateManager AppStateManager.
      * @param app Application.
      */
     @Override
-    public void initialize(AppStateManager stateManager, Application app) {
-        renderManager = app.getRenderManager();
+    public void initialize(Application app) {
         assetManager  = app.getAssetManager();
         application   = app;
         
@@ -126,22 +122,34 @@ public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends AbstractAppStat
         debugNode = new Node("Debug Node");
         debugNode.setCullHint(Spatial.CullHint.Never);
         debugNode.addControl(new BoundsDebugControl<>(physicsSpace.getPhysicsWorld(), renderer));
-                
-        devugViewPort = renderManager.createMainView("Debug Overlay", app.getCamera());
-        devugViewPort.setClearFlags(false, true, false);
-        devugViewPort.attachScene(debugNode);
-        
-        super.initialize(stateManager, app);
+    }
+
+    /**
+     * (non-JavaDoc)
+     */
+    @Override
+    protected void onEnable() {
+        if (getApplication() instanceof SimpleApplication) {
+            ((SimpleApplication) getApplication()).getRootNode().attachChild(debugNode);
+        }
+    }
+
+    /**
+     * (non-JavaDoc)
+     */
+    @Override
+    protected void onDisable() {
+        this.debugNode.removeFromParent();
     }
     
     /**
      * (non-JavaDoc)
      * @see com.jme3.app.state.AbstractAppState#cleanup() 
+     * @param app Application
      */
     @Override
-    public void cleanup() {
-        this.renderManager.removeMainView(this.devugViewPort);
-        super.cleanup();
+    protected void cleanup(Application app) {
+        this.debugNode.removeFromParent();
     }
     
     /**
@@ -150,25 +158,8 @@ public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends AbstractAppStat
      * @param tpf float.
      */
     @Override
-    public void update(final float tpf) {
-        // Actualizar todos los enlaces de objetos
+    public void update(float tpf) {
         updateBodies();
-
-        // Actualizar el nodo raíz de depuración
-        this.debugNode.updateLogicalState(tpf);
-        this.debugNode.updateGeometricState();
-    }
-
-    /**
-     * (non-JavaDoc)
-     * @see com.jme3.app.state.AbstractAppState#render(com.jme3.renderer.RenderManager) 
-     * @param rm admin-render.
-     */
-    @Override
-    public void render(final RenderManager rm) {
-        if (this.devugViewPort != null) {
-            rm.renderScene(this.debugNode, this.devugViewPort);
-        }
     }
     
     /**

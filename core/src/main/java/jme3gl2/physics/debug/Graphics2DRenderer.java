@@ -34,6 +34,7 @@ package jme3gl2.physics.debug;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -142,6 +143,7 @@ class Graphics2DRenderer {
             node.attachChild(geom);
             return (T) node;
         }
+        geom.setQueueBucket(RenderQueue.Bucket.Translucent);
         return (T) geom;
     }
     
@@ -227,6 +229,7 @@ class Graphics2DRenderer {
         }        
         if (geom != null) {
             geom.setMaterial(renderMat(color));
+            geom.setQueueBucket(RenderQueue.Bucket.Translucent);
             node.attachChild(geom);
         }
         return node;
@@ -267,6 +270,7 @@ class Graphics2DRenderer {
         final Geometry axisGeomg = new Geometry("axis", axis);
         
         axisGeomg.setMaterial(renderMat(color));
+        axisGeomg.setQueueBucket(RenderQueue.Bucket.Translucent);
         return axisGeomg;
     }
 }

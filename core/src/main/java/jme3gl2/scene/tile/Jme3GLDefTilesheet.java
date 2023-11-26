@@ -125,7 +125,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
                 }
             } else {
                 sprite = new Sprite(pTle.optFloat("Width", 1), pTle.optFloat("Height", 1),
-                        pMap.optInt("Columns", 1), pMap.optInt("Rows", 1), pMap.optInt("Column", 0), pMap.optInt("Row", 0));
+                        pMap.optInt("Columns", 1), pMap.optInt("Rows", 1), pTle.optInt("Column", 0), pTle.optInt("Row", 0));
             }
             
             sprite.flipH(pTle.optBoolean("FlipH", false));
