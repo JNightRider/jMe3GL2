@@ -258,7 +258,7 @@ public class TileMap extends GeometryGroupNode {
      */
     public void setTile(String id, Properties properties) {
         setTile(id, new Tile() {{
-            setProperties(properties.setProperty("Id", id));
+            setProperties(properties.put("Id", id));
         }});
     }
     
