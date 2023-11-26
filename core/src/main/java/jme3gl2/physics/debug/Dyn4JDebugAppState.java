@@ -139,6 +139,7 @@ public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
      */
     @Override
     protected void onDisable() {
+        this.debugNode.detachAllChildren();
         this.debugNode.removeFromParent();
     }
     
@@ -149,6 +150,7 @@ public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
      */
     @Override
     protected void cleanup(Application app) {
+        this.debugNode.detachAllChildren();
         this.debugNode.removeFromParent();
     }
     
