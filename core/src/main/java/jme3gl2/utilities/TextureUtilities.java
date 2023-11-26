@@ -31,10 +31,29 @@
  */
 package jme3gl2.utilities;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.asset.TextureKey;
+import com.jme3.texture.Texture;
+
 /**
- *
+ * Clase de utilidad para cargar, administrar y modificar texturas.
  * @author wil
+ * @version 1.0.0
+ * @since 2.5.0
  */
-public class TextureUtilities {
+public final class TextureUtilities {
     
+    /**
+     * Devuelve una textura almacenada en el classpath dada la ruta.
+     *
+     * @param assetManager administrador de los activos
+     * @param path la ruta dentro del classpath
+     * @return Texture
+     */
+    public static final Texture getTextureFromClassPath(AssetManager assetManager, String path){
+        Texture tex = assetManager.loadTexture(new TextureKey(path, false));
+        tex.setMagFilter(Texture.MagFilter.Nearest);
+        tex.setWrap(Texture.WrapMode.Repeat);
+        return tex;
+    }
 }
