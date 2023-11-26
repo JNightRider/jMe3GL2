@@ -44,7 +44,7 @@ import jme3gl2.physics.control.PhysicsBody2D;
 import jme3gl2.physics.control.RigidBody2D;
 import jme3gl2.scene.shape.Sprite;
 import jme3gl2.util.Converter;
-import jme3gl2.util.Jme3GL2Utils;
+import jme3gl2.utilities.MaterialUtilities;
 
 import org.dyn4j.geometry.MassType;
 
@@ -70,7 +70,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
                                        tileMap.getColumns(), tileMap.getRows(), 
                                        tile.getColumn(),     tile.getRow());
             
-            final Material mat = Jme3GL2Utils.loadMaterial(assetManager, tileMap.getProperties().getProperty("Texture", (String)null));
+            final Material mat = MaterialUtilities.getUnshadedMaterialFromClassPath(assetManager, tileMap.getProperties().getProperty("Texture", (String)null));
             mat.setFloat("AlphaDiscardThreshold", property.getProperty("AlphaDiscardThreshold", 0.0F));
         
             final Geometry geom = new Geometry(tile.getId(), sprite);
