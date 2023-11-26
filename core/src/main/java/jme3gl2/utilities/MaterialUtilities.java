@@ -42,7 +42,7 @@ import com.jme3.texture.Texture;
  * Clase de utilidad para cargar, administrar y modificar materiales.
  * @author wil
  * @version 1.0.0
- * @since 1.0.0
+ * @since 2.5.0
  */
 public final class MaterialUtilities {
     
