@@ -88,9 +88,9 @@ public final class TileMapUtilities {
     public static final TileMap getTileMap(String id, String path, int cs, int rs, AssetManager assetManager) {
         TileMap myMap = new TileMap(assetManager, id);
         Properties properties = new Properties();
-        properties.setProperty("Texture", path);
-        properties.setProperty("Columns", cs);
-        properties.setProperty("Rows", rs);
+        properties.put("Texture", path);
+        properties.put("Columns", cs);
+        properties.put("Rows", rs);
         myMap.setProperties(properties);
         return myMap;
     }
@@ -169,16 +169,16 @@ public final class TileMapUtilities {
     public static <T extends Convex> Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, AbstractCollisionShape<T> acs) {
         Tile tile = new Tile();        
         Properties properties = new Properties();
-        properties.setProperty("Id", id);
-        properties.setProperty("Row", rp);
-        properties.setProperty("Column", cp);
-        properties.setProperty("Width", w);
-        properties.setProperty("Height", h);
-        properties.setProperty("Translation", new Vector3f(x, y, z));        
+        properties.put("Id", id);
+        properties.put("Row", rp);
+        properties.put("Column", cp);
+        properties.put("Width", w);
+        properties.put("Height", h);
+        properties.put("Translation", new Vector3f(x, y, z));        
         if (acs != null) {
-            properties.setProperty("RigidBody2D", true);
-            properties.setProperty("CollisionShape", acs);
-            properties.setProperty("MassType", MassType.INFINITE);
+            properties.put("PhysicsBody", true);
+            properties.put("CollisionShape", acs);
+            properties.put("MassType", MassType.INFINITE);
         }        
         tile.setProperties(properties);
         return null;
