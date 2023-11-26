@@ -36,7 +36,7 @@ import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.export.Savable;
-import com.jme3.math.Vector3f;
+
 import java.io.IOException;
 
 /**
@@ -81,33 +81,9 @@ public class Tile implements Savable, Cloneable {
      * @return id.
      */
     public String getId() {
-        return properties.getProperty("Id");
-    }    
-    
-    /**
-     * Devuelve un vector con las coordenadas de traslación.
-     * @return posición.
-     */
-    public Vector3f getTranslation() {
-        return properties.getProperty("Translation", new Vector3f());
+        return properties.optString("Id", "");
     }
     
-    /**
-     * Devuelve la fila para la textura a utiliza en el mapa de escena.
-     * @return fila.
-     */
-    public int getRow() {
-        return properties.getProperty("Row", 0);
-    }    
-    
-    /**
-     * Devuelve la columna de la textura a utiliza en el mapa de escena.
-     * @return columna.
-     */
-    public int getColumn() {
-        return properties.getProperty("Column", 0);
-    }
-
     /**
      * Devuelve las propiedades.
      * @return propiedades

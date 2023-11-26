@@ -355,22 +355,6 @@ public class TileMap extends GeometryGroupNode {
     }
     
     /**
-     * Devuele la fila total de azulejos de la imagen mapeado.
-     * @return filas.
-     */
-    public int getRows() {
-        return  properties.getProperty("Rows", 0);
-    }
-    
-    /**
-     * Devuele el número total de columnas de la imagen mapeado.
-     * @return columnas.
-     */
-    public int getColumns() {
-        return properties.getProperty("Columns", 0);
-    }
-    
-    /**
      * (non-JavaDoc)
      * @param geom geometry
      */
