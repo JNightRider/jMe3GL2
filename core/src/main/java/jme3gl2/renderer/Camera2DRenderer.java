@@ -212,7 +212,7 @@ public class Camera2DRenderer extends BaseAppState {
     /**
      * Devuelve el objeto que administra la cámara en 2D.
      * @return cámara-2D.
-     * @deprecated utilise {@link #getjMe3GL2Camera()}.
+     * @deprecated utilise {@link #getJme3GL2Camera()}.
      */
     @Deprecated
     public Jme3GL2Camera getCamera2D() {
@@ -224,7 +224,7 @@ public class Camera2DRenderer extends BaseAppState {
      * @param <T> tipo-datod.
      * @return admin-cámara.
      */
-    public <T extends Jme3GL2Camera> T getjMe3GL2Camera() {
+    public <T extends Jme3GL2Camera> T getJme3GL2Camera() {
         return (T) gL2Camera;
     }
 
