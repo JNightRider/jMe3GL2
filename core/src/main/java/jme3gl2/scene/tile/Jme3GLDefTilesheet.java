@@ -59,7 +59,7 @@ import org.dyn4j.geometry.MassType;
  * {@link TileMap} como valores predeterminados.
  * 
  * @author wil
- * @version 1.0.2
+ * @version 1.5.0
  * 
  * @since 2.0.0
  */
