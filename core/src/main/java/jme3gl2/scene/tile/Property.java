@@ -81,7 +81,7 @@ final class Property implements Savable, Cloneable {
      * @param object 
      *          Valor primitivo a envolver.
      */
-    public Property(Object object) {
+    public Property(Object object) throws RuntimeException {
         this.jmeType = Type.jmeValueOf(object);
         this.object  = object;
     }
