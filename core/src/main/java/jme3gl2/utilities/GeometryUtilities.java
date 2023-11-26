@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.geometry;
+package jme3gl2.utilities;
 
 import java.util.List;
 
@@ -58,10 +58,10 @@ import org.dyn4j.geometry.Wound;
  * 
  * @since 1.0.0
  */
-public final class Jme3GL2Geometry {
+public final class GeometryUtilities {
     
     /** Constructor privado. */
-    private Jme3GL2Geometry() {}
+    private GeometryUtilities() {}
 
     /**
      * (non-JavaDoc)

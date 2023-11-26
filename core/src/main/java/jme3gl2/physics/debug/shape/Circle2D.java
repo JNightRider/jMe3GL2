@@ -33,7 +33,7 @@ package jme3gl2.physics.debug.shape;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
-import jme3gl2.geometry.Jme3GL2Geometry;
+import jme3gl2.utilities.GeometryUtilities;
 import jme3gl2.util.Converter;
 
 /**
@@ -69,7 +69,7 @@ public class Circle2D extends AbstractShape2D {
      */
     public void updateGeometry(int count, float radius, float theta, float deep) {
         // calcular el incremento angular
-        final float pin = Converter.toFloat(Jme3GL2Geometry.TWO_PI / count);
+        final float pin = Converter.toFloat(GeometryUtilities.TWO_PI / count);
         // make sure the resulting output is an even number of vertices
         final Vector3f[] vertices = new Vector3f[count];
 
