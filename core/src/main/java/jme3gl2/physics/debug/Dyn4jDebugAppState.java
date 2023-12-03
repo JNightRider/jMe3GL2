@@ -60,10 +60,10 @@ import java.util.logging.Logger;
  * 
  * @since 2.5.0
  */
-public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
+public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
 
     /** Logger de la clase. */
-    private static final Logger LOGGER = Logger.getLogger(Dyn4JDebugAppState.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Dyn4jDebugAppState.class.getName());
     
     /** Aplicación principal <code>JME</code>. */
     protected Application application;
@@ -103,7 +103,7 @@ public class Dyn4JDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
      * 
      * @param physicsSpace espacio-físico.
      */
-    public Dyn4JDebugAppState(PhysicsSpace<E> physicsSpace) {
+    public Dyn4jDebugAppState(PhysicsSpace<E> physicsSpace) {
         this.physicsSpace = physicsSpace;
     }
     

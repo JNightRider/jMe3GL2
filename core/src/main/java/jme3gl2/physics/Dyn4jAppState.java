@@ -37,7 +37,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.RenderManager;
 
 import jme3gl2.physics.control.PhysicsBody2D;
-import jme3gl2.physics.debug.Dyn4JDebugAppState;
+import jme3gl2.physics.debug.Dyn4jDebugAppState;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -118,7 +118,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     
      // Depurador.
      /** Estado-depuración.*/
-     protected Dyn4JDebugAppState<E> debugAppState;
+     protected Dyn4jDebugAppState<E> debugAppState;
      
      /**
       * <code>true</code> si se activa el estado depurador para los cuerpos
@@ -419,7 +419,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      */
     protected void prepareDebugger(boolean attach) {
         if (this.debugAppState == null) {
-            this.debugAppState = new Dyn4JDebugAppState<>(this.physicsSpace);
+            this.debugAppState = new Dyn4jDebugAppState<>(this.physicsSpace);
             
             if (attach) {
                 this.stateManager.attach(this.debugAppState);
