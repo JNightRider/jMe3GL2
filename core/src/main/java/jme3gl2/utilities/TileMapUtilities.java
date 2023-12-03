@@ -100,7 +100,6 @@ public final class TileMapUtilities {
      * Devuelve un <code>Tile</code> con las propiedades mínimas inicializadas
      * listas para ser gestionadas por un <code>TileMap</code>.
      * 
-     * @param <T> tipo de colición
      * @param cp número de columna (posición: x)
      * @param rp número de fila (posición: y)
      * @param w largo del Tile
@@ -110,7 +109,7 @@ public final class TileMapUtilities {
      * @param z posición en escena: <code>y</code>
      * @return Tile
      */
-    public static <T extends Convex> Tile getTile(int cp, int rp, float w, float h, float x, float y, float z) {
+    public static Tile getTile(int cp, int rp, float w, float h, float x, float y, float z) {
         return getTile(cp, rp, w, h, x, y, z, null);
     }
     
@@ -118,7 +117,6 @@ public final class TileMapUtilities {
      * Devuelve un <code>Tile</code> con las propiedades mínimas inicializadas
      * listas para ser gestionadas por un <code>TileMap</code>.
      * 
-     * @param <T> tipo de colición
      * @param cp número de columna (posición: x)
      * @param rp número de fila (posición: y)
      * @param w largo del Tile
@@ -130,7 +128,7 @@ public final class TileMapUtilities {
      * contrario <code>false</code>
      * @return Tile
      */
-    public static <T extends Convex> Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
+    public static Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
         return getTile(cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(2, h) : null);
     }
     
@@ -175,7 +173,6 @@ public final class TileMapUtilities {
      * Devuelve un <code>Tile</code> con las propiedades mínimas inicializadas
      * listas para ser gestionadas por un <code>TileMap</code>.
      * 
-     * @param <T> tipo de colición
      * @param id identificador unico
      * @param cp número de columna (posición: x)
      * @param rp número de fila (posición: y)
@@ -188,7 +185,7 @@ public final class TileMapUtilities {
      * contrario <code>false</code>
      * @return Tile
      */
-    public static <T extends Convex> Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
+    public static Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
         return getTile(id, cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(w, h) : null);
     }
     
