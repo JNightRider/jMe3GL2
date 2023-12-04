@@ -11,32 +11,14 @@ plugins {
     id 'java-library'
 }
 
-group 'jMe3GL2'
+group 'jme3gl2.awt'
 version '2.5-SNAPSHOT'
 
-project.ext {
-    jmeVer = '3.6.1-stable'
-}
-
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
-}
-
 dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api 'org.apache.commons:commons-math3:3.6.1'
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:31.1-jre'
-
     // Implementation of the jme3 library and the dyn4j engine
-    implementation 'org.jmonkeyengine:jme3-core:' + jmeVer
-    implementation 'org.jmonkeyengine:jme3-desktop:' + jmeVer
-    runtimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmeVer
+    implementation 'org.jmonkeyengine:jme3-core:' + jmonkeyengineVersion
+    implementation 'org.jmonkeyengine:jme3-desktop:' + jmonkeyengineVersion
+    runtimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmonkeyengineVersion
 }
 
 java {
@@ -60,4 +42,3 @@ gradle.projectsEvaluated {
         }
     }
 }
-

@@ -1,0 +1,10 @@
+allprojects  {
+    project.ext {
+        jmonkeyengineVersion = '3.6.1-stable'
+        dyn4jVersion = '5.0.1'
+    }
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
