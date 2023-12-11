@@ -298,7 +298,7 @@ public class CharacterBody2D<E extends Application> extends PhysicsBody2D {
             }
 
             int layerB1 = ((CharacterBody2D) b1).getLayer(),
-                layetB2 = ((CharacterBody2D) b1).getLayer();
+                layetB2 = ((CharacterBody2D) b2).getLayer();
 
             if (layerB1 == layetB2) {
                 contactConstraint.setEnabled(false);
