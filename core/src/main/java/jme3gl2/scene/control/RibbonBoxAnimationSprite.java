@@ -65,6 +65,9 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
 
     /** Logger de la clase. */
     private static final Logger LOG = Logger.getLogger(RibbonBoxAnimationSprite.class.getName());
+    
+    /** Índice actual de la caja de animaciones. */
+    private int index;
 
     /** Material del 'modelos 2D.' */
     private Material mat;
@@ -104,8 +107,8 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
         if ( this.animations.containsKey(name) ) {
             LOG.log(Level.WARNING, "Animation [{0}] existing.", name);
         } else {
-            if (frames == null || frames.length != 1) {
-                throw new IllegalArgumentException("One RibbonBox per animation");
+            if (frames == null) {
+                throw new IllegalArgumentException("Invalid animation");
             }
             this.animations.put(name, frames);
         }
@@ -127,6 +130,7 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
         
         if ( !(name.equals(this.currentAnimationName)) ) {
             this.currentAnimationName = name;
+            this.index = 0;
             
             if ( this.mat != null ) {
                 this.mat.setTexture(getNameParam(), rb[0].getTexture());
@@ -159,11 +163,16 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
             if ( this.elapsedeTime >= this.animationFrameTime ) {
                 this.currentIndex++;
                 
-                if ( this.currentIndex >= this.currentAnimation[0].getFrames().length ) {
-                    if (isLoop()) {
-                        this.currentIndex = 0;
-                    } else {
-                        this.currentIndex = this.currentAnimation[0].getFrames().length - 1;
+                if ( this.currentIndex >= this.currentAnimation[index].getFrames().length ) {
+                    index++;
+                    if (index >= currentAnimation.length) {
+                        if (isLoop()) {
+                            currentIndex = 0;
+                            index        = 0;
+                        } else {
+                            index        = currentAnimation.length - 1;
+                            currentIndex = currentAnimation[index].getFrames().length - 1;
+                        }
                     }
                 }
                 
@@ -172,8 +181,8 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
                 }
                 
                 this.elapsedeTime = 0f;
-                this.sprite.showIndex(this.currentAnimation[0].getFrames()[this.currentIndex]);
-                this.mat.setTexture(getNameParam(), this.currentAnimation[0].getTexture());
+                this.sprite.showIndex(this.currentAnimation[index].getFrames()[this.currentIndex]);
+                this.mat.setTexture(getNameParam(), this.currentAnimation[index].getTexture());
             }
         }
     }
