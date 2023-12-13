@@ -31,23 +31,16 @@
  */
 package jme3gl2.physics.debug.control;
 
-import com.jme3.material.Material;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
 import jme3gl2.physics.control.PhysicsBody2D;
-import jme3gl2.physics.debug.Color;
 import jme3gl2.physics.debug.Graphics2DRenderer;
-import jme3gl2.physics.debug.Id;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.geometry.Convex;
 
 /**
  * Clase <code>PhysicsDebugControl</code> encargado de controlar las formas
@@ -63,24 +56,11 @@ public class PhysicsDebugControl extends AbstractPhysicsDebugControl<PhysicsBody
     /** Renderizador para las formas físcas. */
     protected Graphics2DRenderer renderer;
     
-    /**
-     * Mapa para las formas físicas.
-     */
-    protected Map<UUID, BodyFixture> shapes 
-            = new HashMap<>();
-    
-    /**
-     * Mapa geometría encargado de almacenar los nodos que dan forma física a los
-     * <code>BodyFixture</code> del cuepor físico.
-     */
-    protected Map<UUID, Node> geometries 
-            = new HashMap<>();
+    /** Nodo mapa para todas las formas físicias de un cuerpo. */
+    protected Map<BodyFixture, Node> shapes = new HashMap<>();
     
     /** Nodo padre que contiene las formas físicas.*/
     protected Node spatialAsNode = null;
-    
-    /** Gestor de ID. */
-    protected Id id;
     
     /**
      * Control de la clase <code>PhysicsDebugControl</code> donde se inicializa
@@ -91,7 +71,6 @@ public class PhysicsDebugControl extends AbstractPhysicsDebugControl<PhysicsBody
      */
     public PhysicsDebugControl(Graphics2DRenderer renderer, PhysicsBody2D body) {
         super(body);
-        this.id = new Id();
         this.renderer = renderer;
         for (final BodyFixture bf : body.getFixtures()) {
             processRender(bf);
@@ -111,11 +90,11 @@ public class PhysicsDebugControl extends AbstractPhysicsDebugControl<PhysicsBody
     public void setSpatial(final Spatial spatial) {
         if (spatial != null && spatial instanceof Node) {
             this.spatialAsNode = (Node) spatial;
-            for (final Node node : this.geometries.values()) {
+            for (final Node node : this.shapes.values()) {
                 this.spatialAsNode.attachChild(node);
             }
         } else if (spatial == null && this.spatial != null) {
-            for (final Node node : this.geometries.values()) {
+            for (final Node node : this.shapes.values()) {
                 this.spatialAsNode.detachChild(node);
             }
         }
@@ -134,75 +113,25 @@ public class PhysicsDebugControl extends AbstractPhysicsDebugControl<PhysicsBody
      */
     @Override
     protected void controlUpdate(float tpf) {
-        final List<UUID> currentIDs = new ArrayList<>();
-        for (final BodyFixture bodyFixture : this.body.getFixtures()) {
-            final Convex shape = bodyFixture.getShape();
-            final UUID uuid    = id.getId(shape);
-            
-            currentIDs.add(uuid);
-
-            if (!this.shapes.containsKey(uuid)) {
-                // Nuevo fixture: cree un espacio para la forma, agréguelo a 
-                // la lista de geometría y adjunte a la raíz espacial.
-                processRender(bodyFixture);
+        final Map<BodyFixture, Node> oldMap = shapes;
+        shapes = new HashMap<>();
+        
+        for (final BodyFixture fixture : body.getFixtures()) {
+            if (oldMap.containsKey(fixture)) {
+                shapes.put(fixture, oldMap.get(fixture));
+                oldMap.remove(fixture);
+            } else {
+                processRender(fixture);
             }
         }
-        
-        // Elimina formas que no están presentes en la lista de 
-        // características del cuerpo.
-        boolean b = this.shapes.keySet().retainAll(currentIDs) &&
-                    this.geometries.keySet().retainAll(currentIDs) &&
-                    this.id.retain(currentIDs);
-        
-        
+                
         // Establecer material según el estado del cuerpo.
-        if (b) {
-            this.spatialAsNode.detachAllChildren();
-            this.updateMat(true);
-        } else {
-            this.updateMat(false);
+        for (final Map.Entry<?, Node> entry : oldMap.entrySet()) {
+            entry.getValue().removeFromParent();
         }
         super.controlUpdate(tpf);
     }
     
-    /**
-     * Método encargado de actualizar los materiales de las formas físicas
-     * generadas.
-     * 
-     * @param attach <code>true</code> si hay una nuva pila de nodos disponibles
-     * en espera por agregarse, de lo contrario <code>false</code>.
-     */
-    protected void updateMat(boolean attach) {
-        Material material;
-        if (this.body.isEnabled()) {
-            if (this.body.isBullet()) {
-                material = this.renderer.renderMat(Color.RED);
-            } else if (this.body.isStatic()) {
-                material = this.renderer.renderMat(Color.ORANGE);
-            } else if (this.body.isKinematic()) {
-                material = this.renderer.renderMat(Color.YELLOW);
-            } else if (this.body.isAtRest()) {
-                material = this.renderer.renderMat(Color.BLUE);
-            } else {
-                material = this.renderer.renderMat(Color.MAGENTA);
-            }
-        } else {
-            material = this.renderer.renderMat(Color.GRAY);
-        }        
-        for (final Map.Entry<UUID, Node> entry : this.geometries.entrySet()) {
-            final Node node = entry.getValue();
-            
-            if (attach) {
-                this.spatialAsNode.attachChild(node);
-            }
-            final Spatial geom = node.getChild(node.getName());
-            if (geom != null) {
-                geom.setMaterial(material);
-            }
-        }
-    }
-    
-        
     /**
      * Método encargado de procesar el renderizado de los cuepor físicos, es 
      * decir su forma.
@@ -210,12 +139,8 @@ public class PhysicsDebugControl extends AbstractPhysicsDebugControl<PhysicsBody
      * @return forma gráfica.
      */
     private Node processRender(BodyFixture bf) {
-        final Convex shape = bf.getShape();
-        final Node node = renderer.render(shape, null);        
-        final UUID uuid = id.getId(shape);
-        
-        this.shapes.put(uuid, bf);
-        this.geometries.put(uuid, node);
+        final Node node = renderer.render(bf, body, null);        
+        this.shapes.put(bf, node);
         return node;
     }
 }

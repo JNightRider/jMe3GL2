@@ -31,15 +31,21 @@
  */
 package jme3gl2.physics.debug.control;
 
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.util.TempVars;
 
+import jme3gl2.physics.control.PhysicsBody2D;
+import jme3gl2.physics.debug.Dyn4jDebugColor;
 import jme3gl2.util.Converter;
 
+import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Capsule;
 import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Convex;
@@ -86,9 +92,10 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         /**
          * Constructor de la clase <code>CapsuleDebugControl</code>.
          * @param shape forma física.
+         * @param body cuerpo físico
          */
-        public CapsuleDebugControl(Capsule shape) {
-            super(shape);
+        public CapsuleDebugControl(BodyFixture shape, PhysicsBody2D body) {
+            super(shape, body);
         }
         
         /**
@@ -99,7 +106,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         double getRotationAngle() {
-            return this.shape.getRotationAngle();
+            return this.getShape().getRotationAngle();
         }
         
         /**
@@ -110,7 +117,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         Vector2 getLocaTranslation() {
-            return this.shape.getCenter();
+            return this.getShape().getCenter();
         }        
     }
 
@@ -123,9 +130,10 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         /**
          * Constructor de la clase <code>CircleDebugControl</code>.
          * @param shape forma física.
+         * @param body cuerpo físico
          */
-        public CircleDebugControl(Circle shape) {
-            super(shape);
+        public CircleDebugControl(BodyFixture shape, PhysicsBody2D body) {
+            super(shape, body);
         }
         
         /**
@@ -147,7 +155,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         Vector2 getLocaTranslation() {
-            return shape.getCenter();
+            return getShape().getCenter();
         }        
     }
     
@@ -160,9 +168,10 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         /**
          * Constructor de la clase <code>EllipseDebugControl</code>.
          * @param shape forma física.
+         * @param body cuerpo físico
          */
-        public EllipseDebugControl(Ellipse shape) {
-            super(shape);
+        public EllipseDebugControl(BodyFixture shape, PhysicsBody2D body) {
+            super(shape, body);
         }
         
         /**
@@ -173,7 +182,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         double getRotationAngle() {
-            return shape.getRotationAngle();
+            return getShape().getRotationAngle();
         }
         
         /**
@@ -184,7 +193,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         Vector2 getLocaTranslation() {
-            return shape.getCenter();
+            return getShape().getCenter();
         }        
     }
     
@@ -197,9 +206,10 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         /**
          * Constructor de la clase <code>HalfEllipseDebugControl</code>.
          * @param shape forma física.
+         * @param body cuerpo físico
          */
-        public HalfEllipseDebugControl(HalfEllipse shape) {
-            super(shape);
+        public HalfEllipseDebugControl(BodyFixture shape, PhysicsBody2D body) {
+            super(shape, body);
         }
         
         /**
@@ -210,7 +220,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         double getRotationAngle() {
-            return shape.getRotationAngle();
+            return getShape().getRotationAngle();
         }
 
         /**
@@ -221,8 +231,48 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         Vector2 getLocaTranslation() {
-            return shape.getEllipseCenter();
+            return getShape().getEllipseCenter();
         }        
+    }
+    
+    /**
+     * Clase interna para cualquier forma convexa.
+     */
+    public static final class ConvexDebugControl extends AbstractConvexDebugControl<Convex> {
+
+        /** Posición predeterminado. */
+        private final Vector2 v = new Vector2();
+        
+        /**
+         * Constructor de la clase.
+         * @param shape forma
+         * @param body cuerpo físico
+         */
+        public ConvexDebugControl(BodyFixture shape, PhysicsBody2D body) {
+            super(shape, body);
+        }
+
+        /**
+         * (non-JavaDoc)
+         * @see AbstractConvexDebugControl#getRotationAngle() 
+         * 
+         * @return double
+         */
+        @Override
+        double getRotationAngle() {
+            return 0;
+        }
+
+         /**
+         * (non-JavaDoc)
+         * @see AbstractConvexDebugControl#getLocaTranslation() 
+         * 
+         * @return double
+         */
+        @Override
+        Vector2 getLocaTranslation() {
+            return v;
+        }
     }
     
     /**
@@ -233,9 +283,10 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         /**
          * Constructor de la clase <code>SliceDebugControl</code>.
          * @param shape forma física.
+         * @param body cuerpo físico
          */        
-        public SliceDebugControl(Slice shape) {
-            super(shape);
+        public SliceDebugControl(BodyFixture shape, PhysicsBody2D body) {
+            super(shape, body);
         }
         
         /**
@@ -246,7 +297,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         double getRotationAngle() {
-            return shape.getRotationAngle();
+            return getShape().getRotationAngle();
         }
         
         /**
@@ -257,19 +308,33 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
          */
         @Override
         Vector2 getLocaTranslation() {
-            return shape.getCircleCenter();
+            return getShape().getCircleCenter();
         }        
     }
     
     /** Forma física del objeto. */
-    final E shape;
+    final BodyFixture fixture;
 
+    /** Cuerpos físico. */
+    final PhysicsBody2D body2D;
+    
     /**
      * Constructor privato de la clase <code>AbstractConvexDebugControl</code>.
-     * @param shape forma física.
+     * @param fixture forma física
+     * @param body2D cuerpo físicp
      */
-    private AbstractConvexDebugControl(E shape) {
-        this.shape    = shape;
+    private AbstractConvexDebugControl(BodyFixture fixture, PhysicsBody2D body2D) {
+        this.fixture = fixture;
+        this.body2D = body2D;
+    }
+    
+    /**
+     * Devuelve la forma física.
+     * @return Convex
+     */
+    @SuppressWarnings("unchecked")
+    public E getShape() {
+        return (E) fixture.getShape();
     }
     
     /**
@@ -282,6 +347,36 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
     protected void controlUpdate(float tpf) {
         applyPhysicsLocation();
         applyPhysicsRotation();
+        renderMaterial();
+    }
+    
+    /**
+     * Renderiza el objet; gestiona el material de la geometría.
+     */
+    void renderMaterial() {
+        ColorRGBA color;        
+        if (!(body2D.isEnabled())) {
+            color = Dyn4jDebugColor.DISABLED;
+        } else {
+            if (fixture.isSensor()) {
+                color = Dyn4jDebugColor.SENSOR;
+            } else {
+                if (body2D.isBullet()) {
+                    color = Dyn4jDebugColor.BULLET;
+                } else if (body2D.isStatic()) {
+                    color = Dyn4jDebugColor.STATIC;
+                } else if (body2D.isKinematic()) {
+                    color = Dyn4jDebugColor.KINEMATIC;
+                } else if (body2D.isAtRest()) {
+                    color = Dyn4jDebugColor.AT_RESET;
+                } else {
+                    color = Dyn4jDebugColor.DEFAULT;
+                }
+            }
+        }
+        
+        Material mat = ((Geometry) spatial).getMaterial();   
+        mat.setColor("Color", color);
     }
 
     /**
