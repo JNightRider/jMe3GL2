@@ -111,7 +111,7 @@ public class Timer {
             if (element == null)
                 continue;
             
-            if (attachAllTask(tasks) == null) {
+            if (attachTask(element) == null) {
                 return null;
             }
         }
