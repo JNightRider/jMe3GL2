@@ -76,7 +76,7 @@ import org.dyn4j.geometry.Vector2;
  * puntos-vértices se modifican al trasladarlos o rotarlos en su forma.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT 
+ * @version 1.5.0
  * 
  * @since 2.5.0
  * @param <E> tipo-cuerpo

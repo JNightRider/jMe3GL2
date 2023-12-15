@@ -191,6 +191,8 @@ public class CharacterBody2D<E extends Application> extends PhysicsBody2D {
      * @param application aplicación principal
      */
     public CharacterBody2D(E application) {
+        this.application = application;
+        
         final AppStateManager stateManager = application.getStateManager();
         dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
     }
