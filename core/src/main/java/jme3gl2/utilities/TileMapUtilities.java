@@ -129,7 +129,7 @@ public final class TileMapUtilities {
      * @return Tile
      */
     public static Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
-        return getTile(cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(2, h) : null);
+        return getTile(cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(w, h) : null);
     }
     
     /**
