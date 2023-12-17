@@ -164,13 +164,21 @@ public class RibbonBoxAnimationSprite extends AbstractAnimatedControl<RibbonBox>
                 this.currentIndex++;
                 
                 if ( this.currentIndex >= this.currentAnimation[index].getFrames().length ) {
-                    index++;
-                    if (index >= currentAnimation.length) {
+                    if (currentAnimation.length > 1) {
+                        index++;
+                        currentIndex = 0;
+                        if (index >= currentAnimation.length) {
+                            if (isLoop()) {
+                                index = 0;
+                            } else {
+                                index        = currentAnimation.length - 1;
+                                currentIndex = currentAnimation[index].getFrames().length - 1;
+                            }
+                        }
+                    } else {
                         if (isLoop()) {
                             currentIndex = 0;
-                            index        = 0;
                         } else {
-                            index        = currentAnimation.length - 1;
                             currentIndex = currentAnimation[index].getFrames().length - 1;
                         }
                     }
