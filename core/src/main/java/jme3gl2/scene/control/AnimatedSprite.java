@@ -71,6 +71,9 @@ public class AnimatedSprite extends AbstractAnimatedControl<Texture> {
      */
     protected ScaleType scaleType;
 
+    /** Dimensiones originales de la malla. */
+    protected Vector2f originalDim;
+    
     /**
      * Constructor predeterminado de la clase {@code AnimatedSprite}.
      */
@@ -94,6 +97,7 @@ public class AnimatedSprite extends AbstractAnimatedControl<Texture> {
     public void setSpatial(Spatial spatial) {
         super.setSpatial(spatial);
         mat = ((Geometry) spatial).getMaterial();
+        originalDim = new Vector2f(sprite.getWidth(), sprite.getHeight());
     }
 
     /**
@@ -169,30 +173,37 @@ public class AnimatedSprite extends AbstractAnimatedControl<Texture> {
      */
     private Vector2f getDynamicSize(Texture text) {
         float max, min;
+        float mm_dim;
         if (null == scaleType) {
             throw new NullPointerException("LockScaling is Null.");
         } else switch (scaleType) {
             case GL2_HEIGHT:
                 max = text.getImage().getHeight();
-                return new Vector2f(text.getImage().getWidth() / max, 1.0F);
+                mm_dim = originalDim.y;
+                return new Vector2f((text.getImage().getWidth() / max) *  mm_dim, mm_dim);
             case GL2_WIDTH:
                 max = text.getImage().getWidth();
-                return new Vector2f(1.0F, text.getImage().getHeight() / max);
+                mm_dim = originalDim.x;
+                return new Vector2f(mm_dim, (text.getImage().getHeight() / max) * mm_dim);
             case GL2_MAX:
                 max = text.getImage().getHeight();
                 min = text.getImage().getWidth();
                 if (max >= min) {
-                    return new Vector2f(min / max, 1.0F);
+                    mm_dim = originalDim.y;
+                    return new Vector2f((min / max) * mm_dim, mm_dim);
                 } else {
-                    return new Vector2f(1.0F, max / min);
+                    mm_dim = originalDim.x;
+                    return new Vector2f(mm_dim, (max / min) * mm_dim);
                 }
             case GL2_MIN:
                 max = text.getImage().getHeight();
                 min = text.getImage().getWidth();
                 if (max >= min) {
-                    return new Vector2f(1.0F, max / min);
+                    mm_dim = originalDim.x;
+                    return new Vector2f(mm_dim, (max / min) * mm_dim);
                 } else {
-                    return new Vector2f(min / max, 1.0F);
+                    mm_dim = originalDim.y;
+                    return new Vector2f((min / max) * mm_dim, mm_dim);
                 }
             default:
                 throw new AssertionError();
