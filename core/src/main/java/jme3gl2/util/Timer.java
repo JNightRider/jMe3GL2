@@ -239,10 +239,10 @@ public class Timer {
                     if (task == null) {
                         continue;
                     }
-                    task.doTask();
+                    task.doTask(this);
                 }
             }
-        }        
+        }
     }
     
     /**

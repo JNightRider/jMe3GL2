@@ -44,6 +44,7 @@ public interface TimerTask {
     
     /**
      * Método encargado de activar una tarea.
+     * @param timer el temporizador que ejecuto esta tarea.
      */
-    void doTask();
+    void doTask(Timer timer);
 }
