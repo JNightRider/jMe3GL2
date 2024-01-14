@@ -56,4 +56,22 @@ public final class TextureUtilities {
         tex.setWrap(Texture.WrapMode.Repeat);
         return tex;
     }
+    
+    /**
+     * Devuelve una arreglo de texturas almacenadas en el classpath dada la ruta.
+     * 
+     * @param assetManager administrador de los activos
+     * @param paths la ruta dentro del classpath
+     * @return Texture[]
+     */
+    public static final Texture[] getArrayTextureFromClassPath(AssetManager assetManager, String ...paths) {
+        if (paths == null) {
+            throw new NullPointerException("The paths are not valid: null");
+        }
+        Texture[] texts = new Texture[paths.length];
+        for (int i = 0; i < texts.length; i++) {
+            texts[i] = getTextureFromClassPath(assetManager, paths[i]);
+        }
+        return texts;
+    }
 }
