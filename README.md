@@ -21,3 +21,4 @@ tema, le aconsejamos ver:
 - **Ejemplos dyn4j**
   https://github.com/dyn4j/dyn4j-samples
  
+> Nueva versión en progreso que rompera la copatibilidad con las versiones anteriores...
