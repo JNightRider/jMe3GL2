@@ -47,9 +47,9 @@ public final class JAWTResolution implements Cloneable, Savable {
     public static final JAWTResolution TEST_RESOLUTION = new JAWTResolution(1024, 576);
     
     /** Minimum value that the width of the game screen can have. */
-    public static final int MIN_WIDTH  = 1024;
+    public static final int MIN_WIDTH  = 640;
     /** Minimum value that the height can have on the game screen. */
-    public static final int MIN_HEIGHT = 576;
+    public static final int MIN_HEIGHT = 480;
     
     /** Screen width. */
     private int width;    
