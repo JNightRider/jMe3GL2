@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,14 +31,11 @@
  */
 
 /**
- * En este paquete se aloja la forma que pueden tener los modelos 2D.
- * <p>
- * Existe una sola forma de un modelo. La clase <code>Sprite</code> es la malla
- * predetermina que utilizan los modelos 2D, es decir las geometrías de jme3.
- * </p>
+ * Package responsible for packaging scene objects (class) to create 2D models 
+ * in a 3D environment.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * @since 1.5.0
  */
 package jme3gl2.scene.shape;
