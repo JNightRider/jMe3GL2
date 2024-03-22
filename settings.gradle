@@ -8,10 +8,16 @@
  */
 
 rootProject.name = 'jMe3GL2'
-include('core')
-include('awt')
+
+include 'modules:jawt'
+include 'modules:core'
+//include 'modules:plugins'
+//include 'modules:dyn4j'
 
 // More sensible sub-project names for jars an dstuff
-project(":core").name = "jMe3GL2-core"
-project(":awt").name  = "jMe3GL2-awt"
+project(':modules:core').name = 'jMe3GL2-core'
+project(':modules:jawt').name = 'jMe3GL2-jawt'
+
+//project(':modules:plugins').name = 'jMe3GL2-plugins'
+//project(':modules:dyn4j').name = 'jMe3GL2-dyn4j'
 

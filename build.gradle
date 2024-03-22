@@ -1,10 +1,33 @@
-allprojects  {
+allprojects {
+
+    group = 'jmegl2'
+    version = '3.0.0'
+
     project.ext {
+        // global dependencies
         jmonkeyengineVersion = '3.6.1-stable'
-        dyn4jVersion = '5.0.1'
+        dyn4jVersion = '5.0.2'
     }
+
     repositories {
         mavenCentral()
         mavenLocal()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+        }
+
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
     }
 }

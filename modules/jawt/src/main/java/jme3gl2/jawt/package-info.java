@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,29 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.awt;
 
 /**
- * Clase encargado de gestionar la configuracion de pantalla predeterminado.
+ * Module in charge of managing classes that are useful when starting a game in 
+ * a desktop environment, mainly to determine the full screen resolution.
  * 
  * @author wil
- * @version 1.1-SNAPSHOT
- * 
+ * @version 1.0.5
  * @since 2.0.0
  */
-public final class Jme3GL2DefaultDisplaySystem {
-    
-    /**
-     * (non-JavaDoc).
-     */
-    private Jme3GL2DefaultDisplaySystem() {}
-    
-    /**
-     * Devuelve la configuracion predeterminada.
-     * 
-     * @return (non-JavaDoc).
-     */
-    public static Jme3GL2DisplaySystem getDisplaySystem() {
-        return new Jme3GL2DesktopDisplaySystem();
-    }
-}
+package jme3gl2.jawt;

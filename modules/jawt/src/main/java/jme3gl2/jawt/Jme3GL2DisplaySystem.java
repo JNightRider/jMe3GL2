@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,14 +29,44 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jme3gl2.jawt;
 
 /**
- * Paquete que se encarga de proporcionar una colección de clases para el
- * gestor de resoluciones de pantalla en equipos de escritorio (PC).
+ * An interface in charge of managing the user's screen to determine the resolutions 
+ * of the monitor where the game is run.
+ * <p>
+ * This feature uses <code>AWT</code> components to determine screen resolutions, so 
+ * it only works in a desktop environment (typically Android and IOS run games in full screen).
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- * 
+ * @version 1.1.5
  * @since 2.0.0
  */
-package jme3gl2.awt;
+public interface Jme3GL2DisplaySystem {
+    
+    /**
+     * Returns a series of resolutions that can be used.
+     * @return {@link jme3gl2.jawt.JAWTResolution}
+     */
+    public JAWTResolution[] getResolutions();
+    
+    /**
+     * Returns the resolution of the full screen, this solution will be the screen 
+     * where the game is running.
+     * 
+     * @return {@link jme3gl2.jawt.JAWTResolution}
+     */
+    public JAWTResolution getFullScreenResolution();
+    
+    /**
+     * Method responsible for determining whether the device supports full screen.
+     * @return {@code true} if full screen; otherwise {@code false}
+     */
+    public boolean isFullScreenSupported();
+    
+    /**
+     * Method responsible for determining whether display changes are supported.
+     * @return boolean
+     */
+    public boolean isDisplayChangeSupported();
+}

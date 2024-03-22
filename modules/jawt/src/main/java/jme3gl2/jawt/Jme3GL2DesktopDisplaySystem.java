@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,77 +29,88 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.awt;
+package jme3gl2.jawt;
 
-import java.awt.DisplayMode;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.awt.*;
+import java.util.*;
 
 /**
- * Configuracion de pantalla para PC.
+ * Class in charge of implementing the '<code>Jme3GL2DisplaySystem</code> interface 
+ * where the resolution of supported screens is determined with the help of the 
+ * <b>Java AWT API</b>
  * 
  * @author wil
- * @version 1.1-SNAPSHOT
- * 
+ * @version 1.1.1
  * @since 2.0.0
  */
 final class Jme3GL2DesktopDisplaySystem implements Jme3GL2DisplaySystem {
-
-    private final GraphicsDevice device;
+    
+    /** Device default graphics. */
+    private final GraphicsDevice device;    
+    /** AWT resolution arrray. */
     private final DisplayMode[] modes;
 
+    /**
+     * Constructor.
+     */
     public Jme3GL2DesktopDisplaySystem() {
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         modes  = device.getDisplayModes();
+        
+        // sort the list of resolutions.
         Arrays.sort(modes, new DisplayModeSorter());
     }
-        
+    
+    /**
+     * (non-Javadoc)
+     * @see org.jmegl.jawt.Jme3GL2DisplaySystem#getResolutions() 
+     * @return object
+     */
     @Override
-    public AWTResolution[] getResolutions() {
+    public JAWTResolution[] getResolutions() {
         return getWindowedResolutions();
     }
 
+    /**
+     * (non-Javadoc)
+     * @see org.jmegl.jawt.Jme3GL2DisplaySystem#getFullScreenResolution() 
+     * @return object
+     */
     @Override
-    public AWTResolution getFullScreenResolution() {
-        //AWTResolution resolution = new AWTResolution();
-        //
-        //final AWTResolution[] resAll;
-        //resAll = getWindowedResolutions();
-        //        
-        //for (final AWTResolution res : resAll) {
-        //    if (resolution.getWidth() < res.getWidth() 
-        //            && resolution.getHeight() < res.getHeight()) {
-        //        resolution = res.clone();
-        //    }
-        //}
-        
+    public JAWTResolution getFullScreenResolution() {        
         DisplayMode mode = device.getDisplayMode();
-        AWTResolution resolution = new AWTResolution(mode.getWidth(), mode.getHeight());
+        JAWTResolution resolution = new JAWTResolution(mode.getWidth(), mode.getHeight());
         
         resolution.setBitDepth(mode.getBitDepth());
         resolution.setRefreshRate(mode.getRefreshRate());
         return resolution;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see org.jmegl.jawt.Jme3GL2DisplaySystem#isFullScreenSupported() 
+     * @return boolean
+     */
     @Override
     public boolean isFullScreenSupported() {
         return device.isFullScreenSupported();
     }
 
+    /**
+     * (non-Javadoc)
+     * @see org.jmegl.jawt.Jme3GL2DisplaySystem#isDisplayChangeSupported() 
+     * @return boolean
+     */
     @Override
     public boolean isDisplayChangeSupported() {
         return device.isDisplayChangeSupported();
     }
     
-    private Insets getTempInsets() {
-        return new Insets(0, 0, 0, 0);
-    }
-    
-    private AWTResolution[] getWindowedResolutions() {
+    /**
+     * Returns a list of current screen resolutions.
+     * @return resolutions
+     */
+    private JAWTResolution[] getWindowedResolutions() {
         int maxWidth  = 0,
             maxHeight = 0;
         
@@ -114,17 +125,20 @@ final class Jme3GL2DesktopDisplaySystem implements Jme3GL2DisplaySystem {
             if (maxHeight < element.getHeight()) {
                 maxHeight = element.getHeight();
             }
-        }
-        
+        }        
         return getResolutions(maxHeight, maxWidth);
     }
     
-    private AWTResolution[] getResolutions(int heightLimit, int widthLimit) {
-        Insets insets = getTempInsets();
-        heightLimit -= insets.top + insets.bottom;
-        widthLimit -= insets.left + insets.right;
-        
-        final ArrayList<AWTResolution> resolutions = new ArrayList<>();
+    /**
+     * Returns a list of resolutions greater than the minimum set by the 
+     * {@link jme3gl2.jawt.JAWTResolution} class but less than the given limit
+     * 
+     * @param heightLimit screen height limit
+     * @param widthLimit screen width limit
+     * @return resolutions
+     */
+    private JAWTResolution[] getResolutions(int heightLimit, int widthLimit) {        
+        final ArrayList<JAWTResolution> resolutions = new ArrayList<>();
         for (final DisplayMode element : this.modes) {
             if (element == null)
                 continue;
@@ -132,7 +146,7 @@ final class Jme3GL2DesktopDisplaySystem implements Jme3GL2DisplaySystem {
             int height = element.getHeight(),
                 width  = element.getWidth();
             
-            if (width >= AWTResolution.MIN_WIDTH && height >= AWTResolution.MIN_HEIGHT) {
+            if (width >= JAWTResolution.MIN_WIDTH && height >= JAWTResolution.MIN_HEIGHT) {
                 if (height >= heightLimit) {
                     height = heightLimit;
                 }
@@ -140,7 +154,7 @@ final class Jme3GL2DesktopDisplaySystem implements Jme3GL2DisplaySystem {
                     width = widthLimit;
                 }
                                 
-                AWTResolution resolution = new AWTResolution(width, height);
+                JAWTResolution resolution = new JAWTResolution(width, height);
                 resolution.setBitDepth(element.getBitDepth());
                 resolution.setRefreshRate(element.getRefreshRate());
                 
@@ -148,14 +162,24 @@ final class Jme3GL2DesktopDisplaySystem implements Jme3GL2DisplaySystem {
                     resolutions.add(resolution);
                 }
             }
-        }
-        
-        return resolutions.toArray(AWTResolution[]::new);
+        }        
+        return resolutions.toArray(JAWTResolution[]::new);
     }
     
-    // Clase comparado.
-    private static final 
-    class DisplayModeSorter implements Comparator<DisplayMode> {
+    /**
+     * Comparative class in charge of organizing the list of resolutions where 
+     * the {@link java.lang.Comparable} interface is implemented.
+     */
+    static final class DisplayModeSorter implements Comparator<DisplayMode> {
+        
+        /**
+         * (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object) s
+         * 
+         * @param a object 'a'
+         * @param b object 'b'
+         * @return int
+         */
         @Override
         public int compare(DisplayMode a, DisplayMode b) {
             // Width

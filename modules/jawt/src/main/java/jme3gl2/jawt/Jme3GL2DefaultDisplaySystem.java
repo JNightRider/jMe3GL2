@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,48 +29,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.awt;
+package jme3gl2.jawt;
 
 /**
- * Clase encargado de gestionar la resolución de pantalla que utilizara
- * el juego. En caso de que se este ejecutando en un PC se debe obtener
- * las dimensiones de dciha pantalla con la ayuda de las bibliotecas {@code AWT}.
- * 
- * De lo contrario se debe buscar la forma de obtener dichas resoluciones.
- * 
+ * Class responsible for managing the default screen resolution system.
  * @author wil
- * @version 1.1-SNAPSHOT
- * 
+ * @version 1.1.0
  * @since 2.0.0
  */
-public interface Jme3GL2DisplaySystem {
+public final class Jme3GL2DefaultDisplaySystem {
     
     /**
-     * Devuelve un arreglo de resoluciones a utilizar.
-     * 
-     * @return {@link AWTResolution}.
+     * Constructor for internal use only.
      */
-    public AWTResolution[] getResolutions();
+    private Jme3GL2DefaultDisplaySystem() {}
     
     /**
-     * Genera la resolucion de la pantalla completa, dicha resolucion será
-     * de la pantalla en donde se está corriendo el juego.
-     * 
-     * @return {@link AWTResolution}.
+     * Returns the default setting for screen resolution.
+     * @return A {@link jme3gl2.jawt.Jme3GL2DisplaySystem} object
      */
-    public AWTResolution getFullScreenResolution();
-    
-    /**
-     * Método encargado de determinar si la pantalla completa es soportada 
-     * por el equipo.
-     * @return {@code true} si es pantalla completa, de lo contrario
-     *          será {@code false}.
-     */
-    public boolean isFullScreenSupported();
-    
-    /**
-     * Método encargado de determinar si se admite cambios de visualización.
-     * @return estado.
-     */
-    public boolean isDisplayChangeSupported();
+    public static Jme3GL2DisplaySystem getDisplaySystem() {
+        return new Jme3GL2DesktopDisplaySystem();
+    }
 }
