@@ -31,7 +31,7 @@
  */
 package jme3gl2.scene.control;
 
-import jme3gl2.Jme3GL2Savable;
+import jme3gl2.util.Jme3GL2Savable;
 
 /**
  * Frame interface for animations that use animated controls when applying an 
