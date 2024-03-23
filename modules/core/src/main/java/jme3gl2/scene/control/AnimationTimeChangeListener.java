@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,36 +31,44 @@
  */
 package jme3gl2.scene.control;
 
-/**
- * Un <code>ScaleType</code> se encarga de definir el tipo de escala de un
- * <code>AbstractAnimatedControl</code>.
- *
- * @author wil
- * @version 1.0-SNAPSHOT
- *
- * @since 1.0.0
- */
-public enum ScaleType {
+import com.jme3.scene.Spatial;
 
-    /**
-     * Toma el ancho de la textura como punto de referencia, es decir que el
-     * ancho es el 100%, mientras que el largo será escalado.
-     */
-    GL2_WIDTH,
+/**
+ * Interface in charge of managing the progress of an animation throughout its 
+ * life cycle. With this interface we can obtain information about the exact time 
+ * in which the frames of a certain animation pass.
+ * <p>
+ * Example:
+ * <pre><code>
+ * AnimationTimeChangeListener&#60;?, ?, ?&#62; listener = new AnimationTimeChangeListener&#60;&#62;() {
+ *     &#64;Override
+ *     public void onTime(float range, float elapsedeTime) {
+ *         System.out.println("[ " + range + "%, "+ elapsedeTime +"tpf ]");
+ *     }
+ * }
+ * </code></pre>
+ * 
+ * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
+ * @param <O> the type of model
+ * @param <A> the type of animation
+ * @param <E> the type of animated control
+ */
+public interface AnimationTimeChangeListener<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> {
     
     /**
-     * Toma el largo de la textura como punto de referencia, es decir que el
-     * largo es el 100%, mientras que el ancho será escalado.
+     * Method responsible for reporting the progress of the animations managed by 
+     * the animated control, normally providing 2 types of data:
+     * <p>
+     * <b>Type of information</b>
+     * <ul>
+     * <li><b>range</b>: A range between 1 and 100%</li>
+     * <li><b>elapsedeTime</b>: Frame time lapse</li>
+     * </ul>
+     * 
+     * @param range percentage range (0 - 100)
+     * @param elapsedeTime elapsed time per frame
      */
-    GL2_HEIGHT,
-    
-    /**
-     * Se toma en valor maximo (ancho-largo) como referencia.
-     */
-    GL2_MAX,
-    
-    /**
-     * Se toma en valor minimo (ancho-largo) como referencia.
-     */
-    GL2_MIN;
+    void onTime(float range, float elapsedeTime);
 }

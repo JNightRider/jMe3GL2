@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,29 +31,68 @@
  */
 package jme3gl2.scene.control;
 
-import jme3gl2.physics.control.PhysicsBody2D;
+import com.jme3.export.*;
+import java.io.IOException;
 
 /**
- * Un oyente <code>SpriteAnimationChangeListener</code> es una interfaz encargado
- * de gestionar los cambios de animación.
- * <p>
- * Con esta interfaz se puede gestionar los cambios que aplicar un control de
- * animaciónm, es decir en que punto esta.
+ * A class in charge of managing the frames of the animated control 
+ * {@link jme3gl2.scene.control.AnimatedSingleSprite2D}, in this class the 
+ * properties of the animation are defined.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT 
- * @param <E> tipo-cuerpo.
- * 
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public interface SpriteAnimationChangeListener<E extends PhysicsBody2D> {
+public class SingleAnimation2D implements Animation2D, Savable {
+    
+    /** Animated frame index. */
+    private int index;
+
+    /**
+     * Constructor for internal use only
+     */
+    protected SingleAnimation2D() {
+    }
+
+    /**
+     * Generate a <code>SingleAnimation2D</code> object and initialize its parameters.
+     * @param index int
+     */
+    public SingleAnimation2D(int index) {
+        this.index = index;
+    }
+
+    /**
+     * Returns the index of the animated frame.
+     * @return int
+     */
+    public int getIndex() {
+        return index;
+    }
     
     /**
-     * Método encargado de notificar el cambio que se de en el controlador
-     * de animación.
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
      * 
-     * @param body cuerpo físico.
-     * @param index índice de la animación actual.
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
      */
-    void changeAnimation(E body, int index);
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        OutputCapsule out = ex.getCapsule(this);
+        out.write(index, "Index", 0);
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException hrows
+     */
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        InputCapsule in = im.getCapsule(this);
+        index = in.readInt("Index", index);
+    }
 }
