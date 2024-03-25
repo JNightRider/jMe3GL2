@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,18 +41,19 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Arrow;
 
-import jme3gl2.physics.control.PhysicsBody2D;
-import jme3gl2.physics.debug.control.AbstractConvexDebugControl;
-import jme3gl2.physics.debug.shape.Capsule2D;
-import jme3gl2.physics.debug.shape.Circle2D;
-import jme3gl2.physics.debug.shape.Ellipse2D;
-import jme3gl2.physics.debug.shape.HalfEllipse2D;
-import jme3gl2.physics.debug.shape.Polygon2D;
-import jme3gl2.physics.debug.shape.Slice2D;
-import jme3gl2.util.Converter;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import jme3gl2.physics.control.PhysicsBody2D;
+import static jme3gl2.physics.debug.Dyn4jDebugGraphics.*;
+import jme3gl2.scene.debug.Capsule2D;
+import jme3gl2.scene.debug.Circle2D;
+import jme3gl2.scene.debug.Ellipse2D;
+import jme3gl2.scene.debug.HalfEllipse2D;
+import jme3gl2.scene.debug.Polygon2D;
+import jme3gl2.scene.debug.Slice2D;
+import jme3gl2.scene.debug.custom.DebugGraphics;
+import jme3gl2.util.Converter;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Capsule;
@@ -60,46 +61,90 @@ import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Convex;
 import org.dyn4j.geometry.Ellipse;
 import org.dyn4j.geometry.HalfEllipse;
+import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Slice;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.geometry.Wound;
-
 /**
- * Un objeto de la clase <code>raphics2DRenderer</code> se encarga de renderizar
- * los cuerpos físicos, es decir que se encarga de buscar una forma para ello.
+ * An object of the class <code>Graphics2DRenderer</code> is in charge of
+ * rendering physical bodies, i.e. it is in charge of finding a form for it.
  * <p>
- * Clase encargado de gestionar los colores, materiales y formas de un cuerpo
- * físico para depurarlo en tiempo real.
- * 
+ * Class in charge of managing the colors, materials and shapes of a physical
+ * body to debug it in real time.
+ * </p>
  * @author wil
- * @version 1.0-SNAPSHOT 
- * 
+ * @version 1.5.0
  * @since 2.5.0
  */
-public final 
-class Graphics2DRenderer {
-
-    /** Loggre de la clase. */
+public final class Graphics2DRenderer {
+    /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Graphics2DRenderer.class.getName());
     
-    ///** Administrador-recursos <code>JME</code> */
-    private final AssetManager assetManager;
+    /** Resource manager <code>JME</code>. */
+    private final AssetManager assetManager;    
+    /** Debugger. */
+    private final Dyn4jDebugAppState<PhysicsBody2D> dyn4jDebugAppState;
+
+    /** Graphics debugger. */
+    private DebugGraphics debugGraphics;
+    
+    /**
+     * Class constructor <code>Graphics2DRenderer</code>.
+     * @param dyn4jDebugAppState debugger
+     */
+    public Graphics2DRenderer(Dyn4jDebugAppState<PhysicsBody2D> dyn4jDebugAppState) {
+        this.assetManager = dyn4jDebugAppState.getApplication().getAssetManager();
+        this.dyn4jDebugAppState = dyn4jDebugAppState;
+    }
+    
+    /**
+     * Prints information about the physics engine that was configured on the screen.
+     */
+    void printInformation() {
+        StringBuilder buff = new StringBuilder();
+        buff.append("[jMe3GL2] :Charts for debugging Dyn4j bodies")
+             .append('\n');        
+        buff.append(" *  ").append(GL_DEBUG_AT_RESET).append(": ").append(debugGraphics.getColor(GL_DEBUG_AT_RESET))
+            .append('\n');
+        buff.append(" *  ").append(GL_DEBUG_BULLET).append(": ").append(debugGraphics.getColor(GL_DEBUG_BULLET))
+            .append('\n');
+        buff.append(" *  ").append(GL_DEBUG_DEFAULT).append(": ").append(debugGraphics.getColor(GL_DEBUG_DEFAULT))
+            .append('\n');
+        buff.append(" *  ").append(GL_DEBUG_DISABLED).append(": ").append(debugGraphics.getColor(GL_DEBUG_DISABLED))
+            .append('\n');
+        buff.append(" *  ").append(GL_DEBUG_KINEMATIC).append(": ").append(debugGraphics.getColor(GL_DEBUG_KINEMATIC))
+            .append('\n');
+        buff.append(" *  ").append(GL_DEBUG_SENSOR).append(": ").append(debugGraphics.getColor(GL_DEBUG_SENSOR))
+            .append('\n');
+        buff.append(" *  ").append(GL_DEBUG_STATIC).append(": ").append(debugGraphics.getColor(GL_DEBUG_STATIC))
+            .append('\n');   
+        buff.append(" *  ").append(GL_DEBUG_BOUNDS).append(": ").append(debugGraphics.getColor(GL_DEBUG_BOUNDS))
+            .append('\n');   
+        LOGGER.log(Level.INFO, String.valueOf(buff));
+    }
 
     /**
-     * Constructor de la clase <code>Graphics2DRenderer</code>.
-     * @param assetManager administrador de recursos <b>JME</b>.
+     * Returns the debug graphs.
+     * @return object
      */
-    public Graphics2DRenderer(AssetManager assetManager) {
-        LOGGER.log(Level.INFO, "[ ok ] :{0}", "Initializing Graphics2DRenderer");
-        this.assetManager = assetManager;
+    public DebugGraphics getDebugGraphics() {
+        return debugGraphics;
     }
-        
+
     /**
-     * Método encargado de crear los materiales que utilizarán los
-     * {@code Spatial} para la depuración de los cuerpos físicos.
+     * Set debug graphs
+     * @param debugGraphics object
+     */
+    void setDebugGraphics(DebugGraphics debugGraphics) {
+        this.debugGraphics = debugGraphics;
+    }
+    
+    /**
+     * Method in charge of creating the materials to be used by the
+     * {@code Spatial} for the debugging of the physical bodies.
      * 
-     * @param color color del material.
-     * @return material generado.
+     * @param color color of the material
+     * @return generated material
      */
     public Material createMat(ColorRGBA color) {
         final Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -108,20 +153,20 @@ class Graphics2DRenderer {
     }
     
     /**
-     * Método encargado de renderizar la forma de un <code>Bounds</code> del
-     * mundo de las física utilizado por <b>dyn4j</b>.
+     * Method in charge of rendering the shape of a <code>Bounds</code> of the
+     * world of physics used by <b>dyn4j</b>.
      * 
-     * @param <T> tipo-geometría
-     * @param attach <code>true</code> si se desea devolver un nodo, de lo
-     * contrario <code>false</code> si solo se quiere la geometría.
+     * @param <T> geometry type
+     * @param attach <code>true</code> if you wish to return a node, otherwise
+     * <code>false</code> if only the geometry is desired
      * 
-     * @param vs puntos para la forma del <code>Bounds</code>
-     * @return objeto-bounds gráfico.
+     * @param vs points for the shape of the <code>Bounds</code>
+     * @return graphical object <code>Bounds</code>
      */
     @SuppressWarnings("unchecked")
     public <T extends Spatial> T renderBounds(boolean attach, Vector2... vs) {
-        final Geometry geom = new Geometry("Bounds-Geometry", new Polygon2D(Converter.toArrayVector3f(vs)));        
-        final Material mat = createMat(Dyn4jDebugColor.BOUNDS);
+        final Geometry geom = new Geometry("Bounds-Geometry", new Polygon2D(Converter.allToVector3fValueOfJME3(vs)));        
+        final Material mat = createMat(debugGraphics.getColor(GL_DEBUG_BOUNDS));
         geom.setMaterial(mat);
         if (attach) {
             Node node = new Node();
@@ -133,12 +178,12 @@ class Graphics2DRenderer {
     }
     
     /**
-     * Método encargado de renderizar la forma física a un objeto gráfico.
+     * Method in charge of rendering the physical form to a graphic object.
      * 
-     * @param fixture forma física
-     * @param body cuerpo físico
-     * @param color color para la forma física.
-     * @return objeto gráficos generado.
+     * @param fixture physical shape.
+     * @param body physical body.
+     * @param color color for physical shape.
+     * @return generated graphical object.
      */
     public Node render(BodyFixture fixture, PhysicsBody2D body, ColorRGBA color) {
         final Convex shape = fixture.getShape();
@@ -155,64 +200,65 @@ class Graphics2DRenderer {
         if (shape instanceof Wound) {
             final Wound wound = (Wound) shape;
 
-            final Vector3f[] vertices = 
-                    Converter.toArrayVector3f(wound.getVertices());
+            final Vector3f[] vertices = Converter.allToVector3fValueOfJME3(wound.getVertices());
             final Polygon2D woundDebug = new Polygon2D(vertices);
             
-            geom = new Geometry(uid, woundDebug);            
-            geom.addControl(new AbstractConvexDebugControl.ConvexDebugControl(fixture, body));
+            geom = new Geometry(uid, woundDebug);
+            if (shape instanceof Rectangle) {
+                geom.addControl(new AbstractConvexDebugControl.RectangleDebugControl(dyn4jDebugAppState,fixture, body));
+            } else {
+                geom.addControl(new AbstractConvexDebugControl.ConvexDebugControl(dyn4jDebugAppState,fixture, body));
+            }
         } else if (shape instanceof Circle) {
             final Circle circle = (Circle) shape;
             
-            final float radius = Converter.toFloat(circle.getRadius());
-            final Circle2D circleDebug = 
-                    new Circle2D(Circle2D.COUNT, radius, 0, 0);
+            final float radius = Converter.toFloatValue(circle.getRadius());
+            final Circle2D circleDebug = new Circle2D(Circle2D.COUNT, radius, 0);
             
             geom = new Geometry(uid, circleDebug);
-            geom.addControl(new AbstractConvexDebugControl.CircleDebugControl(fixture, body));
+            geom.addControl(new AbstractConvexDebugControl.CircleDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof Capsule) {
             final Capsule capsule = (Capsule) shape;
 
-            final float width = Converter.toFloat(capsule.getLength());
-            final float height = Converter.toFloat(capsule.getCapRadius() * 2.0);
+            final float width = Converter.toFloatValue(capsule.getLength());
+            final float height = Converter.toFloatValue(capsule.getCapRadius() * 2.0);
             
-            final Capsule2D capsuleDebug = 
-                    new Capsule2D(Capsule2D.COUNT, width, height, 0);
+            final Capsule2D capsuleDebug = new Capsule2D(Capsule2D.COUNT, width, height);
+            
             geom = new Geometry(uid, capsuleDebug);
-            geom.addControl(new AbstractConvexDebugControl.CapsuleDebugControl(fixture, body));
+            geom.addControl(new AbstractConvexDebugControl.CapsuleDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof Ellipse) {
             final Ellipse ellipse = (Ellipse) shape;
 
-            final float width = Converter.toFloat(ellipse.getWidth());
-            final float height = Converter.toFloat(ellipse.getHeight());
+            final float width = Converter.toFloatValue(ellipse.getWidth());
+            final float height = Converter.toFloatValue(ellipse.getHeight());
 
-            final Ellipse2D ellipseDebug = 
-                    new Ellipse2D(Ellipse2D.COUNT, width, height, height);
+            final Ellipse2D ellipseDebug = new Ellipse2D(Ellipse2D.COUNT, width, height);
+            
             geom = new Geometry(uid, ellipseDebug);
-            geom.addControl(new AbstractConvexDebugControl.EllipseDebugControl(fixture, body));
+            geom.addControl(new AbstractConvexDebugControl.EllipseDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof HalfEllipse) {
             final HalfEllipse halfEllipse = (HalfEllipse) shape;
 
-            final float width = Converter.toFloat(halfEllipse.getHalfWidth());
-            final float height = Converter.toFloat(halfEllipse.getHeight());
+            final float width = Converter.toFloatValue(halfEllipse.getHalfWidth() * 2.0);
+            final float height = Converter.toFloatValue(halfEllipse.getHeight());
             
-            final HalfEllipse2D halfEllipseDebug = 
-                    new HalfEllipse2D(HalfEllipse2D.COUNT, width, height, 0);
+            final HalfEllipse2D halfEllipseDebug = new HalfEllipse2D(HalfEllipse2D.COUNT, width, height);
+            
             geom = new Geometry(uid, halfEllipseDebug);
-            geom.addControl(new AbstractConvexDebugControl.HalfEllipseDebugControl(fixture, body));
+            geom.addControl(new AbstractConvexDebugControl.HalfEllipseDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof Slice) {
             final Slice slice = (Slice) shape;
             
-            final float radius = Converter.toFloat(slice.getSliceRadius());
-            final float angle = Converter.toFloat(slice.getTheta() * 0.5);
+            final float radius = Converter.toFloatValue(slice.getSliceRadius());
+            final float angle = Converter.toFloatValue(slice.getTheta() * 0.5);
             
-            final Slice2D sliceDebug = 
-                    new Slice2D(Slice2D.COUNT, radius, angle, 0);
+            final Slice2D sliceDebug = new Slice2D(Slice2D.COUNT, radius, angle);
+            
             geom = new Geometry(uid, sliceDebug);
-            geom.addControl(new AbstractConvexDebugControl.SliceDebugControl(fixture, body));
+            geom.addControl(new AbstractConvexDebugControl.SliceDebugControl(dyn4jDebugAppState, fixture, body));
         } else {
-            LOGGER.log(Level.WARNING, "#### Shape ''{0}'' not supported. ####", 
-                    shape.getClass().getSimpleName());
+            LOGGER.log(Level.WARNING, "#### Shape ''{0}'' not supported. ####", shape.getClass().getSimpleName());
         }        
         if (geom != null) {
             geom.setMaterial(createMat(color));
@@ -223,25 +269,25 @@ class Graphics2DRenderer {
     }
     
     /**
-     * Método encargado de crear un nodo en los ejes de origen.
+     * Method in charge of creating a node on the origin axes.
      * 
-     * @param center centro del objeto.
-     * @return nodo centrado.
+     * @param center center of the object
+     * @return centered node
      */
     private Node createOriginAxes(final Vector2 center) {
         final Node node = new Node("Origin");
         node.attachChild(createAxisArrow(Vector3f.UNIT_X.mult(.25f), ColorRGBA.Red));
         node.attachChild(createAxisArrow(Vector3f.UNIT_Y.mult(.25f), ColorRGBA.Green));
-        node.setLocalTranslation(Converter.toVector3f(center));
+        node.setLocalTranslation(Converter.toVector3fValueOfJME3(center));
         return node;
     }
 
     /**
-     * Método encargado de crear una flecha para los ejes.
+     * Method in charge of creating an arrow for the axes.
      * 
-     * @param direction dirección de la flecha.
-     * @param color color de la flecha.
-     * @return Objeto gráfico generado.
+     * @param direction direction of the arrow
+     * @param color color of the arrow
+     * @return generated graphical object
      */
     private Spatial createAxisArrow(final Vector3f direction, final ColorRGBA color) {
         final Arrow axis = new Arrow(direction);

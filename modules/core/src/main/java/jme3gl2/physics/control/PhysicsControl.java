@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,49 +31,89 @@
  */
 package jme3gl2.physics.control;
 
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
+import com.jme3.util.TempVars;
+
 import jme3gl2.physics.PhysicsSpace;
+import jme3gl2.util.Converter;
+
+import org.dyn4j.geometry.Transform;
 
 /**
- * Un <code>PhysicsControl</code> se utilizan para especificar cierta lógica de
- * actualización y procesamiento para un {@code Spatial} qur utiliza el
- * motor de física <code>Dyn4j</code>.
- * 
+ * An Interface in charge of managing the control of the physical bodies used by 
+ * the dyn4j engine, this interface is in charge of applying physics to the
+ * <code>Spatial</code> of JME3.
+ * @param <E> of type {@link jme3gl2.physics.control.PhysicsBody2D}
  * @author wil
- * @version 1.5.0
- * @param <E> tipo-cuerpo
- * 
+ * @version 1.5.5
  * @since 1.0.0
  */
-public interface PhysicsControl<E extends PhysicsBody2D> extends BasePhysicsControl<E> ,Control {
+public interface PhysicsControl<E extends PhysicsBody2D> extends Control {
     
     /**
-     * Método encargado de establecer el espacio de la física.
-     * @param physicsSpace espacio física.
+     * Returns the <code>Spatia</code> associated with the physical body.
+     * @param <T> type <b>Spatial</b>
+     * @return object
+     */
+    public <T extends Spatial> T getJmeObject();
+    
+    /**
+     * Method responsible for applying physical rotation to the <code>Spatial</code>
+     * associated with the body.
+     * @param physicBody body
+     */
+    default void applyPhysicsRotation(final E physicBody) {
+        final Transform trans = physicBody.getTransform();
+        final float rotation = Converter.toFloatValue(trans.getRotationAngle());
+
+        final TempVars tempVars = TempVars.get();
+        final Quaternion quaternion = tempVars.quat1;
+        
+        quaternion.fromAngleAxis(rotation, new Vector3f(0.0F, 0.0F, 1.0F));
+        getJmeObject().setLocalRotation(quaternion);
+        tempVars.release();
+    }
+    
+    /**
+     * Method in charge of applying the physical position to the <code>Spatial</code>
+     * associated with the body.
+     * @param physicBody body
+     */
+    default void applyPhysicsLocation(final E physicBody) {
+        final Transform trans = physicBody.getTransform();
+
+        final float posX = Converter.toFloatValue(trans.getTranslationX());
+        final float posY = Converter.toFloatValue(trans.getTranslationY());
+
+        final Spatial spatial = getJmeObject();
+        spatial.setLocalTranslation(posX, posY, spatial.getLocalTranslation().z);
+    }
+    
+    /**
+     * Establishes the physical space to which this physical control belongs.
+     * @param physicsSpace a physical space
      */
     public void setPhysicsSpace(PhysicsSpace<E> physicsSpace);
     
     /**
-     * Devuelve el espacio de la física del cuerpo rigido.
-     * @return espacio física.
+     * Returns the physical space to which this physical control belongs.
+     * @return a physical space
      */
     public PhysicsSpace<E> getPhysicsSpace();
     
     /**
-     * Devuelve el cuerpo que gestiona este control.
-     * @return cuerpo físico.
-     */
-    public E getBody();
-    
-    /**
-     * Método encargado de habilidat ó deshabilitar el control.
-     * @param enabled estado de control.
+     * Enables or disables physical control, this directly affects the <code>Spatial</code>
+     * associated with the body.
+     * @param enabled boolean
      */
     public void setEnabledPhysicsControl(boolean enabled);
     
     /**
-     * Devuelve el estado actual de este control.
-     * @return estado de control.
+     * Returns the state of this physical control.
+     * @return boolean
      */
     public boolean isEnabledPhysicsControl();
 }

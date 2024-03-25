@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,44 +34,29 @@ package jme3gl2.physics.control;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 
-import jme3gl2.physics.collision.AbstractCollisionShape;
-
-import org.dyn4j.geometry.Convex;
-
 /**
- * Los cuerpos <code>KinematicBody2D</code> son tipos especiales de cuerpos
- * destinados a ser controlados por el usuario.
- *
+ * The bodies <code>KinematicBody2D</code> are special types of bodies intended
+ * to be controlled by the user.
  * <p>
- * No se ven afectados por la física en absoluto; a comparación de otros tipo de
- * cuerpos, como un personaje o un cuerpo rígido, estos son lo mismo que un
- * cuerpo estático.</p>
+ * They are not affected by physics at all; compared to other types of bodies,
+ * such as a character or a rigid body, they are the same as a static body.
  *
  * @author wil
- * @version 1.5-SNAPSHOT
- *
+ * @version 1.5.5
  * @since 1.2.0
  */
 public class KinematicBody2D extends PhysicsBody2D {
 
     /**
-     * Constructor de la clase <code>KinematicBody2D</code>.
+     * Class constructor <code>KinematicBody2D</code>.
      */
     public KinematicBody2D() {
     }
     
     /**
-     * Constructor de la clase <code>KinematicBody2D</code>.
-     * @param collisionShape forma físico.
-     */
-    public KinematicBody2D(AbstractCollisionShape<? extends Convex> collisionShape) {
-        this.addFixture(collisionShape.getCollisionShape());
-    }
-    
-    /**
-     * (non-JavaDoc).
+     * (non-Javadoc).
+     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
      * @param tpf float
-     * @see PhysicsBody2D#controlUpdate(float) 
      */
     @Override
     protected void controlUpdate(float tpf) {
@@ -83,10 +68,10 @@ public class KinematicBody2D extends PhysicsBody2D {
     }
 
     /**
-     * (non-JavaDoc).
+     * (non-Javadoc)
+     * @see jme3gl2.physics.control.RigidBody2D#controlRender(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
      * @param rm RenderManager
      * @param vp ViewPort
-     * @see PhysicsBody2D#render(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
      */
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) { }

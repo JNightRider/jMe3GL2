@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,26 +31,20 @@
  */
 
 /**
- * Paquete que contine el mundo físico.
+ * Package responsible for managing the <a hrfe="https://dyn4j.org/">dyn4j</a> 
+ * physics engine to provide performance for 2D games created using jMe3GL2 and
+ * <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
  * <p>
- * Este paquete nos proprociona los siguientes objetos que son los que se 
- * encargann de integrar el motor <b>dyn4j</b> con <b>jMonkeyEngine3</b>.
- * 
+ * Classes that make up this package:
  * <ul>
- * <li>
- *  <b>Dyn4jAppState:</b> Objeto encargado de gestionar las actualizaciones del
- * mundo físico dyn4j.
- * </li>
- * <li>
- *  <b>PhysicsSpace:</b> El espacio físico de dyn4j.
- * </li>
- * <li>
- *  <b>ThreadingType:</b> Tipo de integración.
- * </li>
- * </ul>
+ * <li><b>Dyn4jAppState</b>: State in charge of managing the physics engine, in 
+ * charge of applying updates, initializing physics, and enabling body debugging.</li>
+ * <li><b>PhysicsSpace</b>: Physical space for bodies (dyn4j).</li>
+ * <li><b>ThreadingType</b>: Object in charge of defining the type of integration 
+ * of the physics engine.</li>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.5.0
  * @since 1.5.0
  */
 package jme3gl2.physics;

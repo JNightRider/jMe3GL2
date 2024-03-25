@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,110 +31,89 @@
  */
 package jme3gl2.physics;
 
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
-
+import java.util.Iterator;
 import jme3gl2.physics.control.PhysicsBody2D;
 import jme3gl2.physics.control.PhysicsControl;
-import jme3gl2.util.Converter;
-
-import java.util.Iterator;
-import java.util.List;
 
 import org.dyn4j.collision.Bounds;
 import org.dyn4j.dynamics.Settings;
 import org.dyn4j.dynamics.joint.Joint;
-import org.dyn4j.geometry.Vector2;
+import org.dyn4j.world.CollisionWorld;
+import org.dyn4j.world.PhysicsWorld;
 import org.dyn4j.world.World;
 
 /**
- * Un <code>PhysicsSpace</code> es una clase que se encarga de inicializar y
- * preparar el espacio(<code>org.dyn4j.world.World</code>) para la física.
- * 
+ * Class in charge of managing a physical space that connects <b>dyn4j</b> with 
+ * <b>JME3</b> where physical bodies can be formed.
+ * @param <E> of type {@link jme3gl2.physics.control.PhysicsBody2D}
  * @author wil
- * @version 1.0.5-SNAPSHOT
- * 
+ * @version 2.0.0
  * @since 1.0.0
- * @param <E> el tipo {@code PhysicsBody}.
  */
-@SuppressWarnings(value = {"unchecked"})
-public class PhysicsSpace<E extends PhysicsBody2D> {
-
-    /**
-     * Velocidad predeterminada de la física.
-     */
-    private static final float DEFAULT_SPEED = 1f;
-
-    /** Mundo de la física {@code Dyn4j}. */
-    private World<E> physicsWorld;
+public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
+    
+    /** physics default speed. */
+    private static final float DEFAULT_SPEED = 1.0F;
     
     /**
-     * Velocidad de las actualizaciones de la física que utiliza
-     * el mundo {@code Dyn4j}.
+     * The speed with which updates to the physical world are applied (<b>dyn4j</b>).
      */
     protected float speed = DEFAULT_SPEED;
-
+    
     /**
-     * Instancia un nuevo objeto <code>PhysicsSpace</code>. Establezca los 
-     * valores predeterminado del espacio de la física.
+     * Generates a new instance of the <code>PhysicsSpace</code> class where to 
+     * generate a 2D world provided by <b>dyn4j</b>.
      * 
-     * @param initialCapacity capacidad inicial (cuerpos en el mundo).
-     * @param initialJointCapacity capacidad inicial de las articulaciones.
-     * @param bounds Límite del mundo.
+     * @param initialCapacity initial capacity (bodies in the world)
+     * @param initialJointCapacity initial joint capability
+     * @param bounds limit of the world.
      */
     public PhysicsSpace(final Integer initialCapacity, final Integer initialJointCapacity, final Bounds bounds) {
-        if (initialCapacity != null && initialJointCapacity != null) {
-            this.physicsWorld = new World<>(initialCapacity, initialJointCapacity);
-        } else {
-            this.physicsWorld = new World<>();
-        }        
+        super(initialCapacity == null ? CollisionWorld.DEFAULT_INITIAL_BODY_CAPACITY : initialCapacity, 
+              initialJointCapacity == null ? PhysicsWorld.DEFAULT_INITIAL_JOINT_CAPACITY : initialJointCapacity);
         if ( bounds != null ) {
-            this.physicsWorld.setBounds(bounds);
+            this.setBounds(bounds);
         }
     }
 
     /**
      * (non-Javadoc)
-     * @param body Body
+     * @see org.dyn4j.world.AbstractCollisionWorld#addBody(org.dyn4j.collision.CollisionBody)
+     * @param body body
      */
-    public void addBody(final E body) {
+    @Override
+    @SuppressWarnings("unchecked")
+    public void addBody(E body) {
         if (body instanceof PhysicsControl) {
             ((PhysicsControl)  body).setPhysicsSpace(this);
         }
-        this.physicsWorld.addBody(body);
-    }
-    
-    /**
-     * (non-Javadoc)
-     * @param body Body
-     * @return Boolean
-     */
-    public boolean removeBody(final E body) {
-        boolean b = this.physicsWorld.removeBody(body);
-        if ( b && (body instanceof PhysicsControl) ) {
-            ((PhysicsControl) body).setPhysicsSpace(null);
-        }
-        return b;
-    }
-    
-    /**
-     * (non-Javadoc)
-     * @param body Body
-     * @param notify Boolean
-     * @return Boolean
-     */
-    public boolean removeBody(final E body, final boolean notify) {
-        boolean b = this.physicsWorld.removeBody(body, notify);
-        if ( b && (body instanceof PhysicsControl) ) {
-            ((PhysicsControl) body).setPhysicsSpace(null);
-        }
-        return b;
+        super.addBody(body);
     }
 
     /**
      * (non-Javadoc)
-     * @param joint Joint
+     * @see org.dyn4j.world.PhysicsWorld#removeBody(org.dyn4j.dynamics.PhysicsBody, boolean)
+     * @param body body
+     * @param notify boolean
+     * @return boolean
      */
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean removeBody(E body, boolean notify) {
+        boolean b = super.removeBody(body, notify);
+        if ( b && (body instanceof PhysicsControl) ) {
+            ((PhysicsControl) body).setPhysicsSpace(null);
+        }
+        return b;
+    }
+    
+    /**
+     * (non-Javadoc)
+     * @see org.dyn4j.world.PhysicsWorld#addJoint(org.dyn4j.dynamics.joint.Joint)
+     * @param joint joint
+     */
+    @Override
+    @SuppressWarnings("unchecked")
     public void addJoint(final Joint joint) {
         Iterator<E> it = joint.getBodyIterator();
         while (it.hasNext()) {
@@ -143,132 +122,53 @@ public class PhysicsSpace<E extends PhysicsBody2D> {
                 ((PhysicsControl) next).setPhysicsSpace(this);
             }
         }
-        this.physicsWorld.addJoint(joint);
+        super.addJoint(joint);
     }
-    
+
     /**
      * (non-Javadoc)
-     * @param joint Joint
-     * @return Boolean
+     * @see org.dyn4j.world.PhysicsWorld#removeJoint(org.dyn4j.dynamics.joint.Joint) 
+     * @param joint joint
+     * @return boolean
      */
-    public boolean removeJoint(final Joint joint) {
-        Iterator<E> it = joint.getBodyIterator();
-        while (it.hasNext()) {
-            E next = it.next();
-            if ( next != null && (next instanceof PhysicsControl)) {
-                ((PhysicsControl) next).setPhysicsSpace(null);
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean removeJoint(Joint<E> joint) {
+        boolean b = super.removeJoint(joint);
+        if (b) {
+            Iterator<E> it = joint.getBodyIterator();
+            while (it.hasNext()) {
+                E next = it.next();
+                if ( next != null && (next instanceof PhysicsControl)) {
+                    ((PhysicsControl) next).setPhysicsSpace(null);
+                }
             }
         }
-        return this.physicsWorld.removeJoint(joint);
+        return b;
     }
-
+    
     /**
-     * Método encargado de actualizar el mundo de la física.
-     * @param elapsedTime lapso de tiempo.
+     * Responsible method of updating the physical world.
+     * @param elapsedTime float
      */
     public void updateFixed(final float elapsedTime) {
-        this.physicsWorld.update(elapsedTime);
-    }
-
-    /**
-     * Limpia el mundo.
-     * @deprecated Utilice <code>destroy()</code> para eliminar el mundo físico.
-     */
-    @Deprecated(since = "2.5.0")
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        this.update(elapsedTime);
     }
     
     /**
-     * Limpia el mundo (cuerpos físico y articulaciones).
-     * @param notify <code>true</code> si se desa nofoticar a los oyentes que
-     * hay una desntrucción de cuerpo o articulación, de lo contrario el
-     * valor es <code>false</code>.
-     */
-    public void removeAll(boolean notify) {        
-        /*this.physicsWorld = null;*/
-        this.physicsWorld.removeAllBodiesAndJoints(true);
-    }
-    
-    /**
-     * Método encargdo de destruir el mundo físico. Vuelve <code>null</code>
-     * el objeto <code>World</code>.
-     */
-    public void destroy() {
-        this.physicsWorld = null;
-    }
-    
-    /**
-     * Establece una nueva velocidad para el mundo de la física.
-     * @param speed nueva velocidad.
+     * Set a new speed for the physical world
+     * @param speed float
      */
     public void setSpeed(final float speed) {
         this.speed = speed;
-        this.physicsWorld.getSettings().setMinimumAtRestTime(Settings.DEFAULT_STEP_FREQUENCY * speed);
+        this.getSettings().setMinimumAtRestTime(Settings.DEFAULT_STEP_FREQUENCY * speed);
     }
-
+    
     /**
-     * Devuelve la velocidad actual del mundo.
-     * @return velocidad.
+     * Returns the current speed of the world.
+     * @return float
      */
     public float getSpeed() {
         return this.speed;
-    }
-    
-    /**
-     * (non-Javadoc)
-     * @param gravity Vector2f
-     */
-    public void setGravity(final Vector2f gravity) {
-        this.physicsWorld.setGravity(new Vector2(gravity.x, gravity.y));
-    }
-    
-    /**
-     * (non-Javadoc)
-     * @param x double
-     * @param y double
-     */
-    public void setGravity(final double x, final double y) {
-        this.physicsWorld.setGravity(new Vector2(x, y));
-    }
-
-    /**
-     * (non-Javadoc)
-     * @return Vector3f
-     */
-    public Vector3f getGravity() {
-        return Converter.toVector3f(this.physicsWorld.getGravity());
-    }
-    
-    /**
-     * Devuelve una lista de cuerpos contenido en el mundo.
-     * @return lista de cuerpos.
-     */
-    public List<E> getBodies() {
-        return this.physicsWorld.getBodies();
-    }
-    
-    /**
-     * Devuelve una lista de articulaciones.
-     * @return lista de articulaciones.
-     */
-    public List<Joint<E>> getJoints() {
-        return this.physicsWorld.getJoints();
-    }
-    
-    /**
-     * Devuelve el mundo de la física {@code Dyn4j}.
-     * @return mundo física.
-     */
-    public World<E> getPhysicsWorld() {
-        return this.physicsWorld;
-    }
-    
-    /**
-     * Devuelve la cantidad de cuerpos existentes en el mundo.
-     * @return cantidad de cuerpos.
-     */
-    public int getBodyCount() {
-        return this.physicsWorld.getBodyCount();
     }
 }

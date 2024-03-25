@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,56 +29,55 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.debug.shape;
+package jme3gl2.scene.debug;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 
 /**
- * Clase <code>Capsule2D</code> encargado de generar una forma de cápsula.
+ * Class <code>Capsule2D</code> in charge of generating a capsule shape.
  * @author wil
- * @version 1.0-SNAPSHOT 
+ * @version 1.0.5 
  * @since 2.5.0
  */
 public class Capsule2D extends AbstractShape2D {
     
-    /** Contador predeterminado para los bordes-semi circulos de la cápsula. */
+    /** Default counter for capsule edges / half circles. */
     public static final int COUNT = 12;
 
     /**
-     * Constructor de la clase <code>GLCapsule</code> donde se genera la forma
-     * de una cápsula.
-     * @param count cantidad de 'pines' para los border circulares, entre mayor
-     *              sea la cantidad se mejorara el semicirculo. Tenga cuidado ya
-     *              entre mayor sea el número más vértices se utilizan.
-     * @param width largo de la forma.
-     * @param height ancho de la forma.
-     * @param deep profundidad en el mundo 3D.
+     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * generated.
+     * 
+     * @param count number of 'pins' for the circular borders, the higher the
+     *              number the better the semicircle. Be careful as the higher the number the
+     *               more vertices are used
+     * @param width width of the form
+     * @param height height of the form
      */
-    public Capsule2D(int count, float width, float height, float deep) {
-        Capsule2D.this.updateGeometry(count, width, height, deep);
+    public Capsule2D(int count, float width, float height) {
+        Capsule2D.this.updateGeometry(count, width, height);
     }
 
     /**
-     * Método encargado de actualizar las geometrías de esta malla.
-     * @param count cantidad de 'pines' para los border circulares, entre mayor
-     *              sea la cantidad se mejorara el semisirculo. Tenga cuidado ya
-     *              entre mayor sea el número más vértices se utilizan.
-     * @param width largo de la forma.
-     * @param height ancho de la forma.
-     * @param deep profundidad en el mundo 3D.
+     * Method in charge of updating the geometries of this mesh.
+     * @param count number of 'pins' for the circular borders, the higher the
+     *              number the better the semicircle. Be careful as the higher the number the
+     *              more vertices are used
+     * @param width width of the form
+     * @param height height of the form
      */
-    public void updateGeometry(int count, float width, float height, float deep) {
-        // calcular el incremento angular
+    public void updateGeometry(int count, float width, float height) {
+        // Calculate the angular increment
         final float pin = FastMath.PI / (count + 1);
-        // 4 verts rectas más 2 * medias verts circulares
-        final Vector3f[] vertices = new Vector3f[4 + 2 * count];
+        // 4 straight verts plus 2 * half-round verts
+        final Vector3f[] myVertices = new Vector3f[4 + 2 * count];
 
         final float c = FastMath.cos(pin);
         final float s = FastMath.sin(pin);
-        float t = 0;
+        float t;
 
-        // get the major and minor axes
+        // Get the major and minor axes
         float major = width;
         float minor = height;
         boolean vertical = false;
@@ -88,67 +87,68 @@ public class Capsule2D extends AbstractShape2D {
             vertical = true;
         }
 
-        // obtener el radio del eje menor
+        // Obtain the radius of the minor axis
         float radius = minor * 0.5f;
 
-        // calcular las compensaciones x/y
+        // Calculating the compensation x/y
         float offset = major * 0.5f - radius;
         float ox = 0;
         float oy = 0;
         if (vertical) {
-            // alineado con la y
+            // Aligned with y
             oy = offset;
         } else {
-            // alineado con la x
+            // Aligned with x
             ox = offset;
         }
 
         int n = 0;
+        float deep = 0;
 
-        // Tapón derecho
+        // Right cap
         float ao = vertical ? 0 : FastMath.PI * 0.5f;
         float x = radius * FastMath.cos(pin - ao);
         float y = radius * FastMath.sin(pin - ao);
         for (int i = 0; i < count; i++) {
-            vertices[n++] = new Vector3f(x + ox, y + oy, deep);
+            myVertices[n++] = new Vector3f(x + ox, y + oy, deep);
 
-            //aplicar la matriz de rotación
+            // Apply the rotation matrix
             t = x;
             x = c * x - s * y;
             y = s * t + c * y;
         }
 
-        // agregar vértices superior/izquierdo
+        // Add top/left vertices
         if (vertical) {
-            vertices[n++] = new Vector3f(-radius, oy, deep);
-            vertices[n++] = new Vector3f(-radius, -oy, deep);
+            myVertices[n++] = new Vector3f(-radius, oy, deep);
+            myVertices[n++] = new Vector3f(-radius, -oy, deep);
         } else {
-            vertices[n++] = new Vector3f(ox, radius, deep);
-            vertices[n++] = new Vector3f(-ox, radius, deep);
+            myVertices[n++] = new Vector3f(ox, radius, deep);
+            myVertices[n++] = new Vector3f(-ox, radius, deep);
         }
 
-        // tapa izquierda
+        // Left cap
         ao = vertical ? FastMath.PI : FastMath.PI * 0.5f;
         x = radius * FastMath.cos(pin + ao);
         y = radius * FastMath.sin(pin + ao);
         for (int i = 0; i < count; i++) {
-            vertices[n++] = new Vector3f(x - ox, y - oy, deep);
+            myVertices[n++] = new Vector3f(x - ox, y - oy, deep);
 
-            //aplicar la matriz de rotación
+            // Apply the rotation matrix
             t = x;
             x = c * x - s * y;
             y = s * t + c * y;
         }
 
-        // agregar vértices inferior/derecho
+        // Add bottom/right vertices
         if (vertical) {
-            vertices[n++] = new Vector3f(radius, -oy, deep);
-            vertices[n++] = new Vector3f(radius, oy, deep);
+            myVertices[n++] = new Vector3f(radius, -oy, deep);
+            myVertices[n++] = new Vector3f(radius, oy, deep);
         } else {
-            vertices[n++] = new Vector3f(-ox, -radius, deep);
-            vertices[n++] = new Vector3f(ox, -radius, deep);
+            myVertices[n++] = new Vector3f(-ox, -radius, deep);
+            myVertices[n++] = new Vector3f(ox, -radius, deep);
         }
         
-        updateGeometry(vertices);
+        updateGeometry(myVertices);
     }
 }

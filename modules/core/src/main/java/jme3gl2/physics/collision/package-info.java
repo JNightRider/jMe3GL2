@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,14 +31,13 @@
  */
 
 /**
- * Paquete con las formas físicas que puede tener un cuerpo.
+ * Package with the physical forms that a body can have.
  * <p>
- * Los objetos de este paquete pueden ser exportados e importados con los 
- * objetos que nos proprociona <code>jme3</code>
- * </p>.
+ * The objects in this package can be exported and imported with the objects
+ * provided by <code>jme3</code>.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * @since 1.5.0
  */
 package jme3gl2.physics.collision;

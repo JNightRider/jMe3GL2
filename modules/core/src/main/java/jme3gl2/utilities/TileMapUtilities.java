@@ -36,8 +36,7 @@ import com.jme3.math.Vector3f;
 
 import java.util.UUID;
 
-import jme3gl2.physics.collision.AbstractCollisionShape;
-import jme3gl2.physics.collision.RectangleCollisionShape;
+import jme3gl2.physics.collision.CollisionShape;
 import jme3gl2.scene.tile.Properties;
 import jme3gl2.scene.tile.Tile;
 import jme3gl2.scene.tile.TileMap;
@@ -129,7 +128,7 @@ public final class TileMapUtilities {
      * @return Tile
      */
     public static Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
-        return getTile(cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(w, h) : null);
+        return getTile(cp, rp, w, h, x, y, z, coll ? new CollisionShape<>(GeometryUtilities.createRectangle(w, h)) : null);
     }
     
     /**
@@ -147,7 +146,7 @@ public final class TileMapUtilities {
      * @param acs forma física
      * @return Tile
      */
-    public static <T extends Convex> Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, AbstractCollisionShape<T> acs) {
+    public static <T extends Convex> Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, CollisionShape<T> acs) {
         return getTile(getStrigRandomUUID(), cp, rp, w, h, x, y, z, acs);
     }
     
@@ -186,7 +185,7 @@ public final class TileMapUtilities {
      * @return Tile
      */
     public static Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
-        return getTile(id, cp, rp, w, h, x, y, z, coll ? new RectangleCollisionShape(w, h) : null);
+        return getTile(id, cp, rp, w, h, x, y, z, coll ? new CollisionShape<>(GeometryUtilities.createRectangle(w, h)) : null);
     }
     
     /**
@@ -205,7 +204,7 @@ public final class TileMapUtilities {
      * @param acs forma física
      * @return Tile
      */
-    public static <T extends Convex> Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, AbstractCollisionShape<T> acs) {
+    public static <T extends Convex> Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, CollisionShape<T> acs) {
         Tile tile = new Tile();        
         Properties properties = new Properties();
         properties.put("Id", id);

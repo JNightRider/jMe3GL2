@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,57 +32,43 @@
 package jme3gl2.utilities;
 
 import java.util.List;
-
-import org.dyn4j.geometry.Capsule;
-import org.dyn4j.geometry.Circle;
-import org.dyn4j.geometry.Convex;
-import org.dyn4j.geometry.Ellipse;
-import org.dyn4j.geometry.Geometry;
-import org.dyn4j.geometry.HalfEllipse;
-import org.dyn4j.geometry.Link;
-import org.dyn4j.geometry.Polygon;
-import org.dyn4j.geometry.Rectangle;
-import org.dyn4j.geometry.Segment;
-import org.dyn4j.geometry.Slice;
-import org.dyn4j.geometry.Triangle;
-import org.dyn4j.geometry.Vector2;
-import org.dyn4j.geometry.Wound;
+import org.dyn4j.geometry.*;
 
 /**
- * Un <code>jMe3GL2Geometry</code> se encarga de auxiliarnos como intermediario
- * entre la clase {@code org.dyn4j.geometry.Geometry}, con el fin de evitar
- * errores con la clase {@code com.jme3.scene.Geometry}.
+ * An <code>jMe3GL2Geometry</code> is in charge of assisting us as an intermediary
+ * between the class {@code org.dyn4j.geometry.Geometry}, in order to avoid errors
+ * with the class {@code com.jme3.scene.Geometry}.
  * 
  * @author wil
- * @version 1.1-SNAPSHOT
- * 
+ * @version 1.1.1
  * @since 1.0.0
  */
 public final class GeometryUtilities {
     
-    /** Constructor privado. */
-    private GeometryUtilities() {}
+    /**  Private constructor. */
+    private GeometryUtilities() {
+    }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#TWO_PI
      */
     public static final double TWO_PI = Geometry.TWO_PI;
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#INV_3
      */
     public static final double INV_3 = Geometry.INV_3;
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#INV_SQRT_3
      */
     public static final double INV_SQRT_3 = Geometry.INV_SQRT_3;
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getWinding(java.util.List) 
      * 
      * @param points list
@@ -93,7 +79,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getWinding(org.dyn4j.geometry.Vector2...) 
      * 
      * @param points list
@@ -104,7 +90,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#reverseWinding(org.dyn4j.geometry.Vector2...) 
      * 
      * @param points list
@@ -114,7 +100,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#reverseWinding(java.util.List) 
      * 
      * @param points list
@@ -124,7 +110,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getAverageCenter(java.util.List) 
      * 
      * @param points list
@@ -135,7 +121,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getAverageCenter(org.dyn4j.geometry.Vector2...) 
      * 
      * @param points list
@@ -146,7 +132,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getAreaWeightedCenter(java.util.List) 
      * 
      * @param points list
@@ -157,7 +143,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getAreaWeightedCenter(org.dyn4j.geometry.Vector2...) 
      * 
      * @param points list
@@ -168,7 +154,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getRotationRadius(org.dyn4j.geometry.Vector2...) 
      * 
      * @param vertices list
@@ -179,7 +165,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getRotationRadius(org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2...) 
      * 
      * @param center vector2
@@ -191,7 +177,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#getCounterClockwiseEdgeNormals(org.dyn4j.geometry.Vector2...) 
      * 
      * @param vertices list
@@ -203,7 +189,7 @@ public final class GeometryUtilities {
 
     
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createCircle(double) 
      * 
      * @param radius double
@@ -214,7 +200,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygon(org.dyn4j.geometry.Vector2...) 
      * 
      * @param vertices list
@@ -225,7 +211,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonAtOrigin(org.dyn4j.geometry.Vector2...) 
      * 
      * @param vertices list
@@ -236,7 +222,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createUnitCirclePolygon(int, double) 
      * 
      * @param count int
@@ -248,20 +234,20 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createUnitCirclePolygon(int, double, double) 
      * 
      * @param count int
      * @param radius double
      * @param theta double
-     * @return pilygon
+     * @return polygon
      */
     public static final Polygon createUnitCirclePolygon(int count, double radius, double theta) {
         return Geometry.createUnitCirclePolygon(count, radius, theta);
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createSquare(double) 
      * 
      * @param size double
@@ -272,7 +258,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createRectangle(double, double) 
      * 
      * @param width double
@@ -284,7 +270,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createTriangle(org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2) 
      * 
      * @param p1 vector2
@@ -297,7 +283,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createTriangleAtOrigin(org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2) 
      * 
      * @param p1 vector2
@@ -310,7 +296,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createRightTriangle(double, double) 
      * 
      * @param width double
@@ -322,7 +308,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createRightTriangle(double, double, boolean) 
      * 
      * @param width double
@@ -335,7 +321,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createEquilateralTriangle(double) 
      * 
      * @param height double
@@ -346,7 +332,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createIsoscelesTriangle(double, double) 
      * 
      * @param width double
@@ -358,7 +344,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createSegment(org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2) 
      * 
      * @param p1 vector2
@@ -370,7 +356,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createSegmentAtOrigin(org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2) 
      * 
      * @param p1 vector2
@@ -382,7 +368,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createSegment(org.dyn4j.geometry.Vector2) 
      * 
      * @param end vector2
@@ -393,7 +379,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createHorizontalSegment(double) 
      * @param length double
      * @return segment
@@ -403,7 +389,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createVerticalSegment(double) 
      * @param length double
      * @return segment
@@ -413,7 +399,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createCapsule(double, double) 
      * 
      * @param width double
@@ -425,7 +411,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createSlice(double, double) 
      * 
      * @param radius double
@@ -437,7 +423,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createSliceAtOrigin(double, double) 
      * 
      * @param radius double
@@ -449,7 +435,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createEllipse(double, double) 
      * 
      * @param width double
@@ -461,7 +447,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createHalfEllipse(double, double) 
      * 
      * @param width double
@@ -473,7 +459,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createHalfEllipseAtOrigin(double, double) 
      * 
      * @param width double
@@ -485,7 +471,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalCircle(int, double) 
      * 
      * @param count double
@@ -497,7 +483,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalCircle(int, double, double) 
      * 
      * @param count double
@@ -510,7 +496,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalSlice(int, double, double) 
      * 
      * @param count double
@@ -523,7 +509,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalSliceAtOrigin(int, double, double) 
      * 
      * @param count double
@@ -536,7 +522,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalEllipse(int, double, double) 
      * 
      * @param count double
@@ -549,7 +535,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalHalfEllipse(int, double, double) 
      * 
      * @param count double
@@ -562,7 +548,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalHalfEllipseAtOrigin(int, double, double) 
      * 
      * @param count double
@@ -575,7 +561,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createPolygonalCapsule(int, double, double) 
      * 
      * @param count double
@@ -588,7 +574,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#cleanse(java.util.List) 
      * 
      * @param points list
@@ -599,7 +585,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#cleanse(org.dyn4j.geometry.Vector2...) 
      * 
      * @param points list
@@ -610,7 +596,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#flipAlongTheXAxis(org.dyn4j.geometry.Polygon) 
      * 
      * @param polygon polygon
@@ -621,7 +607,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#flipAlongTheYAxis(org.dyn4j.geometry.Polygon) 
      * 
      * @param polygon polygon
@@ -632,7 +618,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#flipAlongTheXAxis(org.dyn4j.geometry.Polygon, org.dyn4j.geometry.Vector2) 
      * 
      * @param polygon polygon
@@ -644,7 +630,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#flipAlongTheYAxis(org.dyn4j.geometry.Polygon, org.dyn4j.geometry.Vector2) 
      * 
      * @param polygon polygon
@@ -656,7 +642,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#flip(org.dyn4j.geometry.Polygon, org.dyn4j.geometry.Vector2) 
      * 
      * @param polygon polygon
@@ -668,7 +654,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#flip(org.dyn4j.geometry.Polygon, org.dyn4j.geometry.Vector2, org.dyn4j.geometry.Vector2) 
      * 
      * @param polygon polygon
@@ -681,7 +667,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @param <E> tipo
      * @param convex1 convex
      * @param convex2 convex
@@ -692,7 +678,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#minkowskiSum(org.dyn4j.geometry.Circle, org.dyn4j.geometry.Polygon, int) 
      * 
      * @param circle circle
@@ -705,7 +691,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#minkowskiSum(org.dyn4j.geometry.Polygon, org.dyn4j.geometry.Circle, int) 
      * 
      * @param polygon polygon
@@ -718,7 +704,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#minkowskiSum(org.dyn4j.geometry.Polygon, double, int) 
      * 
      * @param polygon polygon
@@ -731,7 +717,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#scale(org.dyn4j.geometry.Circle, double) 
      * 
      * @param circle circle
@@ -743,19 +729,19 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#scale(org.dyn4j.geometry.Capsule, double) 
      * 
      * @param capsule capsule
      * @param scale double
-     * @return cpasule
+     * @return capsule
      */
     public static final Capsule scale(Capsule capsule, double scale) {
         return Geometry.scale(capsule, scale);
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#scale(org.dyn4j.geometry.Ellipse, double) 
      * 
      * @param ellipse ellipse
@@ -767,7 +753,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#scale(org.dyn4j.geometry.HalfEllipse, double) 
      * 
      * @param halfEllipse half-ellipse
@@ -779,7 +765,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#scale(org.dyn4j.geometry.Slice, double)  
      * 
      * @param slice slice
@@ -791,7 +777,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#scale(org.dyn4j.geometry.Polygon, double) 
      * 
      * @param polygon polygon
@@ -803,7 +789,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#scale(org.dyn4j.geometry.Segment, double) 
      * 
      * @param segment segment
@@ -815,7 +801,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createLinks(java.util.List, boolean) 
      * 
      * @param vertices list
@@ -827,7 +813,7 @@ public final class GeometryUtilities {
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see Geometry#createLinks(org.dyn4j.geometry.Vector2[], boolean) 
      * 
      * @param vertices array

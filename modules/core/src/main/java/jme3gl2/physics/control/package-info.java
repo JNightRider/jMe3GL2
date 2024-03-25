@@ -31,17 +31,14 @@
  */
 
 /**
- * Paquete encargado de manejar los controles de un cuerpo y aplicar los
- * cambios a un <code>Spatila</code>.
- * 
+ * Package in charge of managing the physical controls that 2D bodies may have.
  * <p>
- * Cualquier objeto que herede de la clase <code>PhysicsBody2D</code> se 
- * considera como un cuerpo físico por parte de dyn4j y un control de
- * <code>Spatial</code> por parte de jme3.
- * </p>
+ * Any object that inherits from the <b>PhysicsBody2D</b> class is considered a physical 
+ * body by <a hrfe="https://dyn4j.org/">dyn4j</a> and a <code>Spatial</code> control 
+ * by  <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.5.0
  * @since 1.5.0
  */
 package jme3gl2.physics.control;

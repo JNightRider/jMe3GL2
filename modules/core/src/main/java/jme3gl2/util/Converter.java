@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,126 +38,152 @@ import org.dyn4j.geometry.Vector2;
 import org.dyn4j.geometry.Vector3;
 
 /**
- * Clase <code>Converter</code> se encarga de proprocionar métodos de converción
- * entre vectores y/o números(float &harr; double).
+ * Class <code>Converter</code> that is responsible for providing conversion methods 
+ * between vectors and/or numbers (float &harr; double).
  * 
  * @author wil
- * @version 1.2-SNAPSHOT
- * 
+ * @version 2.0.0
  * @since 1.0.0
  */
-public final 
-class Converter {
+public final class Converter {
     
     /**
-     * Constructor privado de la clase.
+     * Convert all {@code org.dyn4j.geometry.Vector2} to {@link com.jme3.math.Vector3f}.
+     * @param val value
+     * @return All {@link com.jme3.math.Vector3f} objects
      */
+    public static Vector3f[] allToVector3fValueOfJME3(Vector2[] val) {
+        Vector3f[] array = new Vector3f[val.length];
+        for (int i = 0; i < val.length; i++) {
+            array[i] = toVector3fValueOfJME3(val[i]);
+        }
+        return array;
+    }
+    
+    /**
+     * Convert all {@code org.dyn4j.geometry.Vector2} to {@link com.jme3.math.Vector2f}.
+     * @param val value
+     * @return All {@link com.jme3.math.Vector2f} objects
+     */
+    public static Vector2f[] allToVector2fValueOfJME3(Vector2[] val) {
+        Vector2f[] array = new Vector2f[val.length];
+        for (int i = 0; i < val.length; i++) {
+            array[i] = toVector2fValueOfJME3(val[i]);
+        }
+        return array;
+    }
+    
+    /**
+     * Convert all {@code org.dyn4j.geometry.Vector3} to {@link com.jme3.math.Vector3f}.
+     * @param val value
+     * @return All {@link com.jme3.math.Vector3f} objects
+     */
+    public static Vector3f[] allToVector3fValueOfJME3(Vector3[] val) {
+        Vector3f[] array = new Vector3f[val.length];
+        for (int i = 0; i < val.length; i++) {
+            array[i] = toVector3fValueOfJME3(val[i]);
+        }
+        return array;
+    }
+    
+    /**
+     * Convert all {@link com.jme3.math.Vector2f} to {@code org.dyn4j.geometry.Vector2}.
+     * @param val value
+     * @return All {@code org.dyn4j.geometry.Vector2} objects
+     */
+    public static Vector2[] allToVector2ValueOfDyn4j(Vector2f[] val) {
+        Vector2[] array = new Vector2[val.length];
+        for (int i = 0; i < val.length; i++) {
+            array[i] = toVector2ValueOfDyn4j(val[i]);
+        }
+        return array;
+    }
+    
+    /**
+     * Convert all {@link com.jme3.math.Vector3f} to {@code org.dyn4j.geometry.Vector3}.
+     * @param val value
+     * @return All {@code org.dyn4j.geometry.Vector3} objects
+     */
+    public static Vector3[] allToVector3ValueOfDyn4j(Vector3f[] val) {
+        Vector3[] array = new Vector3[val.length];
+        for (int i = 0; i < val.length; i++) {
+            array[i] = toVector3ValueOfDyn4j(val[i]);
+        }
+        return array;
+    }
+    
+    /**
+     * Convert a {@code org.dyn4j.geometry.Vector2} to a {@link com.jme3.math.Vector2f}.
+     * @param val value
+     * @return A {@link com.jme3.math.Vector2f} object
+     */
+    public static Vector2f toVector2fValueOfJME3(Vector2 val) {
+        return new Vector2f(toFloatValue(val.x), toFloatValue(val.y));
+    }
+    
+    /**
+     * Convert a {@code org.dyn4j.geometry.Vector2} to a {@link com.jme3.math.Vector3f}.
+     * @param val value
+     * @return A {@link com.jme3.math.Vector3f} object
+     */
+    public static Vector3f toVector3fValueOfJME3(Vector2 val) {
+        return new Vector3f(toFloatValue(val.x), toFloatValue(val.y), 0.0F);
+    }
+    
+    /**
+     * Convert a {@code org.dyn4j.geometry.Vector3} to a {@link com.jme3.math.Vector3f}.
+     * @param val value
+     * @return A {@link com.jme3.math.Vector3f} object
+     */
+    public static Vector3f toVector3fValueOfJME3(Vector3 val) {
+        return new Vector3f(toFloatValue(val.x), toFloatValue(val.y), toFloatValue(val.z));
+    }
+    
+    /**
+     * Convert a {@link com.jme3.math.Vector2f} to a {@code org.dyn4j.geometry.Vector2}.
+     * @param val value
+     * @return A {@code org.dyn4j.geometry.Vector2} object
+     */
+    public static Vector2 toVector2ValueOfDyn4j(Vector2f val) {
+        return new Vector2(val.x, val.y);
+    }
+    
+    /**
+     * Convert a {@link com.jme3.math.Vector3f} to a {@code org.dyn4j.geometry.Vector2}.
+     * @param val value
+     * @return A {@code org.dyn4j.geometry.Vector2} object
+     */
+    public static Vector2 toVector2ValueOfDyn4j(Vector3f val) {
+        return new Vector2(val.x, val.y);
+    }
+    
+    /**
+     * Convert a {@link com.jme3.math.Vector3f} to a {@code org.dyn4j.geometry.Vector3}.
+     * @param val value
+     * @return A {@code org.dyn4j.geometry.Vector3} object
+     */
+    public static Vector3 toVector3ValueOfDyn4j(Vector3f val) {
+        return new Vector3(val.x, val.y, val.z);
+    }
+    
+    /**
+     * Convert a <code>double</code> to a <code>float</code>.
+     * @param val value
+     * @return float
+     */
+    public static float toFloatValue(double val) {
+        return Double.valueOf(val).floatValue();
+    }
+    
+    /**
+     * Convert a <code>float</code> to a <code>double</code>.
+     * @param val value
+     * @return double
+     */
+    public static double toDoubleValue(float val) {
+        return Float.valueOf(val).doubleValue();
+    }
+    
+    /** Private constructor. */
     private Converter() {}
-    
-    /**
-     * Método encargado de convertir un arreglo de <code>Vector3</code> a un
-     * nuevo arreglo de <code>Vector3f</code>.
-     * @param vertices arreglo de vectores a convertir.
-     * @return nuevo arreglo.
-     */
-    public static Vector3f[] toArrayVector3f(final Vector3[] vertices) {
-        final Vector3f[] vectors = new Vector3f[vertices.length];
-        for (int i = 0; i < vertices.length; i++) {
-            vectors[i] = toVector3f(vertices[i]);
-        }
-        return vectors;
-    }
-    
-    /**
-     * Método encargado de convertir un arreglo de <code>Vector2</code> a un
-     * nuevo arreglo de <code>Vector3f</code>.
-     * @param vertices arreglo de vectores a convertir.
-     * @return nuevo arreglo.
-     */
-    public static Vector3f[] toArrayVector3f(final Vector2[] vertices) {
-        final Vector3f[] vectors = new Vector3f[vertices.length];
-        for (int i = 0; i < vertices.length; i++) {
-            vectors[i] = toVector3f(vertices[i]);
-        }
-        return vectors;
-    }
-    
-    /**
-     * Convierte un vector {@code Vector2} en {@code Vector2f}.
-     * @param v Vector a convertir.
-     * @return Vector nuevo.
-     */
-    public static Vector2f toVector2f(Vector2 v) {
-        float x = Double.valueOf(v.x).floatValue(),
-              y = Double.valueOf(v.y).floatValue();
-        return new Vector2f(x, y);
-    }
-    
-    /**
-     * Convierte un vector {@code Vector3} en {@code Vector3f}.
-     * @param v Vector a convertir.
-     * @return Vector nuevo.
-     */
-    public static Vector3f toVector3f(Vector3 v) {
-        float x = Double.valueOf(v.x).floatValue(),
-              y = Double.valueOf(v.y).floatValue(),
-              z = Double.valueOf(v.z).floatValue();
-        return new Vector3f(x, y, z);
-    }
-    
-    /**
-     * Convierte un vector {@code Vector2} en {@code Vector3f}.
-     * @param v Vector a convertir.
-     * @return Vector nuevo.
-     */
-    public static Vector3f toVector3f(Vector2 v) {
-        float x = Double.valueOf(v.x).floatValue(),
-              y = Double.valueOf(v.y).floatValue();
-        return new Vector3f(x, y, 0.0F);
-    }
-    
-    /**
-     * Convierte un vector {@code Vector2f} en {@code Vector2}.
-     * @param v Vector a convertir.
-     * @return Vector nuevo.
-     */
-    public static Vector2 toVector2(Vector2f v) {
-        return new Vector2(v.x, v.y);
-    }
-    
-    /**
-     * Convierte un vector {@code Vector3f} en {@code Vector2}.
-     * @param v Vector a convertir.
-     * @return Vector nuevo.
-     */
-    public static Vector2 toVector2(Vector3f v) {
-        return new Vector2(v.x, v.y);
-    }
-    
-    /**
-     * Convierte un vector {@code Vector3f} en {@code Vector3}.
-     * @param v Vector a convertir.
-     * @return Vector nuevo.
-     */
-    public static Vector3 toVector3(Vector3f v) {
-        return new Vector3(v.x, v.y, v.z);
-    }
-    
-    /**
-     * Convierte un numero {@code double} a {@code float}.
-     * @param d número a convertir.
-     * @return nuevo número.
-     */
-    public static float toFloat(double d) {
-        return Double.valueOf(d).floatValue();
-    }
-    
-    /**
-     * Convierte un numero {@code float} a {@code double}.
-     * @param f número a convertir.
-     * @return nuevo número.
-     */
-    public static double toDouble(float f) {
-        return Float.valueOf(f).doubleValue();
-    }
 }

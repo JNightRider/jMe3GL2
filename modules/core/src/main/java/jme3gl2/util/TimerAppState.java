@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,58 +39,88 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Un <code>TimerAppState</code> se encarga de administrar todos los
- * {@link Timer} que se ejecutan en el juego.
- * 
+ * An <code>TimerAppState</code> is responsible for managing all {@link Timer}
+ * running in the game.
  * <p>
- * En terminos más simples, es el encargado de actualizarlas, verificar cuando
- * se hace una pausa o reanudarlas.</p>
+ * In simpler terms, it is in charge of updating them, checking when they are
+ * paused or resuming them.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- *
+ * @version 1.5.0
  * @since 1.3.0
  */
-public final 
-class TimerAppState extends AbstractAppState {
+public final class TimerAppState extends AbstractAppState {
 
-    /** Logger de la clase. */
+    /** Class logger. */
     private static final Logger LOG = Logger.getLogger(TimerAppState.class.getName());
 
     /**
-     * Mapa de los temporizadores.
+     * An object of class <code>State</code> is responsible for enumerating
+     * the 3 possible states of a {@link jme3gl2.util.Timer}:
+     * <div>
+     * <ul>
+     * <li><b>Start:</b> initializing.</li>
+     * <li><b>Pause:</b> momentary pause.</li>
+     * <li><b>Stop:</b> dead status.</li>
+     * </ul>
+     * </div>
+     *
+     * @author wil
+     * @version 1.0.5
+     * @since 2.0.0
      */
-    private final Map<String, EntryTimer> timerMap
-                        = new IdentityHashMap<>();
-
-    /** demora predeterminado. */
+    public static enum State {
+        /**
+         * Initialization state of the timer {@link jme3gl2.util.Timer}, this calls the
+         * method <code>start()</code>.
+         */
+        Start,
+        /**
+         * Temporary pause or stop state of the timer {@link jme3gl2.util.Timer}, this calls
+         * the method <code>pause(boolean pause)</code>.
+         */
+        Pause,
+        /**
+         * It does the opposite of {@code Pause}, i.e. it resumes the processes
+         * as long as it has not died.
+         */
+        Resume,
+        /**
+         * Completely stops the timer processes.
+         */
+        Stop;
+    }
+    
+    /** Map of the timers. */
+    private final Map<String, EntryTimer> timerMap = new IdentityHashMap<>();
+    /** Default delay. */
     private float defaultDelay = 0.5F;
     
     /**
-     * Devuelv la demora predeterminada.
-     * @return demora.
+     * Returns the default delay.
+     * @return delay
      */
     public float getDefaultDelay() {
         return defaultDelay;
     }
 
     /**
-     * Establece una nueva demora que se utiliza como valor predeterminado
-     * para todos los <code>Timer</code> sin una demora establecido.
-     * @param defaultDelay nueva demora predeterminada.
+     * Sets a new delay that is used as default value for all {@link jme3gl2.util.Timer}
+     * without a delay set.
+     * 
+     * @param defaultDelay new default delay
      */
     public void setDefaultDelay(float defaultDelay) {
         this.defaultDelay = defaultDelay;
     }
     
     /**
-     * Método encargado de establecer un estador a un {@link Timer} en 
-     * especifico.
-     * @param name nombre-clave del temporizador.
-     * @param state estado que tomará.
-     * @return {@code true} si se aplico los cambios, de lo contrario {@code false}.
+     * Method in charge of setting a timer to a specific {@link jme3gl2.util.Timer}.
+     * @param name timer codename
+     * @param state status that it will take
+     * @return <code>true</code> if the changes have been applied, otherwise <code>false</code>
      */
-    public boolean setState(String name, TimerState state) {
+    public boolean setState(String name, State state) {
         EntryTimer entryTimer = this.timerMap.get(name);
         if ( entryTimer == null ) {
             LOG.log(Level.WARNING, "[ {0} ] Nonexistent timer.", name);
@@ -118,23 +148,21 @@ class TimerAppState extends AbstractAppState {
     }
     
     /**
-     * Agrega un nuevo temporizador. En donde utilizara el retardo 
-     * predeterminado.
-     * 
-     * @param name nombre clave-temporizador.
-     * @param timer temporizador.
-     * @return el mimo {@link Timer}.
+     * Adds a new timer. Where it will use the default delay.
+     * @param name timer codename
+     * @param timer timer
+     * @return the same {@link jme3gl2.util.Timer}
      */
     public Timer attachTimer(String name, Timer timer) {
         return this.attachTimer(name, timer, defaultDelay);
     }
     
     /**
-     * Agrega un nuevo temporizador.
-     * @param name nombre clave-temporizador.
-     * @param timer temporizador.
-     * @param delay retardo de este temporizador.
-     * @return el mimo {@link Timer}.
+     * Adds a new timer
+     * @param name timer codename
+     * @param timer timer
+     * @param delay delay of this timer
+     * @return the same {@link jme3gl2.util.Timer}
      */
     public Timer attachTimer(String name, Timer timer, float delay) {
         if (this.timerMap.containsKey(name)) {
@@ -148,10 +176,10 @@ class TimerAppState extends AbstractAppState {
     }
 
     /**
-     * Elimina un temporizador del administrador.
-     * @param name nombre clave-temporizador.
-     * @return el temporizador eliminado si existe, de lo contrario devolvera
-     *          un valor {@code null}.
+     * Deletes a timer from the manager.
+     * @param name timer codename
+     * @return the deleted timer if it exists, otherwise it will return a value
+     * of <code>null</code>
      */
     public Timer detachTimer(String name) {
         EntryTimer entryTimer = this.timerMap.remove(name);
@@ -162,9 +190,9 @@ class TimerAppState extends AbstractAppState {
     }
     
     /**
-     * Busca un temporizador a travez de su nombre clave.
-     * @param name nombre clave-temporizador.
-     * @return el {@link Timer}.
+     * Search for a timer by its codename.
+     * @param name timer codename
+     * @return the {@link jme3gl2.util.Timer}
      */
     public Timer getTimer(String name) {
         EntryTimer entryTimer = this.timerMap.get(name);
@@ -175,13 +203,11 @@ class TimerAppState extends AbstractAppState {
     }
     
     /**
-     * Agrega una nueva tarea a un temporizador especifico.
-     * @see Timer#addTask(jMe3GL2.util.TimerTask) 
-     * 
-     * @param name nombre clave-temporizador.
-     * @param task tarera-temporizador.
-     * @return {@code true} si se a agregado de manera correcta la tarea, de
-     *          lo contrario {@code false}.
+     * Adds a new task to a specific timer.
+     * @see jme3gl2.util.Timer#addTask(jMe3GL2.util.TimerTask) 
+     * @param name timer codename
+     * @param task task timer
+     * @return <code>true</code> if the task has been successfully added, otherwise <code>false</code>
      */
     public boolean addTask(String name, TimerTask task) {
         EntryTimer entryTimer = this.timerMap.get(name);
@@ -193,13 +219,11 @@ class TimerAppState extends AbstractAppState {
     }
     
     /**
-     * Elimina una nueva tarea a un temporizador especifico.
-     * @see Timer#removeTask(jMe3GL2.util.TimerTask)  
-     * 
-     * @param name nombre clave-temporizador.
-     * @param task tarera-temporizador.
-     * @return {@code true} si se a eliminado de manera correcta la tarea, de
-     *          lo contrario {@code false}.
+     * Deletes a task at a specific timer.
+     * @see jme3gl2.util.Timer#removeTask(jMe3GL2.util.TimerTask)  
+     * @param name timer codename
+     * @param task task timer
+     * @return <code>true</code> if the task has been deleted correctly, otherwise <code>false</code>
      */
     public boolean removeTask(String name, TimerTask task) {
         EntryTimer entryTimer = this.timerMap.get(name);
@@ -211,9 +235,9 @@ class TimerAppState extends AbstractAppState {
     }
     
     /**
-     * (non-JavaDoc)
-     * @see AbstractAppState#update(float) 
-     * @param tpf {@code float}
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#update(float) 
+     * @param tpf float
      */
     @Override
     public void update(float tpf) {
@@ -228,9 +252,9 @@ class TimerAppState extends AbstractAppState {
     }
 
     /**
-     * (non-JavaDoc)
-     * @see AbstractAppState#setEnabled(boolean) 
-     * @param enabled {@code boolean}
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#setEnabled(boolean) 
+     * @param enabled boolean
      */
     @Override
     public void setEnabled(boolean enabled) {
@@ -246,29 +270,27 @@ class TimerAppState extends AbstractAppState {
     }
     
     /**
-     * Método encargado de eliminar todo los temporizadores registrados en 
-     * este gestor-administrador de tiempos.
+     * Method in charge of deleting all the timers registered in this time
+     * manager/administrator.
      */
     public void detachAllTimer() {
         this.timerMap.clear();
     }
     
     /**
-     * Clase interna encargado de almacenar en memoria el temporizador, así como
-     * su retardo.
+     * Internal class in charge of storing the timer and its delay in memory.
      */
     class EntryTimer {
         
-        /** retardo-temporizador. */
-        private final float delay;
-        
-        /** temporizador. */
+        /** Timer delay. */
+        private final float delay;        
+        /** Timer. */
         private final Timer timer;
 
         /**
-         * Constructor predeterminado de la clase <code>EntryTimer</code>.
-         * @param delay retardo-temporizador.
-         * @param timer temporizador.
+         * Default constructor of the class <code>EntryTimer</code>.
+         * @param delay timer delay
+         * @param timer timer
          */
         public EntryTimer(float delay, Timer timer) {
             this.delay = delay;
@@ -276,7 +298,7 @@ class TimerAppState extends AbstractAppState {
         }
         
         /**
-         * Se encarga de validar los datos.
+         * It is responsible for validating the data.
          */
         public void validate() {
             if (timer == null) {
@@ -288,16 +310,16 @@ class TimerAppState extends AbstractAppState {
         }
 
         /**
-         * Devuelve el retardo.
-         * @return {@code float}
+         * Returns the delay.
+         * @return float
          */
         public float getDelay() {
             return delay;
         }
 
         /**
-         * Devuelve el temporizador.
-         * @return {@link Timer}
+         * Returns the timer.
+         * @return object
          */
         public Timer getTimer() {
             return timer;

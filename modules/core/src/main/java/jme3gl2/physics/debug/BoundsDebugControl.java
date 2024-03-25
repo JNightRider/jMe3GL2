@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,59 +29,53 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.debug.control;
+package jme3gl2.physics.debug;
 
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.AbstractControl;
 
+import jme3gl2.physics.PhysicsSpace;
 import jme3gl2.physics.control.PhysicsBody2D;
-import jme3gl2.physics.debug.Graphics2DRenderer;
 import jme3gl2.util.Converter;
 
 import org.dyn4j.collision.AxisAlignedBounds;
 import org.dyn4j.collision.Bounds;
 import org.dyn4j.geometry.Vector2;
-import org.dyn4j.world.World;
 
 /**
- * Clase <code>BoundsDebugControl</code> encargado de gestionar un depurador
- * para los límites del mundo físico definido por un <code>AxisAlignedBounds</code>.
+ * Class <code>BoundsDebugControl</code> to manage a debugger for the boundaries
+ * of the physical world as defined by a <code>AxisAlignedBounds</code>.
+ * @param <E> body type
  * 
  * @author wil
- * @version 1.0-SNAPSHOT 
- * 
+ * @version 1.0.5
  * @since 2.5.0
- * @param <E> tipo-cuerpo
  */
-public class BoundsDebugControl<E extends PhysicsBody2D> extends AbstractControl {
+final class BoundsDebugControl<E extends PhysicsBody2D> extends AbstractPhysicsDebugControl<E> {
 
-    /** Renderizador. */
-    protected final Graphics2DRenderer renderer;
-    
-    /** Mundo físico. */
-    protected final World<E> world;
-    
-    /** Nodo depuración. */
+    /** Renderer. */
+    protected final Graphics2DRenderer renderer;    
+    /** Physical world. */
+    protected final PhysicsSpace<E> world;    
+    /** Debugging node. */
     protected Node boundsNode;
 
     /**
-     * Constructor de la clase <code>BoundsDebugControl</code>.
-     * @param world mundo físico.
-     * @param renderer renderizador.
+     * Class constructor <code>BoundsDebugControl</code>.
+     * @param dyn4jDebugAppState debugger
+     * @param renderer renderer.
      */
-    public BoundsDebugControl(World<E> world, Graphics2DRenderer renderer) {
+    public BoundsDebugControl(Dyn4jDebugAppState<E> dyn4jDebugAppState, Graphics2DRenderer renderer) {
+        super(dyn4jDebugAppState);
+        this.world    = dyn4jDebugAppState.getPhysicsSpace();
         this.renderer = renderer;
-        this.world = world;
+        
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see com.jme3.scene.control.AbstractControl#setSpatial(com.jme3.scene.Spatial) 
-     * 
-     * @param spatial spatial.
+     * @param spatial spatial
      */
     @Override
     public void setSpatial(Spatial spatial) {
@@ -90,10 +84,10 @@ public class BoundsDebugControl<E extends PhysicsBody2D> extends AbstractControl
     }
 
     /**
-     * Método encargdo de verificar si existe un <code>Bounds</code> para el
-     * mundo físico actual. De se asi se fenerar una forma para ella.
+     * Method for verifying if there is a <code>Bounds</code> for the actual
+     * physical world. If so, a form can be generated for it.
      * <p>
-     * Nota: Solo es compatible con la forma <code>xisAlignedBounds</code>.
+     * Note: Only compatible with the form <code>AxisAlignedBounds</code>.
      */
     protected void renderBounds() {
         final Bounds bounds = world.getBounds();
@@ -120,7 +114,7 @@ public class BoundsDebugControl<E extends PhysicsBody2D> extends AbstractControl
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see com.jme3.scene.control.AbstractControl#controlUpdate(float) 
      * @param tpf float
      */
@@ -131,20 +125,9 @@ public class BoundsDebugControl<E extends PhysicsBody2D> extends AbstractControl
         final Bounds bounds = world.getBounds();
         if (this.boundsNode != null && (bounds instanceof AxisAlignedBounds)) {
             final Vector2 trans = world.getBounds().getTranslation();
-            final float posX = Converter.toFloat(trans.x);
-            final float posY = Converter.toFloat(trans.y);
+            final float posX = Converter.toFloatValue(trans.x);
+            final float posY = Converter.toFloatValue(trans.y);
             this.boundsNode.setLocalTranslation(posX, posY, this.boundsNode.getLocalTranslation().z);
         }
-    }
-
-    /**
-     * (non-JavaDoc)
-     * @see com.jme3.scene.control.AbstractControl#controlRender(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
-     * @param rm render-manager
-     * @param vp view-port
-     */
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-        /* NADA. */
     }
 }

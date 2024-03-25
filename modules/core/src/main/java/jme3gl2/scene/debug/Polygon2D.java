@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,43 +29,34 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.util.input;
+package jme3gl2.scene.debug;
 
-import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.math.Vector3f;
 
 /**
- * Un objeto de la clase <code>MouseAxis</code> se encarga de administrar las
- * entradas con el ratón.
- * 
- * @see MouseAxisTrigger
- * @see MouseTrigger
- * 
+ * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
  * @author wil
- * @version 1.0-SNAPSHOT
- * @since 2.0.0
+ * @version 1.0.5
+ * @since 2.5.0
  */
-public class MouseAxis extends MouseAxisTrigger implements MouseTrigger {
+public class Polygon2D extends AbstractShape2D {
 
-    /** nombre clave de la entrada. */
-    private final String inputName;
-    
     /**
-     * Constructor de la clase <code>MouseAxis</code>.
-     * @param mouseAxis int.
-     * @param negative boolean.
-     * @param name string.
+     * Class constructor <code>Polygon2D</code> where a polygonal shape is
+     * initialized.
+     * @param vertices vertices
      */
-    public MouseAxis(int mouseAxis, boolean negative, String name) {
-        super(mouseAxis, negative);
-        this.inputName = name;
+    public Polygon2D(Vector3f ...vertices) {
+        Polygon2D.this.updateGeometry(vertices);
     }
 
     /**
-     * Método encargado de devolver el nombre de esta llave.
-     * @return nombre clave.
+     * (non-Javadoc)
+     * @see jme3gl2.scene.debug.AbstractShape2D#updateGeometry(com.jme3.math.Vector3f[]) 
+     * @param vertices vertices
      */
     @Override
-    public String getInputName() {
-        return this.inputName;
-    }    
+    public void updateGeometry(Vector3f ...vertices) {
+        super.updateGeometry(vertices);
+    }
 }

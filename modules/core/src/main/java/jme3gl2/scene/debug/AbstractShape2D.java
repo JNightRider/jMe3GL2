@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,13 +29,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.debug.shape;
+package jme3gl2.scene.debug;
 
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
@@ -46,34 +42,31 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 /**
- * Clase <code>AbstractShape2D</code> abstracta encargado de implementar la
- * base de las formas de colicioón que ofrece <code>Dyn4j</code>.
+ * Abstract class <code>AbstractShape2D</code> in charge of implementing the basis
+ * for generating primitive shapes.
  * <p>
- * Para generar las formas se utilizarán 'lineas'.
+ * <b>Lines</b> are used to generate the shapes.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT 
- * 
+ * @version 1.0.5
  * @since 2.5.0
  */
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
     
-    /** Arreglo de vértices para la malla. */
+    /**Arrangement of the mesh vertices. */
     protected Vector3f[] vertices;
     
     /**
-     * Constructor predeterminado interno.
+     * Default internal constructor.
      */
     protected AbstractShape2D() {
-        /* CODIGO. */
         AbstractShape2D.this.setMode(Mode.LineLoop);
     }
 
     /**
-     * (non.JavaDoc)
+     * (non-Javadoc)
      * @see com.jme3.scene.Mesh#deepClone() 
-     * 
-     * @return clon de este objeto.
+     * @return this
      */
     @Override
     public AbstractShape2D deepClone() {
@@ -86,10 +79,9 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     }
 
     /**
-     * (non.JavaDoc)
+     * (non-Javadoc)
      * @see com.jme3.scene.Mesh#clone() 
-     * 
-     * @return clon de este objeto.
+     * @return this
      */
     @Override
     public AbstractShape2D clone() {
@@ -99,10 +91,10 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     }
         
     /**
-     * Método encargado de actualizar la geometría de esta malla para generra 
-     * las nuevas coordenadas de las 'lineas'.
+     * Method responsible for updating the geometry of this mesh to generate the 
+     * new coordinates of the <code>>lines</code>.
      * 
-     * @param vertices nuevo arreglo de vértices.
+     * @param vertices new arrangement of the vertices
      */
     protected void updateGeometry(final Vector3f[] vertices) {
         if (vertices == null ) {
@@ -130,12 +122,11 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     }
 
     /**
-     * (non-JavaDoc).
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
      * 
-     * @param im JmeImporter
-     * @see com.jme3.scene.Mesh#read(com.jme3.export.JmeImporter) 
-     * 
-     * @throws IOException Excepción.
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException throws
      */
     @Override
     public void read(JmeImporter im) throws IOException {
@@ -147,12 +138,11 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     }
 
     /**
-     * (non-JavaDoc).
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
      * 
-     * @param ex JmeExporter.
-     * @see com.jme3.scene.Mesh#write(com.jme3.export.JmeExporter) 
-     * 
-     * @throws IOException Excepción.
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
      */
     @Override
     public void write(JmeExporter ex) throws IOException {

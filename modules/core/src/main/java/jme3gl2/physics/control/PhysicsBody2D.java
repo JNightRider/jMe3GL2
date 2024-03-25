@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,74 +31,51 @@
  */
 package jme3gl2.physics.control;
 
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
+import com.jme3.export.*;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 
-import jme3gl2.physics.PhysicsSpace;
-import jme3gl2.physics.collision.AbstractCollisionShape;
-
 import java.io.IOException;
-
+import jme3gl2.physics.PhysicsSpace;
 import org.dyn4j.dynamics.Body;
-import org.dyn4j.geometry.Convex;
 
 /**
- * Una implementación abstracta de la interfaz {@code PhysicsControl}.
+ * An abstract implementation of the {@link jme3gl2.physics.control.PhysicsControl} 
+ * interface.
  * <p>
- * Un objeto de la clase <code>PhysicsBody2D</code> se puede utilizar como
- * el cuerpo físico de un objeto así como el mismo control de ese modelo</p>.
- * <p>
- * Para utilizarlo, extienda de esta clase <code>PhysicsBody2D</code> o bien
- * extender de una clase que ya implemente la lógica de control.</p>
+ * An object of the <code>PhysicsBody2D</code> class is the body that the physics 
+ * engine uses to give realism to the games. With this control we can manage a 
+ * 2D model with or without physics.
  * 
  * @author wil
- * @version 1.5.0
- *
+ * @version 1.5.5
  * @since 1.0.0
  */
-public abstract class PhysicsBody2D extends Body implements PhysicsControl<PhysicsBody2D>, 
-                                                            BasePhysicsControl<PhysicsBody2D>, Control {
+public abstract class PhysicsBody2D extends Body implements Control, PhysicsControl<PhysicsBody2D> {
     
-    /** Espacio físico. */
+    /** Physical space. */
     protected PhysicsSpace<PhysicsBody2D> physicsSpace;
-    
-    /**
-     * {@code true} si el control físico esta deshabilitado, de lo contrario
-     * {@code false} si esta en operación.
-     */
-    protected boolean enabledPhysics = true;
-
-    /** modelo 2D. */
+    /** The 2D model. */
     protected Spatial spatial;
     
-    ///** Cuerpo físico. */
-    //protected Body body;
-
     /**
-     * Instancie un nuevo objeto utilizadon el contructor de esta clase
-     * <code>AbstractBody</code> con los valores predeterminados.
+     * <code>true</code> if physical control is disabled; otherwise <code>false</code>
+     * if active.
+     */
+    private boolean enablebody= true;
+    
+    /**
+     * Generates a new object of class <code>PhysicsBody2D</code> to generate a 
+     * physical body from a 2D model.
      */
     public PhysicsBody2D() { }
     
     /**
-     * Otra forma de como agregar una forma física.
-     * @param shape forma física.  
-     * @see RigidBody2D#addFixture(org.dyn4j.geometry.Convex) 
-     * @see RigidBody2D#addFixture(org.dyn4j.collision.Fixture) 
-     * @see RigidBody2D#addFixture(org.dyn4j.geometry.Convex, double, double, double) 
-     */
-    public void addCollisionShape(AbstractCollisionShape<? extends Convex> shape) {
-        this.addFixture(shape.getCollisionShape());
-    } 
-    
-    /**
-     * (non-JavaDoc)
-     * @see PhysicsControl#setPhysicsSpace(jMe3GL2.physics.PhysicsSpace) 
-     * @param physicsSpace {@link PhysicsSpace}
+     * (non-Javadoc)
+     * @see jme3gl2.physics.control.PhysicsControl#setPhysicsSpace(jme3gl2.physics.PhysicsSpace) 
+     * @param physicsSpace A {@link jme3gl2.physics.PhysicsSpace} object
      */
     @Override
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
@@ -106,9 +83,9 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl<Physi
     }
 
     /**
-     * (non-JavaDoc)
-     * @see PhysicsControl#getPhysicsSpace() 
-     * @return {@link PhysicsSpace}
+     * (non-Javadoc)
+     * @see jme3gl2.physics.control.PhysicsControl#getPhysicsSpace() 
+     * @return A {@link jme3gl2.physics.PhysicsSpace} object
      */
     @Override
     public PhysicsSpace<PhysicsBody2D> getPhysicsSpace() {
@@ -116,40 +93,30 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl<Physi
     }
 
     /**
-     * (non-JavaDoc)
-     * @see PhysicsControl#getBody() 
-     * @return {@code org.dyn4j.dynamics.Body}
-     */
-    @Override
-    public PhysicsBody2D getBody() {
-        return this;
-    }
-
-    /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
+     * @see jme3gl2.physics.control.PhysicsControl#setEnabledPhysicsControl(boolean) 
      * @param enabled boolean
-     * @see PhysicsControl#setEnabledPhysicsControl(boolean) 
      */
     @Override
     public void setEnabledPhysicsControl(boolean enabled) {
-        this.enabledPhysics = enabled;
+        this.enablebody = enabled;
     }
 
     /**
-     * (non-JavaDoc)
-     * @see PhysicsControl#isEnabledPhysicsControl() 
+     * (non-Javadoc)
+     * @see jme3gl2.physics.control.PhysicsControl#isEnabledPhysicsControl() 
      * @return boolean
      */
     @Override
     public boolean isEnabledPhysicsControl() {
-        return this.enabledPhysics;
+        return this.enablebody;
     }
 
     /**
-     * (non-JavaDoc)
-     * @param spatial {@code Spatial}
-     * @return {@code Control}
-     * @deprecated (non-javadoc)
+     * (non-Javadoc)
+     * @param spatial object
+     * @return object
+     * @deprecated (?,?)
      */
     @Deprecated
     @Override
@@ -158,9 +125,9 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl<Physi
     }
 
     /**
-     * (non-JavaDoc)
-     * @param spatial {@code Spatial}
-     * @see Control#setSpatial(com.jme3.scene.Spatial) 
+     * (non-Javadoc)
+     * @see com.jme3.scene.control.Control#setSpatial(com.jme3.scene.Spatial) 
+     * @param spatial object
      */
     @Override
     public void setSpatial(Spatial spatial) {
@@ -168,42 +135,39 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl<Physi
             throw new IllegalStateException("This control has already been added to a Spatial");
         }
         this.spatial = spatial;
-        /*this.setUserData(spatial);*/
         this.ready();
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
+     * @see com.jme3.scene.control.Control#update(float) 
      * @param tpf float
-     * @see Control#update(float) 
      */
     @Override
     public void update(float tpf) {
-        if (!enabledPhysics)
-            return;
-        
+        if (!enablebody)
+            return;        
         controlUpdate(tpf);
         physicsProcess(tpf);
     }
 
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
+     *  @see com.jme3.scene.control.Control#render(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
      * @param rm render-manager
      * @param vp view-port
-     * @see Control#render(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
      */
     @Override
     public void render(RenderManager rm, ViewPort vp) {
-        if (!enabledPhysics)
+        if (!enablebody)
             return;
-
         controlRender(rm, vp);
     }
 
     /**
-     * Devuelve el <code>Spatial</code> asignado a este cuerpo físico.
-     * @param <T> tipo-spatial
-     * @return <code>Spatial</code> JME.
+     * Returns the {@link com.jme3.scene.Spatial} assigned to this physical body.
+     * @param <T> spatial type
+     * @return A {@link com.jme3.scene.Spatial} object
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -211,71 +175,45 @@ public abstract class PhysicsBody2D extends Body implements PhysicsControl<Physi
         return (T) spatial;
     }
 
-    /**
-     * Inicializacion de los datos para este cuerpo.
-     */
+    /** Data initialization for this body (optional). */
     protected void ready() {}
     
     /**
-     * Actualización de procesos físicos.
-     * @param delta lapso de tiempo por fps.
+     * Updating physical processes (optional).
+     * @param delta time per frame (in seconds)
      */
     protected void physicsProcess(float delta) {}
     
     /**
-     * Para ser implementado en la subclase.
-     *
-     * @param tpf tiempo por cuadro (en segundos)
+     * To be implemented in subclass.
+     * @param tpf time per frame (in seconds)
      */
     protected abstract void controlUpdate(float tpf);
 
     /**
-     * Para ser implementado en la subclase.
-     *
-     * @param rm el RenderManager representando el Spatial controlado (no nulo)
-     * @param vp el ViewPort que se representa (no nulo)
+     * To be implemented in subclass.
+     * @param rm the RenderManager rendering the controlled Spatial (not null)
+     * @param vp the ViewPort being rendered (not null)
      */
     protected abstract void controlRender(RenderManager rm, ViewPort vp);
     
     /**
-     * (non-JavaDoc)
-     * @param physicBody cuerpo físico.
-     * @deprecated Utilize <code>applyPhysicsRotation</code>.
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException throws
      */
-    @Deprecated(since = "2.5.0")
-    protected void setPhysicsRotation(final PhysicsBody2D physicBody) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * (non-JavaDoc)
-     * @param physicBody cuerpo físico.
-     * @deprecated Utilize <code>applyPhysicsLocation()</code>.
-     */
-    @Deprecated(since = "2.5.0")
-    protected void setPhysicsLocation(final PhysicsBody2D physicBody) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    @Override
+    public void read(JmeImporter im) throws IOException { }
     
     /**
-     * (non-JavaDoc)
-     * @param ex jme-exporter
-     * @see Control#write(com.jme3.export.JmeExporter) 
-     * @throws IOException io-expetion
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
+     * 
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
      */
     @Override
-    public void write(JmeExporter ex) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * (non-JavaDoc)
-     * @param im jme-importer
-     * @see Control#read(com.jme3.export.JmeImporter) 
-     * @throws IOException io-exception
-     */
-    @Override
-    public void read(JmeImporter im) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }    
+    public void write(JmeExporter ex) throws IOException { }
 }

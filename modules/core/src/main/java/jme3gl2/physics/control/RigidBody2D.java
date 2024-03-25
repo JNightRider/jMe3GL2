@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,40 +35,27 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 
-import jme3gl2.physics.collision.AbstractCollisionShape;
 import jme3gl2.util.Converter;
 
-import org.dyn4j.geometry.Convex;
-
 /**
- * Un objeto de la clase <code>RigidBody2D</code> se encarga de controlar y
- * aplicar la física en el <code>Spatial</code> (modelo 2D) con un cuerpo
- * rigido.
+ * An object of the class <code>RigidBody2D</code> is responsible for the control
+ * and application of physics in the <code>Spatial</code> (2D model) with a rigid body.
  *
  * @author wil
- * @version 1.0.1-SNAPSHOT
- *
+ * @version 1.0.2
  * @since 1.0.0
  */
 public class RigidBody2D extends PhysicsBody2D {
 
     /**
-     * Constructor de la clase <code>RigidBody2D</code>.
+     * Class constructor <code>RigidBody2D</code>.
      */
     public RigidBody2D() { }
     
     /**
-     * Constructor de la clase <code>RigidBody2D</code>.
-     * @param collisionShape forma físico.
-     */
-    public RigidBody2D(AbstractCollisionShape<? extends Convex> collisionShape) {
-        this.addFixture(collisionShape.getCollisionShape());
-    } 
-    
-    /**
-     * (non-JavaDoc).
+     * (non-Javadoc).
+     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
      * @param tpf float
-     * @see PhysicsBody2D#controlUpdate(float) 
      */
     @Override
     protected void controlUpdate(float tpf) {
@@ -77,20 +64,20 @@ public class RigidBody2D extends PhysicsBody2D {
     }
 
     /**
-     * Detecta si este cuerpo contiene mas de un {@code Fixture}.
-     * @return {@code true} si tiene mas de un {@code Fixture}, de lo contrario
-     *              devolverá {@code false}.
+     * Detects if this body contains more than one {@link org.dyn4j.collision.Fixture}.
+     * @return <code>true</code> if it has more than one {@link org.dyn4j.collision.Fixture},
+     * otherwise it will return <code>false</code>
      */
     public boolean hasMultipleBodies() {
         return this.getFixtureCount() > 1;
     }
     
     /**
-     * Método encaegado de devolver la posición actual.
-     * @return posición actual.
+     * Method in charge of returning the world position of this body.
+     * @return world position.
      */
     public Vector3f getPhysicsLocation() {
-        return new Vector3f(Converter.toFloat(getTransform().getTranslationX()), Converter.toFloat(getTransform().getTranslationY()), this.spatial.getLocalTranslation().z);
+        return new Vector3f(Converter.toFloatValue(getTransform().getTranslationX()), Converter.toFloatValue(getTransform().getTranslationY()), this.spatial.getLocalTranslation().z);
     }
 
     /**
@@ -98,11 +85,11 @@ public class RigidBody2D extends PhysicsBody2D {
      * @return posición mundial.
      */
     public Vector3f getWorldLocation() {
-        return new Vector3f(Converter.toFloat(getWorldCenter().x), Converter.toFloat(getWorldCenter().y), this.spatial.getWorldTranslation().z);
+        return new Vector3f(Converter.toFloatValue(getWorldCenter().x), Converter.toFloatValue(getWorldCenter().y), this.spatial.getWorldTranslation().z);
     }
 
     /**
-     * Limpia las fuerzas.
+     * Cleans the forces.
      */
     public void clearForces() {
         this.clearForce();
@@ -114,10 +101,10 @@ public class RigidBody2D extends PhysicsBody2D {
     }
     
     /**
-     * (non-JavaDoc).
+     * (non-Javadoc)
+     * @see jme3gl2.physics.control.RigidBody2D#controlRender(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
      * @param rm RenderManager
      * @param vp ViewPort
-     * @see PhysicsBody2D#render(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
      */
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) { }

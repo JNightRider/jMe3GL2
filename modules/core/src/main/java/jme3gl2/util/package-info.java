@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,14 +31,11 @@
  */
 
 /**
- * Paquete utilidades.
- * <p>
- * En este paquete podemos encontrar clases u objetos que son de ayuda al crear
- * un modelo 2D e incluso un juego (<b>Mundo JME3</b>).
- * </p>
+ * Useful package that provides helper objects for creating 2D games with
+ * <a href="https://jmonkeyengine.org/">JME3</a> and <a href="https://github.com/JNightRide/jMe3GL2">jMe3GL2</a>.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 1.5.0
  */
 package jme3gl2.util;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,71 +29,80 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.control;
+package jme3gl2.physics.debug;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.control.Control;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
+import com.jme3.scene.control.AbstractControl;
 import com.jme3.util.TempVars;
 
+import jme3gl2.physics.control.PhysicsBody2D;
 import jme3gl2.util.Converter;
 
 import org.dyn4j.geometry.Transform;
 
 /**
- * Interfaz <code>BasePhysicsControl</code> encargado de proprocionar métodos
- * base para el control de cuerpos físicos. Su trabajo consiste en aplicar los
- * cambios de estdos de un cuerpo, es decir su posición el mundos y/o rotación.
- * <p>
- * De manera predeterminada, se implementa un forma de aplicar la traslación y
- * rotación de los cuerpos físico a un <code>Spatial</code>, estos métodos son
- * <code>applyPhysicsRotation</code> y <code>applyPhysicsLocation</code>.
- * 
+ * Abstract class in charge of managing the <code>Spatial</code> controls of the
+ * physical bodies of the debugger.
+ * @param <E> of type {@link jme3gl2.physics.control.PhysicsBody2D}
  * @author wil
- * @version 1.0-SNAPSHOT
- * @param <E> tipo-cuerpo
- * 
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public interface BasePhysicsControl<E extends PhysicsBody2D> extends Control {
-    
-    /**
-     * Devuelve el <code>Spatial</code> asignado a este cuerpo físico.
-     * @param <T> tipo-spatial
-     * @return <code>Spatial</code> JME.
-     */
-    public <T extends Spatial> T getJmeObject();
-    
-    /**
-     * Método encargado de aplicar una rotación física.
-     * @param physicBody cuerpo físico.
-     */
-    default void applyPhysicsRotation(final E physicBody) {
-        final Transform trans = physicBody.getTransform();
+public abstract class AbstractPhysicsDebugControl<E extends PhysicsBody2D> extends AbstractControl {
 
-        final float rotation = Converter.toFloat(trans.getRotationAngle());
+    /** Debug status. */
+    protected Dyn4jDebugAppState<E> dyn4jDebugAppState;
+
+    /**
+     * Constructor of class <code>AbstractPhysicsDebugControl</code>.
+     * @param dyn4jDebugAppState Debug status
+     */
+    public AbstractPhysicsDebugControl(Dyn4jDebugAppState<E> dyn4jDebugAppState) {
+        this.dyn4jDebugAppState = dyn4jDebugAppState;
+    }
+    
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.scene.control.AbstractControl#controlRender(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
+     *
+     * @param rm the render manager (unused)
+     * @param vp the view port to render (unused)
+     */
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+        // do nothing
+    }
+    
+    /**
+     * Method responsible for applying physical rotation to the <code>Spatial</code>
+     * associated with the body.
+     * @param physicBody body
+     */
+    final void applyPhysicsRotation(final E physicBody) {
+        final Transform trans = physicBody.getTransform();
+        final float rotation = Converter.toFloatValue(trans.getRotationAngle());
 
         final TempVars tempVars = TempVars.get();
         final Quaternion quaternion = tempVars.quat1;
+        
         quaternion.fromAngleAxis(rotation, new Vector3f(0.0F, 0.0F, 1.0F));
-
-        getJmeObject().setLocalRotation(quaternion);
-
+        spatial.setLocalRotation(quaternion);
         tempVars.release();
     }
-
+    
     /**
-     * Método encargado de aplicar una traslación físico.
-     * @param physicBody cuerpo físico.
+     * Method in charge of applying the physical position to the <code>Spatial</code>
+     * associated with the body.
+     * @param physicBody body
      */
-    default void applyPhysicsLocation(final E physicBody) {
+    final void applyPhysicsLocation(final E physicBody) {
         final Transform trans = physicBody.getTransform();
-
-        final float posX = Converter.toFloat(trans.getTranslationX());
-        final float posY = Converter.toFloat(trans.getTranslationY());
-
-        final Spatial spatial = getJmeObject();
+        final float posX = Converter.toFloatValue(trans.getTranslationX());
+        final float posY = Converter.toFloatValue(trans.getTranslationY());
+        
         spatial.setLocalTranslation(posX, posY, spatial.getLocalTranslation().z);
     }
 }

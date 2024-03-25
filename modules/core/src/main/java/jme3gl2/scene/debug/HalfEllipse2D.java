@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,67 +29,68 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.debug.shape;
+package jme3gl2.scene.debug;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 
 /**
- * Clase <code>HalfEllipse2D</code> encargado de generar una forma eliptica.
+ * Class <code>HalfEllipse2D</code> in charge of generating an half-elliptical shape.
  * @author wil
- * @version 1.0-SNAPSHOT 
+ * @version 1.0.5
  * @since 2.5.0
  */
 public class HalfEllipse2D extends AbstractShape2D {
     
-    /** Cantidad miníma de poligonos para una elipse decente. */
+    /** Minimum amount of polygons for a decent ellipse. */
     public static final int COUNT = 15;
 
     /**
-     * Constructor de la clase <code>HalfEllipse</code> para generar una forma de
-     * eliptica en '2D' con una profundidad establecida para toda/o los vértices.
+     * Class constructor <code>HalfEllipse</code> to generate a '2D' half-ellipse
+     * shape with a depth set for all/or the vertices.
      * 
-     * @param count cantidad de vértices-poligonos a usar.
-     * @param width laergo de la elipse.
-     * @param height ancho de la elipse.
-     * @param deep profundidad.
+     * @param count number of vertices/polygons to use
+     * @param width width of the ellipse
+     * @param height height of the ellipse
      */
-    public HalfEllipse2D(int count, float width, float height, float deep) {
-        HalfEllipse2D.this.updateGeometry(count, width, height, deep);
+    public HalfEllipse2D(int count, float width, float height) {
+        HalfEllipse2D.this.updateGeometry(count, width, height);
     }
 
     /**
-     * Método encargado de actualizar las geometrías de esta malla.
-     * @param count cantidad de vértices-poligonos a usar.
-     * @param width laergo de la elipse.
-     * @param height ancho de la elipse.
-     * @param deep profundidad.
+     * Method in charge of updating the geometries of this mesh.
+     * 
+     * @param count number of vertices/polygons to use
+     * @param width width of the ellipse
+     * @param height height of the ellipse
      */
-    public void updateGeometry(int count, float width, float height, float deep) {
+    public void updateGeometry(int count, float width, float height) {
         final float a = width * 0.5f;
         final float b = height * 0.5f;
+        float deep = 0;
 
-        // calcular el incremento angular
+        // Calculate the angular increment
         final float inc = FastMath.PI / (count + 1);
-        // asegúrese de que la salida resultante sea un número par de vértices
-        final Vector3f[] vertices = new Vector3f[count + 2];
+        // Make sure that the resulting output is an even number of vertices
+        final Vector3f[] myVertices = new Vector3f[count + 2];
 
-        // establecer los vértices inicial y final
-        vertices[0] = new Vector3f(a, 0, deep);
-        vertices[count + 1] = new Vector3f(-a, 0, deep);
-
-        // Usar las ecuaciones paramétricas:
+        // Set the initial and final vertices
+        myVertices[0] = new Vector3f(a, 0, deep);
+        myVertices[count + 1] = new Vector3f(-a, 0, deep);
+        
+        // Use parametric equations:
         // x = a * cos(t)
         // y = b * sin(t)
         for (int i = 1; i < count + 1; i++) {
             final float t = inc * i;
-            // Dado que el lado inferior de la elipse es el mismo que el 
-            // lado superior, solo que con una y negada, ahorremos algo de 
-            // tiempo creando el lado inferior al mismo tiempo.
+            
+            // Since the bottom side of the ellipse is the same as the top side,
+            // with only a y negated, let's save some time by creating the bottom
+            // side at the same time.
             final float x = a * FastMath.cos(t);
             final float y = b * FastMath.sin(t);
-            vertices[i] = new Vector3f(x, y, deep);
+            myVertices[i] = new Vector3f(x, y, deep);
         }
-        this.updateGeometry(vertices);
+        this.updateGeometry(myVertices);
     }
 }

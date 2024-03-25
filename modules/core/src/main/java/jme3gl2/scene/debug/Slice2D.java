@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,71 +29,71 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.debug.shape;
+package jme3gl2.scene.debug;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 
 /**
- * Clase <code>Slice2D</code> encargado de generar una forma de rebanda.
+ * Class <code>Slice2D</code> responsible for generating a slice shape.
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.5.0
  */
 public class Slice2D extends AbstractShape2D {
 
-    /** Contador predeterminado para generar una rebanada.*/
+    /** Default counter to generate a slice. */
     public static final int COUNT = 24;
     
     /**
-     * Constructor de la clase <code>Circle2D</code> donde se establecern los
-     * valores para generar un forma de rabanada.
+     * Class constructor <code>Circle2D</code> where the values will be set to
+     * generate a slice form.
      * 
-     * @param count cantidad de poligonos.
-     * @param radius radio de la forma.
-     * @param theta theta desado.
-     * @param deep profundidad.
+     * @param count number of polygons
+     * @param radius radius of the circle
+     * @param theta theta value
      */
-    public Slice2D(int count, float radius, float theta, float deep) {
-        Slice2D.this.updateGeometry(count, radius, theta, deep);
+    public Slice2D(int count, float radius, float theta) {
+        Slice2D.this.updateGeometry(count, radius, theta);
     }
 
     /**
-     * Método encargado de actualizar la geometría de esta malla circular.
-     * @param count cantidad de vertices-poligonos.
-     * @param radius radio de la forma.
-     * @param theta un theta.
-     * @param deep profundidad.
+     * Method in charge of updating the geometry of this circular mesh.
+     * 
+     * @param count number of polygons
+     * @param radius radius of the circle
+     * @param theta theta value
      */
-    public void updateGeometry(int count, float radius, float theta, float deep) {
-        // calcular el incremento angular
+    public void updateGeometry(int count, float radius, float theta) {
+        // Calculate the angular increment
         final float pin = theta / (count + 1);
-        // asegúrese de que la salida resultante sea un número par de vértices
-        final Vector3f[] vertices = new Vector3f[count + 3];
+        // Make sure the resulting output is an even number of vertices
+        final Vector3f[] myVertices = new Vector3f[count + 3];
 
         final float c = FastMath.cos(pin);
         final float s = FastMath.sin(pin);
-        float t = 0;
+        float t;
 
-        // inicializar en menos theta
+        // Initialize in minus theta
         float x = radius * FastMath.cos(-theta * 0.5f);
         float y = radius * FastMath.sin(-theta * 0.5f);
 
-        // establecer el primer y último punto del arco
-        vertices[0] = new Vector3f(x, y, deep);
-        vertices[count + 1] = new Vector3f(x, -y, deep);
+        float deep = 0;
+        // Establish the first and last point of the arc
+        myVertices[0] = new Vector3f(x, y, deep);
+        myVertices[count + 1] = new Vector3f(x, -y, deep);
 
         for (int i = 1; i < count + 1; i++) {
-            //aplicar la matriz de rotación
+            // Apply the rotation matrix
             t = x;
             x = c * x - s * y;
             y = s * t + c * y;
-            // agregar un punto.
-            vertices[i] = new Vector3f(x, y, deep);
+            // Add a point
+            myVertices[i] = new Vector3f(x, y, deep);
         }
 
-        // terminar añadiendo el origen
-        vertices[count + 2] = new Vector3f();
-        this.updateGeometry(vertices);
+        // End by adding the origin
+        myVertices[count + 2] = new Vector3f();
+        this.updateGeometry(myVertices);
     }
 }

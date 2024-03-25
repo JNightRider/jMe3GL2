@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,61 +35,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Un objeto de la clase <code>Timer</code> se puede utilizar como temporizador
- * secuencial. Es decir que se actualiza junto con las escenas del juego.
+ * An object of class <code>Timer</code> can be used as a sequential timer. That
+ * is, it is updated along with the game scenes.
  * <p>
- * Para cativar o realizar una/varias tareas, se utiliza la interfaz
- * <code>TimerTask</code>.</p>
+ * To activate or perform one or more tasks, use the interface {@link jme3gl2.util.TimerTask}.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- *
+ * @version 1.0.5
  * @since 1.2.0
  */
-@SuppressWarnings(value = {"unchecked"})
 public class Timer {
     
-    /** Tiempo maximo del temporizador. */
-    private float maxTime = 10f;
-    
-    /** Contador. */
+    /** Maximum timer time. */
+    private float maxTime = 10f;    
+    /** Counter. */
     private float counter = 0;
     
     /**
-     * {@code true} si el temporizador esta detenida, es decir que dejara de
-     * contar, de lo contrario {@code false}.
+     * {@code true} if the timer is stopped, i.e., it will stop counting, 
+     * otherwise {@code false}.
      */
     private boolean paused = true;
     
-    /**
-     * Lista de tareas a ejecutar.
-     */
-    private final List<TimerTask> tasks 
-                        = new ArrayList<>();
+    /** List of tasks to be executed. */
+    private final List<TimerTask> tasks = new ArrayList<>();
     
     /**
-     * Genera un objeto <code>Timer</code> que actuara como un temporizador.
-     * @param maxTime tiempo maximo (se toma los fps del juego).
+     * Generates a <code>Timer</code> object that will act as a timer.
+     * @param maxTime maximum time (the fps of the game is taken)
      */
     public Timer(float maxTime) {
         this.maxTime = maxTime;
-        counter = 0;        
+        this.counter = 0;        
     }
     
     /**
-     * Agrega una nueva tarea.
-     * @param task tarea nueva.
-     * @return estado.
+     * Adds a new task.
+     * @param task new task
+     * @return boolean
      */
     public boolean addTask(TimerTask task) {
         return this.tasks.add(task);
     }
     
     /**
-     * Agrega una nueva tarea.
-     * @param task tarea nueva.
-     * @return {@link Timer} de lo contrario <code>null</code> si sucede un
-     *          erro al agregarlo.
+     * Adds a new task.
+     * @param task new task
+     * @return {@link jme3gl2.util.Timer} otherwise <code>null</code> if an error occurs when
+     * adding it
      */
     public Timer attachTask(TimerTask task) {
         if (this.addTask(task)) {
@@ -97,12 +90,13 @@ public class Timer {
         }
         return null;
     }
-     /**
-      * Método encargado de agregar varias tareas para este temporizador.
-      * @param tasks nuevas tareas.
-      * @return {@link Timer} de lo contrario <code>null</code> si sucede un
-     *          erro al agregarlos.
-      */
+    
+    /**
+     * Method in charge of adding several tasks for this timer.
+     * @param tasks new tasks
+     * @return {@link jme3gl2.util.Timer}otherwise <code>null</code> if an error occurs
+     * when adding them
+     */
     public Timer attachAllTask(TimerTask... tasks) {
         if (tasks == null)
             return null;
@@ -119,18 +113,18 @@ public class Timer {
     }
     
     /**
-     * Elimina una tarea.
-     * @param task tarea a eliminar.
-     * @return estado.
+     * Deletes a task
+     * @param task task to be eliminated
+     * @return boolean
      */
     public boolean removeTask(TimerTask task) {
         return this.tasks.remove(task);
     }
     
     /**
-     * Elimina una tarea.
-     * @param task tarea a eliminar.
-     * @return este temporizador.
+     * Deletes a task.
+     * @param task task to be eliminated
+     * @return this
      */
     public Timer detachTask(TimerTask task) {
         if (this.removeTask(task)) {
@@ -139,14 +133,15 @@ public class Timer {
         return null;
     }
     
-   /**
-     * Elimina el primer {@link TimerTask} que es una instancia de subclase 
-     * de la clase especificada.
+    /**
+     * Deletes the first {@link jme3gl2.util.TimerTask} which is a subclass instance of the
+     * specified class.
      * 
-     * @param <T> el tipo deseado de {@link TimerTask}
-     * @param taskClass clase del tipo deseado.
-     * @return este temporizador.
+     * @param <T> the desired type of {@link jme3gl2.util.TimerTask}
+     * @param taskClass class of the desired type
+     * @return this
      */
+    @SuppressWarnings("unchecked")
     public <T extends TimerTask> Timer detachTask(Class<T> taskClass) {
         if (this.detachTask(this.getTask(taskClass)) != null) {
             return this;
@@ -155,23 +150,25 @@ public class Timer {
     }
     
     /**
-     * Devuelve un {@link TimerTask} según su índice o posición en la lista de 
-     * de tareas de este temporizador.
-     * @param index índice.
-     * @return tarera.
+     * Returns a {@link jme3gl2.util.TimerTask} according to its index or position in the
+     * task list of this timer.
+     * 
+     * @param index index
+     * @return task
      */
     public TimerTask getTask(int index) {
         return this.tasks.get(index);
     }
     
     /**
-     * Devuelve el primer {@link TimerTask} que es una instancia de subclase 
-     * de la clase especificada.
+     * Returns the first {@link jme3gl2.util.TimerTask} which is a subclass instance of the
+     * specified class.
      * 
-     * @param <T> el tipo deseado de {@link TimerTask}
-     * @param taskClass clase del tipo deseado.
-     * @return Primer estado adjunto que es una instancia de {@code taskClass}.
+     * @param <T> the desired type of {@link jme3gl2.util.TimerTask}
+     * @param taskClass class of the desired type.
+     * @return first state attached which is an instance of {@code taskClass}.
      */
+    @SuppressWarnings("unchecked")
     public <T extends TimerTask> T getTask(Class<T> taskClass) {
         synchronized (tasks) {
             for (TimerTask task : tasks) {
@@ -184,14 +181,14 @@ public class Timer {
     }
     
     /**
-     * Limpia las tareas.
+     * Cleans tasks.
      */
     public void clearTask() {
         tasks.clear();
     }
     
     /**
-     * Inicia el temporizador.
+     * Starts the timer.
      */
     public void start() {
         counter = 0;
@@ -199,15 +196,15 @@ public class Timer {
     }
     
     /**
-     * Método encargado de deterner la ejecuación de este temporizador.
-     * @param pause estado del temporizador.
+     * Method in charge of stopping the execution of this timer.
+     * @param pause boolean
      */
     public void pause(boolean pause) {
         paused = pause;
     }
     
     /**
-     * Resetea este temporizador.
+     * Reset this timer.
      */
     public void reset() {
         paused = false;
@@ -215,7 +212,7 @@ public class Timer {
     }
     
     /**
-     * Detiene por completo el temporizador.
+     * Stops the timer completely.
      */
     public void stop() {
         paused = true;
@@ -223,11 +220,11 @@ public class Timer {
     }
     
     /**
-     * Método encargado de actualizar este temporizado. Ten encuenta que se
-     * actualiza de manera secuencial al motor {@code jme3}.
+     * Method in charge of updating this timer. Note that it is updated sequentially 
+     * to the engine {@code JME3}.
      * 
-     * @param tpf fps del juego.
-     * @param speed velocidad.
+     * @param tpf fps of the game
+     * @param speed speed
      */
     public void update(float tpf, float speed) {        
         if (!paused) {
@@ -246,9 +243,11 @@ public class Timer {
     }
     
     /**
-     * Determina si a finalizado ó alcanzado el tiempo maximo esperado.
-     * @return un valor lógico.
+     * (non-Javadoc)
+     * @return boolean
+     * @deprecated Use a {@link jme3gl2.util.TimerTask} to determine if your status
      */
+    @Deprecated(since = "3.0.0")
     public boolean finished() {
         if (paused) {
             return false;
@@ -257,36 +256,36 @@ public class Timer {
     }
     
     /**
-     * Método encargado de gestionar el estado de este temporizador.
-     * @return {@code true} si esta en ejecución, de lo contrario devolvería
-     *          {@code false} si esta detenido o muero.
+     * Method in charge of managing the status of this timer.
+     * @return <code>true</code> if it is running, otherwise it will return
+     * <code>alse</code> if it's stopped or dead
      */
     public boolean isRun() {
         return !paused;
     }
     
     /**
-     * Hace que finalize el temporizador de manera forzada.
+     * Forcibly terminates the timer.
      */
     public void forceFinished() {
         counter = maxTime;
     }
     
     /**
-     * Método encargado de devolver el estado.
-     * @return estado.
+     * Method in charge of returning the status.
+     * @return boolean
      */
     public boolean isPaused() {
         return paused;
     }
     
     /**
-     * Establece un nuevo tiempo maximo.
+     * Set a new maximum time.
      * <p>
-     * <b>NOTA:</b> Se debe tener en cuenta que al establecer un nuevo tiempo, 
-     * se reiniciará automáticamente el temporizador.</p>
+     * <b>NOTE:</b> It should be noted that setting a new time will automatically
+     * reset the timer.
      * 
-     * @param maxTime tiempo maximo.
+     * @param maxTime maximum time
      */
     public void setMaxTime(float maxTime) {
         this.maxTime = maxTime;
@@ -294,32 +293,32 @@ public class Timer {
     }
     
     /**
-     * Devuelve la diferencia entre el tiempo transcurrido y el maximo.
-     * @return tiempo restante.
+     * Returns the difference between the elapsed time and the maximum time.
+     * @return remaining time
      */
     public float getTimeLeft() {
         return (maxTime - counter);
     }
     
     /**
-     * Método que se puede utiliza para hacer un adelanto o un atraso de tiempo.
-     * @param counter contador de tiempo.
+     * Method that can be used to make an advance or a delay of time.
+     * @param counter time counter
      */
     public void setCounterTo(float counter) {
         this.counter = counter;
     }    
 
     /**
-     * Devuelve el contador actual.
-     * @return contador.
+     * Returns the current counter.
+     * @return float
      */
     public float getCounter() {
         return counter;
     }
 
     /**
-     * Devuelve el tiempo maximo actual.
-     * @return tiempo maximo.
+     * Returns the current maximum time.
+     * @return float
      */
     public float getMaxTime() {
         return maxTime;

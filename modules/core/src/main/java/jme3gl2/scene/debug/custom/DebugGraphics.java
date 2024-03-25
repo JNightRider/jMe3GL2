@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,37 +29,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.util.input;
+package jme3gl2.scene.debug.custom;
 
-import com.jme3.input.controls.KeyTrigger;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
+import com.jme3.math.ColorRGBA;
 
 /**
- * Un objeto de la clase <code>Key</code> resenta un código clave.
- * 
+ * Interface in charge of managing a graphical debugger of the bodies of the debugged scene.er.
  * @author wil
- * @version 1.0-SNAPSHOT
- * @since 2.0.0
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class Key extends KeyTrigger {
-    
-    /** nombre clave de la entrada. */
-    private final String keyName;
+public interface DebugGraphics {
+     
+    /**
+     * Returns a font for displaying text.
+     * @param name the font path
+     * @return font
+     */
+    public BitmapFont getBitmapFont(String name);
     
     /**
-     * Instancie un nuevo objeto de la clase <code>Key</code>.
-     * @param keyCode codigo de la entrada.
-     * @param keyName nombre de esta entrada.
+     * Create a 2D object where text can be displayed.
+     * @param font the font of the text
+     * @param value the content
+     * @return text
      */
-    public Key(int keyCode, String keyName) {
-        super(keyCode);
-        this.keyName = keyName;
-    }
-
+    public BitmapText createBitmapText(BitmapFont font, String value);
+    
     /**
-     * Método encargado de devolver el nombre de esta llave.
-     * @return nombre clave.
+     * Returns a custom color for the bodies in the scene.
+     * @param name string
+     * @return color
      */
-    public String getKeyName() {
-        return keyName;
-    }
+    public ColorRGBA getColor(String name);
 }

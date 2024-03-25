@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,8 +40,7 @@ import com.jme3.scene.Spatial;
 
 import jme3gl2.physics.PhysicsSpace;
 import jme3gl2.physics.control.PhysicsBody2D;
-import jme3gl2.physics.debug.control.BoundsDebugControl;
-import jme3gl2.physics.debug.control.PhysicsDebugControl;
+import jme3gl2.scene.debug.custom.DebugGraphics;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,93 +49,92 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase <code>Dyn4JDebugAppState</code> encargado de gestionar un estado para
- * la depuración de las formas físicas de los cuerpo que se agregan al mundo 
- * de <b>Dyn4j</b>.
+ * Class <code>Dyn4JDebugAppState</code> responsible for managing a state for
+ * the debugging of the physical forms of the bodies that are added to the world
+ * of <b>Dyn4j</b>.
+ * @param <E> body types
  * 
  * @author wil
- * @version 1.0-SNAPSHOT 
- * @param <E> tipo-cuepos.
- * 
+ * @version 1.5.0
  * @since 2.5.0
  */
 public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
-
-    /** Logger de la clase. */
+    /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Dyn4jDebugAppState.class.getName());
     
-    /** Aplicación principal <code>JME</code>. */
-    protected Application application;
-    
-    /** Administradro de recursos <code>JME</code>. */
+    /** Main application <code>JME</code>. */
+    protected Application application;    
+    /** Resource manager <code>JME</code>. */
     protected AssetManager assetManager;
     
-    /*
-        Parte gráfica.
-    */
-    /** Espacio físico de los cuerpos. */
+    // Graphic part.
+    /** Physical space of the bodies. */
     private final PhysicsSpace<E> physicsSpace;
     
     /**
-     * Todos los objetos-cuepor para las formas físicas que agregarán en este
-     * nodo fuera de escena para que no interfiera con el nodo raíz principal.
+     * All objects/bodies for the physical shapes to be added in this node out
+     * of scene so that it does not interfere with the main root node.
      */
-    private Node debugNode;
+    private Node debugNode;    
+    /** Rendering manager. */
+    private Graphics2DRenderer renderer; // Debugger
     
-    ///** Vista depuración. */
-    //private ViewPort devugViewPort;
-    
-    /* Administrador de renderizado. */
-    private Graphics2DRenderer renderer;    // deuprador.
-    //private RenderManager renderManager;    // renderizador jme.
-    
-    /*
-        Cuerpos físicos y articulaciones.
-    */
-    /** Mapa cuerpos físicos. */
-    protected Map<E, Spatial> bodies 
-            = new HashMap<>();;
+    // Physical bodies and joints.    
+    /** Map of physical bodies. */
+    protected Map<E, Spatial> bodies = new HashMap<>();
 
     /**
-     * Constructor de la clase <code>Dyn4JDebugAppState</code> donde pide el
-     * espacio físico para gestionar las formas de los cuerpos.
+     * Class constructor <code>Dyn4JDebugAppState</code> where it asks for the
+     * physical space to manage the shapes of the bodies.
      * 
-     * @param physicsSpace espacio-físico.
+     * @param physicsSpace physical space
      */
     public Dyn4jDebugAppState(PhysicsSpace<E> physicsSpace) {
         this.physicsSpace = physicsSpace;
     }
     
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see com.jme3.app.state.AbstractAppState#initialize(com.jme3.app.state.AppStateManager, com.jme3.app.Application) 
-     * @param app Application.
+     * @param app application
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void initialize(Application app) {
-        assetManager  = app.getAssetManager();
-        application   = app;
+        assetManager = app.getAssetManager();
+        application  = app;
         
-        /* inicializamos la escena-depuración. */
-        renderer  = new Graphics2DRenderer(assetManager);
+        // Initialize the debug scene
+        renderer  = new Graphics2DRenderer((Dyn4jDebugAppState<PhysicsBody2D>) this);
         debugNode = new Node("Debug Node");
+        
         debugNode.setCullHint(Spatial.CullHint.Never);
-        debugNode.addControl(new BoundsDebugControl<>(physicsSpace.getPhysicsWorld(), renderer));
+        debugNode.addControl(new BoundsDebugControl<>(this, renderer));
+        
+        setDebugGraphics(new Dyn4jDebugGraphics(app.getAssetManager()));
+    }
+    
+    /**
+     * Sets debug graphics (color manager).
+     * @param graphics object
+     */
+    public void setDebugGraphics(DebugGraphics graphics) {
+        if (!isInitialized()) {
+            LOGGER.log(Level.WARNING, "Initialize debugging first to set a color palette");
+            return;
+        }
+        renderer.setDebugGraphics(graphics);
+        renderer.printInformation();
     }
 
-    /**
-     * (non-JavaDoc)
-     */
+    /** (non-Javadoc) */
     @Override
     protected void onEnable() {
         if (getApplication() instanceof SimpleApplication) {
             ((SimpleApplication) getApplication()).getRootNode().attachChild(debugNode);
         }
     }
-
-    /**
-     * (non-JavaDoc)
-     */
+    /**(non-Javadoc) */
     @Override
     protected void onDisable() {
         this.debugNode.detachAllChildren();
@@ -144,9 +142,9 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     }
     
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see com.jme3.app.state.AbstractAppState#cleanup() 
-     * @param app Application
+     * @param app application
      */
     @Override
     protected void cleanup(Application app) {
@@ -155,9 +153,9 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     }
     
     /**
-     * (non-JavaDoc)
+     * (non-Javadoc)
      * @see com.jme3.app.state.AbstractAppState#update(float) 
-     * @param tpf float.
+     * @param tpf float
      */
     @Override
     public void update(float tpf) {
@@ -165,8 +163,9 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     }
     
     /**
-     * Método encargado de actualizar los cuerpos físicos.
+     * Method in charge of updating the physical bodies.
      */
+    @SuppressWarnings("unchecked")
     private void updateBodies() {
         final Map<E, Spatial> oldBodies = this.bodies;        
         this.bodies = new HashMap<>();
@@ -174,20 +173,20 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
         final Collection<E> currentBodies 
                 = this.physicsSpace.getBodies();
 
-        /* Crear nuevo mapa de cuerpos. */
+        // Create new body map
         for (final E body : currentBodies) {            
             if (oldBodies.containsKey(body)) {
 
-                /* Coapiar el Spatial existente. */
+                // Copy existing Spatial
                 final Spatial spatial = oldBodies.get(body);
                 this.bodies.put(body, spatial);
                 oldBodies.remove(body);
             } else {
                 LOGGER.log(Level.FINE, "**Create new debug PhysicsBody2D**");
                 
-                /* Crear un nuevo Spatial */
+                // Create a new Spatial
                 final Node node = new Node(body.toString());
-                node.addControl(new PhysicsDebugControl(renderer, body));
+                node.addControl(new Dyn4jPhysicsControl((Dyn4jDebugAppState<PhysicsBody2D>) this, body));
                 
                 this.bodies.put(body, node);
                 this.debugNode.attachChild(node);
@@ -196,5 +195,21 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
         for (final Spatial spatial : oldBodies.values()) {
             spatial.removeFromParent();
         }
+    }
+    
+    /**
+     * Return physical space.
+     * @return object
+     */
+    public PhysicsSpace<E> getPhysicsSpace() {
+        return physicsSpace;
+    }
+    
+    /**
+     * Returns the 2D graphics renderer.
+     * @return object
+     */
+    public Graphics2DRenderer getGraphics2DRenderer() {
+        return renderer;
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,46 +29,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.debug.shape;
+package jme3gl2.scene.debug;
 
+import com.jme3.export.*;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.mesh.IndexBuffer;
 import com.jme3.util.BufferUtils;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 /**
- * Clase <code>Cross</code> encargado de generar una forma de cruz.
+ * Class <code>Cross</code> responsible for generating a cross shape.
  * @author wil
- * @version 1.0-SNAPSHOT 
+ * @version 1.0.5
  * @since 2.5.0
  */
 public class Cross extends Mesh {
 
-    /** número de segmentos. */
+    /** Number of segments. */
     private float segmentSize;
 
     /**
-     * Constructor predeterminado solo para serialización. No utilice.
+     * Default constructor for serialization only. Do not use.
      */
     public Cross() {
     }
 
     /**
-     * Constructor principal de la clase <code>Cross2D</code> para construir
-     * una instancia de una cruz.
-     * @param segmentSize el tamaño del segmento de la cruz.
+     * Main class constructor <code>Cross2D</code> to build an instance of a cross.
+     * @param segmentSize the size of the cross segment
      */
     public Cross(final float segmentSize) {
         this(segmentSize, Mode.Lines);
     }
 
     /**
-     * Constructor principal de la clase <code>Cross2D</code> para construir
-     * una instancia de una cruz.
-     * @param segmentSize el tamaño del segmento de la cruz.
-     * @param mode modo para esta malla.
+     * Main class constructor <code>Cross2D</code> to build an instance of a cross.
+     * @param segmentSize the size of the cross segment
+     * @param mode mode for this mesh.
      */
     public Cross(final float segmentSize, final Mode mode) {
         super();
@@ -77,19 +77,19 @@ public class Cross extends Mesh {
     }
 
     /**
-     * Devuelve el tamaño del segmento de la cruz.
-     * @return Tamaño del segmento de la cruz.
+     * Returns the size of the cross segment.
+     * @return the size
      */
     public float getSegmentSize() {
         return this.segmentSize;
     }
 
     /**
-     * Reconstruye la cruz basándose en un nuevo conjunto de parámetros.
-     * @param segmentSize el tamaño del segmento de la cruz.
+     * Reconstructs the cross based on a new set of parameters.
+     * @param segmentSize the size of the cross segment
      */
     public void updateGeometry(final float segmentSize) {
-        /* Crear los buffers */
+        // Create buffers
         this.setBuffer(Type.Position, 3, 
                 BufferUtils.createVector3Buffer(getFloatBuffer(Type.Position),
                         4));
@@ -99,17 +99,44 @@ public class Cross extends Mesh {
         final FloatBuffer pb = getFloatBuffer(Type.Position);
         final IndexBuffer ib = getIndexBuffer();
 
-        // establecer los vertices.
+        // Set the vertices
         pb.put(this.segmentSize).put(this.segmentSize).put(0);
         pb.put(-this.segmentSize).put(this.segmentSize).put(0);
         pb.put(this.segmentSize).put(-this.segmentSize).put(0);
         pb.put(-this.segmentSize).put(-this.segmentSize).put(0);
 
-        // establecer los índices.
+        // Set the indexes
         ib.put(0, 0);
         ib.put(1, 3);
         ib.put(2, 1);
         ib.put(3, 2);
         updateBound();
+    }
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException throws
+     */
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        final InputCapsule in = im.getCapsule(this);
+        super.read(im);
+        segmentSize = in.readFloat("segmentSize", 0);
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
+     * 
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
+     */
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        final OutputCapsule out = ex.getCapsule(this);
+        super.write(ex);
+        out.write(segmentSize, "segmentSize", 0);
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,19 +32,18 @@
 package jme3gl2.util;
 
 /**
- * Un <code>TimerTask</code> es una interfaz encargado de activar una tarea
- * del temporizador <code>Timer</code>.
+ * A <code>TimerTask</code> is an interface responsible for triggering a timer 
+ * task {@link jme3gl2.util.Timer}.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- *
+ * @version 1.0.5
  * @since 1.0.0
  */
 public interface TimerTask {
     
     /**
-     * Método encargado de activar una tarea.
-     * @param timer el temporizador que ejecuto esta tarea.
+     * Responsible method of activating a task.
+     * @param timer the timer that executed this task.
      */
     void doTask(Timer timer);
 }

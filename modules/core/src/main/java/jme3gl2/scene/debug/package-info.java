@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,7 +31,9 @@
  */
 
 /**
- * Constrol para los nodos y geometrías para las formas depuradas de los
- * cuepos en el espacio físico.
+ * Package for physical forms used to debug bodies from physical space.
+ * @author wil
+ * @version 1.0.5
+ * @since 2.5.0
  */
-package jme3gl2.physics.debug.control;
+package jme3gl2.scene.debug;

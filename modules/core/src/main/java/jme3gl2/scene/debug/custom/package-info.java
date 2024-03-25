@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,42 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.util.input;
-
-import com.jme3.input.controls.MouseButtonTrigger;
 
 /**
- * Un objeto de la clase <code>MouseButton</code> se encarga de administrar las
- * entradas con el ratón.
+ * Package in charge of managing the classes to customize the debugger of the
+ * bodies in the scene.
  * 
- * @see MouseButtonTrigger
- * @see MouseTrigger
- *
  * @author wil
- * @version 1.0-SNAPSHOT
- * @since 2.0.0
+ * @version 1.0.5
+ * @since 3.0.0
  */
-public class MouseButton extends MouseButtonTrigger implements MouseTrigger {
-    
-    /** nombre clave de la entrada. */
-    private final String inputName;
-    
-    /**
-     * Constructor de la clase <code>MouseButton</code>.
-     * @param mouseButton int.
-     * @param name string.
-     */
-    public MouseButton(int mouseButton, String name) {
-        super(mouseButton);
-        this.inputName = name;
-    }
-    
-    /**
-     * Método encargado de devolver el nombre de esta llave.
-     * @return nombre clave.
-     */
-    @Override
-    public String getInputName() {
-        return this.inputName;
-    }  
-}
+package jme3gl2.scene.debug.custom;

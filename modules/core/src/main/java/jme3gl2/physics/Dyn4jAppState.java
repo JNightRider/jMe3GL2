@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,9 +36,6 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.RenderManager;
 
-import jme3gl2.physics.control.PhysicsBody2D;
-import jme3gl2.physics.debug.Dyn4jDebugAppState;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -46,169 +43,196 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jme3gl2.physics.control.PhysicsBody2D;
+import jme3gl2.physics.debug.Dyn4jDebugAppState;
+
 import org.dyn4j.collision.Bounds;
 import org.dyn4j.dynamics.Settings;
 
 /**
- * Un <code>Dyn4jAppState</code> es el estado encargado de gestionar el motor<br>
- * de física <code>Dyn4j</code>.
+ * An object (an instance) of the class <code>Dyn4jAppState</code> is a state that 
+ * is responsible for managing the physics engine provided by dyn4j, it integrates 
+ * this engine with JME3 to give realism to 2D games with it.
  * <p>
- * Tenga en cuenta que el motor {@code dyn4j} es independiente de {@code jme3},
- * por lo cual debe tener conociminetos para manejos de ambos. </p>
- * 
+ * Note that the dyn4j engine is independent of jme3; therefore, you must have
+ * knowledge of how to handle both.
+ * @param <E> of type {@link jme3gl2.physics.control.PhysicsBody2D}
  * @author wil
- * @version 1.0.5-SNAPSHOT
- * 
+ * @version 1.5.0
  * @since 1.0.0
- * @param <E> el tipo {@code PhysicsBody}.
  */
-@SuppressWarnings(value = {"unchecked"})
 public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
 
-    /** Tiempo de espera en microsefundos. */
-    private static final long TIME_STEP_IN_MICROSECONDS = (long) (Settings.DEFAULT_STEP_FREQUENCY * 1000L);
+    /** Wait time in microseconds. */
+    private static final long TIME_STEP_IN_MICROSECONDS = (long) (Settings.DEFAULT_STEP_FREQUENCY * 1000L);    
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(Dyn4jAppState.class.getName());
     
-    /**
-     * Consulte {@link Application} para obtener más información.
-     */
-    protected Application app = null;
-    
-    /** Administrador de estados. */
+    /** JME3 Application (Game). */
+    protected Application app = null;    
+    /** States Manager. */
     protected AppStateManager stateManager = null;
     
-    /** Capacidad inicial de cuerpo del mundo. */
+    /**
+     * Initial capacity that the physical space will have (it is just an initial 
+     * space reserved in memory), null if none is specified, to which the one 
+     * established by <b>dyn4j</b> will be assigned.
+     */
     protected Integer initialCapacity = null;
     
-    /** Capacidad inicial para las articulaciones. */
+    /** 
+     * Initial capacity of the joints that the physical space will have (it is 
+     * only an initial space reserved in memory), null if none is specified, to
+     * which the one established by <b>dyn4j</b> will be assigned.
+     */
     protected Integer initialJointCapacity = null;
     
-    /** Límite del mundo.
+    /** 
+     * Limit of the world.
      * <p>
-     * Tenga encuenta que si se establece un límite, el motor de física al
-     * alcanzar dicho límite dejara dehabilitado el mundo.</p>
+     * Please note that if a limit is set, the physics engine will disable the world 
+     * upon reaching the limit
      */
     protected Bounds bounds = null;
     
-    /**
-     * Consulte {@link PhysicsSpace} para obtener más información.
-     */
-    protected PhysicsSpace<E> physicsSpace = null;
-    
-    /** fps para el motor. */
-    protected float tpf = 0;
-    
-    /** fps acumulado para el motor. */
+    /**The physical space of bodies. */
+    protected PhysicsSpace<E> physicsSpace = null;    
+    /** <code>TPF</code> since last update call; in seconds. */
+    protected float tpf = 0;    
+    /**accumulated <code>TPF</code>. */
     protected float tpfSum = 0;
     
-    // Campos MultiTreading //    
-    /** Consulte {@link ThreadingType} para obtener más información. */
+    //--------------------------------------------------------------------------
+    //                       Multithreaded fields
+    //--------------------------------------------------------------------------
+    /** Type of thread on which the physics engine runs. */
     protected ThreadingType threadingType = null;
     
-    /** (non-javadoc) */
+    /**
+     * When the engine is running in parallel, an executor is used to safely update 
+     * the physical engine to avoid problems with JME3 threads.
+     */
     protected ScheduledThreadPoolExecutor executor;
-    /** (non-javadoc) */
-     private final Runnable parallelPhysicsUpdate = () -> {
-         if (!isEnabled()) {
-             return;
-         }
-         
-         Dyn4jAppState.this.physicsSpace.updateFixed(Dyn4jAppState.this.tpfSum);
-         Dyn4jAppState.this.tpfSum = 0;
+    
+    /**
+     * When running the update thread; An executable is used to update the parallel
+     * physics engine.
+     */
+    private final Runnable parallelPhysicsUpdate = () -> {
+        if (!isEnabled()) {
+            return;
+        }
+        
+        // physics engine update
+        Dyn4jAppState.this.physicsSpace.updateFixed(Dyn4jAppState.this.tpfSum);
+        Dyn4jAppState.this.tpfSum = 0.0F;
     };
     
-     // Depurador.
-     /** Estado-depuración.*/
-     protected Dyn4jDebugAppState<E> debugAppState;
-     
-     /**
-      * <code>true</code> si se activa el estado depurador para los cuerpos
-      * físico y articulaciones del espacio-físico, de lo contrario
-      * <code>false</code> para desactivarlo.
-      */
-     protected boolean debug;
+    //--------------------------------------------------------------------------
+    //                              Debugger
+    //-------------------------------------------------------------------------- 
+    /**
+     * State in charge of managing a debugger for all physical bodies that manage
+     * the physical space (world).
+     */
+    protected Dyn4jDebugAppState<E> dyn4jDebugAppState;
      
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> con los valores
-     * predeterminados.
+     * <code>true</code> to enable the purification state of physical bodies and
+     * joints in physical space; otherwise it is <code>false</code> to disable.
+     */
+    protected boolean debug;
+     
+    /**
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      */
     public Dyn4jAppState() {
         this(null, null, ThreadingType.PARALLEL);
     }
-
+    
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> e inicializelo con
-     * los valores predeterminados.
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      * 
-     * @param bounds Límite del mundo.
+     * @param bounds Llmit of the world
      */
     public Dyn4jAppState(final Bounds bounds) {
         this(null, null, bounds, ThreadingType.PARALLEL);
     }
-
+    
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> e inicializelo con
-     * los valores predeterminados.
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      * 
-     * @param initialCapacity capacidad inicial (cuerpos en el mundo).
-     * @param initialJointCapacity capacidad inicial de las articulaciones.
+     * @param initialCapacity initial capacity (bodies in the world)
+     * @param initialJointCapacity initial joint capacity
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity) {
         this(initialCapacity, initialJointCapacity,null, ThreadingType.PARALLEL);
     }
-
+    
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> e inicializelo con
-     * los valores predeterminados.
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      * 
-     * @param initialCapacity capacidad inicial (cuerpos en el mundo).
-     * @param initialJointCapacity capacidad inicial de las articulaciones.
-     * @param bounds Límite del mundo.
+     * @param initialCapacity initial capacity (bodies in the world)
+     * @param initialJointCapacity initial joint capacity
+     * @param bounds Llmit of the world
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity, final Bounds bounds) {
         this(initialCapacity, initialJointCapacity, bounds, ThreadingType.PARALLEL);
     }
-
+    
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> e inicializelo con
-     * los valores predeterminados.
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      * 
-     * @param threadingType Tipo del integración del motor.
+     * @param threadingType physics engine integration type (thread)
      */
     public Dyn4jAppState(final ThreadingType threadingType) {
         this(null, null, threadingType);
     }
-
+    
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> e inicializelo con
-     * los valores predeterminados.
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      * 
-     * @param bounds Límite del mundo.
-     * @param threadingType Tipo del integración del motor.
+     * @param bounds Llmit of the world
+     * @param threadingType physics engine integration type (thread)
      */
     public Dyn4jAppState(final Bounds bounds, final ThreadingType threadingType) {
         this(null, null, bounds, threadingType);
     }
-
+    
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> e inicializelo con
-     * los valores predeterminados.
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      * 
-     * @param initialCapacity capacidad inicial (cuerpos en el mundo).
-     * @param initialJointCapacity capacidad inicial de las articulaciones.
-     * @param threadingType Tipo del integración del motor.
+     * @param initialCapacity initial capacity (bodies in the world)
+     * @param initialJointCapacity initial joint capacity
+     * @param threadingType physics engine integration type (thread)
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity, final ThreadingType threadingType) {
         this(initialCapacity, initialJointCapacity, null, threadingType);
     }
 
     /**
-     * Instancia un nuevo objeto <code>Dyn4jAppState</code> e inicializelo con
-     * los valores predeterminados.
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
      * 
-     * @param initialCapacity capacidad inicial (cuerpos en el mundo).
-     * @param initialJointCapacity capacidad inicial de las articulaciones.
-     * @param bounds Límite del mundo.
-     * @param threadingType Tipo del integración del motor.
+     * @param initialCapacity initial capacity (bodies in the world)
+     * @param initialJointCapacity initial joint capacity
+     * @param bounds Llmit of the world
+     * @param threadingType physics engine integration type (thread)
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity, final Bounds bounds, final ThreadingType threadingType) {
         this.threadingType = threadingType;
@@ -217,25 +241,25 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     }
 
     /**
-     * (non-JavaDoc).
-     * 
-     * @param stateManager AppStateManager
-     * @param app Application
-     * @see AbstractAppState#initialize(com.jme3.app.state.AppStateManager, com.jme3.app.Application) 
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#initialize(com.jme3.app.state.AppStateManager, com.jme3.app.Application) 
+     * @param stateManager object
+     * @param app object
      */
     @Override
     public void initialize(final AppStateManager stateManager, final Application app) {
         this.app = app;
         this.stateManager = stateManager;
 
-        // Iniciar objetos relacionados con la física.
+        // Start physics-related objects.
         startPhysics();
 
         super.initialize(stateManager, app);
+        printInformation();
     }
 
     /**
-     * Inicializa las física.
+     * Initialize physics for physical bodies.
      */
     private void startPhysics() {
         if (this.initialized) {
@@ -252,8 +276,27 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     }
     
     /**
-     * Inicializa la física de manera que se ejecute en paralelo con el motor
-     * {@code jme3}, es decir con nuestros 'modelos 2D'.
+     * Prints information about the physics engine that was configured on the screen.
+     */
+    protected void printInformation() {
+        StringBuilder buff = new StringBuilder();
+        buff.append("[jMe3GL2] :Physical engine initialized with the following properties")
+             .append('\n');
+        buff.append(" *  Threading Type: ").append(threadingType)
+            .append('\n');
+        buff.append(" *  Initial Capacity: ").append(initialCapacity)
+            .append('\n');
+        buff.append(" *  Initial Joint Capacity: ").append(initialJointCapacity)
+            .append('\n');
+        buff.append(" *  Bounds: ").append(bounds)
+            .append('\n');
+        buff.append(" *  Debugger Enabled: ").append(debug)
+            .append('\n');
+        LOGGER.log(Level.INFO, String.valueOf(buff));
+    }
+    
+    /**
+     * Initializes the physics engine to run in parallel with JME3 safely.
      */
     private void startPhysicsOnExecutor() {
         if (this.executor != null) {
@@ -261,6 +304,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
         }
         this.executor = new ScheduledThreadPoolExecutor(1);
 
+        @SuppressWarnings("unchecked")
         final Callable<Boolean> call = () -> {
             Dyn4jAppState.this.physicsSpace = new PhysicsSpace(Dyn4jAppState.this.initialCapacity, Dyn4jAppState.this.initialJointCapacity,
                     Dyn4jAppState.this.bounds);
@@ -277,30 +321,29 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     }
 
     /**
-     * (non-JavaDoc).
+     * Method responsible for configuring the physical engine update task, this 
+     * is only valid if the engine runs in parallel.
      */
     private void schedulePhysicsCalculationTask() {
         if (this.executor != null) {
-            this.executor.scheduleAtFixedRate(this.parallelPhysicsUpdate, 0l, TIME_STEP_IN_MICROSECONDS,
+            this.executor.scheduleAtFixedRate(this.parallelPhysicsUpdate, 0L, TIME_STEP_IN_MICROSECONDS,
                     TimeUnit.MICROSECONDS);
         }
     }
 
     /**
-     * (non-JavaDoc).
-     * @param stateManager AppStateManager
-     * @see AbstractAppState#stateAttached(com.jme3.app.state.AppStateManager) 
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#stateAttached(com.jme3.app.state.AppStateManager) 
+     * @param stateManager object
      */
     @Override
     public void stateAttached(final AppStateManager stateManager) {
-        // iniciar objetos relacionados con la física 
-        // si appState no está inicializado.
+        // initializes physics-related objects if AppState is not initialized.
         if (!this.initialized) {
             startPhysics();
         }
         
-        // Comprobar si el modo depurador está habilitado 
-        // e iniciar el estado depurador.
+        // Check if debugger mode is enabled and start the debugger state.
         if (this.debug) {
             this.stateManager = stateManager;
             prepareDebugger(true);
@@ -310,9 +353,9 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     }
     
     /**
-     * (non-JavaDoc).
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#update(float) 
      * @param tpf float
-     * @see AbstractAppState#update(float) 
      */
     @Override
     public void update(final float tpf) {
@@ -320,9 +363,9 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             return;
         }
         
-        if (this.debug && this.debugAppState == null && this.physicsSpace != null) {
+        if (this.debug && this.dyn4jDebugAppState == null && this.physicsSpace != null) {
             prepareDebugger(true);
-        } else if (!this.debug && this.debugAppState != null) {
+        } else if (!this.debug && this.dyn4jDebugAppState != null) {
             destroyDebugger();
         }
         
@@ -331,9 +374,9 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     }
     
     /**
-     * (non-JavaDoc).
-     * @param rm RenderManager
-     * @see AbstractAppState#render(com.jme3.renderer.RenderManager) 
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#render(com.jme3.renderer.RenderManager) 
+     * @param rm object
      */
     @Override
     public void render(final RenderManager rm) {
@@ -353,9 +396,9 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     }
 
     /**
-     * (non-JavaDoc).
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#setEnabled(boolean) 
      * @param enabled boolean
-     * @see AbstractAppState#setEnabled(boolean) 
      */
     @Override
     public void setEnabled(final boolean enabled) {
@@ -369,7 +412,10 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
     }
 
     /**
-     * Método encargado de limpiar el estado de la física.
+     * Method responsible for cleaning the state of physics.
+     * <p>
+     * <b>WARNING</b>: Once this method is executed (remove it from the state manager)
+     * the physical space will be invalidated so it will be unusable.
      */
     @Override
     public void cleanup() {
@@ -379,61 +425,59 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             this.executor = null;
         }
 
-        this.physicsSpace.destroy();
+        this.physicsSpace = null;
 
         super.cleanup();
     }
 
     /**
-     * Devuelve esl espacio de la física.
-     * @return motor de la física.
+     * Returns the physics space.
+     * @return A {@link jme3gl2.physics.PhysicsSpace} object
      */
     public PhysicsSpace<E> getPhysicsSpace() {
         return this.physicsSpace;
     }
 
     /**
-     * Método encargado de devolver el estado del depurador.
-     * @return <code>true</code> si esta habilitado, de lo contrario devolverá
-     * <code>false</code> si se encuentra deshabilitado.
+     * Method responsible for returning the state of the debugger.
+     * @return <code>true</code> if enabled; otherwise it will return 
+     * <code>false</code> if disabled
      */
     public boolean isDebug() {
         return debug;
     }
 
     /**
-     * Método encargado de activar o desactivar el depurador de los cuerpos 
-     * físicos.
-     * 
-     * @param debug <code>true</code> para habilitar el estado, de lo contrario
-     * <code>false</code> para deshabilitar.
+     * Method responsible for activating or deactivating the physical body debugger.
+     * @param debug <code>true</code> to enable state; otherwise <code>false</code>
+     * to disable it
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
     
     /**
-     * Método encargado de preparar el depurador para los cuerpos físicos.
-     * @param attach <code>true</code> si se desea agregar al administrador de
-     * estados, de lo contrario <code>false</code>.
+     * Responsible method of preparing the physical debugger.
+     * @param attach <code>true</code> if you want to add it to the state manager;
+     * otherwise <code>false</code>
      */
     protected void prepareDebugger(boolean attach) {
-        if (this.debugAppState == null) {
-            this.debugAppState = new Dyn4jDebugAppState<>(this.physicsSpace);
+        if (this.dyn4jDebugAppState == null) {
+            this.dyn4jDebugAppState = new Dyn4jDebugAppState<>(this.physicsSpace);
             
             if (attach) {
-                this.stateManager.attach(this.debugAppState);
+                this.stateManager.attach(this.dyn4jDebugAppState);
             }
         }
     }
     
     /**
-     * Método encargado de estruir el estado depurador.
+     * Method responsible for destroying the debugger state.
      */
     protected void destroyDebugger() {
-        if (this.debugAppState != null) {
-            this.stateManager.detach(this.debugAppState);
-            this.debugAppState = null;
+        if (this.dyn4jDebugAppState != null) {
+            this.stateManager.detach(this.dyn4jDebugAppState);
+            this.dyn4jDebugAppState = null;
         }
     }
 }
