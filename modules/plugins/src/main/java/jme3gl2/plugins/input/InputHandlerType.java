@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024 jMonkeyEngine.
+/* Copyright (c) 2009-2023 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,23 +29,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jme3gl2.plugins.input;
 
 /**
- * Package responsible for managing the <a href="https://dyn4j.org/">dyn4j</a> 
- * physics engine to provide performance for 2D games created using jMe3GL2 and
- * <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
- * <p>
- * Classes that make up this package:
- * <ul>
- * <li><b>Dyn4jAppState</b>: State in charge of managing the physics engine, in 
- * charge of applying updates, initializing physics, and enabling body debugging.</li>
- * <li><b>PhysicsSpace</b>: Physical space for bodies (dyn4j).</li>
- * <li><b>ThreadingType</b>: Object in charge of defining the type of integration 
- * of the physics engine.</li>
- * </ul>
+ * Clase enumeara <code>InputHandlerType</code> encargado de definir el tipo de
+ * entrada que administrara esta plantilla.
  * 
  * @author wil
- * @version 1.5.0
- * @since 1.5.0
+ * @version 1.0-SNAPSHOT
+ * @since 2.0.0
  */
-package jme3gl2.physics;
+public enum InputHandlerType {
+
+    /**
+     * Entrada por medio de una acción utilizando la interfaz
+     * {@code ActionListener} que jme3 proprociona.
+     */
+    Action,
+    /**
+     * Entrada analógico utilizando la interfaz {@code AnalogListener} que jme3
+     * proprociona.
+     */
+    Analog;
+}

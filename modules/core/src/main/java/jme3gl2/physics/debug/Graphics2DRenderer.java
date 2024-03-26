@@ -32,6 +32,7 @@
 package jme3gl2.physics.debug;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -118,8 +119,7 @@ public final class Graphics2DRenderer {
             .append('\n');
         buff.append(" *  ").append(GL_DEBUG_STATIC).append(": ").append(debugGraphics.getColor(GL_DEBUG_STATIC))
             .append('\n');   
-        buff.append(" *  ").append(GL_DEBUG_BOUNDS).append(": ").append(debugGraphics.getColor(GL_DEBUG_BOUNDS))
-            .append('\n');   
+        buff.append(" *  ").append(GL_DEBUG_BOUNDS).append(": ").append(debugGraphics.getColor(GL_DEBUG_BOUNDS));
         LOGGER.log(Level.INFO, String.valueOf(buff));
     }
 
@@ -149,6 +149,8 @@ public final class Graphics2DRenderer {
     public Material createMat(ColorRGBA color) {
         final Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", color);
+        mat.getAdditionalRenderState().setLineWidth(2.0F);
+        mat.getAdditionalRenderState().setWireframe(true);
         return mat;
     }
     
@@ -279,6 +281,16 @@ public final class Graphics2DRenderer {
         node.attachChild(createAxisArrow(Vector3f.UNIT_X.mult(.25f), ColorRGBA.Red));
         node.attachChild(createAxisArrow(Vector3f.UNIT_Y.mult(.25f), ColorRGBA.Green));
         node.setLocalTranslation(Converter.toVector3fValueOfJME3(center));
+        
+        BitmapText x = debugGraphics.createBitmapText(debugGraphics.getBitmapFont("Default"), "X");
+        x.setQueueBucket(RenderQueue.Bucket.Translucent);
+        x.move(0.2F, 0, 0);
+        node.attachChild(x);
+        
+        BitmapText y = debugGraphics.createBitmapText(debugGraphics.getBitmapFont("Default"), "Y");
+        y.setQueueBucket(RenderQueue.Bucket.Translucent);
+        y.move(-0.15F, 0.25F, 0);        
+        node.attachChild(y);
         return node;
     }
 
@@ -292,7 +304,6 @@ public final class Graphics2DRenderer {
     private Spatial createAxisArrow(final Vector3f direction, final ColorRGBA color) {
         final Arrow axis = new Arrow(direction);
         final Geometry axisGeomg = new Geometry("axis", axis);
-        
         axisGeomg.setMaterial(createMat(color));
         axisGeomg.setQueueBucket(RenderQueue.Bucket.Translucent);
         return axisGeomg;

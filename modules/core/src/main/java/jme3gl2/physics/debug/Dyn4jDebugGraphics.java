@@ -67,6 +67,9 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
     /** Code name for debug color: BOUNDS. */
     public static final String GL_DEBUG_BOUNDS    = "BOUNDS";
     
+    /** Code name for debug color: MASS_INFINITE. */
+    public static final String GL_DEBUG_MASS_INFINITE    = "MASS_INFINITE";
+    
     //--------------------------------------------------------------------------
     //                        Class - Dyn4jDebugGraphics
     //--------------------------------------------------------------------------
@@ -99,6 +102,7 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
             case GL_DEBUG_SENSOR: return SENSOR;
             case GL_DEBUG_STATIC: return STATIC;
             case GL_DEBUG_BOUNDS: return BOUNDS;
+            case GL_DEBUG_MASS_INFINITE: return ColorRGBA.Orange;
             default:
                 throw new AssertionError();
         }
@@ -113,7 +117,10 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
      */
     @Override
     public BitmapFont getBitmapFont(String name) {
-        return assetManager.loadFont(name);
+        if (name.startsWith("path//")) {
+            return assetManager.loadFont(name.substring(6, name.length()));
+        }
+        return assetManager.loadFont("Interface/Fonts/Default.fnt");
     }
 
     /**
@@ -127,7 +134,7 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
     @Override
     public BitmapText createBitmapText(BitmapFont font, String value) {
         BitmapText text = font.createLabel(value);
-        text.setSize(0.5F);
+        text.setSize(0.1F);
         return text;
     }
 }

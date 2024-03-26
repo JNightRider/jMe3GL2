@@ -29,23 +29,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jme3gl2.renderer.effect;
+
+import jme3gl2.renderer.GLXCamera;
 
 /**
- * Package responsible for managing the <a href="https://dyn4j.org/">dyn4j</a> 
- * physics engine to provide performance for 2D games created using jMe3GL2 and
- * <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
- * <p>
- * Classes that make up this package:
- * <ul>
- * <li><b>Dyn4jAppState</b>: State in charge of managing the physics engine, in 
- * charge of applying updates, initializing physics, and enabling body debugging.</li>
- * <li><b>PhysicsSpace</b>: Physical space for bodies (dyn4j).</li>
- * <li><b>ThreadingType</b>: Object in charge of defining the type of integration 
- * of the physics engine.</li>
- * </ul>
- * 
+ *
  * @author wil
- * @version 1.5.0
- * @since 1.5.0
  */
-package jme3gl2.physics;
+public interface GLXEffect {
+    
+    public void setCamera(GLXCamera camera);
+    
+    public void update(float tpf);
+}

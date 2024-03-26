@@ -36,7 +36,8 @@ import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
 
 /**
- * Interface in charge of managing a graphical debugger of the bodies of the debugged scene.er.
+ * Interface in charge of managing a graphical debugger of the bodies of the 
+ * debugged scene.
  * @author wil
  * @version 1.0.0
  * @since 3.0.0

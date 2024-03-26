@@ -1881,11 +1881,19 @@ public class Properties implements Savable, Cloneable {
      */
     @Deprecated(since = "2.5.0")
     public <T extends Object> T getProperty(String key, T defaultVal) {
-        Property userData = (Property) this.properties.get(key);
-        if (userData == null) {
-            return defaultVal;
+        Object obj = this.properties.get(key);
+        T value = defaultVal;
+        if (obj instanceof Property) {
+            T var = (T) ((Property) obj).getValue();
+            if (var != null) {
+                value = var;
+            }
+        } else {
+            if (obj != null) {
+                value = (T) obj;
+            }
         }
-        return (T) userData.getValue();
+        return value;
     }
     
     /**

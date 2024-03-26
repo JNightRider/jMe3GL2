@@ -81,7 +81,7 @@ public abstract class AbstractPhysicsDebugControl<E extends PhysicsBody2D> exten
      * associated with the body.
      * @param physicBody body
      */
-    final void applyPhysicsRotation(final E physicBody) {
+    protected void applyPhysicsRotation(final E physicBody) {
         final Transform trans = physicBody.getTransform();
         final float rotation = Converter.toFloatValue(trans.getRotationAngle());
 
@@ -98,7 +98,7 @@ public abstract class AbstractPhysicsDebugControl<E extends PhysicsBody2D> exten
      * associated with the body.
      * @param physicBody body
      */
-    final void applyPhysicsLocation(final E physicBody) {
+    protected void applyPhysicsLocation(final E physicBody) {
         final Transform trans = physicBody.getTransform();
         final float posX = Converter.toFloatValue(trans.getTranslationX());
         final float posY = Converter.toFloatValue(trans.getTranslationY());

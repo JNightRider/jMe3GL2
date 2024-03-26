@@ -33,11 +33,15 @@ package jme3gl2.physics.debug;
 
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.util.TempVars;
 
 import jme3gl2.physics.control.PhysicsBody2D;
 import jme3gl2.scene.debug.custom.DebugGraphics;
 import static jme3gl2.physics.debug.Dyn4jDebugGraphics.*;
+import jme3gl2.util.Converter;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Capsule;
@@ -45,6 +49,7 @@ import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Convex;
 import org.dyn4j.geometry.Ellipse;
 import org.dyn4j.geometry.HalfEllipse;
+import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Slice;
 import org.dyn4j.geometry.Vector2;
@@ -283,6 +288,28 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         applyPhysicsRotation(body2D);
         renderMaterial();
     }
+
+    @Override
+    protected void applyPhysicsLocation(PhysicsBody2D physicBody) {
+        final Vector2 center = getLocaTranslation();
+        if (center == null)
+            return;
+
+        final float posX = Converter.toFloatValue(center.x);
+        final float posY = Converter.toFloatValue(center.y);        
+        spatial.setLocalTranslation(posX, posY, spatial.getLocalTranslation().z);
+    }
+
+    @Override
+    protected void applyPhysicsRotation(PhysicsBody2D physicBody) {
+        double rotation = getRotationAngle();
+        final TempVars tempVars = TempVars.get();
+        final Quaternion quaternion = tempVars.quat1;
+
+        quaternion.fromAngleAxis(Converter.toFloatValue(rotation), new Vector3f(0.0F, 0.0F, 1.0F));
+        this.spatial.setLocalRotation(quaternion);
+        tempVars.release();
+    }
     
     /**
      * Renders the object; manages the geometry material.
@@ -294,19 +321,23 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         if (!(body2D.isEnabled())) {
             color = dg.getColor(GL_DEBUG_DISABLED);
         } else {
-            if (fixture.isSensor()) {
-                color = dg.getColor(GL_DEBUG_SENSOR);
+            if (body2D.getMass().getType() == MassType.INFINITE) {
+                color = dg.getColor(GL_DEBUG_MASS_INFINITE);
             } else {
-                if (body2D.isBullet()) {
-                    color = dg.getColor(GL_DEBUG_BULLET);
-                } else if (body2D.isStatic()) {
-                    color = dg.getColor(GL_DEBUG_STATIC);
-                } else if (body2D.isKinematic()) {
-                    color = dg.getColor(GL_DEBUG_KINEMATIC);
-                } else if (body2D.isAtRest()) {
-                    color = dg.getColor(GL_DEBUG_AT_RESET);
+                if (fixture.isSensor()) {
+                    color = dg.getColor(GL_DEBUG_SENSOR);
                 } else {
-                    color = dg.getColor(GL_DEBUG_DEFAULT);
+                    if (body2D.isBullet()) {
+                        color = dg.getColor(GL_DEBUG_BULLET);
+                    } else if (body2D.isStatic()) {
+                        color = dg.getColor(GL_DEBUG_STATIC);
+                    } else if (body2D.isKinematic()) {
+                        color = dg.getColor(GL_DEBUG_KINEMATIC);
+                    } else if (body2D.isAtRest()) {
+                        color = dg.getColor(GL_DEBUG_AT_RESET);
+                    } else {
+                        color = dg.getColor(GL_DEBUG_DEFAULT);
+                    }
                 }
             }
         }

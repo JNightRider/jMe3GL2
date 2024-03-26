@@ -29,23 +29,44 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jme3gl2.renderer.effect;
+
+import jme3gl2.renderer.GLXCamera;
 
 /**
- * Package responsible for managing the <a href="https://dyn4j.org/">dyn4j</a> 
- * physics engine to provide performance for 2D games created using jMe3GL2 and
- * <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
- * <p>
- * Classes that make up this package:
- * <ul>
- * <li><b>Dyn4jAppState</b>: State in charge of managing the physics engine, in 
- * charge of applying updates, initializing physics, and enabling body debugging.</li>
- * <li><b>PhysicsSpace</b>: Physical space for bodies (dyn4j).</li>
- * <li><b>ThreadingType</b>: Object in charge of defining the type of integration 
- * of the physics engine.</li>
- * </ul>
- * 
+ *
  * @author wil
- * @version 1.5.0
- * @since 1.5.0
  */
-package jme3gl2.physics;
+public abstract class AbstractGLXEffect implements GLXEffect {
+    
+    protected boolean enabled = true;
+    protected GLXCamera camera;
+
+    public AbstractGLXEffect() {
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
+    @Override
+    public void setCamera(GLXCamera camera) {
+        if (this.camera != null && camera != null && camera != this.camera) {
+            throw new IllegalStateException("This control already has a camera");
+        }
+        this.camera = camera;
+    }
+
+    @Override
+    public void update(float tpf) {
+        if (!enabled)
+            return;
+        effectUpdate(tpf);
+    }
+    
+    protected abstract void effectUpdate(float tpf);
+}

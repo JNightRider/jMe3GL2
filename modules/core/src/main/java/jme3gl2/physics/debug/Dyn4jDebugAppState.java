@@ -32,9 +32,10 @@
 package jme3gl2.physics.debug;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -82,6 +83,11 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     // Physical bodies and joints.    
     /** Map of physical bodies. */
     protected Map<E, Spatial> bodies = new HashMap<>();
+    
+    /** Debugger view. */
+    protected ViewPort viewPort;
+    /** <code>JME3</code> renderer. */
+    protected RenderManager rm;
 
     /**
      * Class constructor <code>Dyn4JDebugAppState</code> where it asks for the
@@ -101,6 +107,7 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(Application app) {
+        rm            = app.getRenderManager();
         assetManager = app.getAssetManager();
         application  = app;
         
@@ -110,6 +117,9 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
         
         debugNode.setCullHint(Spatial.CullHint.Never);
         debugNode.addControl(new BoundsDebugControl<>(this, renderer));
+
+        viewPort = rm.createMainView("Physics Debug Overlay", app.getCamera());
+        viewPort.setClearFlags(false, true, false);
         
         setDebugGraphics(new Dyn4jDebugGraphics(app.getAssetManager()));
     }
@@ -130,15 +140,17 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     /** (non-Javadoc) */
     @Override
     protected void onEnable() {
-        if (getApplication() instanceof SimpleApplication) {
-            ((SimpleApplication) getApplication()).getRootNode().attachChild(debugNode);
+        if (viewPort != null) {
+            viewPort.attachScene(debugNode);
         }
     }
     /**(non-Javadoc) */
     @Override
     protected void onDisable() {
-        this.debugNode.detachAllChildren();
-        this.debugNode.removeFromParent();
+        if (viewPort != null) {
+            debugNode.detachAllChildren();
+            viewPort.detachScene(debugNode);
+        }
     }
     
     /**
@@ -148,8 +160,8 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
      */
     @Override
     protected void cleanup(Application app) {
-        this.debugNode.detachAllChildren();
-        this.debugNode.removeFromParent();
+        debugNode.detachAllChildren();
+        rm.removeMainView(viewPort);
     }
     
     /**
@@ -159,7 +171,24 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
      */
     @Override
     public void update(float tpf) {
+        // Update all object links
         updateBodies();
+        
+        // Update debug root node
+        debugNode.updateLogicalState(tpf);
+        debugNode.updateGeometricState();
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#render(com.jme3.renderer.RenderManager) 
+     * @param rm render
+     */
+    @Override
+    public void render(RenderManager rm) {
+        if (this.viewPort != null) {
+            rm.renderScene(this.debugNode, this.viewPort);
+        }
     }
     
     /**

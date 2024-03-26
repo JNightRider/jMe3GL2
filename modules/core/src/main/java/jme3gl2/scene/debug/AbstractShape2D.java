@@ -60,7 +60,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      * Default internal constructor.
      */
     protected AbstractShape2D() {
-        AbstractShape2D.this.setMode(Mode.LineLoop);
+        AbstractShape2D.this.setMode(Mode.Lines);
     }
 
     /**
@@ -92,7 +92,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
         
     /**
      * Method responsible for updating the geometry of this mesh to generate the 
-     * new coordinates of the <code>>lines</code>.
+     * new coordinates of the <code>lines</code>.
      * 
      * @param vertices new arrangement of the vertices
      */

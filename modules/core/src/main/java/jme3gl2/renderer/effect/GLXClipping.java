@@ -29,23 +29,55 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jme3gl2.renderer.effect;
+
+import com.jme3.math.FastMath;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
 
 /**
- * Package responsible for managing the <a href="https://dyn4j.org/">dyn4j</a> 
- * physics engine to provide performance for 2D games created using jMe3GL2 and
- * <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
- * <p>
- * Classes that make up this package:
- * <ul>
- * <li><b>Dyn4jAppState</b>: State in charge of managing the physics engine, in 
- * charge of applying updates, initializing physics, and enabling body debugging.</li>
- * <li><b>PhysicsSpace</b>: Physical space for bodies (dyn4j).</li>
- * <li><b>ThreadingType</b>: Object in charge of defining the type of integration 
- * of the physics engine.</li>
- * </ul>
- * 
+ *
  * @author wil
- * @version 1.5.0
- * @since 1.5.0
  */
-package jme3gl2.physics;
+public class GLXClipping extends AbstractGLXEffect {
+    
+    private Vector2f minimumClipping;
+    private Vector2f maximumClipping;
+
+    public GLXClipping(Vector2f minimumClipping, Vector2f maximumClipping) {
+        this.minimumClipping = minimumClipping;
+        this.maximumClipping = maximumClipping;
+    }
+    
+    public void setMinimumClipping(Vector2f minimumClipping) {
+        this.minimumClipping = minimumClipping;
+    }
+
+    public void setMaximumClipping(Vector2f maximumClipping) {
+        this.maximumClipping = maximumClipping;
+    }
+
+    public Vector2f getMinimumClipping() {
+        return minimumClipping;
+    }
+
+    public Vector2f getMaximumClipping() {
+        return maximumClipping;
+    }
+    
+    
+
+    @Override
+    protected void effectUpdate(float tpf) {        
+        if (minimumClipping != null && maximumClipping != null) {
+            Vector3f loc = camera.getCamera().getLocation();            
+            Vector2f clipping = clipping(loc, Vector2f.ZERO);
+            camera.getCamera().setLocation(loc.set(clipping.x, clipping.y, loc.z));
+        }
+    }
+    
+    protected final Vector2f clipping(Vector3f loc, Vector2f offset) {
+        return new Vector2f(FastMath.clamp((loc.x + offset.x), minimumClipping.x, maximumClipping.x), 
+                            FastMath.clamp((loc.y + offset.y), minimumClipping.y, maximumClipping.y));
+    }
+}

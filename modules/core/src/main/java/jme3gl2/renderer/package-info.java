@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,11 +31,6 @@
  */
 
 /**
- * En este paquete se alojan los objetos que se encargan de la renderización
- * de los modelos 2D, así como el manejo de la cámara en 2D.
  * 
- * @author wil
- * @version 1.0-SNAPSHOT
- * @since 1.5.0
  */
 package jme3gl2.renderer;

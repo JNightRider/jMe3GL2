@@ -34,7 +34,7 @@
  * Package in charge of managing the physical controls that 2D bodies may have.
  * <p>
  * Any object that inherits from the <b>PhysicsBody2D</b> class is considered a physical 
- * body by <a hrfe="https://dyn4j.org/">dyn4j</a> and a <code>Spatial</code> control 
+ * body by <a href="https://dyn4j.org/">dyn4j</a> and a <code>Spatial</code> control 
  * by  <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
  * 
  * @author wil

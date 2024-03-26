@@ -29,23 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jme3gl2.renderer;
+
+import com.jme3.math.Vector3f;
+import jme3gl2.renderer.Camera2DRenderer.GLRendererType;
+import jme3gl2.renderer.effect.GLXDistanceFrustum;
 
 /**
- * Package responsible for managing the <a href="https://dyn4j.org/">dyn4j</a> 
- * physics engine to provide performance for 2D games created using jMe3GL2 and
- * <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
- * <p>
- * Classes that make up this package:
- * <ul>
- * <li><b>Dyn4jAppState</b>: State in charge of managing the physics engine, in 
- * charge of applying updates, initializing physics, and enabling body debugging.</li>
- * <li><b>PhysicsSpace</b>: Physical space for bodies (dyn4j).</li>
- * <li><b>ThreadingType</b>: Object in charge of defining the type of integration 
- * of the physics engine.</li>
- * </ul>
- * 
+ *
  * @author wil
- * @version 1.5.0
- * @since 1.5.0
  */
-package jme3gl2.physics;
+final class GLXCamera30D extends AbstractGLXCamera {
+
+    public GLXCamera30D() {
+    }
+    
+    @Override
+    protected void initialize() {
+        camera.setParallelProjection(false);
+        camera.setFrustumPerspective(45.0F, (float)camera.getWidth() / (float)camera.getHeight(), 1.0F, 1000.0F);
+        
+        float cameraDistanceFrustum = 10.0F;        
+        GLXDistanceFrustum glxdf = getEffect(GLXDistanceFrustum.class);
+        if (glxdf != null) {
+            cameraDistanceFrustum = glxdf.getDistanceFrustum();
+        }
+        
+        camera.setLocation(new Vector3f(0.0F, 0.0F, cameraDistanceFrustum));
+        camera.lookAt(new Vector3f(0.0F, 0.0F, 0.0F), Vector3f.UNIT_Y);     
+    }
+    
+    @Override
+    public GLRendererType getType() {
+        return GLRendererType.GLX_30D;
+    }
+}

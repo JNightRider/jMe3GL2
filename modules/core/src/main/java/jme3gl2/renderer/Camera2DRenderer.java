@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,69 +34,46 @@ package jme3gl2.renderer;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
-import com.jme3.math.Vector2f;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.Spatial;
-
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import jme3gl2.renderer.effect.GLXDistanceFrustum;
+import jme3gl2.renderer.effect.GLXFollowing;
+import jme3gl2.renderer.effect.GLXEffect;
 
 /**
- * Un objeto de la clase <code>Camera2DState</code> se encarga de preparar y
- * manejar la cámara en 2D.
- * <p>
- * Con esto podemos utilizar la camara 3D que nos proprociona {@code JME} en
- * un mundo 2D.
- * </p>
- * 
+ *
  * @author wil
- * @version 2.0
- * 
- * @since 2.0.0
  */
-@SuppressWarnings(value = {"unchecked"})
 public class Camera2DRenderer extends BaseAppState {
+
+    private static final Logger LOGGER = Logger.getLogger(Camera2DRenderer.class.getName());
     
-    /**
-     * Clase enumarada interna <code>GLRendererType</code> encargado de enlistar
-     * los tipo de gestores de cámaras.
-     */
     public static enum GLRendererType {
-        /**
-         * Utiliza un gestor donde pone la cámara en una proyección paralela.
-         * <p>
-         * Los objetos nunca tocaran la cámara, es decir; por más que se
-         * acerquen, no podran alcanzar la vista frontal.
-         */
-        GL_2D,
+        GLX_25D,
         
-        /**
-         * Utiliza un gestor en donde se usa la cámara 3D para garantizar un
-         * enfoque más realista.
-         */
+        GLX_30D,
+        
+        @Deprecated
+        GL_2D,
+        @Deprecated
         GL_3D;
     }
 
-    /** Logger de la clase. */
-    private static final Logger LOG = Logger.getLogger(Camera2DRenderer.class.getName());
-
-    /** Camara-2D. */
-    private Jme3GL2Camera gL2Camera;
-
-    /** Tipo de gestor-cámara. */
     private GLRendererType rendererType;
-
-    /**
-     * Constructor de la clase <code>Camera2DRenderer</code> donde se especifica
-     * el tipo de gestor-cámara.
-     * @param rendererType tipo de gestor-cámara.
-     */
+    private GLXCamera xCamera;
+    
     public Camera2DRenderer(GLRendererType rendererType) {
+        if (rendererType == null) {
+            throw new NullPointerException("Render type cannot be null");
+        }
+        
         switch (rendererType) {
-            case GL_2D:
-                gL2Camera = new JCameraG2D();
+            case GLX_25D: case GL_2D:
+                xCamera = new GLXCamera25D();
                 break;
-            case GL_3D:
-                gL2Camera = new JCameraG3D();
+            case GLX_30D: case GL_3D:
+                xCamera = new GLXCamera30D();
                 break;
             default:
                 throw new AssertionError();
@@ -104,30 +81,17 @@ public class Camera2DRenderer extends BaseAppState {
         this.rendererType = rendererType;
     }
         
-    
-    /**
-     * Genera un objeto de la clase <code>Camera2DRenderer</code> con las
-     * características principales a gestionar.
-     * 
-     * @param rendererType tipo-renderizado cámara.
-     * @param cameraDistanceFrustum distancia-cámara.
-     * @param followInterpolationAmount velocidad-interpolación.
-     */
-    public Camera2DRenderer(GLRendererType rendererType, float cameraDistanceFrustum, float followInterpolationAmount) {
-        this(rendererType);        
-        /*
-            Simplemente agregamos los nuevos atributos del objeto 'Camara2D' 
-            para porder inicializarlos despues.
-        */
-        this.gL2Camera.setProperty("CameraDistanceFrustum", cameraDistanceFrustum);
-        this.gL2Camera.setProperty("FollowInterpolationAmount", followInterpolationAmount);
+    public Camera2DRenderer(GLRendererType rendererType, GLXEffect ...effects) {
+        this(rendererType);
+        for (final GLXEffect ce : effects) {
+            xCamera.addEffect(ce);
+        }
     }
     
-    /**
-     * (non-JavaDoc)
-     * @param app {@code Application}
-     * @see BaseAppState#initialize(com.jme3.app.Application) 
-     */
+    public Camera2DRenderer(GLRendererType rendererType, float cameraDistanceFrustum, float followInterpolationAmount) {
+        this(rendererType, new GLXFollowing(followInterpolationAmount), new GLXDistanceFrustum(cameraDistanceFrustum, 0));
+    }
+    
     @Override
     protected void initialize(Application app) {
         final Camera camera = app.getCamera();
@@ -135,123 +99,55 @@ public class Camera2DRenderer extends BaseAppState {
             SimpleApplication simpleApplication = (SimpleApplication) app;
             simpleApplication.getFlyByCamera().setEnabled(false);
             simpleApplication.getFlyByCamera().unregisterInput();
-            LOG.info("PlatformerCameraState is removing default fly camera");
+            
+            LOGGER.log(Level.INFO, "PlatformerCameraState is removing default fly camera");
         }
-        
-        gL2Camera.initialize(camera);
+        xCamera.setCamera(camera);
     }
 
-    /**
-     * (non-JavaDoc)
-     * @param tpf {@code float}
-     * @see BaseAppState#update(float) 
-     * @see JCameraG2D#update(float) 
-     */
     @Override
     public void update(float tpf) {
-        gL2Camera.update(tpf);
+        xCamera.update(tpf);
     }
 
-    /**
-     * (non-JavaDoc)
-     * @param s {@code Spatial}
-     * @see JCameraG2D#setTarget(com.jme3.scene.Spatial) 
-     */
-    public void setTarget(Spatial s) {
-        gL2Camera.setTarget(s);
+    @Override
+    protected void cleanup(Application app) { }
+
+    public Camera getCamera() {
+        return getApplication().getCamera();
     }
     
-    /**
-     * Método encargado de establecer la velocidad de interpolación de la
-     * cámara en 2D.
-     * <p>
-     * Esta velocidad se utiliza para mover la cámara hacia su objetivo si
-     * tiene uno establecido.
-     * </p>
-     * @param follow valor-interpolación.
-     */
-    public void setFollowInterpolationAmount(float follow) {
-        gL2Camera.setProperty("FollowInterpolationAmount", follow);
+    public void addEffect(GLXEffect effect) {
+        xCamera.addEffect(effect);
     }
 
-    /**
-     * (non-JavaDoc)
-     * @param frustum {@code float}
-     * @see JCameraG2D#setCameraDistanceFrustum(float) 
-     */
-    public void setDistanceFrustum(float frustum) {
-        gL2Camera.setCameraDistanceFrustum(frustum);
+    public void removeEffect(GLXEffect effect) {
+        xCamera.removeEffect(effect);
     }
     
-    /**
-     * Establece nuevos valores de recorte para la cámara.
-     * <p>
-     * Si se desea quitar los recortes, con valores <code>null</code> como
-     * párametro se borrarám.
-     * </p>
-     * 
-     * @param minimumClipping recorte-minimo.
-     * @param maxClipping recorte-maximo.
-     */
-    public void setClipping(Vector2f minimumClipping, Vector2f maxClipping) {
-        Jme3GL2Clipping gL2Clipping = gL2Camera.getClipping();
-        gL2Clipping.setMaximum(maxClipping);
-        gL2Clipping.setMinimum(minimumClipping);
-    }
-    
-    /**
-     * (non-JavaDoc)
-     * @param offset {@code Vector2f}
-     * @see Jme3GL2Clipping#setOffset(com.jme3.math.Vector2f) 
-     */
-    public void setOffset(Vector2f offset) {
-        Jme3GL2Clipping gL2Clipping = gL2Camera.getClipping();
-        gL2Clipping.setOffset(offset);
-    }
-    
-    /**
-     * Devuelve el objeto que administra la cámara en 2D.
-     * @return cámara-2D.
-     * @deprecated utilise {@link #getJme3GL2Camera()}.
-     */
-    @Deprecated
-    public Jme3GL2Camera getCamera2D() {
-        return gL2Camera;
-    }
-    
-    /**
-     * Método encargado de devolver el administrador de la cámara 2D-Falso.
-     * @param <T> tipo-datod.
-     * @return admin-cámara.
-     */
-    public <T extends Jme3GL2Camera> T getJme3GL2Camera() {
-        return (T) gL2Camera;
+    public <T extends GLXEffect> void removeEffect(Class<T> clazz) {
+        removeEffect(getEffect(clazz));
     }
 
-    /**
-     * Devuelve el tipo de cámara uilizada.
-     * @return tipo-renderizado.
-     */
+    public <T extends GLXEffect> T getEffect(Class<T> clazz) {
+        return xCamera.getEffect(clazz);
+    }
+
+    @Override
+    protected void onEnable() {
+        if (xCamera instanceof AbstractGLXCamera) {
+            ((AbstractGLXCamera) xCamera).setEnabled(true);
+        }
+    }
+
+    @Override
+    protected void onDisable() {
+        if (xCamera instanceof AbstractGLXCamera) {
+            ((AbstractGLXCamera) xCamera).setEnabled(false);
+        }
+    }
+
     public GLRendererType getRendererType() {
         return rendererType;
     }
-
-    /**
-     * (non-JavaDoc)
-     * @param app  application
-     * @see BaseAppState#cleanup(com.jme3.app.Application) 
-     */
-    @Override protected void cleanup(Application app) { }
-    
-    /**
-     * (non-JavaDoc)
-     * @see BaseAppState#onEnable() 
-     */
-    @Override protected void onEnable() { }
-    
-    /**
-     * (non-JavaDoc)
-     * @see BaseAppState#onDisable() 
-     */
-    @Override protected void onDisable() { }   
 }

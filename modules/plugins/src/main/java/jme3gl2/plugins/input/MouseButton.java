@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024 jMonkeyEngine.
+/* Copyright (c) 2009-2023 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,23 +29,42 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jme3gl2.plugins.input;
+
+import com.jme3.input.controls.MouseButtonTrigger;
 
 /**
- * Package responsible for managing the <a href="https://dyn4j.org/">dyn4j</a> 
- * physics engine to provide performance for 2D games created using jMe3GL2 and
- * <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
- * <p>
- * Classes that make up this package:
- * <ul>
- * <li><b>Dyn4jAppState</b>: State in charge of managing the physics engine, in 
- * charge of applying updates, initializing physics, and enabling body debugging.</li>
- * <li><b>PhysicsSpace</b>: Physical space for bodies (dyn4j).</li>
- * <li><b>ThreadingType</b>: Object in charge of defining the type of integration 
- * of the physics engine.</li>
- * </ul>
+ * Un objeto de la clase <code>MouseButton</code> se encarga de administrar las
+ * entradas con el ratón.
  * 
+ * @see MouseButtonTrigger
+ * @see MouseTrigger
+ *
  * @author wil
- * @version 1.5.0
- * @since 1.5.0
+ * @version 1.0-SNAPSHOT
+ * @since 2.0.0
  */
-package jme3gl2.physics;
+public class MouseButton extends MouseButtonTrigger implements MouseTrigger {
+    
+    /** nombre clave de la entrada. */
+    private final String inputName;
+    
+    /**
+     * Constructor de la clase <code>MouseButton</code>.
+     * @param mouseButton int.
+     * @param name string.
+     */
+    public MouseButton(int mouseButton, String name) {
+        super(mouseButton);
+        this.inputName = name;
+    }
+    
+    /**
+     * Método encargado de devolver el nombre de esta llave.
+     * @return nombre clave.
+     */
+    @Override
+    public String getInputName() {
+        return this.inputName;
+    }  
+}

@@ -290,8 +290,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             .append('\n');
         buff.append(" *  Bounds: ").append(bounds)
             .append('\n');
-        buff.append(" *  Debugger Enabled: ").append(debug)
-            .append('\n');
+        buff.append(" *  Debugger Enabled: ").append(debug);
         LOGGER.log(Level.INFO, String.valueOf(buff));
     }
     
