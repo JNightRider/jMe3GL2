@@ -65,8 +65,6 @@ public class GLXClipping extends AbstractGLXEffect {
         return maximumClipping;
     }
     
-    
-
     @Override
     protected void effectUpdate(float tpf) {        
         if (minimumClipping != null && maximumClipping != null) {

@@ -39,7 +39,6 @@ import com.jme3.export.Savable;
 import com.jme3.math.Vector2f;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -418,10 +417,10 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 shape.translate(sTraslate);
                 break;
             case Custom:
-                LOGGER.log(Level.WARNING, "CollisionShape cannot import custom shapes.");
+                LOGGER.log(Level.WARNING, "Unknown/Unsupported class {0}", shape.getClass().getName());
                 break;
             default:
-                throw new UnsupportedOperationException(MessageFormat.format("Unknown/Unsupported type {0}", type));
+                throw new AssertionError();
         }
     }
 
@@ -542,10 +541,10 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 }
                 break;
             case Custom:
-                LOGGER.log(Level.WARNING, "CollisionShape cannot export custom shapes.");
+                LOGGER.log(Level.WARNING, "Unknown/Unsupported class {0}", shape.getClass().getName());
                 break;
             default:
-                throw new UnsupportedOperationException(MessageFormat.format("Unknown/Unsupported class {0}", shape.getClass().getName()));
+                throw new AssertionError();
         }
     }
 }

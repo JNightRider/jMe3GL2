@@ -55,8 +55,77 @@ import jme3gl2.utilities.TileMapUtilities;
 import org.dyn4j.geometry.MassType;
 
 /**
- * Class that implements the default administrators used by the class {@link TileMap} 
+ * Class that implements the default administrators used by the class {@link jme3gl2.scene.tile.TileMap} 
  * as default values.
+ * <p>
+ * Properties table:
+ * <table>
+ * <tr>
+ * <th>Name</th>
+ * <th>Value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>Translation</td>
+ * <td>{@link com.jme3.math.Vector3f}</td>
+ * <td>Set tile position on map</td>
+ * </tr>
+ * <tr>
+ * <td>Offset</td>
+ * <td>{@link com.jme3.math.Vector3f}</td>
+ * <td>A relative 'offset' with respect to its original position</td>
+ * </tr>
+ * <tr>
+ * <td>PhysicsBody</td>
+ * <td><b>boolean</b></td>
+ * <td>Defines whether the tile is a physical object or simply part of the map</td>
+ * </tr>
+ * <tr>
+ * <td>PhysicsControl</td>
+ * <td>{@link jme3gl2.physics.control.PhysicsBody2D}</td>
+ * <td>Set a physical control for the tile</td>
+ * </tr>
+ * <tr>
+ * <td>CollisionShape</td>
+ * <td>{@link jme3gl2.physics.collision.CollisionShape}</td>
+ * <td>Defines the physical shape of the body</td>
+ * </tr>
+ * <tr>
+ * <td>Rotate</td>
+ * <td><b>float</b></td>
+ * <td>Model rotation</td>
+ * </tr>
+ * <tr>
+ * <td>MassType</td>
+ * <td>{@link org.dyn4j.geometry.MassType}</td>
+ * <td>The type of body mass</td>
+ * </tr>
+ * <tr>
+ * <td>Id</td>
+ * <td><b>String</b></td>
+ * <td>A unique identifier (optional)</td>
+ * </tr>
+ * <tr>
+ * <td>RenderQueue.Bucket</td>
+ * <td>{@link com.jme3.renderer.queue.RenderQueue.Bucket}</td>
+ * <td>It is used to define whether the object is going to be translucent or transparent (among others)</td>
+ * </tr>
+ * <tr>
+ * <td>LocalScale</td>
+ * <td>{@link com.jme3.math.Vector3f}</td>
+ * <td>Scale only the model</td>
+ * </tr>
+ * <tr>
+ * <td>StandaloneSprite</td>
+ * <td><b>boolean</b></td>
+ * <td>Defines whether the TileMap texture or a new independent one will be used</td>
+ * </tr>
+ * <tr>
+ * <td>SpritesHeets</td>
+ * <td><b>boolean</b></td>
+ * <td>Defines whether the texture is loaded from a TileMap (set of textures in a single image) or independently</td>
+ * </tr>
+ * </table>
  * @author wil
  * @version 1.5.1
  * @since 2.0.0
@@ -85,7 +154,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
          */
         private void renderPhysicsBody2D(Geometry geom, Properties pTle) {
             Vector3f translation = pTle.optSavable("Translation", new Vector3f(0.0F, 0.0F, 0.0F));
-            Vector2f offset = pTle.optSavable("offset", new Vector2f(0.0F, 0.0F));
+            Vector2f offset = pTle.optSavable("Offset", new Vector2f(0.0F, 0.0F));
             
             if (pTle.optBoolean("PhysicsBody", false)) {
                 PhysicsBody2D pbd = geom.getControl(PhysicsBody2D.class);

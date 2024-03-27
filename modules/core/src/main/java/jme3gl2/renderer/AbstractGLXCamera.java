@@ -39,7 +39,7 @@ import jme3gl2.renderer.effect.GLXEffect;
  *
  * @author wil
  */
-abstract class AbstractGLXCamera implements GLXCamera {
+public abstract class AbstractGLXCamera implements GLXCamera {
     
     private SafeArrayList<GLXEffect> effects = new SafeArrayList<>(GLXEffect.class);
     

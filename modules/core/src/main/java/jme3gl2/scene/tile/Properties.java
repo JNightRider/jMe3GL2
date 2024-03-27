@@ -59,41 +59,37 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Un <code>Properties</code> se encarga de guardar las propiedades de
- * un {@link Tile}.
+ * An <code>Properties</code> is responsible for storing the properties of a
+ * {@link jme3gl2.scene.tile.Tile}.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- * 
+ * @version 1.0.1
  * @since 2.0.0
  */
 @SuppressWarnings(value = {"unchecked"})
 public class Properties implements Savable, Cloneable {
-
-    /** Loggre de la clase. */
+    /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Properties.class.getName());
     
-    /** Mapa de propiedades. */
-    private HashMap<String, Savable> properties;
-    
-    /** Version que tiene la clase {@code Properties} actualemente. */
+    /** Map of properties. */
+    private HashMap<String, Savable> properties;    
+    /** Version that has the class {@code Properties} currently. */
     public static final int SAVABLE_VERSION = 2;
     
     /**
-     * Constructor predeterminado.
+     * Default constructor.
      */
     public Properties() {
         this.properties = new HashMap<>();
     }
     
     /**
-     * Obtiene el objeto de valor asociado con una clave.
+     * Gets the value object associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return El objeto asociado con la clave.
-     * @throws RuntimeException
-     *             si no se encuentra la clave.
+     * @param key string key
+     * @return the object associated with the key
+     * 
+     * @throws RuntimeException if the key is not found
      */
     public Object get(String key) throws RuntimeException {
         if (key == null) {
@@ -107,37 +103,36 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga el valor de enum asociado con una clave.
+     * Gets the enum value associated with a key.
      *
-     * @param <E>
-     *            Tipoe enumerado.
-     * @param key
-     *           Clave string.
-     * @return El valor de enumeración asociado con la clave.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no se puede convertir
-     *             a una enumeración.
+     * @param <E> enumerated type
+     * @param key string key
+     * @return the enumeration value associated with the key
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to an enumeration
      */
     public <E extends Enum<E>> E getEnum(String key) throws RuntimeException {
         E val = optEnum(key);
         if(val==null) {
-            // JmeException realmente debería tomar un argumento arrojable.
-            // Si lo hiciera, lo volvería a implementar con Enum.valueOf
-            // método y coloque cualquier excepción lanzada en JmeException
+            /*
+            JmeException should really take a throwable argument.
+            If it did, I would re-implement it with Enum.valueOf method and
+            place any exception thrown in JmeException.
+            */
             throw wrongValueFormatException(key, "enum of type " + quote("null"), opt(key), null);
         }
         return val;
     }
 
     /**
-     * Obtiene el valor boolean asociado con una clave.
+     * Gets the boolean value associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Valor verdadero o real.
-     * @throws RuntimeException
-     *             si el valor no es un booleano o la cadena "true" o
-     *             "false".
+     * @param key string key
+     * @return true or false value
+     * 
+     * @throws RuntimeException if the value is not a boolean or the string
+     *          "true" or "false"
      */
     public boolean getBoolean(String key) throws RuntimeException {
         Object object = this.get(key);
@@ -154,14 +149,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga el valor BigInteger asociado con una clave.
+     * Gets the BigInteger value associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return El valor numérico.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no puede
-     *             ser convertido a BigInteger.
+     * @param key string key
+     * @return the numerical value
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to BigInteger
      */
     public BigInteger getBigInteger(String key) throws RuntimeException {
         Object object = this.get(key);
@@ -173,17 +167,16 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga el valor BigDecimal asociado con una clave. Si el valor es flotante o
-     * double, el constructor {@link BigDecimal#BigDecimal(double)}
-     * sera usado. Consulte las notas sobre el constructor para problemas de conversión que pueden
-     * aumentar.
+     * Gets the BigDecimal value associated with a key. If the value is a float
+     * or double, the constructor {@link BigDecimal#BigDecimal(double)} will be
+     * used. See the notes on the constructor for conversion problems that may
+     * increase.
      *
-     * @param key
-     *            Clave string.
-     * @return El valor numérico.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor
-     *             no se puede convertir a BigDecimal.
+     * @param key string key
+     * @return the numerical value
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to BigDecimal
      */
     public BigDecimal getBigDecimal(String key) throws RuntimeException {
         Object object = this.get(key);
@@ -195,14 +188,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga el valor BitSet asociado con una clave.
+     * Gets the BitSet value associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Un objeto como valor.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no puede
-     *             ser convertido a BitSet.
+     * @param key string key
+     * @return an object as a value
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to BitSet
      */
     public BitSet getBitSet(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -219,13 +211,12 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene un FloatBuffer asociada con una clave.
+     * Gets a FloatBuffer associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Una buffer que es el valor.
-     * @throws RuntimeException
-     *             si no hay un valor buffer para la clave.
+     * @param key string key
+     * @return a buffer which is the value
+     * 
+     * @throws RuntimeException if there is no buffer value for the key
      */
     public FloatBuffer getFloatBuffer(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -236,13 +227,12 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene un IntBuffer asociada con una clave.
+     * Gets an IntBuffer associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Una buffer que es el valor.
-     * @throws RuntimeException
-     *             si no hay un valor buffer para la clave.
+     * @param key string key
+     * @return a buffer which is the value
+     * 
+     * @throws RuntimeException if there is no buffer value for the key
      */
     public IntBuffer getIntBuffer(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -253,13 +243,12 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene un ByteBuffer asociada con una clave.
+     * Gets a ByteBuffer associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Una buffer que es el valor.
-     * @throws RuntimeException
-     *             si no hay un valor buffer para la clave.
+     * @param key string key
+     * @return a buffer which is the value
+     * 
+     * @throws RuntimeException if there is no buffer value for the key
      */
     public ByteBuffer getByteBuffer(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -270,13 +259,12 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene un ShortBuffer asociada con una clave.
+     * Gets a ShortBuffer associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Una buffer que es el valor.
-     * @throws RuntimeException
-     *             si no hay un valor buffer para la clave.
+     * @param key string key
+     * @return a buffer which is the value
+     * 
+     * @throws RuntimeException if there is no buffer value for the key
      */
     public ShortBuffer getShortBuffer(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -287,14 +275,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene el valor double asociado a una clave.
+     * Gets the double value associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Valor numerico.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no es un Número
-     *              objeto y no se puede convertir en un número.
+     * @param key string key
+     * @return numerical value
+     * 
+     * @throws RuntimeException if the key is not found or if the value is not
+     *          an object number and cannot be converted to a number.
      */
     public double getDouble(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -309,14 +296,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene el valor float asociado con una clave.
+     * Gets the float value associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return El valor numerico.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no es un Número
-     *             objeto y no se puede convertir en un número.
+     * @param key string key
+     * @return the numerical value
+     * 
+     * @throws RuntimeException if the key is not found or if the value is not
+     *          an object number and cannot be converted to a number
      */
     public float getFloat(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -331,14 +317,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga el valor Numbers asociado con una clave.
+     * Gets the Number value associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return El valor numerico.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no es un Número
-     *             objeto y no se puede convertir en un número.
+     * @param key string key
+     * @return the numerical value
+     * 
+     * @throws RuntimeException if the key is not found or if the value is not
+     *          an object number and cannot be converted to a number
      */
     public Number getNumber(String key) throws RuntimeException {
         Object object = this.get(key);
@@ -353,14 +338,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene el valor int asociado con una clave.
+     * Gets the int value associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Valor Integer.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no se puede convertir
-     *             a un número entero.
+     * @param key string key
+     * @return integer value
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to an integer
      */
     public int getInt(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -375,14 +359,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene el valor long asociado con una clave.
+     * Gets the long value associated with a key.
      *
-     * @param key
-     *            Un string como clave.
-     * @return Un long como valor.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no se puede convertir
-     *              a un long.
+     * @param key string key
+     * @return long value
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to a long
      */
     public long getLong(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -397,14 +380,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene el valor short asociado con una clave.
+     * Gets the short value associated with a key.
      *
-     * @param key
-     *            Un string como clave.
-     * @return Un short como valor.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no se puede convertir
-     *              a un short.
+     * @param key string key
+     * @return short value
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     * b        e converted to a short
      */
     public short getShort(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -419,14 +401,13 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene el valor byte asociado con una clave.
+     * Gets the byte value associated with a key.
      *
-     * @param key
-     *            Un string como clave.
-     * @return Un byte como valor.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no se puede convertir
-     *              a un byte.
+     * @param key string key
+     * @return byte value
+     * 
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to a byte
      */
     public byte getByte(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -445,14 +426,12 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene el valor char asociado con una clave.
+     * Gets the char value associated with a key.
      *
-     * @param key
-     *            Un string como clave.
-     * @return Un char como valor.
-     * @throws RuntimeException
-     *             si no se encuentra la clave o si el valor no se puede convertir
-     *              a un char.
+     * @param key string key
+     * @return char value
+     * @throws RuntimeException if the key is not found or if the value cannot
+     *          be converted to a char
      */
     public char getChar(String key) throws RuntimeException {
         final Object object = this.get(key);
@@ -471,13 +450,11 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene un String asociada con una clave.
+     * Gets a String associated with a key.
      *
-     * @param key
-     *            Clave string.
-     * @return Una cadena que es el valor.
-     * @throws RuntimeException
-     *             si no hay un valor de cadena para la clave.
+     * @param key string key
+     * @return a String that is the value
+     * @throws RuntimeException if there is no string value for the key
      */
     public String getString(String key) throws RuntimeException {
         Object object = this.get(key);
@@ -489,15 +466,12 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtiene un Savable asociada con una clave.
+     * Gets a Savable associated with a key.
      *
-     * @param <E>
-     *          Tipo savable.
-     * @param key
-     *            Clave string.
-     * @return Un objeto Savable como valor.
-     * @throws RuntimeException
-     *             si no hay un valor savable para la clave.
+     * @param <E> savable type
+     * @param key string key
+     * @return a Savable object as a value
+     * @throws RuntimeException if there is no Savable value for the key
      */
     public <E extends Savable> E getSavable(String key) throws RuntimeException {
         Object object = this.get(key);
@@ -508,24 +482,22 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Determine si JmeProperties contiene una clave específica.
+     * Determine if JmeProperties contains a specific key.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return true si la clave existe en JmeProperties.
+     * @param key string key
+     * @return true if the key exists in JmeProperties
      */
     public boolean has(String key) {
         return this.properties.containsKey(key);
     }
 
     /**
-     * Determine si el valor asociado con la clave es <code>null</code> o si no hay
-     * valor.
+     * Determine if the value associated with the key is <code>null</code> or
+     * if there is no value.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return true si no hay ningún valor asociado con la clave o si el valor
-     *          es el objeto JmeProperties.NULL o JmeNull.
+     * @param key string key
+     * @return true if there is no value associated with the key or if the value
+     *          is the object JmeProperties.NULL or JmeNull
      */
     public boolean isNull(String key) {
         final Object object = this.opt(key);
@@ -533,79 +505,71 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga una enumeración de las claves del JmeProperties. La modificación de este conjunto de claves también
-     * modificar el JmeProperties. Utilizar con precaución.
+     * Gets an enumeration of the keys of the JmeProperties. Modifying this set
+     * of keys also modifies the JmeProperties. Use with caution.
      *
      * @see Set#iterator()
-     *
-     * @return Un iterador de las claves.
+     * @return a key iterator
      */
     public Iterator<String> keys() {
         return this.keySet().iterator();
     }
 
     /**
-     * Obtenga una enumeración de las claves del JmeProperties. La modificación de este conjunto de claves también
-     * modificar el JmeProperties. Utilizar con precaución.
+     * Gets an enumeration of the keys of the JmeProperties. Modifying this set
+     * of keys also modifies the JmeProperties. Use with caution.
      *
      * @see Map#keySet()
-     *
-     * @return Un juego de llaves.
+     * @return a set of keys
      */
     public Set<String> keySet() {
         return this.properties.keySet();
     }
 
     /**
-     * Obtenga un conjunto de entradas de JmeProperties. Estos son valores brutos y es posible que no
-     * coincide con lo que devuelven las funciones get* y opt* de JmeProperties. modificando
-     * el EntrySet devuelto o los objetos Entry contenidos en él modificarán el
-     * respaldando JmeProperties. Esto no devuelve un clon o una vista de solo lectura.
-     *
-     * Utilizar con precaución.
+     * Gets a set of entries from JmeProperties. These are raw values and may
+     * not match what is returned by the get* and opt* functions of JmeProperties.
+     * Modifying the returned EntrySet or the Entry objects contained in it will
+     * modify the JmeProperties. This does not return a clone or a read-only view.
+     * Use with caution.
      *
      * @see Map#entrySet()
-     *
-     * @return Un conjunto de entrada
+     * @return an input set
      */
     protected Set<Entry<String, Savable>> entrySet() {
         return this.properties.entrySet();
     }
 
     /**
-     * Obtenga el número de claves almacenadas en JmeProperties.
-     *
-     * @return El número de claves en el JmeProperties.
+     * Gets the number of keys stored in JmeProperties.
+     * @return the number of keys in the JmeProperties
      */
     public int length() {
         return this.properties.size();
     }
 
     /**
-     * Elimina todos los elementos de este JmeProperties.
-     * JmeProperties estará vacío después de que regrese esta llamada.
+     * Removes all elements of this JmeProperties.
+     * JmeProperties will be empty after this call returns.
      */
     public void clear() {
         this.properties.clear();
     }
 
     /**
-     * Compruebe si JmeProperties está vacío.
-     *
-     * @return true si el JmeProperties está vacío, de lo contrario false.
+     * Checks if JmeProperties is empty.
+     * @return true if the JmeProperties is empty, otherwise false
      */
     public boolean isEmpty() {
         return this.properties.isEmpty();
     }
     
     /**
-     * Produce una cadena a partir de un Número.
+     * Produces a string from a number
      *
-     * @param number
-     *            Un numero.
-     * @return Uan cadena.
-     * @throws RuntimeException
-     *             Si n es un número no finito.
+     * @param number a number
+     * @return a string
+     * @throws RuntimeException if it's not a non-finite number
      */
     protected static String numberToString(Number number) throws RuntimeException {
         if (number == null) {
@@ -613,7 +577,7 @@ public class Properties implements Savable, Cloneable {
         }
         testValidity(number);
 
-        // Elimina los ceros finales y el punto decimal, si es posible.
+        // Remove trailing zeros and decimal point, if possible
 
         String string = number.toString();
         if (string.indexOf('.') > 0 && string.indexOf('e') < 0
@@ -629,11 +593,10 @@ public class Properties implements Savable, Cloneable {
     }
 
     /**
-     * Obtenga un valor opcional asociado con una clave.
+     * Gets an optional value associated with a key
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor, o nulo si no hay valor.
+     * @param key string key
+     * @return an object that is the value, or null if there is no value
      */
     public Object opt(String key) {
         if (key == null)
@@ -651,29 +614,25 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga el valor de enumeración asociado con una clave.
+     * Gets the enumeration value associated with a key
      *
-     * @param <E>
-     *            Tipo enum.
-     * @param key
-     *            Una cadena clave.
-     * @return El valor enumerado asociado con la clave o nulo si no se encuentra
+     * @param <E> enum type
+     * @param key string key
+     * @return the enumerated value associated with the key or null if not found
      */
     public <E extends Enum<E>> E optEnum(String key) {
         return this.optEnum(key, null);
     }
     
     /**
-     * Obtenga el valor de enumeración asociado con una clave.
+     * Gets the enumeration value associated with a key.
      *
-     * @param <E>
-     *            Tipo enum.
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            El valor predeterminado en caso de que no se encuentre el valor
-     * @return El valor de enumeración asociado con la clave o defaultValue
-     *          si el valor no se encuentra o no se puede asignar a <code>clazz</code>
+     * @param <E> enum type
+     * @param key string key
+     * @param defaultValue the default value in case the value is not found
+     * 
+     * @return the enumeration value associated with the key or defaultValue if
+     *          the value is not found or cannot be assigned to <code>class</code>
      */
     public <E extends Enum<E>> E optEnum(String key, E defaultValue) {
         final Object val = this.opt(key);
@@ -681,7 +640,7 @@ public class Properties implements Savable, Cloneable {
             return defaultValue;
         }
         if (val instanceof Enum) {
-            // Lo acabamos de comprobar!
+            // We just checked it out!
             @SuppressWarnings("unchecked")
             E myE = (E) val;
             return myE;
@@ -690,27 +649,24 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un booleano opcional asociado con una clave. Devuelve false si
-     * no existe tal clave, o si el valor no es Boolean.TRUE o la cadena "true".
+     * Gets an optional boolean associated with a key. Returns false if no such
+     * key exists, or if the value is not Boolean.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Valo real o verdadero.
+     * @param key string key
+     * @return true or false value
      */
     public boolean optBoolean(String key) {
         return this.optBoolean(key, false);
     }
     
     /**
-     * Obtenga un boolean opcional asociado con una clave. devuelve el
-     * defaultValue si no existe tal clave, o si no es un boolean o la
-     * Cadena "ture" o "falsoe" (no distingue entre mayúsculas y minúsculas).
+     * Gets an optional boolean associated with a key. Returns the default value
+     * if no such key exists, or if it is not a boolean or the String "true" or
+     * "false" (case insensitive).
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Valo real o verdadero.
+     * @param key string key
+     * @param defaultValue default value
+     * @return true or false value
      */
     public boolean optBoolean(String key, boolean defaultValue) {
         Object val = this.opt(key);
@@ -721,7 +677,7 @@ public class Properties implements Savable, Cloneable {
             return ((boolean) val);
         }
         try {
-            // usaremos get de todos modos porque hace conversión de cadenas.
+            // We will use get anyway because it does string conversion
             return this.getBoolean(key);
         } catch (RuntimeException e) {
             return defaultValue;
@@ -729,34 +685,31 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un BigDecimal opcional asociado con una clave, o null si
-     * no existe tal clave o si su valor no es un número. Si el valor es un
-     * string, se intentará evaluarlo como un número. si el valor
-     * es flotante o doble, entonces {@link BigDecimal#BigDecimal(double)}
-     * Se utilizará el constructor. Ver notas sobre el constructor para la conversión
-     * de problemas que puedan surgir.
+     * Gets an optional BigDecimal associated with a key, or null if no such key
+     * exists or if its value is not a number. If the value is a string, an
+     * attempt will be made to evaluate it as a number. If the value is a float
+     * or double, then the constructor {@link BigDecimal#BigDecimal(double)}
+     * will be used. See notes on the constructor for conversion problems that
+     * may arise.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return an object that is the value
      */
     public BigDecimal optBigDecimal(String key) {
         return this.optBigDecimal(key, null);
     }
     
     /**
-     * Obtenga un BigDecimal opcional asociado con una clave, o el valor predeterminado si
-     * no existe tal clave o si su valor no es un número. Si el valor es un
-     * string, se intentará evaluarlo como un número. si el valor
-     * es flotante o doble, entonces {@link BigDecimal#BigDecimal(double)}
-     * Se utilizará el constructor. Ver notas sobre el constructor para la conversión
-     * de problemas que puedan surgir.
+     * Gets an optional BigDecimal associated with a key, or the default value
+     * if no such key exists or if its value is not a number. If the value is a
+     * string, an attempt will be made to evaluate it as a number. If the value
+     * is a float or double, then the constructor {@link BigDecimal#BigDecimal(double)}
+     * will be used. See notes on the constructor for conversion problems that
+     * may arise.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminadoo.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return an object that is the value
      */
     public BigDecimal optBigDecimal(String key, BigDecimal defaultValue) {
         Object val = this.opt(key);
@@ -764,26 +717,32 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * @param val 
-     *          valor para convertir
-     * @param defaultValue 
-     *                  el valor predeterminado que se devuelve es que la conversión no funciona o es nula.
-     * @return Conversión BigDecimal del valor original, o el valor predeterminado si no se puede
-     *          para convertir.
+     * Converts an object to BigDecimal.
+     * 
+     * @param val value to convert
+     * @param defaultValue the default value that is returned when conversion
+     * does not work or is null
+     * @return BigDecimal conversion of the original value, or the default value
+     *          if it cannot be converted
      */
-    static BigDecimal objectToBigDecimal(Object val, BigDecimal defaultValue) {
+    protected static BigDecimal objectToBigDecimal(Object val, BigDecimal defaultValue) {
         return objectToBigDecimal(val, defaultValue, true);
     }
     
     /**
-     * @param val valor para convertir
-     * @param defaultValue el valor predeterminado que se devuelve es que la conversión no funciona o es nula.
-     * @param exact Cuando <code>true</code>, los valores {@link Double} y {@link Float} se convertirán exactamente.
-     *              Cuando <code>false</code>, se convertirán a valores {@link String} antes de convertirse a {@link BigDecimal}.
-     * @return Conversión BigDecimal del valor original, o el valor predeterminado si no se puede
-     *          para convertir.
+     * Converts an object to BigDecimal.
+     * 
+     * @param val value to convert
+     * @param defaultValue the default value that is returned when conversio
+     * does not work or is null
+     * @param exact When <code>true</code>, the values {@link Double} and {@link Float}
+     * will be converted exactly. When <code>false</code>, will be converted to
+     * {@link String} value before converting to {@link BigDecimal}
+     * 
+     * @return BigDecimal conversion of the original value, or the default value
+     *          if it cannot be converted
      */
-    static BigDecimal objectToBigDecimal(Object val, BigDecimal defaultValue, boolean exact) {
+    protected static BigDecimal objectToBigDecimal(Object val, BigDecimal defaultValue, boolean exact) {
         if (val == null) {
             return defaultValue;
         }
@@ -799,10 +758,11 @@ public class Properties implements Savable, Cloneable {
             }
             if (exact) {
                 return new BigDecimal(((Number)val).doubleValue());
-            }else {
-                // usar el constructor de cadenas para mantener valores "agradables" para double y float,
-                // el constructor double traducirá los douuble a valores "exactos" en lugar de los probables
-                // representación prevista
+            } else {
+                
+                // Using the string constructor to hold "nice" values for double
+                // and float, the double constructor will translate the doubles to
+                // "exact" values instead of the likely intended representation.
                 return new BigDecimal(val.toString());
             }
         }
@@ -810,7 +770,7 @@ public class Properties implements Savable, Cloneable {
                 || val instanceof Short || val instanceof Byte){
             return new BigDecimal(((Number) val).longValue());
         }
-        // no verifique si es una cadena en caso de subclases de números no verificadas
+        // Do not check if it is a string in case of unchecked subclasses of numbers.
         try {
             return new BigDecimal(String.valueOf(val));
         } catch (Exception e) {
@@ -819,28 +779,25 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un BigInteger opcional asociado con una clave, o null si
-     * no existe tal clave o si su valor no es un número. Si el valor es un
-     * string, se intentará evaluarlo como un número.
+     * Gets an optional BigInteger associated with a key, or null if no such key
+     * exists or if its value is not a number. If the value is a string, an
+     * attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return an object that is the value
      */
     public BigInteger optBigInteger(String key) {
         return this.optBigInteger(key, null);
     }
     
     /**
-     * Obtenga un BigInteger opcional asociado con una clave, o el valor predeterminado si
-     * no existe tal clave o si su valor no es un número. Si el valor es un
-     * string, se intentará evaluarlo como un número.
+     * Gets an optional BigInteger associated with a key, or the default value
+     * if no such key exists or if its value is not a number. If the value is a
+     * string, an attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            valor predeterminado.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return an object that is the value
      */
     public BigInteger optBigInteger(String key, BigInteger defaultValue) {
         Object val = this.opt(key);
@@ -849,12 +806,16 @@ public class Properties implements Savable, Cloneable {
 
     
     /**
-     * @param val valor para convertir
-     * @param defaultValue el valor predeterminado que se devuelve es que la conversión no funciona o es nula.
-     * @return Conversión BigInteger del valor original, o el valor predeterminado si no se puede
-     *          para convertir.
+     * Converts an object to BigDecimal.
+     * 
+     * @param val value to convert
+     * @param defaultValue the default value that is returned when the conversion
+     * does not work or is null
+     * 
+     * @return BigInteger conversion of the original value, or the default value
+     *                     if it cannot be converted
      */
-    static BigInteger objectToBigInteger(Object val, BigInteger defaultValue) {
+    protected static BigInteger objectToBigInteger(Object val, BigInteger defaultValue) {
         if (val == null) {
             return defaultValue;
         }
@@ -874,13 +835,8 @@ public class Properties implements Savable, Cloneable {
                 || val instanceof Short || val instanceof Byte){
             return BigInteger.valueOf(((Number) val).longValue());
         }
-        // no verifique si es una cadena en caso de subclases de números no verificadas
+        // Do not check if it is a string in case of unchecked subclasses of numbers
         try {
-            // las otras funciones opt manejan conversiones implícitas, es decir
-            // jo.put("doble",1.1d);
-            // jo.optInt("doble"); -- devolverá 1, no un error
-            // esta conversión a BigDecimal y luego a BigInteger es para mantener
-            // ese tipo de soporte de conversión que puede truncar el decimal.
             final String valStr = String.valueOf(val);
             if(isDecimalNotation(valStr)) {
                 return new BigDecimal(valStr).toBigInteger();
@@ -892,28 +848,25 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un doble opcional asociado con una clave, o NaN si no existe tal
-     * clave o si su valor no es un número. Si el valor es una cadena, un intento
-     * se hará para evaluarlo como un número.
+     * Gets an optional double associated with a key, or NaN if no such key
+     * exists or if its value is not a number. If the value is a string, an
+     * attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena que es la clave..
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return the value
      */
     public double optDouble(String key) {
         return this.optDouble(key, Double.NaN);
     }
 
     /**
-     * Obtenga un double opcional asociado con una clave, o el valor predeterminado si
-     * no existe tal clave o si su valor no es un número. Si el valor es un
-     * string, se intentará evaluarlo como un número.
+     * Gets an optional double associated with a key, or the default value if no
+     * such key exists or if its value is not a number. If the value is a string,
+     * an attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predetermiando.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public double optDouble(String key, double defaultValue) {
         Number val = this.optNumber(key);
@@ -921,35 +874,29 @@ public class Properties implements Savable, Cloneable {
             return defaultValue;
         }
         final double doubleValue = val.doubleValue();
-        // if (Double.isNaN(doubleValue) || Double.isInfinite(doubleValue)) {
-        // return defaultValue;
-        // }
         return doubleValue;
     }
     
     /**
-     * Obtenga el valor float opcional asociado con una clave. Sse devuelve 
-     * Nan si la clave no existe, o si el valor no es un
-     * número y no se puede convertir a un número.
+     * Gets the optional float value associated with a key. Nan is returned if
+     * the key does not exist, or if the value is not a number and cannot be
+     * converted to a number.
      *
-     * @param key
-     *           Una cande clave.
-     * @return El valor.
+     * @param key string key
+     * @return the value
      */
     public float optFloat(String key) {
         return this.optFloat(key, Float.NaN);
     }
 
     /**
-     * Obtenga el valor float opcional asociado con una clave. El valor predeterminado
-     * se devuelve si la clave no existe, o si el valor no es un
-     * número y no se puede convertir a un número.
+     * Gets the optional float value associated with a key. The default value is
+     * returned if the key does not exist, or if the value is not a number and
+     * cannot be converted to a number.
      *
-     * @param key
-     *            Una cande clave
-     * @param defaultValue
-     *            El valor predetreminado.
-     * @return El valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public float optFloat(String key, float defaultValue) {
         Number val = this.optNumber(key);
@@ -957,35 +904,29 @@ public class Properties implements Savable, Cloneable {
             return defaultValue;
         }
         final float floatValue = val.floatValue();
-        // if (Float.isNaN(floatValue) || Float.isInfinite(floatValue)) {
-        // return defaultValue;
-        // }
         return floatValue;
     }
     
     /**
-     * Obtenga un valor int opcional asociado con una clave, o cero si no hay
-     * tal clave o si el valor no es un número. Si el valor es una cadena, un
-     * se intentará evaluarlo como un número.
+     * Gets an optional int value associated with a key, or zero if there is no
+     * such key or if the value is not a number. If the value is a string, a
+     * will attempt to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return the value
      */
     public int optInt(String key) {
         return this.optInt(key, 0);
     }
 
     /**
-     * Obtenga un valor int opcional asociado con una clave, o el valor predeterminado si existe
-     * no existe tal clave o si el valor no es un número. Si el valor es una cadena,
-     * se intentará evaluarlo como un número.
+     * Gets an optional int value associated with a key, or the default value if
+     * there is no such key or if the value is not a number. If the value is a
+     * string, an attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            valor predeterminado.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public int optInt(String key, int defaultValue) {
         final Number val = this.optNumber(key, null);
@@ -996,28 +937,25 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un valor long opcional asociado con una clave, o cero si no hay
-     * tal clave o si el valor no es un número. Si el valor es una cadena,
-     * se intentará evaluarlo como un número.
+     * Gets an optional long value associated with a key, or zero if there is no
+     * such key or if the value is not a number. If the value is a string, an
+     * attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return the value
      */
     public long optLong(String key) {
         return this.optLong(key, 0L);
     }
 
     /**
-     * Obtenga un valor long opcional asociado con una clave, o el valor predeterminado si existe
-     * no existe tal clave o si el valor no es un número. Si el valor es una cadena,
-     * se intentará evaluarlo como un número.
+     * Gets an optional long value associated with a key, or the default value
+     * if there is no such key or if the value is not a number. If the value is
+     * a string, an attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public long optLong(String key, long defaultValue) {
         final Number val = this.optNumber(key, null);
@@ -1029,28 +967,25 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un valor short opcional asociado con una clave, o cero si no hay
-     * tal clave o si el valor no es un número. Si el valor es una cadena,
-     * se intentará evaluarlo como un número.
+     * Gets an optional short value associated with a key, or zero if there is no
+     * such key or if the value is not a number. If the value is a string, an
+     * attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return the value
      */
     public short optShort(String key) {
         return this.optShort(key, (short)0);
     }
 
     /**
-     * Obtenga un valor short opcional asociado con una clave, o el valor predeterminado si existe
-     * no existe tal clave o si el valor no es un número. Si el valor es una cadena,
-     * se intentará evaluarlo como un número.
+     * Gets an optional short value associated with a key, or the default value
+     * if there is no such key or if the value is not a number. If the value is
+     * a string, an attempt will be made to evaluate it as a number.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public short optShort(String key, short defaultValue) {
         final Number val = this.optNumber(key, null);
@@ -1062,28 +997,25 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un valor byte opcional asociado con una clave, o cero bytes si no hay
-     * tal clave o si el valor no es un byte o número. Si el valor es una cadena,
-     * se intentará evaluarlo como un Byte.
+     * Gets an optional byte value associated with a key, or zero bytes if there
+     * is no such key or if the value is not a byte or number. If the value is a
+     * string, an attempt will be made to evaluate it as a byte.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return the value
      */
     public byte optByte(String key) {
         return this.optByte(key, (byte)0);
     }
 
     /**
-     * Obtenga un valor byte opcional asociado con una clave, o el valor predeterminado si no hay
-     * tal clave o si el valor no es un byte o número. Si el valor es una cadena,
-     * se intentará evaluarlo como un Byte.
+     * Gets an optional byte value associated with a key, or the default value
+     * if there is no such key or if the value is not a byte or number. If the
+     * value is a string, an attempt will be made to evaluate it as a byte.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public byte optByte(String key, byte defaultValue) {
         final Object val = this.opt(key);
@@ -1094,7 +1026,7 @@ public class Properties implements Savable, Cloneable {
             return (byte) val;
         }
         try {
-            // usaremos get de todos modos porque hace conversión de cadenas.
+            // We will use get anyway because it does string conversion.
             return this.getByte(key);
         } catch (RuntimeException e) {
             return defaultValue;
@@ -1102,28 +1034,25 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un valor char opcional asociado con una clave, o un valor nulo si no hay
-     * tal clave o si el valor no es un char. Si el valor es una cadena,
-     * se intentará evaluarlo como un char.
+     * Gets an optional char value associated with a key, or a null value if
+     * there is no such key or if the value is not a char. If the value is a
+     * string, an attempt will be made to evaluate it as a char.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return the value
      */
     public char optChar(String key) {
         return this.optChar(key, '\u0000');
     }
 
     /**
-     * Obtenga un valor char opcional asociado con una clave, o el valor predeterminado si no hay
-     * tal clave o si el valor no es un char. Si el valor es una cadena,
-     * se intentará evaluarlo como un char
+     * Gets an optional char value associated with a key, or the default value
+     * if there is no such key or if the value is not a char. If the value is a
+     * string, an attempt will be made to evaluate it as a char.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public char optChar(String key, char defaultValue) {
         final Object val = this.opt(key);
@@ -1134,7 +1063,7 @@ public class Properties implements Savable, Cloneable {
             return (char) val;
         }
         try {
-            // usaremos get de todos modos porque hace conversión de cadenas.
+            // We will use get anyway because it does string conversion.
             return this.getChar(key);
         } catch (RuntimeException e) {
             return defaultValue;
@@ -1142,30 +1071,29 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un valor {@link Number} opcional asociado con una clave, o <code>null</code>
-     * si no existe tal clave o si el valor no es un número. Si el valor es una cadena,
-     * se intentará evaluarlo como un número ({@link BigDecimal}). Este método
-     * se usaría en los casos en que no se desee la coerción de tipo del valor numérico.
+     * Gets a optional {@link Number} value associated with a key, or <code>null</code>
+     * if no such key exists or if the value is not a number. If the value is a
+     * string, an attempt will be made to evaluate it as a ({@link BigDecimal})
+     * number. This method would be used in cases where type coercion of the
+     * numeric value is not desired.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @return the value
      */
     public Number optNumber(String key) {
         return this.optNumber(key, null);
     }
 
     /**
-     * Obtenga un valor {@link Number} opcional asociado con una clave, o el valor predeterminado si
-     * no existe tal clave o si el valor no es un número. Si el valor es una cadena,
-     * se intentará evaluarlo como un número. Este método
-     * se usaría en los casos en que no se desee la coerción de tipo del valor numérico.
+     * Gets a optional {@link Number} value associated with a key, or the default
+     * value if no such key exists or if the value is not a number. If the value
+     * is a string, an attempt will be made to evaluate it as a number. This
+     * method would be used in cases where type coercion of the numeric value is
+     * not desired.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Un objeto que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public Number optNumber(String key, Number defaultValue) {
         Object val = this.opt(key);
@@ -1184,27 +1112,24 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga una cadena opcional asociada con una clave. Devuelve una cadena vacía.
-     * si no existe tal clave. Si el valor no es una cadena y no es nulo,
-     * luego se convierte en una cadena.
+     * Gets an optional string associated with a key. Returns an empty string if
+     * no such key exists. If the value is not a string and is not null, then it
+     * is converted to a string.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Una cadena que es el valor.
+     * @param key string key
+     * @return the value
      */
     public String optString(String key) {
         return this.optString(key, "");
     }
 
     /**
-     * Obtenga una cadena opcional asociada con una clave. Devuelve el valor predeterminado
-     * si no existe tal clave.
+     * Gets an optional string associated with a key. Returns the default value
+     * if no such key exists.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Una cadena que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public String optString(String key, String defaultValue) {
         Object object = this.opt(key);
@@ -1218,26 +1143,23 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un BitSet opcional asociada con una clave. Devuelve <code>null</code>.
-     * Si no existe tal clave. O si el valor no es un objeto {@link BitSet}.
+     * Gets an optional BitSet associated with a key. Returns <code>null</code>
+     * if there is no such key, or if the value is not an object {@link BitSet}.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Una BitSet que es el valor.
+     * @param key string key
+     * @return the value
      */
     public BitSet optBitSet(String key) {
         return this.optBitSet(key, null);
     }
     
     /**
-     * Obtenga un BitSet opcional asociada con una clave. Devuelve el valor predeterminado
-     * si no existe tal clave.
+     * Gets an optional BitSet associated with a key. Returns the default value
+     * if no such key exists.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Una BitSet que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return the value
      */
     public BitSet optBitSet(String key, BitSet defaultValue) {
         try {
@@ -1249,8 +1171,7 @@ public class Properties implements Savable, Cloneable {
                 return (BitSet) object;
             }
 
-            // usaremos get ya que hace una
-            // conversion.
+            // We will use get since it does a conversion
             return this.getBitSet(key);
         } catch (RuntimeException e) {
             return defaultValue;
@@ -1258,26 +1179,23 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un FloatBuffer opcional asociada con una clave. Devuelve <code>null</code>.
-     * Si no existe tal clave. O si el valor no es un objeto {@link FloatBuffer}.
+     * Gets an optional FloatBuffer associated with a key. Returns <code>null</code>
+     * if there is no such key, or if the value is not an object {@link FloatBuffer}.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @return a buffer which is the value
      */
     public FloatBuffer optFloatBuffer(String key) {
         return this.optFloatBuffer(key, null);
     }
     
     /**
-     * Obtenga un FloatBuffer opcional asociada con una clave. Devuelve el valor predeterminado
-     * si no existe tal clave.
+     * Gets an optional FloatBuffer associated with a key. Returns the default
+     * value if no such key exists.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return a buffer which is the value
      */
     public FloatBuffer optFloatBuffer(String key, FloatBuffer defaultValue) {
         final Object object = this.opt(key);
@@ -1292,26 +1210,23 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un IntBuffer opcional asociada con una clave. Devuelve <code>null</code>.
-     * Si no existe tal clave. O si el valor no es un objeto {@link IntBuffer}.
+     * Gets an optional IntBuffer associated with a key. Returns <code>null</code>
+     * if there is no such key, or if the value is not an object {@link IntBuffer}.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @return a buffer which is the value
      */
     public IntBuffer optIntBuffer(String key) {
         return this.optIntBuffer(key, null);
     }
     
     /**
-     * Obtenga un IntBuffer opcional asociada con una clave. Devuelve el valor predeterminado
-     * si no existe tal clave.
+     * Gets an optional IntBuffer associated with a key. Returns the default
+     * value if no such key exists.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return a buffer which is the value
      */
     public IntBuffer optIntBuffer(String key, IntBuffer defaultValue) {
         final Object object = this.opt(key);
@@ -1326,26 +1241,23 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un ByteBuffer opcional asociada con una clave. Devuelve <code>null</code>.
-     * Si no existe tal clave. O si el valor no es un objeto {@link ByteBuffer}.
+     * Gets an optional ByteBuffer associated with a key. Returns <code>null</code>
+     * if there is no such key, or if the value is not an object {@link ByteBuffer}.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @return a buffer which is the value
      */
     public ByteBuffer optByteBuffer(String key) {
         return this.optByteBuffer(key, null);
     }
     
     /**
-     * Obtenga un ByteBuffer opcional asociada con una clave. Devuelve el valor predeterminado
-     * si no existe tal clave.
+     * Gets an optional ByteBuffer associated with a key. Returns the default
+     * value if no such key exists.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return a buffer which is the value
      */
     public ByteBuffer optByteBuffer(String key, ByteBuffer defaultValue) {
         final Object object = this.opt(key);
@@ -1360,26 +1272,23 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Obtenga un ShortBuffer opcional asociada con una clave. Devuelve <code>null</code>.
-     * Si no existe tal clave. O si el valor no es un objeto {@link ShortBuffer}.
+     * Gets an optional ShortBuffer associated with a key. Returns <code>null</code>
+     * if there is no such key, or if the value is not an object {@link ShortBuffer}.
      *
-     * @param key
-     *            Una cadena clave.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @return a buffer which is the value
      */
     public ShortBuffer optShortBuffer(String key) {
         return this.optShortBuffer(key, null);
     }
     
     /**
-     * Obtenga un ShortBuffer opcional asociada con una clave. Devuelve el valor predeterminado
-     * si no existe tal clave.
+     * Gets an optional ShortBuffer associated with a key. Returns the default
+     * value if no such key exists.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Una buffer que es el valor.
+     * @param key string key
+     * @param defaultValue default value
+     * @return a buffer which is the value
      */
     public ShortBuffer optShortBuffer(String key, ShortBuffer defaultValue) {
         final Object object = this.opt(key);
@@ -1394,30 +1303,25 @@ public class Properties implements Savable, Cloneable {
     }
         
     /**
-     * Obtenga una savable opcional asociada con una clave.Devuelve el nulo <code>null</code>
-     *  si no existe tal clave.
+     * Gets an optional savable associated with a key. Returns <code>null</code>
+     * if no such key exists.
      * 
-     * @param <E>
-     *          Tipo savable.
-     * @param key
-     *            Una cadena clave.
-     * @return Una cadena que es el valor.
+     * @param <E> savable type
+     * @param key string key
+     * @return the savable object
      */
     public <E extends Savable> E optSavable(String key) {
         return this.optSavable(key, null);
     }
     
     /**
-     * Obtenga una savable opcional asociada con una clave.Devuelve el valor predeterminado
-     * si no existe tal clave.
+     * Gets an optional savable associated with a key. Returns the default value
+     * if no such key exists.
      *
-     * @param <E>
-     *          Tipo savable
-     * @param key
-     *            Una cadena clave.
-     * @param defaultValue
-     *            Valor predeterminado.
-     * @return Un savable que es el valor.
+     * @param <E> savable type
+     * @param key string key
+     * @param defaultValue default value
+     * @return the savable object
      */
     @SuppressWarnings("unchecked")
     public <E extends Savable> E optSavable(String key, E defaultValue) {
@@ -1432,22 +1336,22 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Método encargado de generar un clon de este objeto.
-     * @return clon objeto.
+     * Method in charge of generating a clone of this object.
+     * @return clone object.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Properties clone() {
         try {
-            // Clonamos el objeto JmeProperties
+            // Clone the object JmeProperties
             Properties clon = (Properties) 
                                super.clone();
             
-            // Objeto clonaro.
+            // Cloned object
             final Cloner cloner = new Cloner();
             
-            // Ya que la clonacion solo afecta de manera superficial
-            // los objeto, tambine clonaremos el Map junto con sus
-            // datos que soportan la clonacion.
+            // Since cloning only superficially affects the objects, we will 
+            // also clone the Map along with its data that supports cloning.
             clon.properties = (HashMap<String, Savable>) properties.clone();
                         
             for (final Entry<?, ?> entry : clon.properties.entrySet()) {
@@ -1467,7 +1371,7 @@ public class Properties implements Savable, Cloneable {
                         oldvalue instanceof Cloneable ||
                         cloner.isCloned(oldvalue)) {
                         
-                        // ¡Clonamos el objeto!.
+                        // We cloned the object!
                         newvalue = cloner.clone(oldvalue);
                     } else {
                         newvalue = oldvalue;                        
@@ -1482,27 +1386,25 @@ public class Properties implements Savable, Cloneable {
                 clon.properties.put(String.valueOf(entry.getKey()), wrap(newvalue));
             }
             
-            // Devolvemos el objeto clonado junto con
-            // su propiedades.
+            // We return the cloned object together with its properties
             return clon;
         } catch (CloneNotSupportedException e) {
-            // Si da un erro o por alguna razon JmeProperties
-            // no soporto la clonacion.
+            // If it gives an error or for some reason Jm Properties does not 
+            // support cloning.
             throw new InternalError(e);
         }
     }
     
     /**
-     * Envuelva un objeto, si es necesario. Si el objeto es <code>null</code>, devuelve NULL
-     * objeto. Si es una matriz o una colección, envuélvala en un JmeArray. Si esto es
-     * un mapa, envuélvalo en un JmeProperties. Si es una propiedad estándar (Double,
-     * String, etc.) entonces ya está envuelto. En caso contrario, si procede
-     * uno de los paquetes java, convertirlo en una cadena. Y si no es así, prueba
-     * para envolverlo en un JmeProperties. Si el ajuste falla, se devuelve nulo.
+     * Wrap an object, if necessary. If the object is <code>null</code>, returns
+     * a NULL object. If this is an array or a collection, wrap it in a JmeArray.
+     * If this is a map, wrap it in a JmeProperties. If it is a standard property
+     * (Double, String, etc.) then it is already wrapped. Otherwise, if it comes
+     * from one of the java packages, convert it to a string. And if not, try to
+     * wrap it in a JmeProperties. If the settings fails, null is returned.
      *
-     * @param object
-     *            El objeto a envolver
-     * @return El valor envuelto
+     * @param object the object to be wrapped
+     * @return the value wrapped
      */
     protected static Savable wrap(Object object) {
         try {
@@ -1525,9 +1427,8 @@ public class Properties implements Savable, Cloneable {
     }
 
     /**
-     * Genera el codigo hahs de la clase u objeto {@link Properties}.
-     * 
-     * @return codigo hahs del objeto.
+     * Generates the hash code of the class of an object {@link Properties}.
+     * @return object hash code
      */
     @Override
     public int hashCode() {
@@ -1537,12 +1438,10 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Un objeto {@link Properties} es igual a sí mismo.
+     * An object {@link Properties} is equal to itself.
      *
-     * @param obj
-     *            Un objeto para probar la nulidad.
-     * @return true si el parámetro del objeto es el objeto JmeProperties o
-     *         el mismo.
+     * @param obj an object to prove nullity
+     * @return true if the object parameter is the Properties object or the same
      */
     @Override    
     public boolean equals(Object obj) {
@@ -1560,157 +1459,145 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Coloque un par clave/boolean en el JmeProperties
+     * Place a key/boolean pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param value
-     *            Un boolean que es el valor.
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value a boolean as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *          if the value is a non-finite number
+     * @throws NullPointerException 
+     *          if the key is <code>null</code>
      */
     public Properties put(String key, boolean value) throws RuntimeException{
         return this.put(key, value ? Boolean.TRUE : Boolean.FALSE);
     }
     
     /**
-     * Coloque un par clave/double en el JmeProperties.
+     * Place a key/double pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena como clave.
-     * @param value
-     *            Un double como valor-
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la lcave es <code>null</code>.
+     * @param key string key
+     * @param value a double as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *          if the value is a non-finite number
+     * @throws NullPointerException 
+     *          if the key is <code>null</code>
      */
     public Properties put(String key, double value) throws RuntimeException {
         return this.put(key, Double.valueOf(value));
     }
     
     /**
-     * Coloque un par clave/float en el JmeProperties.
+     * Place a key/float pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param value
-     *            Un float como valor
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value a float as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *          if the value is a non-finite number.
+     * @throws NullPointerException 
+     *          if the key is <code>null</code>
      */
     public Properties put(String key, float value) throws RuntimeException {
         return this.put(key, Float.valueOf(value));
     }
     
     /**
-     * Coloque un par clave/int en el JmeProperties.
+     * Place a key/int pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param value
-     *            Un int como valor.
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value a int as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *          if the value is a non-finite number
+     * @throws NullPointerException 
+     *          if the key is <code>null</code>
      */
-    public Properties put(String key, int value) throws RuntimeException{
+    public Properties put(String key, int value) throws RuntimeException {
         return this.put(key, Integer.valueOf(value));
     }
     
     /**
-     * Coloque un par clave/long en el JmeProperties
+     * Place a key/long pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param value
-     *            Un long como valor..
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value a long as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *          if the value is a non-finite number
+     * @throws NullPointerException 
+     *          if the key is <code>null</code>
      */
     public Properties put(String key, long value) throws RuntimeException {
         return this.put(key, Long.valueOf(value));
     }
     
     /**
-     * Coloque un par clave/byte en el JmeProperties
+     * Place a key/byte pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param value
-     *            Un byte como valor..
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value a byte as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *              if the value is a non-finite number
+     * @throws NullPointerException 
+     *              if the key is <code>null</code>
      */
     public Properties put(String key, byte value) throws RuntimeException {
         return this.put(key, Byte.valueOf(value));
     }
     
     /**
-     * Coloque un par clave/char en el JmeProperties
+     * Place a key/char pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param value
-     *            Un char como valor..
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value a char as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *              if the value is a non-finite number.
+     * @throws NullPointerException 
+     *              if the key is <code>null</code>
      */
     public Properties put(String key, char value) throws RuntimeException {
         return this.put(key, Character.valueOf(value));
     }
     
     /**
-     * Coloque un par clave/short en el JmeProperties
+     * Place a key/short pair in the JmeProperties.
      *
-     * @param key
-     *            Una cadena clave.
-     * @param value
-     *            Un short como valor..
-     * @return this.
-     * @throws RuntimeException
-     *            Si el valor es un número no finito.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value a short as value
+     * @return this
+     * 
+     * @throws RuntimeException 
+     *          if the value is a non-finite number
+     * @throws NullPointerException 
+     *          if the key is <code>null</code>
      */
     public Properties put(String key, short value) throws RuntimeException {
         return this.put(key, Short.valueOf(value));
     }
     
     /**
-     * Coloque un par clave/valor en el JmeProperties. Si el valor es <code>null</code>, entonces el
-     * La clave se eliminará del JmeProperties si está presente.
+     * Place a key/value pair in the JmeProperties. If the value is <code>null</code>,
+     * then the key will be removed from the JmeProperties if present.
      *
-     * @param key
-     *            Un cadena como clave..
-     * @param value
-     *            Un objeto que es el valor. debe ser de uno de estos
-     *            tipos: boolean, double, int, JmeArray, JmeProperties, long,
-     *            String, o el objeto JmeNull.
-     * @return this.
-     * @throws RuntimeException
-     *             Si el valor es un número no finito o el valor no est
-     *              soportado.
-     * @throws NullPointerException
-     *            Si la clave es <code>null</code>.
+     * @param key string key
+     * @param value an object that is the value. It must be of one of these types:
+     * boolean, double, int, JmeArray, JmeProperties, long, String, or the JmeNull object
+     * @return this
+     * 
+     * @throws RuntimeException if the value is a non-finite number or the value
+     *                          is not supported
+     * @throws NullPointerException if the key is <code>null</code>
      */
     public Properties put(String key, Object value) throws RuntimeException {
         if (key == null) {
@@ -1729,6 +1616,12 @@ public class Properties implements Savable, Cloneable {
         return this;
     }
 
+    /**
+     * Checks if a numeric value is a finite number.
+     * 
+     * @param n the value to check
+     * @return true if it's a finite number, false otherwise
+     */
     private static boolean numberIsFinite(Number n) {
         if (n instanceof Double && (((Double) n).isInfinite() || ((Double) n).isNaN())) {
             return false;
@@ -1739,11 +1632,12 @@ public class Properties implements Savable, Cloneable {
     }
     
      /**
-     * Comprueba si el valor debe probarse como un decimal. No prueba si hay dígitos reales.
+     * Tests whether the value should be tested as a decimal. It does not test
+     * for real digits.
      *
-     * @param val 
-     *          valor a probar
-     * @return verdadero si la cadena es "-0" o si contiene '.', 'e' o 'E', falso en caso contrario.
+     * @param val value to be tested
+     * @return true if the string is "-0" or if it contains '.', 'e' or 'E',
+     * false otherwise
      */
     protected static boolean isDecimalNotation(final String val) {
         return val.indexOf('.') > -1 || val.indexOf('e') > -1
@@ -1751,25 +1645,25 @@ public class Properties implements Savable, Cloneable {
     }
     
    /**
-     * Convierte una cadena en un número usando el tipo más estrecho posible. Posible
-     * Los resultados de esta función son BigDecimal, Double, BigInteger, Long e Integer.
-     * Cuando se devuelve un Doble, siempre debe ser un Doble válido y no NaN o +-infinito.
+     * Converts a string to a number using the narrowest possible type. Possible
+     * results of this function are BigDecimal, Double, BigInteger, Long and
+     * Integer. When a Double is returned, it must always be a valid Double and
+     * not NaN or +-infinite.
      *
-     * @param val 
-     *          valor para convertir
-     * @return Representación numérica del valor.
-     * @throws NumberFormatException 
-     *                  lanzado si el valor no es un número válido. La persona
-     *                  que llama debe captar esto y envolverlo en una {@link RuntimeException} si corresponde.
+     * @param val value to convert
+     * @return numerical representation of the value
+     * @throws NumberFormatException thrown if the value is not a valid number
+     * The caller should catch this and wrap it in a {@link RuntimeException}
+     * if applicabl
      */
     protected static Number stringToNumber(final String val) throws NumberFormatException {
         char initial = val.charAt(0);
         if ((initial >= '0' && initial <= '9') || initial == '-') {
-            // representación decimal
+            // Decimal representation
             if (isDecimalNotation(val)) {
-                // Usar un BigDecimal todo el tiempo para mantener el original
-                // representación. BigDecimal no admite -0.0, asegúrese de que
-                // mantener eso forzando un decimal.
+                // Use a BigDecimal all the time to keep the original representation.
+                // BigDecimal does not support -0.0, make sure you maintain that by
+                // forcing a decimal.
                 try {
                     BigDecimal bd = new BigDecimal(val);
                     if(initial == '-' && BigDecimal.ZERO.compareTo(bd)==0) {
@@ -1777,7 +1671,7 @@ public class Properties implements Savable, Cloneable {
                     }
                     return bd;
                 } catch (NumberFormatException retryAsDouble) {
-                    // esto es para soportar "Hex Floats" como este: 0x1.0P-1074
+                    // This is to support "Hex Floats" like this one: 0x1.0P-1074
                     try {
                         Double d = Double.valueOf(val);
                         if(d.isNaN() || d.isInfinite()) {
@@ -1789,7 +1683,7 @@ public class Properties implements Savable, Cloneable {
                     }
                 }
             }
-            // bloquea elementos como 00 01, etc. Los analizadores de números de Java los tratan como octales.
+            // Blocks items such as 00 01, etc. Java number parsers treat them as octal.
             if(initial == '0' && val.length() > 1) {
                 char at1 = val.charAt(1);
                 if(at1 >= '0' && at1 <= '9') {
@@ -1802,14 +1696,15 @@ public class Properties implements Savable, Cloneable {
                     throw new NumberFormatException("val ["+val+"] is not a valid number.");
                 }
             }
-            // representación de enteros.
-            // Esto reducirá cualquier valor a la representación de objeto razonable más pequeña
-            // (Integer, Long o BigInteger)
-
-            // Conversión descendente de BigInteger: Usamos una comparación de longitud de bits similar a
-            // BigInteger#intValueExact usa. Aumenta GC, pero los objetos se mantienen
-            // solo lo que necesitan. es decir, menos sobrecarga de tiempo de ejecución si el valor es
-            // larga vida.
+            
+            // Integer representation.
+            // This will reduce any value to the smallest reasonable object representation.
+            // (Integer, Long or BigInteger).
+            // 
+            // BigInteger downconversion: We use a bit length comparison similar to
+            // BigInteger#intValueExact uses. It increases GC, but objects are kept
+            // only what they need. i.e. less runtime overhead if the value is long-lived.
+            
             BigInteger bi = new BigInteger(val);
             if(bi.bitLength() <= 31){
                 return bi.intValue();
@@ -1823,12 +1718,10 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Lanza una excepción si el objeto es un NaN o un número infinito.
+     * Throws an exception if the object is a NaN or an infinite number.
      *
-     * @param o
-     *            El objeto a probar.
-     * @throws RuntimeException
-     *             Si o es un número no finito.
+     * @param o the object to be tested.
+     * @throws RuntimeException if it is a non-finite number.
      */
     protected static void testValidity(Object o) throws RuntimeException {
         if (o instanceof Number && !numberIsFinite((Number) o)) {
@@ -1837,91 +1730,46 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Método encargado de determinar si existe una propiedad.
-     * @param key nombre clave.
-     * @return estado.
-     * @deprecated utilizar {@code has()}
-     */
-    @Deprecated(since = "2.5.0")
-    public boolean contains(String key) {
-        return this.properties.containsKey(key);
-    }
-    
-    /**
-     * Eliminar un nombre y su valor, si está presente.
+     * Delete a name and its value, if present.
      *
-     * @param key
-     *            El nombre que se va a eliminar.
-     * @return El valor que se asoció con el nombre, o nulo si no
-     *         hubo valor.
+     * @param key the name to be deleted
+     * @return the value that was associated with the name, or null if there was
+     * no value
      */
     public Object remove(String key) {
         return this.properties.remove(key);
     }
     
     /**
-     * Establece una nueva propiedad.
-     * @param <T> tipo de dato.
-     * @param key nombre clave.
-     * @param value valor a guardar.
-     * @return este.
+     * Sets a new property.
+     * 
+     * @param <T> data type
+     * @param key key name
+     * @param value value to be saved
+     * @return this.
      */
     @Deprecated(since = "2.5.0")
     public <T extends Object> Properties setProperty(String key, T value) {
         this.properties.put(key, new Property(value));
         return this;
     }
-
-    /**
-     * Método encargado de buscar y devolver una propiedad.
-     * @param <T> tipo de dato.
-     * @param key nombre clave.
-     * @param defaultVal valor predeterminado.
-     * @return valor buscado.
-     */
-    @Deprecated(since = "2.5.0")
-    public <T extends Object> T getProperty(String key, T defaultVal) {
-        Object obj = this.properties.get(key);
-        T value = defaultVal;
-        if (obj instanceof Property) {
-            T var = (T) ((Property) obj).getValue();
-            if (var != null) {
-                value = var;
-            }
-        } else {
-            if (obj != null) {
-                value = (T) obj;
-            }
-        }
-        return value;
-    }
     
     /**
-     * Método encargado de buscar y devolver una propiedad.
-     * @param <T> tipo de dato.
-     * @param key nombre clave.
-     * @return valor buscado.
-     */
-    @Deprecated(since = "2.5.0")
-    public <T extends Object> T getProperty(String key) {
-        return getProperty(key, null);
-    }
-    
-    /**
-     * Método encargado de gestionar los nombres claves de las propiedades.
-     * @return nombres claves.
+     * Method in charge of managing the key names of the properties.
+     * 
+     * @return key names.
      */
     public Iterator<String> propertyNames() {
         return this.properties.keySet().iterator();
     }
     
     /**
-     * (non-JavaDoc).
+     * (non-Javadoc).
      * 
-     * @param ex JmeExporter.
+     * @param ex JmeExporter
      * @see Savable#write(com.jme3.export.JmeExporter) 
      * 
-     * @throws IOException Excepción.
+     * @throws IOException exception.
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
@@ -1930,12 +1778,12 @@ public class Properties implements Savable, Cloneable {
     }
 
     /**
-     * (non-JavaDoc).
+     * (non-JavaDdc).
      * 
      * @param im JmeImporter
      * @see Savable#read(com.jme3.export.JmeImporter) 
      * 
-     * @throws IOException Excepción.
+     * @throws IOException exception.
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -1945,15 +1793,14 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Produce una cadena entre comillas dobles con secuencias de barra invertida en todos los
-     * lugares correctos. Se insertará una barra invertida dentro de &lt;/, produciendo
-     * &lt;\/, lo que permite que el texto de propieades se entregue en HTML. En texto de propiedades, una
-     * cadena no puede contener un carácter de control o una comilla sin escape o
-     * barra invertida.
+     * Produces a string enclosed in double quotes with backslash sequences in
+     * all the correct places. A backslash will be inserted inside &lt;/, producing
+     * &lt;\/, which allows the property text to be delivered in HTML. In property
+     * text, a string cannot contain a control character or a quotation mark without
+     * an escape or backslash.
      *
-     * @param string
-     *            Una cadena
-     * @return Una cadena con el formato correcto para la inserción en un texto JmeProperties.
+     * @param string the text
+     * @return a correctly formatted string for insertion into a JmeProperties text
      */
     protected static String quote(String string) {
         StringWriter sw = new StringWriter();
@@ -1961,12 +1808,24 @@ public class Properties implements Savable, Cloneable {
             try {
                 return quote(string, sw).toString();
             } catch (IOException ignored) {
-                // nunca sucedera - estamos escribiendo a un escritor de cadenas
+                // It will never happen - we are writing to a string writer.
                 return "";
             }
         }
     }
 
+    /**
+     * Produces a string enclosed in double quotes with backslash sequences in
+     * all the correct places using a custom {@link Writer} object. A backslash
+     * will be inserted inside &lt;/, producing &lt;\/, which allows the property
+     * text to be delivered in HTML. In property text, a string cannot contain a
+     * control character or a quotation mark without an escape or backslash.
+     * 
+     * @param string the text
+     * @param w the custom Writer object
+     * @return a correctly formatted string inside a Writer object
+     * @throws IOException exception
+     */
     protected static Writer quote(String string, Writer w) throws IOException {
         if (string == null || string.isEmpty()) {
             w.write("\"\"");
@@ -2027,11 +1886,12 @@ public class Properties implements Savable, Cloneable {
     }
     
     /**
-     * Cree una nueva JmeException en un formato comun para conversiones incorrectas.
-     * @param key nombre de la llave
-     * @param valueType el tipo de valor al que se obliga
+     * Creates a new JmeException in a common format for incorrect conversions.
+     * 
+     * @param key name of the key
+     * @param valueType the type of value to which it is obligated
      * @param cause causa opcional de la falla de coerción
-     * @return JmeException que se puede tirar.
+     * @return JmeException that can be thrown out
      */
     private static RuntimeException wrongValueFormatException(
             String key,
@@ -2044,7 +1904,7 @@ public class Properties implements Savable, Cloneable {
                     "JmeProperties[" + quote(key) + "] is not a " + valueType + " (null)."
                     , cause);
         }
-        // no intente hacer cadenas de colecciones o tipos de objetos conocidos que podrian ser grandes.
+        // Do not attempt to make chains of collections or known object types that could be large
         if(value instanceof Map || value instanceof Iterable || value instanceof Properties) {
             return new RuntimeException(
                     "JmeProperties[" + quote(key) + "] is not a " + valueType + " (" + value.getClass() + ")."

@@ -31,6 +31,10 @@
  */
 package jme3gl2.physics.control;
 
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 
@@ -45,6 +49,10 @@ import org.dyn4j.world.listener.StepListener;
 import org.dyn4j.world.listener.StepListenerAdapter;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.IOException;
+
 import jme3gl2.physics.PhysicsSpace;
 
 /**
@@ -81,6 +89,8 @@ import jme3gl2.physics.PhysicsSpace;
  * @since 1.0.0
  */
 public class CharacterBody2D extends PhysicsBody2D {
+    /** Class logger. */
+    private static final Logger LOG = Logger.getLogger(CharacterBody2D.class.getName());
 
     /**
      * This object can be used as an identifier for a single object of type
@@ -343,6 +353,49 @@ public class CharacterBody2D extends PhysicsBody2D {
                 onWall    = true;
             }
         }
+    }
+
+    /** (non-Javadoc )*/
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        super.write(ex);        
+        OutputCapsule out = ex.getCapsule(this);
+        out.write(layer, "layer", 0);
+        
+        Object user = getUserData();
+        if (user == CHARACTER) {
+            out.write("CHARACTER", "CharacterBody2D#UserData", null);
+        } else if (user == FLOOR) {
+            out.write("FLOOR", "CharacterBody2D#UserData", null);
+        } else if (user == ONE_WAY_PLATFORM) {
+            out.write("ONE_WAY_PLATFORM", "CharacterBody2D#UserData", null);
+        }
+    }
+
+    /** (non-Javadoc )*/
+    @Override
+    @SuppressWarnings("unchecked")
+    public void read(JmeImporter im) throws IOException {
+        super.read(im);
+        InputCapsule in = im.getCapsule(this);
+        layer = in.readInt("layer", 0);
+        
+        String data = in.readString("CharacterBody2D#UserData", null);
+        if (data == null) {
+            return;
+        }
+        
+        Object obj = null;
+        if ("CHARACTER".equals(data)) {
+            obj = CHARACTER;
+        } else if ("FLOOR".equals(data)) {
+            obj = FLOOR;
+        } else if ("ONE_WAY_PLATFORM".equals(data)) {
+            obj = ONE_WAY_PLATFORM;
+        } else {
+            LOG.log(Level.WARNING, "Could not load user data");
+        }
+        setUserData(obj);
     }
 
     /**

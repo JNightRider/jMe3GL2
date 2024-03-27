@@ -48,6 +48,8 @@ import jme3gl2.physics.debug.Dyn4jDebugAppState;
 
 import org.dyn4j.collision.Bounds;
 import org.dyn4j.dynamics.Settings;
+import org.dyn4j.world.CollisionWorld;
+import org.dyn4j.world.PhysicsWorld;
 
 /**
  * An object (an instance) of the class <code>Dyn4jAppState</code> is a state that 
@@ -94,6 +96,9 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * upon reaching the limit
      */
     protected Bounds bounds = null;
+    
+    /** Physical space configurations. */
+    private Settings settings;
     
     /**The physical space of bodies. */
     protected PhysicsSpace<E> physicsSpace = null;    
@@ -160,7 +165,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @param bounds Llmit of the world
      */
     public Dyn4jAppState(final Bounds bounds) {
-        this(null, null, bounds, ThreadingType.PARALLEL);
+        this(null, null, bounds, null, ThreadingType.PARALLEL);
     }
     
     /**
@@ -172,7 +177,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @param initialJointCapacity initial joint capacity
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity) {
-        this(initialCapacity, initialJointCapacity,null, ThreadingType.PARALLEL);
+        this(initialCapacity, initialJointCapacity, null, null, ThreadingType.PARALLEL);
     }
     
     /**
@@ -185,7 +190,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @param bounds Llmit of the world
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity, final Bounds bounds) {
-        this(initialCapacity, initialJointCapacity, bounds, ThreadingType.PARALLEL);
+        this(initialCapacity, initialJointCapacity, bounds, null, ThreadingType.PARALLEL);
     }
     
     /**
@@ -208,7 +213,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @param threadingType physics engine integration type (thread)
      */
     public Dyn4jAppState(final Bounds bounds, final ThreadingType threadingType) {
-        this(null, null, bounds, threadingType);
+        this(null, null, bounds, null, threadingType);
     }
     
     /**
@@ -221,7 +226,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @param threadingType physics engine integration type (thread)
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity, final ThreadingType threadingType) {
-        this(initialCapacity, initialJointCapacity, null, threadingType);
+        this(initialCapacity, initialJointCapacity, null, null, threadingType);
     }
 
     /**
@@ -235,9 +240,26 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @param threadingType physics engine integration type (thread)
      */
     public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity, final Bounds bounds, final ThreadingType threadingType) {
-        this.threadingType = threadingType;
-        this.initialCapacity = initialCapacity;
-        this.bounds = bounds;
+        this(initialCapacity, initialJointCapacity, bounds, null, threadingType);
+    }
+    
+    /**
+     * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
+     * a physics engine that can handle all physical bodies in a 2D world or scene 
+     * realistically via <b>dyn4j</b>.
+     * 
+     * @param initialCapacity initial capacity (bodies in the world)
+     * @param initialJointCapacity initial joint capacity
+     * @param bounds limit of the world
+     * @param settings physical space configurations
+     * @param threadingType physics engine integration type (thread)
+     */
+    public Dyn4jAppState(final Integer initialCapacity, final Integer initialJointCapacity, final Bounds bounds, Settings settings, final ThreadingType threadingType) {
+        this.threadingType        = threadingType;
+        this.initialCapacity      = initialCapacity;
+        this.initialJointCapacity = initialJointCapacity;
+        this.settings = settings;
+        this.bounds   = bounds;
     }
 
     /**
@@ -255,7 +277,6 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
         startPhysics();
 
         super.initialize(stateManager, app);
-        printInformation();
     }
 
     /**
@@ -270,6 +291,10 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             startPhysicsOnExecutor();
         } else {
             this.physicsSpace = new PhysicsSpace<>(initialCapacity, initialJointCapacity, bounds);
+            if (this.settings != null) {
+                this.physicsSpace.setSettings(this.settings);
+            }
+            this.printInformation();
         }
 
         this.initialized = true;
@@ -284,13 +309,15 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
              .append('\n');
         buff.append(" *  Threading Type: ").append(threadingType)
             .append('\n');
-        buff.append(" *  Initial Capacity: ").append(initialCapacity)
+        buff.append(" *  Initial Capacity: ").append(initialCapacity == null ? CollisionWorld.DEFAULT_INITIAL_BODY_CAPACITY : initialCapacity)
             .append('\n');
-        buff.append(" *  Initial Joint Capacity: ").append(initialJointCapacity)
+        buff.append(" *  Initial Joint Capacity: ").append(initialJointCapacity == null ? PhysicsWorld.DEFAULT_INITIAL_JOINT_CAPACITY : initialJointCapacity)
             .append('\n');
-        buff.append(" *  Bounds: ").append(bounds)
+        buff.append(" *  Bounds: ").append(bounds != null ? bounds.getClass().getName() : null)
             .append('\n');
-        buff.append(" *  Debugger Enabled: ").append(debug);
+        buff.append(" *  Debugger Enabled: ").append(debug)
+            .append('\n');
+        buff.append(" *  ").append(physicsSpace.getSettings());
         LOGGER.log(Level.INFO, String.valueOf(buff));
     }
     
@@ -307,6 +334,10 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
         final Callable<Boolean> call = () -> {
             Dyn4jAppState.this.physicsSpace = new PhysicsSpace(Dyn4jAppState.this.initialCapacity, Dyn4jAppState.this.initialJointCapacity,
                     Dyn4jAppState.this.bounds);
+            if (Dyn4jAppState.this.settings != null) {
+                Dyn4jAppState.this.physicsSpace.setSettings(Dyn4jAppState.this.settings);
+            }
+            Dyn4jAppState.this.printInformation();
             return true;
         };
 

@@ -69,7 +69,6 @@ final class BoundsDebugControl<E extends PhysicsBody2D> extends AbstractPhysicsD
         super(dyn4jDebugAppState);
         this.world    = dyn4jDebugAppState.getPhysicsSpace();
         this.renderer = renderer;
-        
     }
 
     /**

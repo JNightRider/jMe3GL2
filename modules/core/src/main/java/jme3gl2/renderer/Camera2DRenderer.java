@@ -113,10 +113,10 @@ public class Camera2DRenderer extends BaseAppState {
     @Override
     protected void cleanup(Application app) { }
 
-    public Camera getCamera() {
-        return getApplication().getCamera();
+    public GLXCamera getGLXCamera() {
+        return xCamera;
     }
-    
+
     public void addEffect(GLXEffect effect) {
         xCamera.addEffect(effect);
     }

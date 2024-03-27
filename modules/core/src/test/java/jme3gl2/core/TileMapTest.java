@@ -31,10 +31,10 @@ public class TileMapTest extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
-        Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.SEQUENTIAL);
+        Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.PARALLEL);
         dyn4jAppState.setDebug(true);
         stateManager.attach(dyn4jAppState);
-
+        
         TileMap map = getTileMap("TileMap/PixelPlatformer/tilemap_packed.png", 20, 9, assetManager);
         map.setPhysicsSpace(dyn4jAppState.getPhysicsSpace());
         

@@ -32,14 +32,26 @@
 package jme3gl2.physics.control;
 
 import com.jme3.export.*;
+import com.jme3.math.Vector2f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.UserData;
 import com.jme3.scene.control.Control;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import jme3gl2.physics.PhysicsSpace;
+import jme3gl2.util.Converter;
+
+import org.dyn4j.Epsilon;
 import org.dyn4j.dynamics.Body;
+import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.geometry.Mass;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector2;
 
 /**
  * An abstract implementation of the {@link jme3gl2.physics.control.PhysicsControl} 
@@ -53,7 +65,9 @@ import org.dyn4j.dynamics.Body;
  * @version 1.5.5
  * @since 1.0.0
  */
-public abstract class PhysicsBody2D extends Body implements Control, PhysicsControl<PhysicsBody2D> {
+public abstract class PhysicsBody2D extends Body implements Control, Savable, PhysicsControl<PhysicsBody2D> {
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(PhysicsBody2D.class.getName());
     
     /** Physical space. */
     protected PhysicsSpace<PhysicsBody2D> physicsSpace;
@@ -205,7 +219,46 @@ public abstract class PhysicsBody2D extends Body implements Control, PhysicsCont
      * @throws IOException throws
      */
     @Override
-    public void read(JmeImporter im) throws IOException { }
+    public void read(JmeImporter im) throws IOException { 
+        InputCapsule in = im.getCapsule(this);
+        UserData userObject = (UserData) in.readSavable("UserData", null);
+        if (userObject != null) {
+            setUserData(userObject.getValue());
+        }
+        
+        int fSize = in.readInt("BodyFixture#fSize", 0);
+        for (int j = 0; j < fSize; j++) {
+            PhysicsFixture pf = (PhysicsFixture) in.readSavable("BodyFixture#" + String.valueOf(j), null);
+            addFixture(pf.getFixture());
+        }
+        
+        rotate(in.readDouble("RotationAngle", 0));
+        translate(Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Translation", new Vector2f())));
+        setLinearVelocity(Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("LinearVelocity", new Vector2f())));
+        setAngularVelocity(in.readDouble("AngularVelocity", 0));
+        
+        setEnabled(in.readBoolean("Enabled", true));
+        setAtRest(in.readBoolean("AtRest", false));
+        setAtRestDetectionEnabled(in.readBoolean("AtRestDetectionEnabled", true));
+        setBullet(in.readBoolean("Bullet", false));
+        
+        setLinearDamping(in.readDouble("LinearDamping", Body.DEFAULT_LINEAR_DAMPING));
+        setAngularDamping(in.readDouble("AngularDamping", Body.DEFAULT_ANGULAR_DAMPING));
+        setGravityScale(in.readDouble("GravityScale", 1.0));
+        
+        Vector2 mCenter = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Center", new Vector2f(0.0F, 0.0F)));
+        Mass myMass     = new Mass(mCenter, in.readDouble("Mass", 0.0), in.readDouble("Inertia", 0.0));
+        myMass.setType(in.readEnum("MassType", MassType.class, MassType.INFINITE));
+        
+        applyForce(Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("AccumulatedForce", new Vector2f(0.0F, 0.0F))));
+        applyTorque(in.readDouble("AccumulatedTorque", 0));
+        
+        enablebody = in.readBoolean("EnableBody", true);
+        spatial    = (Spatial) in.readSavable("Spatial", null);        
+        if (spatial == null) {
+            LOGGER.log(Level.SEVERE, "There is NO 'Spatial' to represent this physical body");
+        }
+    }
     
     /**
      * (non-Javadoc)
@@ -215,5 +268,85 @@ public abstract class PhysicsBody2D extends Body implements Control, PhysicsCont
      * @throws IOException throws
      */
     @Override
-    public void write(JmeExporter ex) throws IOException { }
+    @SuppressWarnings("unchecked")
+    public void write(JmeExporter ex) throws IOException { 
+        OutputCapsule out = ex.getCapsule(this);      
+        Object userObject = this.getUserData();
+        byte userType = -1;
+        try {
+            userType = UserData.getObjectType(userObject);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Unsupported type: {0}", userObject == null ? null : userObject.getClass().getName());
+        }
+        
+        if (userType != -1) {
+            out.write(new UserData(userType, userObject), "UserData", null);
+        }
+        
+        int fSize = this.getFixtureCount();
+        out.write(fSize, "BodyFixture#fSize", 0);
+        
+        for (int j = 0; j < fSize; j++) {
+            BodyFixture bf  = this.getFixture(j);            
+            out.write(new PhysicsFixture(bf), "BodyFixture#" + String.valueOf(j), null);
+        }
+        
+        // set the transform
+        if (Math.abs(getTransform().getRotationAngle()) > Epsilon.E) {
+            out.write(getTransform().getRotationAngle(), "RotationAngle", 0);
+        }
+        if (!getTransform().getTranslation().isZero()) {
+            out.write(Converter.toVector2fValueOfJME3(getTransform().getTranslation()), "Translation", null);
+        }
+        // set velocity
+        if (!getLinearVelocity().isZero()) {
+            out.write(Converter.toVector2fValueOfJME3(getLinearVelocity()), "LinearVelocity", null);
+        }
+        if (Math.abs(getAngularVelocity()) > Epsilon.E) {
+            out.write(getAngularVelocity(), "AngularVelocity", 0);
+        }
+        // set state properties
+        if (!isEnabled()) {
+            out.write(isEnabled(), "Enabled", true);
+        } // by default the body is active
+        if (isAtRest()) {
+            out.write(isAtRest(), "AtRest", false);
+        } // by default the body is awake
+        if (!isAtRestDetectionEnabled()) {
+            out.write(isAtRestDetectionEnabled(), "AtRestDetectionEnabled", true);
+        } // by default auto sleeping is true
+        if (isBullet()) {
+            out.write(isBullet(), "Bullet", false);
+        } // by default the body is not a bullet
+        // set damping
+        if (getLinearDamping() != Body.DEFAULT_LINEAR_DAMPING) {
+            out.write(getLinearDamping(), "LinearDamping", 0);
+        }
+        if (getAngularDamping() != Body.DEFAULT_ANGULAR_DAMPING) {
+            out.write(getAngularDamping(), "AngularDamping", 0);
+        }
+        // set gravity scale
+        if (getGravityScale() != 1.0) {
+            out.write(getGravityScale(), "GravityScale", 0);
+        }
+        
+        // set mass properties last
+        Mass myMass = getMass();
+        out.write(Converter.toVector2fValueOfJME3(myMass.getCenter()), "Center", null);
+        out.write(myMass.getMass(), "Mass", 0);
+        out.write(myMass.getInertia(), "Inertia", 0);
+        out.write(myMass.getType(), "MassType", MassType.INFINITE);
+        
+        // set force/torque accumulators
+        if (!getAccumulatedForce().isZero()) {
+            out.write(Converter.toVector2fValueOfJME3(getAccumulatedForce()), "AccumulatedForce", null);
+        }
+        if (Math.abs(getAccumulatedTorque()) > Epsilon.E) {
+            out.write(getAccumulatedTorque(), "AccumulatedTorque", 0);
+        }
+        
+        // jme3
+        out.write(enablebody, "EnableBody", true);
+        out.write(spatial, "Spatial", null);
+    }
 }

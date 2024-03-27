@@ -289,6 +289,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         renderMaterial();
     }
 
+    /* (non-Javadoc) */
     @Override
     protected void applyPhysicsLocation(PhysicsBody2D physicBody) {
         final Vector2 center = getLocaTranslation();
@@ -300,6 +301,7 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
         spatial.setLocalTranslation(posX, posY, spatial.getLocalTranslation().z);
     }
 
+    /* (non-Javadoc) */
     @Override
     protected void applyPhysicsRotation(PhysicsBody2D physicBody) {
         double rotation = getRotationAngle();

@@ -29,47 +29,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.renderer.effect;
-
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 
 /**
- *
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class GLXFlip extends AbstractGLXEffect {
-
-    public static enum Flip {
-        Axi_X(Vector3f.UNIT_X),
-        Axi_y(Vector3f.UNIT_Y),
-        Axi_XY(new Vector3f(1, 1, 0));
-        
-        private Vector3f axi;
-
-        private Flip(Vector3f axi) {
-            this.axi = axi;
-        }
-
-        public Vector3f getAxi() {
-            return axi;
-        }
-    }
-
-    private Flip flip;
-    
-    public GLXFlip() {
-    }
-    
-    public void flip(Flip flip) {
-        this.flip = flip;
-    }
-    
-    @Override
-    protected void effectUpdate(float tpf) {
-        if (flip != null) {
-            Quaternion a;
-            
-        }
-    }    
-}
+package jme3gl2.physics.joint;
