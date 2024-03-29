@@ -46,7 +46,7 @@ public class Circle2D extends AbstractShape2D {
     public static final float TWO_PI = 2.0F * FastMath.PI;
     
     /** Default counter to generate a circle. */
-    public static final int COUNT = 24;
+    public static final int COUNT = 54;
     
     /**
      * Class constructor <code>Circle2D</code> where the values will be set to
@@ -93,6 +93,7 @@ public class Circle2D extends AbstractShape2D {
             x = c * x - s * y;
             y = s * t + c * y;
         }
+        setMode(Mode.Lines);
         updateGeometry(myVertices);
     }
 }

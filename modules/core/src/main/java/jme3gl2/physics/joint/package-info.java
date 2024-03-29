@@ -31,6 +31,7 @@
  */
 
 /**
+ * Package in charge of containing all the classes for the joints.
  * @author wil
  * @version 1.0.0
  * @since 3.0.0

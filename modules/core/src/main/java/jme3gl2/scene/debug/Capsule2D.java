@@ -149,6 +149,7 @@ public class Capsule2D extends AbstractShape2D {
             myVertices[n++] = new Vector3f(ox, -radius, deep);
         }
         
+        setMode(Mode.Lines);
         updateGeometry(myVertices);
     }
 }

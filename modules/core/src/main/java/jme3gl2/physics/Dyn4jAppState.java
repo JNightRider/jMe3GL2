@@ -473,7 +473,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @return <code>true</code> if enabled; otherwise it will return 
      * <code>false</code> if disabled
      */
-    public boolean isDebug() {
+    public boolean isDebugEnabled() {
         return debug;
     }
 
@@ -482,7 +482,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * @param debug <code>true</code> to enable state; otherwise <code>false</code>
      * to disable it
      */
-    public void setDebug(boolean debug) {
+    public void setDebugEnabled(boolean debug) {
         this.debug = debug;
     }
     

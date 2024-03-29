@@ -204,7 +204,7 @@ public class CharacterBody2D extends PhysicsBody2D {
     
     /**
      * (non-Javadoc)
-     * @see jme3gl2.physics.control.PhysicsControl#setEnabledPhysicsControl(boolean) 
+     * @see jme3gl2.physics.control.PhysicsControl#setPhysicsSpace(jme3gl2.physics.PhysicsSpace) 
      * @param physicsSpace object
      */
     @Override

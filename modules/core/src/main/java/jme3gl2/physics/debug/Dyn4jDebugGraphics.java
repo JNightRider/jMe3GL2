@@ -67,9 +67,6 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
     /** Code name for debug color: BOUNDS. */
     public static final String GL_DEBUG_BOUNDS    = "BOUNDS";
     
-    /** Code name for debug color: MASS_INFINITE. */
-    public static final String GL_DEBUG_MASS_INFINITE    = "MASS_INFINITE";
-    
     //--------------------------------------------------------------------------
     //                        Class - Dyn4jDebugGraphics
     //--------------------------------------------------------------------------
@@ -102,7 +99,6 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
             case GL_DEBUG_SENSOR: return SENSOR;
             case GL_DEBUG_STATIC: return STATIC;
             case GL_DEBUG_BOUNDS: return BOUNDS;
-            case GL_DEBUG_MASS_INFINITE: return ColorRGBA.Orange;
             default:
                 throw new AssertionError();
         }

@@ -70,6 +70,7 @@ import org.dyn4j.geometry.Vector2;
  * <li>Ellipse</li>
  * <li>HalfEllipse</li>
  * <li>Slice</li>
+ * <li>Rectangle</li>
  * </ul>
  * <p>
  * On the other hand, a form <code>Polygon</code> or that implements the interface
@@ -318,21 +319,18 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
      */
     void renderMaterial() {
         DebugGraphics dg = dyn4jDebugAppState.getGraphics2DRenderer().getDebugGraphics();
-        ColorRGBA color/*= ColorRGBA.White*/;
+        ColorRGBA color  = dg.getColor(GL_DEBUG_DISABLED);
         
-        if (!(body2D.isEnabled())) {
-            color = dg.getColor(GL_DEBUG_DISABLED);
-        } else {
-            if (body2D.getMass().getType() == MassType.INFINITE) {
-                color = dg.getColor(GL_DEBUG_MASS_INFINITE);
+        if (body2D.isEnabled()) {
+            MassType mt = body2D.getMass().getType();
+            if ((mt == MassType.INFINITE || body2D.isStatic()) && !(body2D.isKinematic())) {
+                color = dg.getColor(GL_DEBUG_STATIC);
             } else {
                 if (fixture.isSensor()) {
                     color = dg.getColor(GL_DEBUG_SENSOR);
                 } else {
                     if (body2D.isBullet()) {
                         color = dg.getColor(GL_DEBUG_BULLET);
-                    } else if (body2D.isStatic()) {
-                        color = dg.getColor(GL_DEBUG_STATIC);
                     } else if (body2D.isKinematic()) {
                         color = dg.getColor(GL_DEBUG_KINEMATIC);
                     } else if (body2D.isAtRest()) {

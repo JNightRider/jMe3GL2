@@ -60,7 +60,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      * Default internal constructor.
      */
     protected AbstractShape2D() {
-        AbstractShape2D.this.setMode(Mode.Lines);
+        AbstractShape2D.this.setMode(Mode.LineLoop);
     }
 
     /**

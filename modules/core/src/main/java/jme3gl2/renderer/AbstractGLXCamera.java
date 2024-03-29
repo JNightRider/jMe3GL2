@@ -36,8 +36,10 @@ import com.jme3.util.SafeArrayList;
 import jme3gl2.renderer.effect.GLXEffect;
 
 /**
- *
+ * Abstract class that implements the {@link jme3gl2.renderer.GLXCamera} interface.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 public abstract class AbstractGLXCamera implements GLXCamera {
     

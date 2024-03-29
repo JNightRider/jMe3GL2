@@ -59,50 +59,153 @@ import org.dyn4j.dynamics.joint.WheelJoint;
 import org.dyn4j.geometry.Vector2;
 
 /**
- * @param <T>
- * @param <E>
+ * Class in charge of encapsulating a {@link org.dyn4j.dynamics.joint.Joint} so 
+ * that it can be exported and imported.
+ * 
+ * @param <T> of type {@link jme3gl2.physics.control.RigidBody2D}
+ * @param <E> of type {@link org.dyn4j.dynamics.joint.Joint}
  * 
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implements Savable {
-
+    /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsJoint.class.getName());
 
+    /**
+     * Types of joints allowed for export and import.
+     */
     public static enum Type {
-        AngleJoint,        
-        DistanceJoint,        
+        
+        /**
+         * For <code>AngleJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.AngleJoint
+         */
+        AngleJoint,
+        
+        /**
+         * For <code>DistanceJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.DistanceJoint
+         */
+        DistanceJoint,
+        
+        /**
+         * For <code>FrictionJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.FrictionJoint
+         */
         FrictionJoint,
+        
+        /**
+         * For <code>PinJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.PinJoint
+         */
         PinJoint,
+        
+        /**
+         * For <code>PrismaticJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.PrismaticJoint
+         */
         PrismaticJoint,
+        
+        /**
+         * For <code>PulleyJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.PulleyJoint
+         */
         PulleyJoint,
+        
+        /**
+         * For <code>RevoluteJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.RevoluteJoint
+         */
         RevoluteJoint,
+        
+        /**
+         * For <code>WeldJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.WeldJoint
+         */
         WeldJoint,
+        
+        /**
+         * For <code>WheelJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.WheelJoint
+         */
         WheelJoint,
+        
+        /**
+         * For <code>MotorJoint</code> type joint.
+         * @see org.dyn4j.dynamics.joint.MotorJoint
+         */
         MotorJoint,
+        
+        /**
+         * For a custom joint.
+         */
         Custom;
         
+        /**
+         * Determine the type of joint.
+         * @param joint a joint
+         * @return type
+         */
         public static Type valueOf(Joint<?> joint) {
+            if (joint instanceof org.dyn4j.dynamics.joint.AngleJoint) {
+                return AngleJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.DistanceJoint) {
+                return DistanceJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.FrictionJoint) {
+                return FrictionJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.PinJoint) {
+                return PinJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.PrismaticJoint) {
+                return PrismaticJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.PulleyJoint) {
+                return PulleyJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.RevoluteJoint) {
+                return RevoluteJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.WeldJoint) {
+                return WeldJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.WheelJoint) {
+                return WheelJoint;
+            } else if (joint instanceof org.dyn4j.dynamics.joint.MotorJoint) {
+                return MotorJoint;
+            }
             return null;
         }
     }
     
+    /** type-joint. */
     private Type type;
+    /** joint. */
     private E joint;
 
+    /**
+     * Construtor.
+     */
     protected PhysicsJoint() {
     }
 
+    /**
+     * Generates an object of class <code>PhysicsJoint</code>.
+     * @param joint the joint
+     */
     public PhysicsJoint(E joint) {
         this.type  = Type.valueOf(joint);
         this.joint = joint;
     }
 
+    /**
+     * Returns the joint type.
+     * @return type
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     * Returns the encapsulated joint.
+     * @return joint
+     */
     public E getJoint() {
         return joint;
     }

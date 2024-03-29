@@ -74,5 +74,7 @@ public class KinematicBody2D extends PhysicsBody2D {
      * @param vp ViewPort
      */
     @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) { }
+    protected void controlRender(RenderManager rm, ViewPort vp) { 
+        // do nothing
+    }
 }

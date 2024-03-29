@@ -115,13 +115,15 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
         renderer  = new Graphics2DRenderer((Dyn4jDebugAppState<PhysicsBody2D>) this);
         debugNode = new Node("Debug Node");
         
-        debugNode.setCullHint(Spatial.CullHint.Never);
-        debugNode.addControl(new BoundsDebugControl<>(this, renderer));
-
-        viewPort = rm.createMainView("Physics Debug Overlay", app.getCamera());
+        viewPort  = rm.createMainView("Physics Debug Overlay", app.getCamera());
         viewPort.setClearFlags(false, true, false);
         
         setDebugGraphics(new Dyn4jDebugGraphics(app.getAssetManager()));
+        BoundsDebugControl bdc = new BoundsDebugControl<>(this, renderer);
+        bdc.setEnabled(false);
+        
+        debugNode.setCullHint(Spatial.CullHint.Never);
+        debugNode.addControl(bdc);
     }
     
     /**
@@ -141,6 +143,7 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     @Override
     protected void onEnable() {
         if (viewPort != null) {
+            debugNode.getControl(BoundsDebugControl.class).setEnabled(true);
             viewPort.attachScene(debugNode);
         }
     }
@@ -149,6 +152,7 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     protected void onDisable() {
         if (viewPort != null) {
             debugNode.detachAllChildren();
+            debugNode.getControl(BoundsDebugControl.class).setEnabled(false);
             viewPort.detachScene(debugNode);
         }
     }

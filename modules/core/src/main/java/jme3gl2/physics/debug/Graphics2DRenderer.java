@@ -45,8 +45,8 @@ import com.jme3.scene.debug.Arrow;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jme3gl2.physics.control.PhysicsBody2D;
 import static jme3gl2.physics.debug.Dyn4jDebugGraphics.*;
+import jme3gl2.physics.control.PhysicsBody2D;
 import jme3gl2.scene.debug.Capsule2D;
 import jme3gl2.scene.debug.Circle2D;
 import jme3gl2.scene.debug.Ellipse2D;
@@ -148,9 +148,8 @@ public final class Graphics2DRenderer {
      */
     public Material createMat(ColorRGBA color) {
         final Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", color);
-        mat.getAdditionalRenderState().setLineWidth(2.0F);
         mat.getAdditionalRenderState().setWireframe(true);
+        mat.setColor("Color", color);
         return mat;
     }
     
@@ -182,10 +181,10 @@ public final class Graphics2DRenderer {
     /**
      * Method in charge of rendering the physical form to a graphic object.
      * 
-     * @param fixture physical shape.
-     * @param body physical body.
-     * @param color color for physical shape.
-     * @return generated graphical object.
+     * @param fixture physical shape
+     * @param body physical body
+     * @param color color for physical shape
+     * @return generated graphical object
      */
     public Node render(BodyFixture fixture, PhysicsBody2D body, ColorRGBA color) {
         final Convex shape = fixture.getShape();
@@ -282,14 +281,14 @@ public final class Graphics2DRenderer {
         node.attachChild(createAxisArrow(Vector3f.UNIT_Y.mult(.25f), ColorRGBA.Green));
         node.setLocalTranslation(Converter.toVector3fValueOfJME3(center));
         
-        BitmapText x = debugGraphics.createBitmapText(debugGraphics.getBitmapFont("Default"), "X");
+        BitmapText x = debugGraphics.createBitmapText(debugGraphics.getBitmapFont("Default"), "x");
         x.setQueueBucket(RenderQueue.Bucket.Translucent);
-        x.move(0.2F, 0, 0);
+        x.move(0.25F, -0.05F, 0);
         node.attachChild(x);
-        
-        BitmapText y = debugGraphics.createBitmapText(debugGraphics.getBitmapFont("Default"), "Y");
+
+        BitmapText y = debugGraphics.createBitmapText(debugGraphics.getBitmapFont("Default"), "y");
         y.setQueueBucket(RenderQueue.Bucket.Translucent);
-        y.move(-0.15F, 0.25F, 0);        
+        y.move(-0.15F, 0.25F, 0);
         node.attachChild(y);
         return node;
     }

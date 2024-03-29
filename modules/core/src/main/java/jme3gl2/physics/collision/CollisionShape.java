@@ -68,7 +68,6 @@ import org.dyn4j.geometry.Vector2;
  * @since 1.0.0
  */
 public class CollisionShape<E extends Convex> implements Savable, Cloneable {
-
     /** Logger class. */
     private static final Logger LOGGER = Logger.getLogger(CollisionShape.class.getName());
     

@@ -73,13 +73,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
     protected PhysicsSpace<PhysicsBody2D> physicsSpace;
     /** The 2D model. */
     protected Spatial spatial;
-    
-    /**
-     * <code>true</code> if physical control is disabled; otherwise <code>false</code>
-     * if active.
-     */
-    private boolean enablebody= true;
-    
+        
     /**
      * Generates a new object of class <code>PhysicsBody2D</code> to generate a 
      * physical body from a 2D model.
@@ -108,26 +102,6 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
 
     /**
      * (non-Javadoc)
-     * @see jme3gl2.physics.control.PhysicsControl#setEnabledPhysicsControl(boolean) 
-     * @param enabled boolean
-     */
-    @Override
-    public void setEnabledPhysicsControl(boolean enabled) {
-        this.enablebody = enabled;
-    }
-
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.physics.control.PhysicsControl#isEnabledPhysicsControl() 
-     * @return boolean
-     */
-    @Override
-    public boolean isEnabledPhysicsControl() {
-        return this.enablebody;
-    }
-
-    /**
-     * (non-Javadoc)
      * @param spatial object
      * @return object
      * @deprecated (?,?)
@@ -149,6 +123,9 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
             throw new IllegalStateException("This control has already been added to a Spatial");
         }
         this.spatial = spatial;
+        
+        this.applyPhysicsLocation(this);
+        this.applyPhysicsRotation(this);
         this.ready();
     }
 
@@ -159,7 +136,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      */
     @Override
     public void update(float tpf) {
-        if (!enablebody)
+        if (!isEnabled())
             return;        
         controlUpdate(tpf);
         physicsProcess(tpf);
@@ -173,7 +150,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      */
     @Override
     public void render(RenderManager rm, ViewPort vp) {
-        if (!enablebody)
+        if (!isEnabled())
             return;
         controlRender(rm, vp);
     }
@@ -253,7 +230,6 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         applyForce(Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("AccumulatedForce", new Vector2f(0.0F, 0.0F))));
         applyTorque(in.readDouble("AccumulatedTorque", 0));
         
-        enablebody = in.readBoolean("EnableBody", true);
         spatial    = (Spatial) in.readSavable("Spatial", null);        
         if (spatial == null) {
             LOGGER.log(Level.SEVERE, "There is NO 'Spatial' to represent this physical body");
@@ -346,7 +322,6 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         }
         
         // jme3
-        out.write(enablebody, "EnableBody", true);
         out.write(spatial, "Spatial", null);
     }
 }
