@@ -17,6 +17,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
 
     java {
         toolchain {
@@ -29,5 +30,20 @@ subprojects {
 
     tasks.withType(JavaCompile).configureEach {
         options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform() // Use JUnit Platform for unit tests.
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = 'com.github.JNightRide'
+                artifactId = project.name
+                version = project.version
+                from components.java
+            }
+        }
     }
 }
