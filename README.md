@@ -31,13 +31,13 @@ with this topic, we advise you to check out the following resources:
 jMe3GL2 can be added as a normal dependency using the [stable](https://github.com/JNightRide/jMe3GL2/releases/tag/v2.5.0) 
 jar files or using 'JitPack' as follows:
 
-### Step 1. Add the JitPack maven repository
+**Step 1. Add the JitPack maven repository**
 
 ```gradle
     maven { url "https://jitpack.io"  }
 ```
 
-### Step 2. Add the necessary dependencies
+**Step 2. Add the necessary dependencies**
 
 ```gradle
     implementation 'com.github.JNightRide.jMe3GL2:jMe3GL2-core:3.0.0'
