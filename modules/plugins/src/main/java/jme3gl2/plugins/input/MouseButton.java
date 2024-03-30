@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,25 +34,25 @@ package jme3gl2.plugins.input;
 import com.jme3.input.controls.MouseButtonTrigger;
 
 /**
- * Un objeto de la clase <code>MouseButton</code> se encarga de administrar las
- * entradas con el ratón.
+ * An object of class <code>MouseButton</code> is responsible for managing mouse
+ * inputs.
  * 
  * @see MouseButtonTrigger
  * @see MouseTrigger
  *
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * @since 2.0.0
  */
 public class MouseButton extends MouseButtonTrigger implements MouseTrigger {
     
-    /** nombre clave de la entrada. */
+    /** Key name of the entry. */
     private final String inputName;
     
     /**
-     * Constructor de la clase <code>MouseButton</code>.
-     * @param mouseButton int.
-     * @param name string.
+     * Constructor of the class <code>MouseButton</code>.
+     * @param mouseButton int
+     * @param name string
      */
     public MouseButton(int mouseButton, String name) {
         super(mouseButton);
@@ -60,8 +60,8 @@ public class MouseButton extends MouseButtonTrigger implements MouseTrigger {
     }
     
     /**
-     * Método encargado de devolver el nombre de esta llave.
-     * @return nombre clave.
+     * Method in charge of returning the name of this key.
+     * @return key name
      */
     @Override
     public String getInputName() {

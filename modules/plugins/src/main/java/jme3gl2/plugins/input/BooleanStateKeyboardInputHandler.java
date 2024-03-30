@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,27 +32,24 @@
 package jme3gl2.plugins.input;
 
 /**
- * Clase <code>BooleanStateKeyboardInputHandler</code> que exitiene de la clase
- * padre {@link AbstractKeyboardInputHandler} en donde gestiona el estado 
- * lógico de una entrada, activo o no.
+ * Class <code>BooleanStateKeyboardInputHandler</code> which exists from the
+ * parent class {@link AbstractKeyboardInputHandler} where it manages the logical
+ * state of an input, active or not.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.0.0
  */
 public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandler {
 
-    /** Si el estado de la tecla está activo (presionado)  */
+    /** If the key status is active (pressed).  */
     private boolean active;
-
-    /** {@code true} si se ha manejado el estado activo */
+    /** {@code true} if the active status has been handled. */
     private boolean hasBeenHandled;
 
     /**
-     * Instancie un nuevo objeto de la clase 
-     * <code>BooleanStateKeyboardInputHandler</code>.
-     * 
-     * @param keys clave de las entradas(las entradas por teclado).
+     * Instantiate a new object of the class <code>BooleanStateKeyboardInputHandler</code>.
+     * @param keys key of the inputs (keyboard inputs)
      */
     public BooleanStateKeyboardInputHandler(Key... keys) {
         super(InputHandlerType.Action, keys);
@@ -60,27 +57,27 @@ public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandl
         this.hasBeenHandled = false;
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see AbstractKeyboardInputHandler#onKeyPressed() 
      */
     @Override
     protected void onKeyPressed() {		
-	// salvar el antiguo estado
+	// Saving the old state
 	boolean active0 = this.active;
 	
-	// establecer el estado en activo
+	// Set active status
 	this.active = true;
 	
-	// si el estado pasó de inactivo a activo
-        // marca que necesita ser manejado
+	// If the status changed from inactive to active mark 
+        // that needs to be managed
 	if (!active0) {
             this.hasBeenHandled = false;
 	}
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see AbstractKeyboardInputHandler#onKeyReleased() 
      */
     @Override
@@ -88,10 +85,9 @@ public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandl
         this.active = false;
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see AbstractKeyboardInputHandler#isActive() 
-     * @return boolean
      */
     @Override
     public boolean isActive() {
@@ -99,9 +95,9 @@ public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandl
     }
     
     /**
-     * Método encargado de gestionar si la entrada esta activa y no ha sido
-     * manejado.
-     * @return boolean.
+     * Method in charge of managing if the input is active and has not been
+     * handled.
+     * @return boolean
      */
     public boolean isActiveButNotHandled() {
     	if (this.hasBeenHandled) {
@@ -111,8 +107,8 @@ public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandl
     }
 	
     /**
-     * Establece el estado de la entrada.
-     * @param hasBeenHandled estado.
+     * Sets the status of the input.
+     * @param hasBeenHandled status
      */
     public void setHasBeenHandled(boolean hasBeenHandled) {
     	this.hasBeenHandled = hasBeenHandled;

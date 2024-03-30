@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,19 +34,19 @@ package jme3gl2.plugins.input;
 import com.jme3.input.controls.Trigger;
 
 /**
- * Interfaz <code>MouseTrigger</code> que se encarga de preparar un método
- * con el nombre del mapa al agregarse como una entrada en el administrador
- * de datos que proprociona jme3 {@code InputManager}.
+ * Interface <code>MouseTrigger</code> that is responsible for preparing a method
+ * with the name of the map when added as an input in the data manager providing
+ * JME3 {@code InputManager}.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * @since 2.0.0
  */
 public interface MouseTrigger extends Trigger {
     
     /**
-     * Nombre para esta entrada.
-     * @return nombre-entrada.
+     * Name for this input.
+     * @return input name
      */
     public String getInputName();
 }

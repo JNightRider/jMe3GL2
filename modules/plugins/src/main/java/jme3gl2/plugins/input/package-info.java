@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,10 +31,10 @@
  */
 
 /**
- * Paquete utilidades que proprociona una ayuda con las entradas y salidas
- * de datos por parte del usuario.
+ * Utility package that provides help with data input and output by the user.
+ * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * @since 2.0.0
  */
 package jme3gl2.plugins.input;

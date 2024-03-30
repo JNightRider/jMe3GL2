@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,26 +34,26 @@ package jme3gl2.plugins.input;
 import com.jme3.input.controls.MouseAxisTrigger;
 
 /**
- * Un objeto de la clase <code>MouseAxis</code> se encarga de administrar las
- * entradas con el ratón.
+ * An object of class <code>MouseAxis</code> is responsible for managing mouse
+ * inputs.
  * 
  * @see MouseAxisTrigger
  * @see MouseTrigger
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * @since 2.0.0
  */
 public class MouseAxis extends MouseAxisTrigger implements MouseTrigger {
 
-    /** nombre clave de la entrada. */
+    /** Key name of the input. */
     private final String inputName;
     
     /**
-     * Constructor de la clase <code>MouseAxis</code>.
-     * @param mouseAxis int.
-     * @param negative boolean.
-     * @param name string.
+     * Constructor of the class <code>MouseAxis</code>.
+     * @param mouseAxis int
+     * @param negative boolean
+     * @param name string
      */
     public MouseAxis(int mouseAxis, boolean negative, String name) {
         super(mouseAxis, negative);
@@ -61,8 +61,8 @@ public class MouseAxis extends MouseAxisTrigger implements MouseTrigger {
     }
 
     /**
-     * Método encargado de devolver el nombre de esta llave.
-     * @return nombre clave.
+     * Method in charge of returning the name of this key.
+     * @return key name
      */
     @Override
     public String getInputName() {

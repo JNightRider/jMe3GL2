@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,35 +36,27 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 
 /**
- * Un objeto de la clase <code>AbstractKeyboardInputHandler</code> se encarga
- * de generar una plantilla para las entradas por teclado por parte del usuario.
+ * An object of class <code>AbstractKeyboardInputHandler</code> is responsible
+ * for generating a template for keyboard input by the user.
  * <p>
- * <b>jMonkeyEngine3</b> proporciona 2 entradas, por medio de acción o analogo,
- * cada uno tien formas diferentes de interactuar.
- * </p>
+ * <b>jMonkeyEngine3</b> provides 2 inputs, by means of action or analog, each
+ * having different ways of interacting.
  * <p>
- * La entrada por acción se activa una sola vez, en cambio la analoga se mantien
- * activa hasta que la entrada sale.
- * </p>
+ * The action input is activated only once, while the analog input remains active
+ * until the input exits.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.0.0
  */
 public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler implements InputHandler {
     
     /**
-     * Clave interna encargado de gestionar las entradas.
+     * Internal key in charge of ticket management.
      */
-    private final 
-    class CustomKeyListener implements ActionListener,
-                                        AnalogListener {
-        
-        /**
-         * (non-JavaDoc)
-         * @param name string
-         * @param isPressed boolean
-         * @param tpf float
+    private final class CustomKeyListener implements ActionListener, AnalogListener {
+        /*
+         * (non-Javadoc)
          * @see ActionListener#onAction(java.lang.String, boolean, float) 
          */
         @Override
@@ -84,11 +76,8 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
             }
         }
 
-        /**
-         * (non-JavaDoc)
-         * @param name string
-         * @param value float
-         * @param tpf float
+        /*
+         * (non-Javadoc)
          * @see AnalogListener#onAnalog(java.lang.String, float, float) 
          */
         @Override
@@ -105,21 +94,17 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
         }
     }
 
-    /** Entradas y salidas de datos. */
-    private final CustomKeyListener keyAdapter;
-    
-    /** Tipo de entrada. */
-    protected InputHandlerType type;
-    
-    /** Claves de las entradas. */
+    /** Data inputs and outputs. */
+    private final CustomKeyListener keyAdapter;    
+    /** Input type. */
+    protected InputHandlerType type;    
+    /** Keys to the inputs. */
     protected Key[] keys;
 
     /**
-     * Instancie un nuevo objeto de la clase 
-     * <code>AbstractKeyboardInputHandler</code>.
-     * 
-     * @param type tipo de entrada.
-     * @param keys clave de las entradas(las entradas por teclado).
+     * Instantiate a new object of the class <code>AbstractKeyboardInputHandler</code>.
+     * @param type input type
+     * @param keys key of the inputs (keyboard inputs)
      */
     public AbstractKeyboardInputHandler(InputHandlerType type, Key... keys) {
         this.keyAdapter = new CustomKeyListener();
@@ -128,9 +113,9 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
     }
     
     /**
-     * Método encargado de gestionar si una clave es una entrada.
-     * @param name nombre clave.
-     * @return estado.
+     * Method in charge of managing whether a key is an input.
+     * @param name key name
+     * @return status
      */
     private boolean isKeyMatch(String name) {
         if (this.keys == null) {
@@ -144,7 +129,7 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
         return false;
     }
 
-    /**
+    /*
      * (non-JavaDoc)
      * @see AbstractInputHandler#install() 
      */
@@ -165,7 +150,7 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
         im.addListener(keyAdapter, mapp);
     }
 
-    /**
+    /*
      * (non-JavaDoc)
      * @see AbstractKeyboardInputHandler#uninstall() 
      */
@@ -185,12 +170,12 @@ public abstract class AbstractKeyboardInputHandler extends AbstractInputHandler 
     }
 
     /**
-     * Se activa cuando una entrada es presionada.
+     * It is activated when an input is pressed.
      */
     protected abstract void onKeyPressed();
 
     /**
-     * Se activa cuando una entrada es liberado
+     * It is activated when an input is released.
      */
     protected abstract void onKeyReleased();
 }

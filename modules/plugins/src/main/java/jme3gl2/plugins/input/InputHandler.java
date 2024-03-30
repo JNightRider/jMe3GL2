@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,79 +35,75 @@ import com.jme3.input.InputManager;
 import java.util.List;
 
 /**
- * Cualquier clase que implemente la interfaz <code>InputHandler</code> tendra
- * acceso a gestionar las entradas de datos del usuario.
+ * Any class that implements the <code>InputHandler</code> interface will have
+ * access to manage user input data.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.0.0
  */
 public interface InputHandler {
     
     /**
-     * Método encargado de inicializar las entradas, es decir que establece
-     * el administrador de las entradas.
-     * @param im administrador-entradas.
+     * Method in charge of initializing the input, i.e. it establishes the
+     * manager of the inputs.
+     * 
+     * @param im input manager
      */
     public void initialize(InputManager im);
     
     /**
-     * Determina si se ha inicializado el gestor de las entradas.
-     * @return estado.
+     * Determines whether the input manager has been initialized.
+     * @return status
      */
     public boolean isInitialized();
 
-    /**
-     * Método encargado de instalar las entradas.
-     */
+    /**  Method responsible for installing the inputs.  */
     public void install();
-
-    /**
-     * Método encargado de desinstalar las entradas.
-     */
+    /** Method responsible for uninstalling the inputs. */
     public void uninstall();
 
     /**
-     * Determina el estado de las entradas.
-     * @return estado lógico.
+     * Determines the status of the inputs.
+     * @return logical state
      */
     public boolean isEnabled();
 
     /**
-     * Método encargado de establecer el estado de las entradas.
-     * @param flag {@code true} si se habilita las entradas, de lo contrario
-     *              {@code false} si se deshabilita.
+     * Method in charge of establishing the status of the inputs.
+     * @param flag {@code true} if inputs are enabled, otherwise {@code false}
+     *              if disabled
      */
     public void setEnabled(boolean flag);
 
     /**
-     * Método encargado de gestionar las entradas para determina su estado.
-     * @return {@code true} si se a activado la entrada, {@code false} si no
-     *          a habido cambios.
+     * Method in charge of managing the inputs to determine their status.
+     * @return {@code true} if the input has been activated, {@code false} if
+     *          there have been no changes
      */
     public boolean isActive();
 
     /**
-     * Gestiona una lista de dependencia de comportamineto.
-     * @return lista de dependencias.
+     * Manages a list of behavioral dependencies.
+     * @return list of dependencies
      */
     public List<InputHandler> getDependentBehaviors();
 
     /**
-     * Encargado de devolver el estado de las dependencia de esta entrada.
-     * @return estado.
+     * Responsible for returning the status of the dependencies of this input.
+     * @return status
      */
     public boolean isDependentBehaviorActive();
 
     /**
-     * Método encargado de determinar si las dependencias son aditivas o no.
-     * @return estado.
+     * Method to determine whether the dependencies are additive or not.
+     * @return status
      */
     public boolean isDependentBehaviorsAdditive();
 
     /**
-     * Establece si las dependencias de esta entrada son aditivas.
-     * @param flag estado.
+     * Sets whether the dependencies of this input are additive.
+     * @param flag status
      */
     public void setDependentBehaviorsAdditive(boolean flag);
 }

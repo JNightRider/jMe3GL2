@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,32 +40,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Un objeto de la clase <code>InputHandlerAppState</code> se encarga de 
- * administrar todas las entradas a tarvez de la interfaz {@link InputHandler}
- * que se generen.
+ * An object of class <code>InputHandlerAppState</code> is in charge of managing
+ * all the inputs generated through the {@link InputHandler} interface.
  * <p>
- * Se encarga de inicializarlas o destruirlas.
- * </p>
+ * It is responsible for initializing or destroying them.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.0.0
  */
-@SuppressWarnings(value = {"unchecked"})
 public class InputHandlerAppState extends AbstractAppState {
 
-    /**
-     * Listas de entradas entrantes.
-     */
-    private final List<InputHandler> inputHandlers 
-            = new ArrayList<>();
-    
-    /** Administrador de entradas {@code jme3}. */
+    /** Lists of incoming inputs. */
+    private final List<InputHandler> inputHandlers = new ArrayList<>();    
+    /** Input manager {@code jme3}. */
     private InputManager inputManager;
 
-    /**
-     * (non-JavaDoc)
-     * @param stateManager AppStateManager
+    /*
+     * (non-Javadoc)
      * @see AbstractAppState#stateAttached(com.jme3.app.state.AppStateManager) 
      */
     @Override
@@ -83,12 +75,12 @@ public class InputHandlerAppState extends AbstractAppState {
     }
     
     /**
-     * Método encargado de agregar e inicializar una entrada que implemente la
-     * interfaz {@link InputHandler}.
+     * Method in charge of adding and initializing an input that implements the
+     * interface. {@link InputHandler}.
      * 
-     * @param <T> tipo de entrada.
-     * @param inputHandler nueva entrada a registrar.
-     * @return entrada registrada.
+     * @param <T> input type
+     * @param inputHandler new input to be registered
+     * @return registered input
      */
     public <T extends InputHandler> T addInputHandler(T inputHandler) {
         if (!inputHandler.isInitialized()) {
@@ -99,13 +91,14 @@ public class InputHandlerAppState extends AbstractAppState {
     }
     
     /**
-     * Devuelve el primer {@link InputHandler} que es una instancia de subclase 
-     * de la clase especificada.
+     * Returns the first {@link InputHandler} which is a subclass instance of
+     * the specified class.
      * 
-     * @param <T> el tipo deseado de {@link InputHandler}
-     * @param inputClass clase del tipo deseado.
-     * @return Primer estado adjunto que es una instancia de {@code inputClass}.
+     * @param <T> the desired type of {@link InputHandler}
+     * @param inputClass class of the desired type
+     * @return first state attached which is an instance of {@code inputClass}
      */
+    @SuppressWarnings("unchecked")
     public <T extends InputHandler> T getInputHandler(Class<T> inputClass) {
         synchronized (inputHandlers) {
             for (InputHandler handler : inputHandlers) {
@@ -118,20 +111,21 @@ public class InputHandlerAppState extends AbstractAppState {
     }
     
     /**
-     * Devuelve una entrada a traves de un índice.
-     * @param <T> tipo de entrada.
-     * @param index índice de la entrada.
-     * @return entrada registrada.
+     * Returns an input through an index.
+     * @param <T> input type
+     * @param index index of the input
+     * @return registered input
      */
+    @SuppressWarnings("unchecked")
     public <T extends InputHandler> T getInputHandler(int index) {
         return (T) this.inputHandlers.get(index);
     }
     
     /**
-     * Elimina una entrada.
-     * @param <T> tipo de entrada.
-     * @param inputHandler entrada a eliminar.
-     * @return entrada eliminada.
+     * Deletes an input.
+     * @param <T> input type
+     * @param inputHandler input to be deleted
+     * @return input deleted
      */
     public <T extends InputHandler> T removeInputHandler(T inputHandler) {
         if (inputHandler.isInitialized()) {
@@ -141,9 +135,8 @@ public class InputHandlerAppState extends AbstractAppState {
         return inputHandler;
     }
     
-    /**
-     * (non-JavaDoc)
-     * @param enabled boolean
+    /*
+     * (non-Javadoc)
      * @see AbstractAppState#setEnabled(boolean) 
      */
     @Override
@@ -157,8 +150,8 @@ public class InputHandlerAppState extends AbstractAppState {
         }
     }
     
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see AbstractAppState#cleanup() 
      */
     @Override

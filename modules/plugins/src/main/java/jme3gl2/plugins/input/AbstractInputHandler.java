@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,39 +36,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase abstracta <code>AbstractInputHandler</code> donde se implementa la 
- * interfaz {@link InputHandler} e implementa alguno de sus métodos para
- * tener una plantilla base.
+ * Abstract class <code>AbstractInputHandler</code> where the {@link InputHandler}
+ * interface is implemented and implements some of its methods to have a base
+ * template.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.0.0
  */
 public abstract class AbstractInputHandler implements InputHandler {
 
-    /** Estado de la entrada. */
-    private boolean enabled;
-    
-    /** Estado de las dependencias de esta entrada. */
+    /** Input status. */
+    private boolean enabled;    
+    /** Status of the dependencies of this input. */
     private boolean additive;
     
     /**
-     * <code>initialized</code> se establece en {@code true} cuando el método
-     * <code>initialize(InputManager im)</code> es llamado por el administrador
-     * de estado <code>InputHandlerAppState</code> al agregar una nueva entrada.
+     * <code>initialized</code> is set to {@code true} when method
+     * <code>initialize(InputManager im)</code> is called by the
+     * <code>InputHandlerAppState</code> state manager when adding a new input.
      */
     private boolean initialized;
     
-    /**
-     * Lista de dependencia para esta entrada.
-     */
-    private final List<InputHandler> dependentBehaviors;
-    
-    /** Administrador de entradas {@code jme3}. */
+    /** Dependency list for this input. */
+    private final List<InputHandler> dependentBehaviors;    
+    /** Ticket manager {@code jme3}. */
     private InputManager inputManager;
 
     /**
-     * Constructor predeterminado de la clase <code>AbstractInputHandler</code>.
+     * Default constructor of the class <code>AbstractInputHandler</code>.
      */
     public AbstractInputHandler() {
         this.dependentBehaviors = new ArrayList<>();
@@ -77,9 +73,8 @@ public abstract class AbstractInputHandler implements InputHandler {
         this.additive    = false;
     }
 
-    /**
-     * (non-JavaDoc)
-     * @param im input-manager
+    /*
+     * (non-Javadoc)
      * @see InputHandler#initialize(com.jme3.input.InputManager) 
      */
     @Override
@@ -93,10 +88,9 @@ public abstract class AbstractInputHandler implements InputHandler {
         this.initialized  = result;
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see InputHandler#isInitialized() 
-     * @return boolean
      */
     @Override
     public boolean isInitialized() {
@@ -104,26 +98,24 @@ public abstract class AbstractInputHandler implements InputHandler {
     }
 
     /**
-     * Devuelve el administrador de entradas.
-     * @return administrador-entrada.
+     * Returns the input manager.
+     * @return input manager
      */
     public InputManager getInputManager() {
         return inputManager;
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see InputHandler#isEnabled() 
-     * @return boolean
      */
     @Override
     public boolean isEnabled() {
         return this.enabled;
     }
 
-    /**
-     * (non-JavaDoc)
-     * @param flag boolean
+    /*
+     * (non-Javadoc)
      * @see InputHandler#setEnabled(boolean) 
      */
     @Override
@@ -131,20 +123,18 @@ public abstract class AbstractInputHandler implements InputHandler {
         this.enabled = flag;
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see InputHandler#getDependentBehaviors() 
-     * @return list.
      */
     @Override
     public List<InputHandler> getDependentBehaviors() {
         return this.dependentBehaviors;
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see InputHandler#isDependentBehaviorActive() 
-     * @return boolean
      */
     @Override
     public boolean isDependentBehaviorActive() {
@@ -160,19 +150,17 @@ public abstract class AbstractInputHandler implements InputHandler {
         return result;
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see InputHandler#isDependentBehaviorsAdditive() 
-     * @return boolean
      */
     @Override
     public boolean isDependentBehaviorsAdditive() {
         return this.additive;
     }
 
-    /**
-     * (non-JavaDoc)
-     * @param flag boolean
+    /*
+     * (non-Javadoc)
      * @see InputHandler#setDependentBehaviorsAdditive(boolean) 
      */
     @Override

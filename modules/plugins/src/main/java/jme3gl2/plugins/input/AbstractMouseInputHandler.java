@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,33 +37,29 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.math.Vector2f;
 
 /**
- * Un que objeto de la <code>AbstractMouseInputHandler</code> se encarga de
- * generar una plantilla base para las entradas del ratón.
+ * A <code>AbstractMouseInputHandler</code> object is responsible for generating
+ * a base template for mouse inputs.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.0.0
  */
 public abstract class AbstractMouseInputHandler extends AbstractInputHandler implements InputHandler {
 
     /**
-     * Un adaptador de mouse personalizado para realizar un seguimiento de
-     * los eventos de arrastre del mouse.
+     * A custom mouse adapter to track mouse drag events.
      */
     private final class CustomMouseAdapter implements ActionListener, AnalogListener {
 
-        /**
-         * (non-JavaDoc)
-         * @param name string
-         * @param isPressed boolean
-         * @param tpf float
+        /*
+         * (non-Javadoc)
          * @see ActionListener#onAction(java.lang.String, boolean, float) 
          */
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
             if (isMouseMatch(name) && isInitialized()) {
                 if (isPressed) {
-                    // almacenar la posición del clic del mouse para usarla más tarde
+                    // Store mouse click position for later use
                     dragCurrent = getInputManager().getCursorPosition().clone();
                     dragStart   = dragCurrent;
                     
@@ -80,11 +76,8 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
             }
         }
 
-        /**
-         * (non-JavaDoc)
-         * @param name string
-         * @param value float
-         * @param tpf float
+        /*
+         * (non-Javadoc)
          * @see AnalogListener#onAnalog(java.lang.String, float, float) 
          */
         @Override
@@ -104,26 +97,19 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
         }
     }
 
-    /** Entradas y salidas de datos. */
-    private final CustomMouseAdapter mouseAdapter;
-    
-    /** Entrada del ratón. */
+    /** Data inputs and outputs. */
+    private final CustomMouseAdapter mouseAdapter;    
+    /** Mouse input. */
     private final MouseTrigger mouseTrigger;
     
-    /**
-     * Posición del cursor actual del ratón.
-     */
-    private Vector2f dragCurrent;
-    
-    /**
-     * Posición inicial del ratón.
-     */
+    /** Current mouse cursor position. */
+    private Vector2f dragCurrent;    
+    /** Initial mouse position. */
     private Vector2f dragStart;
 
     /**
-     * Instancie un nuevo objeto de la clase 
-     * <code>AbstractMouseInputHandler</code>
-     * @param mouseTrigger entrada-ratón.
+     * Instantiate a new object of the class <code>AbstractMouseInputHandler</code>.
+     * @param mouseTrigger mouse input
      */
     public AbstractMouseInputHandler(MouseTrigger mouseTrigger) {
         this.mouseAdapter = new CustomMouseAdapter();
@@ -131,9 +117,9 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
     }
 
     /**
-     * Método encargado de gestionar si una clave es una entrada.
-     * @param name nombre clave.
-     * @return estado.
+     * Method in charge of managing whether a key is an input.
+     * @param name key name
+     * @return status
      */
     private boolean isMouseMatch(String name) {
         if (mouseTrigger == null) {
@@ -142,8 +128,8 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
         return mouseTrigger.getInputName().equals(name);
     }
     
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see AbstractInputHandler#install() 
      */
     @Override
@@ -157,8 +143,8 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
         im.addListener(mouseAdapter, mouseTrigger.getInputName());
     }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see AbstractKeyboardInputHandler#uninstall() 
      */
     @Override
@@ -174,9 +160,8 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
         im.removeListener(mouseAdapter);
     }
     
-    /**
-     * (non-JavaDoc)
-     * @param flag boolean
+    /*
+     * (non-Javadoc)
      * @see AbstractInputHandler#setEnabled(boolean) 
      */
     @Override
@@ -189,26 +174,26 @@ public abstract class AbstractMouseInputHandler extends AbstractInputHandler imp
     }
     
     /**
-     * Botón del ratón presionado.
-     * @param point posición del cursor.
+     * Mouse button pressed.
+     * @param point cursor position
      */
     protected abstract void onMousePressed(Vector2f point);
     
     /**
-     * Ratón a arrastrado por el usuario.
-     * @param start posición inidical del cursor.
-     * @param current posición actual del cursor.
+     * Mouse dragged by the user.
+     * @param start initial position of the cursor
+     * @param current current cursor position
      */
     protected abstract void onMouseDrag(Vector2f start, Vector2f current);
     
     /**
-     * Botón del ratón liberado.
+     * Mouse button released.
      */
     protected abstract void onMouseRelease();
     
     /**
-     * Ruda del ratón en rotación.
-     * @param rotation valor.
+     * Mouse wheel in rotation.
+     * @param rotation value
      */
     protected abstract void onMouseWheel(double rotation);
 }

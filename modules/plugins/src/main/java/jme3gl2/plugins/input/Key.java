@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,21 +34,21 @@ package jme3gl2.plugins.input;
 import com.jme3.input.controls.KeyTrigger;
 
 /**
- * Un objeto de la clase <code>Key</code> resenta un código clave.
+ * An object of class <code>Key</code> resents a key code.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.1
  * @since 2.0.0
  */
 public class Key extends KeyTrigger {
     
-    /** nombre clave de la entrada. */
+    /** Key name of the input. */
     private final String keyName;
     
     /**
-     * Instancie un nuevo objeto de la clase <code>Key</code>.
-     * @param keyCode codigo de la entrada.
-     * @param keyName nombre de esta entrada.
+     * Instantiate a new object of the class <code>Key</code>.
+     * @param keyCode input code
+     * @param keyName input name
      */
     public Key(int keyCode, String keyName) {
         super(keyCode);
@@ -56,8 +56,8 @@ public class Key extends KeyTrigger {
     }
 
     /**
-     * Método encargado de devolver el nombre de esta llave.
-     * @return nombre clave.
+     * Method in charge of returning the name of this key.
+     * @return key name
      */
     public String getKeyName() {
         return keyName;
