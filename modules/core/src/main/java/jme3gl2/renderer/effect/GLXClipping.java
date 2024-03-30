@@ -36,35 +36,62 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 
 /**
- *
+ * A limit effect for the camera (clipping).
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 public class GLXClipping extends AbstractGLXEffect {
     
+    /** Minimum clipping. */
     private Vector2f minimumClipping;
+    /** Maximum clipping. */
     private Vector2f maximumClipping;
 
+    /**
+     * Generate a new instance of this class <code>GLXClipping</code>.
+     * @param minimumClipping Minimum clipping
+     * @param maximumClipping Maximum clipping
+     */
     public GLXClipping(Vector2f minimumClipping, Vector2f maximumClipping) {
         this.minimumClipping = minimumClipping;
         this.maximumClipping = maximumClipping;
     }
     
-    public void setMinimumClipping(Vector2f minimumClipping) {
+    /**
+     * Sets new clipping values for the camera.
+     * <p>
+     * If you want to remove the trimmings, with values <code>null</code> as a
+     * parameter they will be erased.
+     * 
+     * @param minimumClipping minimum clipping.
+     * @param maximumClipping maximum clipping.
+     */
+    public void setClipping(Vector2f minimumClipping, Vector2f maximumClipping) {
         this.minimumClipping = minimumClipping;
-    }
-
-    public void setMaximumClipping(Vector2f maximumClipping) {
         this.maximumClipping = maximumClipping;
     }
 
+    /**
+     * Returns a minimum clipping value.
+     * @return clipping.
+     */
     public Vector2f getMinimumClipping() {
         return minimumClipping;
     }
 
+    /**
+     * Returns a maximum clipping value.
+     * @return clipping.
+     */
     public Vector2f getMaximumClipping() {
         return maximumClipping;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.effect.AbstractGLXEffect#effectUpdate(float) 
+     */
     @Override
     protected void effectUpdate(float tpf) {        
         if (minimumClipping != null && maximumClipping != null) {
@@ -74,7 +101,18 @@ public class GLXClipping extends AbstractGLXEffect {
         }
     }
     
+    /**
+     * Method responsible for calculating the camera position within the
+     * clipping ranges.
+     * 
+     * @param loc position
+     * @param offset offset
+     * @return new calculated position.
+     */
     protected final Vector2f clipping(Vector3f loc, Vector2f offset) {
+        if (minimumClipping == null || maximumClipping == null) {
+            return new Vector2f(loc.x +  offset.y, loc.y + offset.y);
+        }        
         return new Vector2f(FastMath.clamp((loc.x + offset.x), minimumClipping.x, maximumClipping.x), 
                             FastMath.clamp((loc.y + offset.y), minimumClipping.y, maximumClipping.y));
     }

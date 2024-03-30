@@ -43,22 +43,40 @@ import jme3gl2.renderer.effect.GLXEffect;
  */
 public abstract class AbstractGLXCamera implements GLXCamera {
     
+    /** GLX (Camera) effects list. */
     private SafeArrayList<GLXEffect> effects = new SafeArrayList<>(GLXEffect.class);
     
+    /** Status (enabled | disabled).*/
     protected boolean enabled = true;
+    /** Camera. */
     protected Camera camera;
 
+    /**
+     * Constructor.
+     */
     public AbstractGLXCamera() {
     }
-
+    
+    /**
+     * Returns the status of this camera
+     * @return boolean
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * Set the status of this camera
+     * @param enabled boolean
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#setCamera(com.jme3.renderer.Camera) 
+     */
     @Override
     public void setCamera(Camera camera) {
         if (this.camera != null && camera != null && camera != this.camera) {
@@ -71,13 +89,25 @@ public abstract class AbstractGLXCamera implements GLXCamera {
         this.initialize();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#getCamera()
+     */
     @Override
     public Camera getCamera() {
         return this.camera;
     }
     
+    /**
+     * Abstract method implemented by the classes that inherit this object to 
+     * initialize the camera with its corresponding configurations.
+     */
     protected abstract void initialize();
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#update(float)
+     */
     @Override
     public void update(float tpf) {
         if (!enabled)
@@ -88,6 +118,10 @@ public abstract class AbstractGLXCamera implements GLXCamera {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#addEffect(jme3gl2.renderer.effect.GLXEffect) 
+     */
     @Override
     public void addEffect(GLXEffect effect) {
         if (effect == null) {
@@ -100,6 +134,10 @@ public abstract class AbstractGLXCamera implements GLXCamera {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#removeEffect(jme3gl2.renderer.effect.GLXEffect) 
+     */
     @Override
     public void removeEffect(GLXEffect effect) {
         if (this.effects.remove(effect)) {
@@ -107,12 +145,20 @@ public abstract class AbstractGLXCamera implements GLXCamera {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#getEffect(int) 
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <T extends GLXEffect> T getEffect(int index) {
         return (T) this.effects.get(index);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#getEffect(java.lang.Class) 
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <T extends GLXEffect> T getEffect(Class<T> clazz) {
@@ -124,6 +170,10 @@ public abstract class AbstractGLXCamera implements GLXCamera {
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#getEffectQuantity() 
+     */
     @Override
     public int getEffectQuantity() {
         return this.effects.size();

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,14 +34,14 @@ package jme3gl2.scene.tile;
 import com.jme3.scene.Node;
 
 /**
- * Un objeto de la clase <code>TileMapGroupNode</code> se puede utilizar como
- * nodo padre para todos los {@link TileMap} que se desean agrupar en un nodo
- * scena para tener una mejor limpieza.
+ * An object of class <code>TileMapGroupNode</code> can be used as a parent node
+ * for all {@link TileMap} that you want to group into a scene node for better
+ * cleanup.
  * 
  * @author wil
- * @param <T> tipo de dato.
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 2.0.0
+ * @param <T> data type
  */
 public class TileMapGroupNode<T extends TileMap> extends Node {
     /* CODE */

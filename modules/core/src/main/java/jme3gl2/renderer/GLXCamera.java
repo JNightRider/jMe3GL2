@@ -36,26 +36,68 @@ import jme3gl2.renderer.Camera2DRenderer.GLRendererType;
 import jme3gl2.renderer.effect.GLXEffect;
 
 /**
- *
+ * Interface in charge of representing the camera of a 2D world.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 public interface GLXCamera {
     
+    /**
+     * Sets a camera to be managed by this object.
+     * @param camera a camera
+     */
     public void setCamera(Camera camera);
     
+    /**
+     * Returns the managed camera.
+     * @return camera
+     */
     public Camera getCamera();
     
+    /**
+     * Update camera status.
+     * @param tpf float
+     */
     public void update(float tpf);
     
+    /**
+     * Add an effect to the camera.
+     * @param effect glx-effect
+     */
     public void addEffect(GLXEffect effect);
     
+    /**
+     * Remove a camera effect.
+     * @param effect glx-effect
+     */
     public void removeEffect(GLXEffect effect);
     
+    /**
+     * Returns a camera effect through its index.
+     * @param <T> type
+     * @param index int
+     * @return glx-effect
+     */
     public <T extends GLXEffect> T getEffect(int index);
     
+    /**
+     * Returns a camera effect through its class.
+     * @param <T> type
+     * @param clazz effect-class
+     * @return glx-effect
+     */
     public <T extends GLXEffect> T getEffect(Class<T> clazz);
     
+    /**
+     * Returns the number of effects loaded in this manager.
+     * @return int
+     */
     public int getEffectQuantity();
     
+    /**
+     * Returns the type of camera used.
+     * @return rendering type
+     */
     public GLRendererType getType();
 }

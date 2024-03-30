@@ -34,12 +34,23 @@ package jme3gl2.renderer.effect;
 import jme3gl2.renderer.GLXCamera;
 
 /**
- *
+ * Interface responsible for generating a <code>GLX</code> effect for the fake 
+ * 2D camera.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 public interface GLXEffect {
     
+    /**
+     * Set a camera.
+     * @param camera camera
+     */
     public void setCamera(GLXCamera camera);
     
+    /**
+     * Update camera status (effects).
+     * @param tpf float
+     */
     public void update(float tpf);
 }

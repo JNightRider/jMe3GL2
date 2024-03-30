@@ -31,6 +31,11 @@
  */
 
 /**
+ * This package contains the objects that are responsible for rendering the 2D
+ * models, as well as the 2D camera management.
  * 
+ * @author wil
+ * @version 2.0.0
+ * @since 1.5.0
  */
 package jme3gl2.renderer;

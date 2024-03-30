@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,38 +35,37 @@ import com.jme3.asset.AssetManager;
 import com.jme3.scene.Geometry;
 
 /**
- * Un <code>Spritesheet</code> es una interfaz encargado de gestionar la creación
- * de modelos 2D para un {@link TileMap}.
+ * An <code>Spritesheet</code> is an interface responsible for managing the
+ * creation of 2D models for a {@link TileMap}.
  * <p>
- * Cada {@link Tile} que se agrega al nodo escena cuenta con una lista de 
- * propiedades con que personalizar el modelo 2D que se genere.
- * </p>
+ * Each {@link Tile} added to the scene node has a list of properties to customize
+ * the generated 2D model.
  * 
  * @author wil
- * @version 1.0.1
- * 
+ * @version 1.0.5
  * @since 2.0.0
  */
 public interface Spritesheet {
     
     /**
-     * Método encargado de crear un modelo en una geometría para agregarlo en
-     * una escena. Cada {@link TileMap} que se genere utiliza este método para
-     * crear su nodos hijos.
+     * Method in charge of creating a model in a geometry to add it in a scene.
+     * Each {@link TileMap} that is generated uses this method to create its
+     * child nodes.
      * 
-     * @param tileMap nodo padre de mapas.
-     * @param tile información del azulejo a crear.
-     * @param assetManager admnistrador de recursos
-     * @return modelo 2d.
+     * @param tileMap parent map node
+     * @param tile information of the tile to be created
+     * @param assetManager resource manager
+     * @return 2D model
      */
     public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager);
     
     /**
-     * Método encargado de actualizar un modelo con nuevas propiedades.
-     * @param tileMap nodo padre de mapas.
-     * @param tile información del azulejo a crear.
-     * @param assetManager admnistrador de recursos
-     * @param geom geometrya a modificar.
+     * Method in charge of updating a model with new properties.
+     * 
+     * @param tileMap parent map node
+     * @param tile information of the tile to be created
+     * @param assetManager resource manager
+     * @param geom geometry to be modified
      */
     public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom);
 }

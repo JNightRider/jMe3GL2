@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,26 +32,25 @@
 package jme3gl2.scene.tile;
 
 /**
- * Un <code>Tilesheet</code> es una interfaz con método que devuelve los
- * administradores encargados de la creación y gestionamiento del espacio
- * de los modelos 2D de un {@link TileMap}.
+ * An <code>Tilesheet</code> is an interface with a method that returns the
+ * administrators in charge of the creation and management of the 2D model space
+ * of a {@link TileMap}.
  * 
  * @author wil
- * @version 1.0.1
- * 
+ * @version 1.0.5
  * @since 2.0.0
  */
 public interface Tilesheet {
     
     /**
-     * Devuelve un {@link Spritesheet} para el nodo de mapas.
-     * @return tile-model
+     * Returns a {@link Spritesheet} for the map node.
+     * @return tile model
      */
     public Spritesheet getSpritesheet();
     
     /**
-     * Devuelve un {@link SpritesheetPhysics} para el nodo de mapas.
-     * @return tile-space
+     * Returns a {@link SpritesheetPhysics} for the map node.
+     * @return tile space
      */
     public SpritesheetPhysics getSpritesheetPhysics();
 }

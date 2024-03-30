@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,65 +37,58 @@ import jme3gl2.physics.PhysicsSpace;
 import jme3gl2.physics.control.PhysicsBody2D;
 
 /**
- * Clase de conveniencia para implementar la interfaz {@link SpritesheetPhysicsAdapter}. 
+ * Convenience class to implement the interface {@link SpritesheetPhysicsAdapter}.
  * @author wil
- * @version 1.0.1
+ * @version 1.0.5
  * @since 2.0.0
  */
 public abstract class SpritesheetPhysicsAdapter implements SpritesheetPhysics {
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see SpritesheetPhysics#setPhysicsSpace(jMe3GL2.physics.PhysicsSpace) 
-     * @param physicsSpace Physics-Space
      */
     @Override
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) { }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see SpritesheetPhysics#onDetachTile(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
      */
     @Override
     public void onDetachTile(Geometry geom) { }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see SpritesheetPhysics#onAttachTile(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
      */
     @Override
     public void onAttachTile(Geometry geom) { }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see SpritesheetPhysics#onTileUnassociated(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
      */
     @Override
     public void onTileUnassociated(Geometry geom) { }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see SpritesheetPhysics#onTransformChange(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
      */
     @Override
     public void onTransformChange(Geometry geom) { }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see SpritesheetPhysics#onMaterialChange(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
      */
     @Override
     public void onMaterialChange(Geometry geom) { }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see SpritesheetPhysics#onMeshChange(com.jme3.scene.Geometry) 
-     * @param geom Geometry 
      */
     @Override
     public void onMeshChange(Geometry geom) { }    

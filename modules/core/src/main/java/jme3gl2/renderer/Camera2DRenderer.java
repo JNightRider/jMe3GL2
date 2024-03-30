@@ -101,7 +101,7 @@ public class Camera2DRenderer extends BaseAppState {
      * manager/camera is specified.
      * @param rendererType type of manager/camera
      */
-    public Camera2DRenderer(GLRendererType rendererType) {
+    protected Camera2DRenderer(GLRendererType rendererType) {
         if (rendererType == null) {
             throw new NullPointerException("Render type cannot be null");
         }
@@ -165,7 +165,7 @@ public class Camera2DRenderer extends BaseAppState {
     public void setTarget(Spatial s) { getEffect(GLXFollowing.class).setTarget(s); }
     /* Use {@link jme3gl2.renderer.effect.GLXFollowing#setFollowInterpolationAmount(float) }. */
     @Deprecated(since = "3.0.0")
-    public void setFollowInterpolationAmount(float follow) { getEffect(GLXFollowing.class).setFollowInterpolationAmount(follow); }    
+    public void setFollowInterpolationAmount(float follow) { getEffect(GLXFollowing.class).setInterpolationAmount(follow); }    
     /* Use {@link jme3gl2.renderer.effect.GLXDistanceFrustum#setDistanceFrustum(float). */
     @Deprecated(since = "3.0.0")
     public void setDistanceFrustum(float frustum) { getEffect(GLXDistanceFrustum.class).setDistanceFrustum(frustum); }    
@@ -174,10 +174,10 @@ public class Camera2DRenderer extends BaseAppState {
     public void setOffset(Vector2f offset) { getEffect(GLXFollowing.class).setOffset(offset); }    
     /*  Use {@link jme3gl2.renderer.effect.GLXClipping#setMaximumClipping(com.jme3.math.Vector2f)|Use {@link jme3gl2.renderer.effect.GLXClipping#setMinimumClipping(com.jme3.math.Vector2f). */
     @Deprecated(since = "3.0.0")
-    public void setClipping(Vector2f minimumClipping, Vector2f maxClipping) { getEffect(GLXClipping.class).setMinimumClipping(minimumClipping);getEffect(GLXClipping.class).setMaximumClipping(maxClipping); }
+    public void setClipping(Vector2f minimumClipping, Vector2f maxClipping) { getEffect(GLXClipping.class).setClipping(minimumClipping, maxClipping); }
 
     /*
-     *(non-Javadoc)
+     * (non-Javadoc)
      * @see com.jme3.app.state.BaseAppState#update(float)
      */
     @Override
@@ -186,7 +186,7 @@ public class Camera2DRenderer extends BaseAppState {
     }
 
     /*
-     *(non-Javadoc)
+     * (non-Javadoc)
      * @see com.jme3.app.state.BaseAppState#cleanup(com.jme3.app.Application) 
      */
     @Override
@@ -236,7 +236,7 @@ public class Camera2DRenderer extends BaseAppState {
     }
 
     /*
-     *(non-Javadoc)
+     * (non-Javadoc)
      * @see com.jme3.app.state.BaseAppState#onEnable()
      */
     @Override
@@ -247,7 +247,7 @@ public class Camera2DRenderer extends BaseAppState {
     }
 
     /*
-     *(non-Javadoc)
+     * (non-Javadoc)
      * @see com.jme3.app.state.BaseAppState#onDisable()
      */
     @Override

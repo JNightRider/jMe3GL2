@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,25 +39,25 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture;
 
 /**
- * Clase de utilidad para cargar, administrar y modificar materiales.
+ * Utility class for loading, managing and modifying materials.
  * @author wil
- * @version 1.0.0
+ * @version 1.0.5
  * @since 2.5.0
  */
 public final class MaterialUtilities {
     
     /**
-     * Valor que puede mínimo del <code>AlphaDiscardThreshold</code> de los
-     * materiales que soportan billo.
+     * Minimum value of the <code>AlphaDiscardThreshold</code> of materials that
+     * support brightness.
      */
     public static final float MIN_ALPHA_DISCARD_THRESHOLD = 0.0001F;
     
     /**
-     * Devuelve un <code>Material</code> almacenada en el classpath dada la ruta.
+     * Returns a <code>Material</code> stored in the classpath given the path.
      * 
-     * @param assetManager administrador de los activos
-     * @param color color del material
-     * @return Material
+     * @param assetManager asset manager
+     * @param color material color
+     * @return material
      */
     public static final Material getUnshadedColorMaterialFromClassPath(AssetManager assetManager, ColorRGBA color) {
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -67,12 +67,12 @@ public final class MaterialUtilities {
     }
     
     /**
-     * Devuelve un <code>Material</code> almacenada en el classpath dada la ruta
-     * con una textura agregada.
+     * Returns a <code>Material</code> stored in the classpath given the path
+     * with an added texture.
      * 
-     * @param assetManager administrador de los activos
-     * @param path la ruta dentro del classpath
-     * @return Material
+     * @param assetManager asset manager
+     * @param path the path within the classpath
+     * @return material
      */
     public static final Material getUnshadedMaterialFromClassPath(AssetManager assetManager, String path) {
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -85,13 +85,13 @@ public final class MaterialUtilities {
     }
     
     /**
-     * Devuelve un <code>Material</code> almacenada en el classpath dada la ruta
-     * con una textura agregada que brillo en el.
+     * Returns a <code>Material</code> stored in the classpath given the path
+     * with an added texture that shines on it.
      * 
-     * @param assetManager administrador de los activos
-     * @param path1 la ruta de la textura dentro del classpath
-     * @param path2 la ruta de la textura para el brillo dentro del classpath
-     * @return Material
+     * @param assetManager asset manager
+     * @param path1 the texture path within the classpath
+     * @param path2 the texture path for the gloss within the classpath
+     * @return material
      */
     public static final Material getUnshadedMaterialSupportsGlowFromClassPath(AssetManager assetManager, String path1, String path2) {
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -113,12 +113,12 @@ public final class MaterialUtilities {
     }
     
     /**
-     * Devuelve un <code>Material</code> almacenada en el classpath dada la ruta
-     * con una textura agregada.
+     * Returns a <code>Material</code> stored in the classpath given the path
+     * with an added texture.
      * 
-     * @param assetManager administrador de los activos
-     * @param path la ruta dentro del classpath
-     * @return Material
+     * @param assetManager asset manager
+     * @param path the path within the classpath
+     * @return material
      */
     public static final Material getLightingMaterialFromClassPath(AssetManager assetManager, String path) {
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -138,13 +138,13 @@ public final class MaterialUtilities {
     }
     
     /**
-     * Devuelve un <code>Material</code> almacenada en el classpath dada la ruta
-     * con una textura agregada que brillo en el.
+     * Returns a <code>Material</code> stored in the classpath given the path
+     * with an added texture that shines on it.
      * 
-     * @param assetManager administrador de los activos
-     * @param path1 la ruta de la textura dentro del classpath
-     * @param path2 la ruta de la textura para el brillo dentro del classpath
-     * @return Material
+     * @param assetManager asset manager
+     * @param path1 the texture path within the classpath
+     * @param path2 the texture path for the gloss within the classpath
+     * @return material
      */
     public static final Material getLightingMaterialSupportsGlowFromClassPath(AssetManager assetManager, String path1, String path2) {
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");

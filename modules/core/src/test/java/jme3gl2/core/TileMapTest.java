@@ -17,7 +17,6 @@ import jme3gl2.utilities.MaterialUtilities;
 import org.dyn4j.collision.AxisAlignedBounds;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
-import org.dyn4j.geometry.Vector2;
 
 
 public class TileMapTest extends SimpleApplication {
@@ -39,17 +38,17 @@ public class TileMapTest extends SimpleApplication {
         dyn4jAppState.setDebugEnabled(true);
         stateManager.attach(dyn4jAppState);
 
-
-        TileMap map = getTileMap("TileMap/PixelPlatformer/tilemap_packed.png", 20, 9, assetManager);
+        
+        TileMap map = gl2GetTileMap("TileMap/PixelPlatformer/tilemap_packed.png", 20, 9, assetManager);
         map.setPhysicsSpace(dyn4jAppState.getPhysicsSpace());
         
-        map.addTile(getTile(1, 1, 1, 1, 0, 0, 0, true));
-        map.addTile(getTile(2, 1, 1, 1, 1, 0, 0, true));
-        map.addTile(getTile(5, 1, 1, 1, 0, -1, 0, false));
+        map.addTile(gl2GetTile(1, 1, 1, 1, 0, 0, 0, true));
+        map.addTile(gl2GetTile(2, 1, 1, 1, 1, 0, 0, true));
+        map.addTile(gl2GetTile(5, 1, 1, 1, 0, -1, 0, false));
         
-        map.addTile(getTile(2, 3, 1, 1, 2, 0, 0, true));
-        map.addTile(getTile(3, 3, 1, 1, 3, 0, 0, true));
-        map.addTile(getTile(4, 1, 1, 1, 3, -1, 0, false));
+        map.addTile(gl2GetTile(2, 3, 1, 1, 2, 0, 0, true));
+        map.addTile(gl2GetTile(3, 3, 1, 1, 3, 0, 0, true));
+        map.addTile(gl2GetTile(4, 1, 1, 1, 3, -1, 0, false));
         
         rootNode.attachChild(map);
         setupCube();

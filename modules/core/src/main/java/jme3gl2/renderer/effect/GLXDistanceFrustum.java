@@ -36,47 +36,60 @@ import com.jme3.renderer.Camera;
 import jme3gl2.renderer.Camera2DRenderer.GLRendererType;
 
 /**
- *
+ * Class responsible for handling a distance effect between the 2D world scene
+ * and the camera.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 public class GLXDistanceFrustum extends AbstractGLXEffect {
     
+    /** distance. */
     private float distanceFrustum;
-    private float followInterpolationAmount;
-
+    
+    /**
+     * Generate a new instance of this class <code>GLXDistanceFrustum</code>.
+     * @param distanceFrustum distance
+     * @param followInterpolationAmount interpolation speed (amount)
+     */
     public GLXDistanceFrustum(float distanceFrustum, float followInterpolationAmount) {
         this.distanceFrustum = distanceFrustum;
-        this.followInterpolationAmount = followInterpolationAmount;
+        this.interpolationAmount = followInterpolationAmount;
     }
 
+    /**
+     * Returns the distance
+     * @return float
+     */
     public float getDistanceFrustum() {
         return distanceFrustum;
     }
 
-    public float getFollowInterpolationAmount() {
-        return followInterpolationAmount;
-    }
-
+    /**
+     * Set a new distance
+     * @param distanceFrustum float
+     */
+    @SuppressWarnings("deprecation")
     public void setDistanceFrustum(float distanceFrustum) {
         this.distanceFrustum = distanceFrustum;        
-        if (camera.getType() == GLRendererType.GLX_25D) {
+        if (camera.getType() == GLRendererType.GLX_25D || camera.getType() == GLRendererType.GL_2D) {
             final Camera cam = camera.getCamera();
             float aspect     = (float) cam.getWidth() / (float )cam.getHeight();
             cam.setFrustum(-1000, 1000, -aspect * distanceFrustum, aspect * distanceFrustum, distanceFrustum, -distanceFrustum);
         }
     }
-
-    public void setFollowInterpolationAmount(float followInterpolationAmount) {
-        this.followInterpolationAmount = followInterpolationAmount;
-    }
     
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.effect.AbstractGLXEffect#effectUpdate(float) 
+     */
     @Override
     protected void effectUpdate(float tpf) {
         Camera cam   = camera.getCamera();        
         Vector3f loc = cam.getLocation();
         
-        if (followInterpolationAmount > 0) {
-            float changeAmount = tpf * followInterpolationAmount;
+        if (interpolationAmount > 0) {
+            float changeAmount = tpf * interpolationAmount;
             cam.setLocation(loc.setZ((1.0F - changeAmount) * loc.z + changeAmount * distanceFrustum));
         } else {
             cam.setLocation(loc.setZ(distanceFrustum));

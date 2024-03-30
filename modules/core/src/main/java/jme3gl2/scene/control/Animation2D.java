@@ -31,7 +31,7 @@
  */
 package jme3gl2.scene.control;
 
-import jme3gl2.util.Jme3GL2Savable;
+import jme3gl2.util.NULL;
 
 /**
  * Frame interface for animations that use animated controls when applying an 
@@ -41,5 +41,5 @@ import jme3gl2.util.Jme3GL2Savable;
  * @version 1.0.0
  * @since 3.0.0
  */
-public interface Animation2D extends Jme3GL2Savable {    
+public interface Animation2D extends NULL {    
 }

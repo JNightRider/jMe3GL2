@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,207 +32,170 @@
 package jme3gl2.scene.tile;
 
 /**
- * Un <code>Type</code> se encarga de enumerar los diferentes tipos de
- * datos que soporta {@link Properties}
+ * A <code>Type</code> is responsible for listing the different types of data
+ * that supports {@link Properties}.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- * 
+ * @version 1.0.5
  * @since 2.0.0
  */
 enum Type {
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Integer}
      */
     Int,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Float}
      */
     Float, 
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Boolean}
      */
     Boolean, 
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.String}
      */
     String,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Long}
      */
     Long,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Double}
      */
     Double, 
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Short}
      */
     Short, 
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Byte}
      */
     Byte,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Enum}
      */
     Enum,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.lang.Character}
      */
     Character,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.math.BigDecimal}
      */
     BigDecimal,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.math.BigInteger
      */
     BigInteger,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.util.BitSet}
      */
     BitSet,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.nio.FloatBuffer}
      */
     FloatBuffer,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.nio.IntBuffer}
      */
     IntBuffer,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.nio.ByteBuffer}
      */
     ByteBuffer,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@link java.nio.ShortBuffer}
      */
     ShortBuffer,
     
     /**
-     * Tipo de dato: 
+     * Data type: 
      *          {@code  com.jme3.export.Savable
      */
     Savable;
     
     /**
-     * Evalua un objeto para determinar su tipo de dato.
-     * @param o Objeto a evaluer.
-     * @return Tipo de dato.
-     * @throws IllegalArgumentException Si el objeto que se evalua, no esta
-     *                                  soportado o es <code>NULL</code>
+     * Evaluates an object to determine its data type.
+     * 
+     * @param o object to be evaluated
+     * @return data type
+     * @throws IllegalArgumentException if the object to be evaluated is not
+     *                                  supported or is <code>NULL</code>.
      */
     public static Type jmeValueOf(Object o) throws IllegalArgumentException {
         if (o == null)
             throw new NullPointerException("Object is Null.");
             
-        if (o instanceof java
-                        .lang
-                        .Character) {
+        if (o instanceof java.lang.Character) {
             return Character;
-        } else if (o instanceof java
-                                .lang
-                                .Integer) {
+        } else if (o instanceof java.lang.Integer) {
             return Int;
-        } else if (o instanceof java
-                                .lang
-                                .Float) {
+        } else if (o instanceof java.lang.Float) {
             return Float;
-        } else if (o instanceof java
-                                .lang
-                                .Boolean) {
+        } else if (o instanceof java.lang.Boolean) {
             return Boolean;
-        } else if (o instanceof java
-                                .lang
-                                .String) {
+        } else if (o instanceof java.lang.String) {
             return String;
-        } else if (o instanceof java
-                                .lang
-                                .Long) {
+        } else if (o instanceof java.lang.Long) {
             return Long;
-        } else if (o instanceof java
-                                .lang
-                                .Double) {
+        } else if (o instanceof java.lang.Double) {
             return Double;
-        } else if (o instanceof java
-                                .lang
-                                .Short) {
+        } else if (o instanceof java.lang.Short) {
             return Short;
-        } else if (o instanceof java
-                                .lang
-                                .Byte) {
+        } else if (o instanceof java.lang.Byte) {
             return Byte;
-        } else if (o instanceof java
-                                .lang
-                                .Enum) {
+        } else if (o instanceof java.lang.Enum) {
             return Enum;
-        } else if (o instanceof java
-                                .math
-                                .BigInteger) {
+        } else if (o instanceof java.math.BigInteger) {
             return BigInteger;
-        } else if (o instanceof java
-                                .math
-                                .BigDecimal) {
+        } else if (o instanceof java.math.BigDecimal) {
             return BigDecimal;
-        } else if (o instanceof java
-                                .util
-                                .BitSet) {
+        } else if (o instanceof java.util.BitSet) {
             return BitSet;
-        } else if (o instanceof java
-                                .nio
-                                .FloatBuffer) {
+        } else if (o instanceof java.nio.FloatBuffer) {
             return FloatBuffer;
-        } else if (o instanceof java
-                                .nio
-                                .IntBuffer) {
+        } else if (o instanceof java.nio.IntBuffer) {
             return IntBuffer;
-        } else if (o instanceof java
-                                .nio
-                                .ByteBuffer) {
+        } else if (o instanceof java.nio.ByteBuffer) {
             return ByteBuffer;
-        } else if (o instanceof java
-                                .nio
-                                .ShortBuffer) {
+        } else if (o instanceof java.nio.ShortBuffer) {
             return ShortBuffer;
-        } else if (o instanceof com
-                                .jme3
-                                .export
-                                .Savable) {
+        } else if (o instanceof com.jme3.export.Savable) {
             return Savable;
         }
         throw new IllegalArgumentException("Object " + o.getClass().getName() + " type not supported.");

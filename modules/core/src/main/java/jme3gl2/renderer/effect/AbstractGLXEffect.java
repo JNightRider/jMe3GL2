@@ -34,25 +34,48 @@ package jme3gl2.renderer.effect;
 import jme3gl2.renderer.GLXCamera;
 
 /**
- *
+ * Abstract class where the {@link jme3gl2.renderer.effect.GLXDistanceFrustum}
+ * interface for camera effects is implemented.
+ * 
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 public abstract class AbstractGLXEffect implements GLXEffect {
-    
+    /** Status (enabled | disabled).*/
     protected boolean enabled = true;
+    /** GLX-Camera. */
     protected GLXCamera camera;
 
+    /** Interpolation speed (amount). */
+    protected float interpolationAmount;
+    
+    /**
+     * Constructor.
+     */
     public AbstractGLXEffect() {
     }
 
+    /**
+     * Returns the state of this effect.
+     * @return boolean
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * Sets the state of this effect.
+     * @param enabled boolean
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.effect.GLXEffect#setCamera(jme3gl2.renderer.GLXCamera) 
+     */
     @Override
     public void setCamera(GLXCamera camera) {
         if (this.camera != null && camera != null && camera != this.camera) {
@@ -61,6 +84,10 @@ public abstract class AbstractGLXEffect implements GLXEffect {
         this.camera = camera;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.effect.GLXEffect#update(float) 
+     */
     @Override
     public void update(float tpf) {
         if (!enabled)
@@ -68,5 +95,25 @@ public abstract class AbstractGLXEffect implements GLXEffect {
         effectUpdate(tpf);
     }
     
+    /**
+     * Updates the status of all loaded effects.
+     * @param tpf float
+     */
     protected abstract void effectUpdate(float tpf);
+
+    /**
+     * Returns the interpolation amount (speed).
+     * @return float
+     */
+    public float getInterpolationAmount() {
+        return interpolationAmount;
+    }
+
+    /**
+     * Sets a new interpolation amount (speed)
+     * @param interpolationAmount float
+     */
+    public void setInterpolationAmount(float interpolationAmount) {
+        this.interpolationAmount = interpolationAmount;
+    }
 }

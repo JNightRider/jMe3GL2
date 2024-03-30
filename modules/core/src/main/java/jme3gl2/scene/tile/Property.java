@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,35 +51,30 @@ import java.util.BitSet;
 import java.util.Objects;
 
 /**
- * Un <code>Property</code> se encarga de administrar los tipos de datos que
- * puede guardar la clase {@link Properties} al crera un {@link Tile}.
+ * An <code>Property</code> is responsible for managing the types of data that
+ * can be stored by the class {@link Properties} by creating a {@link Tile}.
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
- * 
+ * @version 1.0.5
  * @since 2.0.0
  */
-@SuppressWarnings(value = {"unchecked"})
 final class Property implements Savable, Cloneable {
     
-    /** Tipo de dato que se este envolviendo. */
-    private Type jmeType;
-    
-    /** Dato primitivo a envolver. */
+    /** Type of data being wrapped. */
+    private Type jmeType;    
+    /** Primitive data to be wrapped. */
     private Object object;
     
     /**
-     * Constructor predeterminado.
+     * Default constructor.
      */
     public Property() {
     }
 
     /**
-     * Construye un {@link Property} con un valor espefecificado
-     * a envolver.
+     * Constructs a {@link Property} with a specified value to wrap.
      * 
-     * @param object 
-     *          Valor primitivo a envolver.
+     * @param object primitive value to be wrapped
      */
     public Property(Object object) throws RuntimeException {
         this.jmeType = Type.jmeValueOf(object);
@@ -87,12 +82,12 @@ final class Property implements Savable, Cloneable {
     }
     
     /**
-     * Siempre que clonamos un {@code JmePrimitive} se hara de una manera profunda,
-     * para clonar su valor y tipo de dato.
+     * Whenever we clone a {@code JmePrimitive} it will be done in a deep way,
+     * to clone its value and data type
      * 
-     * @throws InternalError Si ocurre un error interno(JVM) al clonar
-     *                          el objeto/clase.
-     * @return Clon del objeto generado.
+     * @throws InternalError if an internal(JVM) error occurs when cloning the
+     *          object/class
+     * @return clone of the generated object
      */
     @Override
     public Property clone() {
@@ -108,20 +103,17 @@ final class Property implements Savable, Cloneable {
     }
     
     /**
-     * Metodo auxiliar que se encarga de clonar el valor de esta clase, siempre
-     * y cuando soporte la clonacion, los de tipo primitivo son una excepcion a
-     * esa regla, dado que ellos solo se asignan.
+     * Auxiliary method that is in charge of cloning the value of this class, as
+     * long as it supports the cloning, the primitive ones are an exception to
+     * that rule, since they are only assigned.
      * 
-     * @param obj
-     *          Valor a clonar.
-     * @param type
-     *          El tipo del objeto que se clonara.
-     * @return Valor clonado.
+     * @param obj value to be cloned
+     * @param type the type of the object to be cloned
+     * @return cloned value
      */
     private Object clone0(Object obj, Type type) {
         switch (type) {
-            case BitSet: return (BitSet) 
-                                ((BitSet) obj).clone();
+            case BitSet:       return (BitSet) ((BitSet) obj).clone();
             case FloatBuffer:  return BufferUtils.clone((FloatBuffer) obj);
             case ShortBuffer:  return BufferUtils.clone((ShortBuffer) obj);            
             case ByteBuffer:   return BufferUtils.clone((ByteBuffer) obj);
@@ -138,9 +130,10 @@ final class Property implements Savable, Cloneable {
     }
 
     /**
-     * Genera un text({@code String}) con el comportamiento de
-     * la clase {@code JmePrimitive}.
-     * @return Un string como valor.
+     * Generates a text ({@code String}) with the behavior of class
+     * {@code JmePrimitive}.
+     * 
+     * @return a string as value.
      */
     @Override
     public String toString() {
@@ -148,11 +141,32 @@ final class Property implements Savable, Cloneable {
                    + ", object=" + object + ']';
     }
 
-    // Getters de la clase 'JmePrimitive' que devuelvel el tipo de dato que se
-    // esta envolviendo, a si como el dato establecido.
-    public Type getJmeType() { return jmeType; }
-    public Object getValue()    { return object;  }
+    // Getters of the 'JmePrimitive' class that return the type of data being
+    // wrapped, as well as the data set.
+    
+    /**
+     * Gets the type of data being wrapped.
+     * 
+     * @return type of data
+     */
+    public Type getJmeType() {
+        return jmeType;
+    }
+    
+    /**
+     * Gets the wrapped data.
+     * 
+     * @return the wrapped data
+     */
+    public Object getValue() {
+        return object;
+    }
 
+    /**
+     * (non-JavaDoc).
+     * @param ex JmeExporter
+     * @throws IOException exception
+     */
     @Override
     public void write(JmeExporter ex) throws IOException {
         final OutputCapsule out = ex.getCapsule(this);
@@ -243,6 +257,11 @@ final class Property implements Savable, Cloneable {
         }
     }
 
+    /**
+     * (non-JavaDoc).
+     * @param im JmeImporter
+     * @throws IOException exception.
+     */
     @Override
     public void read(JmeImporter im) throws IOException {
         final InputCapsule in = im.getCapsule(this);
@@ -310,17 +329,17 @@ final class Property implements Savable, Cloneable {
     }
     
     /**
-     * El metodo <code>readCharacter</code> tiene como funcionalidad, leer un
-     * objeto de tipo {@code char}.
+     * The <code>readCharacter</code> method has the functionality to read an
+     * object of type {@code char}.
      * 
-     * @param in
-     *          Administrador de entradas jme.
-     * @return un caracter({@code char}) como valor.
+     * @param in JME ticket manager
+     * @return a character ({@code char}) as value
      * 
-     * @throws IOException Si al leer los datos en la entrada, genera
-     *                      algun erro o excepcion.
-     * @throws InternalError Si el valor leido tiene mas de un caracter, se considera
-     *                          un error interno, ya que estamos importando un {@code char}.
+     * @throws IOException if, when reading the data in the input, it generates
+     *                      an error or exception
+     * @throws InternalError if the value read has more than one character, it
+     *                       is considered an internal error, because we are 
+     *                      importing a {@code char}
      */
     private char readCharacter(InputCapsule in) throws IOException {
         final String valueOf = in.readString("charVal", null);
@@ -337,18 +356,18 @@ final class Property implements Savable, Cloneable {
     }
     
     /**
-     * El metodo <code>readEnum</code> tiene como funcionalidad, leer un
-     * objeto de tipo {@code enum}.
+     * The <code>readEnum</code> method has the functionality to read an object
+     * of type {@code enum}.
      * 
-     * @param in
-     *          Administrador de entradas jme.
-     * @return Un valor enumerado {@link java.lang.Enum}.
+     * @param in JME ticket manager
+     * @return an enumerated value {@link java.lang.Enum}
      * 
-     * @throws IOException Si al leer los datos en la entrada, genera
-     *                      algun erro o excepcion.
-     * @throws InternalError Si los valores solicitados para leer un {@code enum}
-     *                          no son validos, se lanzara un error interno.
+     * @throws IOException if, when reading the data in the input, it generates
+     *                      an error or exception
+     * @throws InternalError if the values requested to read an {@code enum} are
+     *                      not valid, an internal error will be thrown
      */
+    @SuppressWarnings("unchecked")
     private Enum<?> readEnum(InputCapsule in) throws IOException {
         try {
             String className = in.readString("className", null);
@@ -362,22 +381,22 @@ final class Property implements Savable, Cloneable {
     
     
     /**
-     * El metodo <code>readBigNumber</code> tiene como funcionalidad, leer un
-     * numero entero o decimal de gran capacidad conocidos como: <pre><code>
-     * BigDecimal -> decimales
-     * BigInteger -> enteros</code></pre>
+     * The <code>readBigNumber</code> method has as functionality, read an
+     * integer or decimal number of large capacity known as:
+     * <pre><code>
+     * BigDecimal --- decimals
+     * BigInteger --- integers
+     * </code></pre>
      * 
-     * @param in
-     *          Administrador de entradas jme.
-     * @param isDecimal 
-     *              {@code true} si se va a leer un <code>BigDecimal</code>, de lo
-     *                  contrario {@code false} para un <code>BigInteger</code>.
-     * @return Un numero gigante/grande como valor.
+     * @param in JME ticket manager
+     * @param isDecimal {@code true} if you are going to read a <code>BigDecimal</code>,
+     *                  otherwise {@code false} to a <code>BigInteger</code>
+     * @return a giant/large number as a value
      * 
-     * @throws IOException Si al leer los datos en la entrada, genera
-     *                      algun erro o excepcion.
-     * @throws InternalError Si los valores solicitados no son <code>BigDecimal</code> o 
-     *                          <code>BigInteger</code>, se lanzara un error interno.
+     * @throws IOException if, when reading the data in the input, it generates
+     *                      an error or exception
+     * @throws InternalError if the requested values are not <code>BigDecimal</code>
+     *          or <code>BigInteger</code>, an internal error will be thrown
      */
     private Number readBigNumber(InputCapsule in, boolean isDecimal) throws IOException {
         if (isDecimal) {
@@ -400,8 +419,9 @@ final class Property implements Savable, Cloneable {
     }
 
     /**
-     * Metodo encargado de generar un hash para la clase.
-     * @return {@code hashCode} de la clase.
+     * Method in charge of generating a hash for the class.
+     * 
+     * @return {@code hashCode} of the class
      */
     @Override
     public int hashCode() {
@@ -412,13 +432,11 @@ final class Property implements Savable, Cloneable {
     }
 
     /**
-     * Metodo encargado de comparar un objeto para luego determinar si son
-     * iguales a nivel de contenido o asi mismo.
+     * Method in charge of comparing an object to then determine if they are
+     * equal at the content level or not.
      * 
-     * @param obj
-     *          Un objeto para comprobar.
-     * @return {@code true} si son iguales, de lo contrario
-     *          devolveria {@code false} como valor.
+     * @param obj an object to check
+     * @return {@code true} if they are the same, returns {@code false} as value
      */
     @Override
     public boolean equals(Object obj) {

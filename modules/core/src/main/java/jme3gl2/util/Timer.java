@@ -55,8 +55,7 @@ public class Timer {
      * {@code true} if the timer is stopped, i.e., it will stop counting, 
      * otherwise {@code false}.
      */
-    private boolean paused = true;
-    
+    private boolean paused = true;    
     /** List of tasks to be executed. */
     private final List<TimerTask> tasks = new ArrayList<>();
     

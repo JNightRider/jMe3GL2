@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,33 +35,23 @@ import com.jme3.asset.AssetManager;
 import com.jme3.scene.Geometry;
 
 /**
- * Clase de conveniencia para implementar la interfaz {@link Spritesheet}. 
+ * Convenience class to implement the interface {@link Spritesheet}. 
  * @author wil
- * @version 1.0.1
+ * @version 1.0.5
  * @since 2.0.0
  */
 public abstract class SpritesheetAdapter implements Spritesheet {
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see Spritesheet#render(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager) 
-     * 
-     * @param tileMap Tile-Map
-     * @param tile Tile
-     * @param assetManager Asset-Manager
-     * @return Modelo.
      */
     @Override
     public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager) { return null; }
 
-    /**
-     * (non-JavaDoc)
+    /*
+     * (non-Javadoc)
      * @see Spritesheet#update(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager, com.jme3.scene.Geometry) 
-     * 
-     * @param tileMap Tile-Map
-     * @param tile Tile
-     * @param assetManager Asset-Manager
-     * @param geom Geometry
      */
     @Override
     public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) { }

@@ -50,7 +50,6 @@ import java.util.logging.Logger;
  * @since 1.3.0
  */
 public final class TimerAppState extends AbstractAppState {
-
     /** Class logger. */
     private static final Logger LOG = Logger.getLogger(TimerAppState.class.getName());
 

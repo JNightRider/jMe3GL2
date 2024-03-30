@@ -190,7 +190,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
          */
         private Geometry renderGeometry(Geometry defG, Properties pTle, Properties pMap, AssetManager assetManager) {
             Geometry geom = defG == null ? new Geometry() : defG;            
-            geom.setName(pTle.optString("Id", TileMapUtilities.getStrigRandomUUID()));
+            geom.setName(pTle.optString("Id", TileMapUtilities.gl2GetStrigRandomUUID()));
             geom.setMesh(renderMesh(pTle, pMap));
             geom.setMaterial(renderMat(pTle, pMap, assetManager));
             geom.setQueueBucket(pTle.optEnum("RenderQueue.Bucket", RenderQueue.Bucket.Transparent));
@@ -267,6 +267,10 @@ class Jme3GLDefTilesheet implements Tilesheet {
             return mat;
         }
 
+        /*
+         * (non-Javadoc)
+         * @see jme3gl2.scene.tile.Spritesheet#update(jme3gl2.scene.tile.TileMap, jme3gl2.scene.tile.Tile, com.jme3.asset.AssetManager, com.jme3.scene.Geometry) 
+         */
         @Override
         public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) {
             renderGeometry(geom, tile.getProperties(), tileMap.getProperties(), assetManager);

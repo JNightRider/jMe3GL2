@@ -47,6 +47,38 @@ import org.dyn4j.geometry.Vector3;
  */
 public final class Converter {
     
+    /* Use {@link jme3gl2.util.Converter#allToVector3fValueOfJME3(org.dyn4j.geometry.Vector3[]) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector3f[] toArrayVector3f(final Vector3[] vertices) { return allToVector3fValueOfJME3(vertices); }
+    /* Use {@link jme3gl2.util.Converter#allToVector3fValueOfJME3(org.dyn4j.geometry.Vector2[]) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector3f[] toArrayVector3f(final Vector2[] vertices) { return allToVector3fValueOfJME3(vertices); }
+    /* Use {@link jme3gl2.util.Converter#toVector2fValueOfJME3(org.dyn4j.geometry.Vector2) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector2f toVector2f(Vector2 v) { return toVector2fValueOfJME3(v); }
+    /* Use {@link jme3gl2.util.Converter#toVector3fValueOfJME3(org.dyn4j.geometry.Vector3) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector3f toVector3f(Vector3 v) { return toVector3fValueOfJME3(v); }
+    /* Use {@link jme3gl2.util.Converter#toVector3fValueOfJME3(org.dyn4j.geometry.Vector2) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector3f toVector3f(Vector2 v) { return toVector3fValueOfJME3(v); }
+    /* Use {@link jme3gl2.util.Converter#toVector2ValueOfDyn4j(com.jme3.math.Vector2f) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector2 toVector2(Vector2f v) { return toVector2ValueOfDyn4j(v); }
+    /* Use {@link jme3gl2.util.Converter#toVector2ValueOfDyn4j(com.jme3.math.Vector3f) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector2 toVector2(Vector3f v) { return toVector2ValueOfDyn4j(v); }
+    /* Use {@link jme3gl2.util.Converter#toVector3ValueOfDyn4j(com.jme3.math.Vector3f) } */
+    @Deprecated(since = "3.0.0")
+    public static Vector3 toVector3(Vector3f v) { return toVector3ValueOfDyn4j(v); }
+    
+    /* Use {@link jme3gl2.util.Converter#toFloatValuej(double) } */
+    @Deprecated(since = "3.0.0")
+    public static float toFloat(double d) { return toFloatValue(d); }
+    /* Use {@link jme3gl2.util.Converter#toDoubleValue(float) } */
+    @Deprecated(since = "3.0.0")
+    public static double toDouble(float f) { return toDoubleValue(f); }
+    
     /**
      * Convert all {@code org.dyn4j.geometry.Vector2} to {@link com.jme3.math.Vector3f}.
      * @param val value

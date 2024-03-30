@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2023 jMonkeyEngine.
+/* Copyright (c) 2009-2024 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,7 +44,7 @@
  * </ul>
  * 
  * @author wil
- * @version 1.0-SNAPSHOT
+ * @version 1.0.5
  * @since 1.5.0
  */
 package jme3gl2.scene.tile;

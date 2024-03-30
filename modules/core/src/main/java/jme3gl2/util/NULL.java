@@ -29,47 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.renderer.effect;
+package jme3gl2.util;
 
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.Savable;
+import java.io.IOException;
 
 /**
- *
+ * A class <code>Savable</code> that represents a null value.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class GLXFlip extends AbstractGLXEffect {
+public interface NULL extends Savable {
 
-    public static enum Flip {
-        Axi_X(Vector3f.UNIT_X),
-        Axi_y(Vector3f.UNIT_Y),
-        Axi_XY(new Vector3f(1, 1, 0));
-        
-        private Vector3f axi;
-
-        private Flip(Vector3f axi) {
-            this.axi = axi;
-        }
-
-        public Vector3f getAxi() {
-            return axi;
-        }
-    }
-
-    private Flip flip;
-    
-    public GLXFlip() {
-    }
-    
-    public void flip(Flip flip) {
-        this.flip = flip;
-    }
-    
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
+     * 
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
+     */
     @Override
-    protected void effectUpdate(float tpf) {
-        if (flip != null) {
-            Quaternion a;
-            
-        }
-    }    
+    public default void write(JmeExporter ex) throws IOException { }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException throws
+     */
+    @Override
+    public default void read(JmeImporter im) throws IOException { }    
 }

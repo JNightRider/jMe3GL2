@@ -36,14 +36,23 @@ import jme3gl2.renderer.Camera2DRenderer.GLRendererType;
 import jme3gl2.renderer.effect.GLXDistanceFrustum;
 
 /**
- *
+ * Class in charge of handling a fake 2D camera.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 final class GLXCamera25D extends AbstractGLXCamera {
 
+    /**
+     * Constructor
+     */
     public GLXCamera25D() {
     }
     
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.AbstractGLXCamera#initialize() 
+     */
     @Override
     protected void initialize() {
         camera.setParallelProjection(true);
@@ -60,6 +69,10 @@ final class GLXCamera25D extends AbstractGLXCamera {
         camera.setLocation(new Vector3f(0, 0, 0));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#getType() 
+     */
     @Override
     public GLRendererType getType() {
         return GLRendererType.GLX_25D;
