@@ -185,7 +185,8 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
         this.changeListeners     = new ArrayList<>(0);
         this.timeChangeListeners = new ArrayList<>(0);
         this.handlerFunction  = handlerFunction;
-        this.animation2DSpeed = 0.60F;
+        this.animation2Dloop  = true;
+        this.animation2DSpeed = 60F;
     }
     
     /**
@@ -442,7 +443,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
             out.write(entry.getValue(), "jMe3GL2@AbstractAnimationControl2D" + entry.getKey(), new Animation2D[0]);
         }
         
-        out.write(animation2Dloop, "Animation2Dloop", false);
+        out.write(animation2Dloop, "Animation2Dloop", true);
         out.write(animation2DSpeed, "Animation2DSpeed", 1);
     }
 }

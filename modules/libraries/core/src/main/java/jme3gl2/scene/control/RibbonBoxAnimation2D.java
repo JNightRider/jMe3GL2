@@ -88,6 +88,17 @@ public class RibbonBoxAnimation2D implements Animation2D, Savable {
     }
 
     /**
+     * Returns the current frame of the animation.
+     * @return int
+     */
+    public int getFrame() {
+        if (frames == null) {
+            return 0;
+        }
+        return frames[index];
+    }
+    
+    /**
      * Returns the list of frames.
      * @return array of integers
      */

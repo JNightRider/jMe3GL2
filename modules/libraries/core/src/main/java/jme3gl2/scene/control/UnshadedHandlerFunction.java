@@ -117,7 +117,7 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
                     Sprite sprite = (Sprite) mesh;
                     
                     sprite.applyCoords(rbad.getColumns(), rbad.getRows(), sprite.getTransform().getColPosition(), sprite.getTransform().getRowPosition());
-                    sprite.showIndex(rbad.getIndex());
+                    sprite.showIndex(rbad.getFrame());
                 }
                 break;
             case Custom:
