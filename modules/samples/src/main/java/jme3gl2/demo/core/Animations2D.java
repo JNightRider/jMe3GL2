@@ -39,13 +39,12 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.texture.Texture;
+
 import jme3gl2.scene.control.AnimatedRibbonBoxSprite2D;
 import jme3gl2.scene.control.AnimatedSingleSprite2D;
 import jme3gl2.scene.control.AnimatedSprite2D;
 import jme3gl2.scene.control.RibbonBoxAnimation2D;
 import jme3gl2.scene.shape.Sprite;
-import jme3gl2.utilities.MaterialUtilities;
-
 import static jme3gl2.utilities.MaterialUtilities.*;
 import static jme3gl2.utilities.TextureUtilities.*;
 
@@ -99,7 +98,7 @@ public class Animations2D extends SimpleApplication {
         //                 An animation integrated into an image.
         //----------------------------------------------------------------------
         Geometry bee = new Geometry("", new Sprite(1.0F, 1.0F, 10, 6, 1, 5));        
-        Material mat   = MaterialUtilities.getLightingMaterialFromClassPath(assetManager, "Textures/Tilemap_Packed_Rabbit.png");
+        Material mat   = getLightingMaterialFromClassPath(assetManager, "Textures/Tilemap_Packed_Rabbit.png");
         
         mat.setColor("Ambient", ColorRGBA.White);
         mat.setColor("Diffuse", ColorRGBA.White);
