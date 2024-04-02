@@ -3,6 +3,7 @@
 
 # Ignore Gradle build output directory
 build
+dist
 
 # Other
 /.gradle/
@@ -10,6 +11,7 @@ build
 /.nb-gradle/
 /build/
 /private/
+/dist/
 /*.dll
 /*.dylib
 /*.so

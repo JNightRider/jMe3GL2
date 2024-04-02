@@ -1,0 +1,48 @@
+plugins {
+    id 'application'
+    id 'idea'
+}
+
+description = 'jMe3GL2 - samples'
+
+application {
+    if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+        applicationDefaultJvmArgs = ['-XstartOnFirstThread'] // this is when using a Mac as a development machine which requires the AppKit main UI thread to be used for GUI applications
+    }
+}
+
+dependencies {
+    // You can read more about how to add dependencies here:
+    //   https://docs.gradle.org/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
+
+    implementation 'org.jmonkeyengine:jme3-core:' + jmonkeyengineVersion
+    implementation 'org.jmonkeyengine:jme3-desktop:' + jmonkeyengineVersion
+    runtimeOnly 'org.jmonkeyengine:jme3-jogg:' + jmonkeyengineVersion
+    runtimeOnly 'org.jmonkeyengine:jme3-plugins:' + jmonkeyengineVersion
+
+    implementation 'org.jmonkeyengine:jme3-effects:' + jmonkeyengineVersion
+    runtimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmonkeyengineVersion
+
+    implementation 'org.dyn4j:dyn4j:' + dyn4jVersion
+
+    implementation project(':modules:libraries:jMe3GL2-core')
+    implementation project(':modules:libraries:jMe3GL2-jawt')
+    implementation project(':modules:libraries:jMe3GL2-plugins')
+}
+
+task dist (dependsOn: ['build']) {
+    doLast {
+        // Copy all dependencies to ../../dist/lib, remove versions from jar files
+        configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+            copy {
+                from artifact.file
+                into "${rootProject.projectDir}/dist/lib"
+                if(artifact.classifier != null){
+                    rename { "${artifact.name}-${artifact.classifier}.${artifact.extension}" }
+                } else{
+                    rename { "${artifact.name}.${artifact.extension}" }
+                }
+            }
+        }
+    }
+}
