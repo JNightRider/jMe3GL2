@@ -70,7 +70,7 @@ public class SpriteAnimation2D extends AbstractAnimation2D<SpriteAnimation2D> im
      * @param nw mesh width
      * @param nh mesh height
      */
-    public SpriteAnimation2D(Texture texture, Integer nw, Integer nh) {
+    public SpriteAnimation2D(Texture texture, Float nw, Float nh) {
         super(nw, nh);
         this.texture = texture;
     }

@@ -69,7 +69,7 @@ public class SingleAnimation2D extends AbstractAnimation2D<SingleAnimation2D> im
      * @param nw mesh width
      * @param nh mesh height
      */
-    public SingleAnimation2D(int index, Integer nw, Integer nh) {
+    public SingleAnimation2D(int index, Float nw, Float nh) {
         super(nw, nh);
         this.index = index;
     }

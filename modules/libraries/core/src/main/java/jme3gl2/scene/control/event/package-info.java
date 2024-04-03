@@ -31,6 +31,9 @@
  */
 
 /**
- * 
+ * Package in charge of managing animated event objects.
+ * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 package jme3gl2.scene.control.event;

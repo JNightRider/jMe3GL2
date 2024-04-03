@@ -35,35 +35,55 @@ import com.jme3.export.*;
 import java.io.IOException;
 
 /**
- *
- * @param <T>
- * @author wil type
+ * Abstract class for all animations (frames)
+ * @param <T> a {@code jme3gl2.scene.control.AbstractAnimation2D} type
+ * 
+ * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> implements Animation2D, Savable {
     
     /* size (mesh). **/
-    private Integer width,  // <- mesh width (Sprite)
-                    height; // <- mesh height (Sprite)
+    private Float width,  // <- mesh width (Sprite)
+                  height; // <- mesh height (Sprite)
 
-    public AbstractAnimation2D(Integer width, Integer height) {
+    /**
+     * Generate a new instance of class <code>AbstractAnimation2D</code>,
+     * @param width mesh width (Sprite)
+     * @param height mesh height (Sprite)
+     */
+    public AbstractAnimation2D(Float width, Float height) {
         this.width  = width;
         this.height = height;
     }
     
+    /**
+     * Set a new size for the animation mesh
+     * @param width mesh width (Sprite)
+     * @param height mesh height (Sprite)
+     * @return this
+     */
     @SuppressWarnings("unchecked")
-    public T build(Integer width, Integer height) {
+    public T size(Float width, Float height) {
         this.width = width;
         this.height = height;
         return (T) this;
     }
 
-    public Integer getWidth() {
+    /**
+     * Returns the width, <code>null</code> by default.
+     * @return float|Float
+     */
+    public Float getWidth() {
         return width;
     }
 
-    public Integer getHeight() {
+    /**
+     * Returns the height, <code>null</code> by default.
+     * @return float|Float
+     */
+    public Float getHeight() {
         return height;
     }
 
@@ -76,7 +96,13 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
-        
+        OutputCapsule out = ex.getCapsule(this);
+        if (width != null) {
+            out.write(width, "Width", -1);
+        }
+        if (height != null) {
+            out.write(height, "Heigh", -1);
+        }
     }
 
     /**
@@ -88,6 +114,14 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
      */
     @Override
     public void read(JmeImporter im) throws IOException {
-        
+        InputCapsule in = im.getCapsule(this);
+        float nw = in.readFloat("Width", -1);
+        if (nw > -1) {
+            width = nw;
+        }        
+        float nh = in.readFloat("Heigh", -1);
+        if (nh > -1) {
+            height = nh;
+        }
     }
 }

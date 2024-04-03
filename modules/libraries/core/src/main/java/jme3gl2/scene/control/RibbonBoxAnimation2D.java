@@ -95,7 +95,7 @@ public class RibbonBoxAnimation2D extends AbstractAnimation2D<RibbonBoxAnimation
      * @param nw mesh width
      * @param nh mesh height
      */
-    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs, Integer nw, Integer nh) {
+    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs, Float nw, Float nh) {
         super(nw, nh);
         this.texture = texture;
         this.frames  = frames;

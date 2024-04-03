@@ -36,27 +36,33 @@ import jme3gl2.scene.control.AbstractAnimation2DControl;
 import jme3gl2.scene.control.Animation2D;
 
 /**
- *
- * @author wil
- * @version 3.0.0
- * @since 1.0.0
+ * Class in charge of managing the data of animation change events ({@link jme3gl2.scene.control.event.AnimationChangeListener}).
  * @param <O> the type of model
  * @param <A> the type of animation
  * @param <E> the type of animated control
+ * 
+ * @author wil
+ * @version 3.0.0
+ * @since 1.0.0
  */
 public class AnimationEvent<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> {
     
-    
+    /** 2D model. */
     private O model;
+    /** Frame animation. */
     private A animation;
+    /** Animated control. */
     private E control;
     
+    /** current animation name. */
     private String name;
+    /** animation frame index. */
     private int index;
+    /** current frame of the animation. */
     private int frame;
 
     /**
-     * 
+     * Generate a new animated event with class <code>AnimationEvent</code>.
      * @param model the 2D model
      * @param animation frame animation
      * @param control animated control
@@ -73,26 +79,50 @@ public class AnimationEvent<O extends Spatial, A extends Animation2D, E extends 
         this.frame = frame;
     }
 
+    /**
+     * Returns the 2D model.
+     * @return object
+     */
     public O getModel() {
         return model;
     }
 
+    /**
+     * Returns the current animation.
+     * @return object
+     */
     public A getAnimation() {
         return animation;
     }
 
+    /**
+     * Returns the animated control.
+     * @return object
+     */
     public E getControl() {
         return control;
     }
 
+    /**
+     * Returns the name of the active animation.
+     * @return string
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the index of the active animation.
+     * @return int
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Returns the frame of the active animation (index dependent).
+     * @return int
+     */
     public int getFrame() {
         return frame;
     }
