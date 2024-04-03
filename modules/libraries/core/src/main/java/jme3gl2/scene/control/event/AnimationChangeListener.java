@@ -29,9 +29,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.scene.control;
+package jme3gl2.scene.control.event;
 
 import com.jme3.scene.Spatial;
+import jme3gl2.scene.control.AbstractAnimation2DControl;
+import jme3gl2.scene.control.Animation2D;
 
 /**
  * Interface in charge of managing an animation change detector, said change is
@@ -44,12 +46,12 @@ import com.jme3.scene.Spatial;
  * <pre><code>
  * AnimationChangeListener&#60;?, ?, ?&#62; listener = new AnimationChangeListener&#60;&#62;() {
  *     &#64;Override
- *     public void beforeAnimation2DChange(Spatial model, Animation2D animation, AbstractAnimation2DControl control, int index) {
- *         System.out.println("before("+ index+")");
+ *     public void beforeAnimation2DChange(AnimationEvent&#60;Spatial, Animation2D, AbstractAnimation2DControl&#62; event) {
+ *         System.out.println("before(name=" + event.getName() + ", animation=" + event.getIndex() + ", frame=" + event.getFrame() +")");
  *     }
  *     &#64;Override
- *     public void afterAnimation2DChange(Spatial model, Animation2D animation, AbstractAnimation2DControl control, int index) {
- *         System.out.println("after("+ index+")");
+ *     public void afterAnimation2DChange(AnimationEvent&#60;Spatial, Animation2D, AbstractAnimation2DControl&#62; event) {
+ *         System.out.println("after(name=" + event.getName() + ", animation=" + event.getIndex() + ", frame=" + event.getFrame() +")");
  *     }
  *  }
  * 
@@ -71,19 +73,14 @@ public interface AnimationChangeListener<O extends Spatial, A extends Animation2
     
     /**
      * Notify the animation frame before applying the new one.
-     * @param model the 2D model
-     * @param animation frame animation
-     * @param control animated control
-     * @param index animation frame index
+     * @param event animation event
+     * 
      */
-    void beforeAnimation2DChange(O model, A animation, E control, int index);
+    void beforeAnimation2DChange(AnimationEvent<O, A, E> event);
     
     /**
      * Notify the animation frame after applying the new one.
-     * @param model the 2D model
-     * @param animation frame animation
-     * @param control animated control
-     * @param index animation frame index
+     * @param event animation event
      */
-    void afterAnimation2DChange(O model, A animation, E control, int index);
+    void afterAnimation2DChange(AnimationEvent<O, A, E> event);
 }

@@ -31,44 +31,63 @@
  */
 package jme3gl2.scene.control;
 
-import com.jme3.scene.Spatial;
+import com.jme3.export.*;
+import java.io.IOException;
 
 /**
- * Interface in charge of managing the progress of an animation throughout its 
- * life cycle. With this interface we can obtain information about the exact time 
- * in which the frames of a certain animation pass.
- * <p>
- * Example:
- * <pre><code>
- * AnimationTimeChangeListener&#60;?, ?, ?&#62; listener = new AnimationTimeChangeListener&#60;&#62;() {
- *     &#64;Override
- *     public void onTime(float range, float elapsedeTime) {
- *         System.out.println("[ " + range + "%, "+ elapsedeTime +"tpf ]");
- *     }
- * }
- * </code></pre>
- * 
- * @author wil
+ *
+ * @param <T>
+ * @author wil type
  * @version 1.0.0
  * @since 3.0.0
- * @param <O> the type of model
- * @param <A> the type of animation
- * @param <E> the type of animated control
  */
-public interface AnimationTimeChangeListener<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> {
+public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> implements Animation2D, Savable {
     
+    /* size (mesh). **/
+    private Integer width,  // <- mesh width (Sprite)
+                    height; // <- mesh height (Sprite)
+
+    public AbstractAnimation2D(Integer width, Integer height) {
+        this.width  = width;
+        this.height = height;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public T build(Integer width, Integer height) {
+        this.width = width;
+        this.height = height;
+        return (T) this;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
     /**
-     * Method responsible for reporting the progress of the animations managed by 
-     * the animated control, normally providing 2 types of data:
-     * <p>
-     * <b>Type of information</b>
-     * <ul>
-     * <li><b>range</b>: A range between 1 and 100%</li>
-     * <li><b>elapsedeTime</b>: Frame time lapse</li>
-     * </ul>
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
      * 
-     * @param range percentage range (0 - 100)
-     * @param elapsedeTime elapsed time per frame
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
      */
-    void onTime(float range, float elapsedeTime);
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException hrows
+     */
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        
+    }
 }

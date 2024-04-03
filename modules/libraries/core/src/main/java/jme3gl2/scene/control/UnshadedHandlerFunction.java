@@ -100,11 +100,13 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
         Mesh mesh;
         switch (control.getType()) {
             case Sprite:
+                reshape(geom.getMesh(), animation);
                 mat.setTexture("ColorMap", ((SpriteAnimation2D) animation).getTexture());
                 break;
             case Single:
                 mesh = geom.getMesh();
-                if (mesh instanceof Sprite) {            
+                if (mesh instanceof Sprite) {
+                    reshape(mesh, animation);
                     ((Sprite) mesh).showIndex(((SingleAnimation2D) animation).getIndex());
                 }
                 break;
@@ -116,6 +118,7 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
                 if (mesh instanceof Sprite) {
                     Sprite sprite = (Sprite) mesh;
                     
+                    reshape(mesh, animation);
                     sprite.applyCoords(rbad.getColumns(), rbad.getRows(), sprite.getTransform().getColPosition(), sprite.getTransform().getRowPosition());
                     sprite.showIndex(rbad.getFrame());
                 }
@@ -125,6 +128,24 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
                 break;
             default:
                 throw new AssertionError();
+        }
+    }
+    
+    /**
+     * If possible, change the mesh size.
+     * @param mesh mesh (Sprite)
+     * @param animation the animated control
+     */
+    protected void reshape(Mesh mesh, A animation) {
+        if ((animation instanceof AbstractAnimation2D<?>) && (mesh instanceof Sprite)) {
+            float sw = ((Sprite) mesh).getNativeWidth(), 
+                  sh = ((Sprite) mesh).getNativeHeight();
+            
+            Integer nw = ((AbstractAnimation2D<?>) animation).getWidth(), 
+                    nh = ((AbstractAnimation2D<?>) animation).getHeight();
+            if ((nw != null && sw != nw) && (nh != null && sh != nh)) {
+                ((Sprite) mesh).applySize(nw, nh);
+            }
         }
     }
 }

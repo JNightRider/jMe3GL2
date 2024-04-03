@@ -114,14 +114,14 @@ public abstract class AbstractAnimatedSprite2D<O extends Spatial, A extends Anim
                 
                 boolean b = old_index != animation2DIndex;
                 if (b) {
-                    fireAnimation2DChangeListener(false, animation2DIndex, old_index);
+                    fireAnimation2DChangeListener(false, animation2DIndex, 0, old_index);
                 }
                 
                 elapsedeTime = 0.0F;
                 handlerFunction.applyAnimation2DControl((O) spatial, getCurrentAnimation(animation2DIndex), (E)this);
                 
                 if (b) {
-                    fireAnimation2DChangeListener(true, animation2DIndex, animation2DIndex);
+                    fireAnimation2DChangeListener(true, animation2DIndex, 0, animation2DIndex);
                 }
             }
         }

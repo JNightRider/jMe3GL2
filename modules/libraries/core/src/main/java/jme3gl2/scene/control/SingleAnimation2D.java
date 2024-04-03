@@ -43,7 +43,7 @@ import java.io.IOException;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class SingleAnimation2D implements Animation2D, Savable {
+public class SingleAnimation2D extends AbstractAnimation2D<SingleAnimation2D> implements Animation2D, Savable {
     
     /** Animated frame index. */
     private int index;
@@ -52,6 +52,7 @@ public class SingleAnimation2D implements Animation2D, Savable {
      * Constructor for internal use only
      */
     protected SingleAnimation2D() {
+        this(-1);
     }
 
     /**
@@ -59,6 +60,17 @@ public class SingleAnimation2D implements Animation2D, Savable {
      * @param index int
      */
     public SingleAnimation2D(int index) {
+        this(index, null, null);
+    }
+    
+    /**
+     * Generate a <code>SingleAnimation2D</code> object and initialize its parameters.
+     * @param index int
+     * @param nw mesh width
+     * @param nh mesh height
+     */
+    public SingleAnimation2D(int index, Integer nw, Integer nh) {
+        super(nw, nh);
         this.index = index;
     }
 
@@ -79,6 +91,7 @@ public class SingleAnimation2D implements Animation2D, Savable {
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
+        super.write(ex);
         OutputCapsule out = ex.getCapsule(this);
         out.write(index, "Index", 0);
     }
@@ -92,6 +105,7 @@ public class SingleAnimation2D implements Animation2D, Savable {
      */
     @Override
     public void read(JmeImporter im) throws IOException {
+        super.read(im);
         InputCapsule in = im.getCapsule(this);
         index = in.readInt("Index", index);
     }

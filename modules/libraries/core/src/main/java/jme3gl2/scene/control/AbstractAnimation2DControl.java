@@ -37,6 +37,10 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 
+import jme3gl2.scene.control.event.AnimationChangeListener;
+import jme3gl2.scene.control.event.AnimationTimeChangeListener;
+import jme3gl2.scene.control.event.AnimationEvent;
+
 import java.io.IOException;
 
 import java.util.*;
@@ -313,14 +317,16 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
      * @param post <code>true</code> if after animation; otherwise <code>false</code> if before animation (change)
      * @param animIdx current animation index
      * @param idx current frame index
+     * @param frame current frame
      */
     @SuppressWarnings("unchecked")
-    protected final void fireAnimation2DChangeListener(boolean post, int animIdx, int idx) {
+    protected final void fireAnimation2DChangeListener(boolean post, int animIdx, int idx, int frame) {
         this.changeListeners.stream().filter(Objects::nonNull).forEachOrdered(listener -> {
+            AnimationEvent<O, A, E> event = new AnimationEvent<>((O) spatial, currentAnimation2D[animIdx], (E) AbstractAnimation2DControl.this, currentNameAnimation2D, idx, frame);
             if (post) {
-                listener.afterAnimation2DChange((O) spatial, currentAnimation2D[animIdx], (E) AbstractAnimation2DControl.this, idx);
+                listener.afterAnimation2DChange(event);
             } else {
-                listener.beforeAnimation2DChange((O) spatial, currentAnimation2D[animIdx], (E) AbstractAnimation2DControl.this, idx);
+                listener.beforeAnimation2DChange(event);
             }
         });
     }

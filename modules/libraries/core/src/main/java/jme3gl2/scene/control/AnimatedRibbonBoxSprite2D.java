@@ -54,7 +54,7 @@ import com.jme3.scene.Spatial;
  */
 public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatial, RibbonBoxAnimation2D, AnimatedRibbonBoxSprite2D> {
 
-    /** Index of current animation frame- */
+    /** Index of current animation frame. */
     private int index = 0;
     
     /**
@@ -132,7 +132,8 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
         if (currentAnimation2D != null) {
             fireAnimatedTimeChangeListener();
             
-            int old_index = animation2DIndex;
+            int old_index = animation2DIndex,
+                old_anim  = index;
             elapsedeTime += (tpf * animation2DSpeed);
             
             if (elapsedeTime >= animationFrameTime) {
@@ -160,9 +161,9 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
                     }
                 }
                 
-                boolean b = old_index != animation2DIndex;
+                boolean b = old_index != animation2DIndex || old_anim != index;
                 if (b) {
-                    fireAnimation2DChangeListener(false, index, old_index);
+                    fireAnimation2DChangeListener(false, index, old_anim, old_index);
                 }
                 
                 RibbonBoxAnimation2D animation2D = getCurrentAnimation(index);
@@ -171,12 +172,12 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
                 
                 handlerFunction.applyAnimation2DControl(spatial, animation2D, this);                
                 if (b) {
-                    fireAnimation2DChangeListener(true, index, animation2DIndex);
+                    fireAnimation2DChangeListener(true, index, index, animation2DIndex);
                 }
             }
         }
     }
-
+    
     /**
      * (non-Javadoc)
      * @see jme3gl2.scene.control.AbstractAnimation2DControl#getType() 

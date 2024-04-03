@@ -89,9 +89,9 @@ public class Animations2D extends SimpleApplication {
             getTextureFromClassPath(assetManager, "Textures/Rabbit/tile_0040.png"),
             getTextureFromClassPath(assetManager, "Textures/Rabbit/tile_0041.png")
         });
-        animatedSprite2D.playAnimation("walk", 10);
         
         player.addControl(animatedSprite2D);
+        animatedSprite2D.playAnimation("walk", 10);
         rootNode.attachChild(player);
         
         //----------------------------------------------------------------------
@@ -112,9 +112,9 @@ public class Animations2D extends SimpleApplication {
         AnimatedSingleSprite2D animatedSingleSprite2D = new AnimatedSingleSprite2D(true);
         animatedSingleSprite2D.addAnimation("idle", new int[] {51});
         animatedSingleSprite2D.addAnimation("fly", new int[] {51, 52});
-        animatedSingleSprite2D.playAnimation("fly", 8);
-        
+
         bee.addControl(animatedSingleSprite2D);
+        animatedSingleSprite2D.playAnimation("fly", 8);
         rootNode.attachChild(bee);
         
         // Must add a light to make the lit object visible!
@@ -159,9 +159,10 @@ public class Animations2D extends SimpleApplication {
             new RibbonBoxAnimation2D(getTextureFromClassPath(assetManager, "Textures/Rabbit/tile_0040.png"), new int[] {0}, 1, 1),
             new RibbonBoxAnimation2D(getTextureFromClassPath(assetManager, "Textures/Rabbit/tile_0041.png"), new int[] {0}, 1, 1)
         });        
-        animatedRibbonBoxSprite2D.playAnimation("start", 15);
         
         complex.addControl(animatedRibbonBoxSprite2D);
+        animatedRibbonBoxSprite2D.playAnimation("start", 15);
+        
         rootNode.attachChild(complex);
     }
 }

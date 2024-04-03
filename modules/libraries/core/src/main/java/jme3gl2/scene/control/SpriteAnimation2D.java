@@ -44,7 +44,7 @@ import java.io.IOException;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class SpriteAnimation2D implements Animation2D, Savable {
+public class SpriteAnimation2D extends AbstractAnimation2D<SpriteAnimation2D> implements Animation2D, Savable {
     
     /** A texture that acts as animation frames. */
     private Texture texture;
@@ -53,6 +53,7 @@ public class SpriteAnimation2D implements Animation2D, Savable {
      * Constructor for internal use only
      */
     protected SpriteAnimation2D() {
+        this(null);
     }
 
     /**
@@ -60,6 +61,17 @@ public class SpriteAnimation2D implements Animation2D, Savable {
      * @param texture object-teture
      */
     public SpriteAnimation2D(Texture texture) {
+        this(texture, null, null);
+    }
+    
+    /**
+     * Generate a <code>SpriteAnimation2D</code> object and initialize its parameters.
+     * @param texture object-teture
+     * @param nw mesh width
+     * @param nh mesh height
+     */
+    public SpriteAnimation2D(Texture texture, Integer nw, Integer nh) {
+        super(nw, nh);
         this.texture = texture;
     }
     
@@ -80,6 +92,7 @@ public class SpriteAnimation2D implements Animation2D, Savable {
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
+        super.write(ex);
         OutputCapsule out = ex.getCapsule(this);
         out.write(texture, "Texture", null);
     }
@@ -93,6 +106,7 @@ public class SpriteAnimation2D implements Animation2D, Savable {
      */
     @Override
     public void read(JmeImporter im) throws IOException {
+        super.read(im);
         InputCapsule in = im.getCapsule(this);
         texture = (Texture) in.readSavable("Texture", texture);
     }

@@ -44,7 +44,7 @@ import java.io.IOException;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class RibbonBoxAnimation2D implements Animation2D, Savable {
+public class RibbonBoxAnimation2D extends AbstractAnimation2D<RibbonBoxAnimation2D> implements Animation2D, Savable {
 
     /** Animated texture. */
     private Texture texture;
@@ -77,14 +77,30 @@ public class RibbonBoxAnimation2D implements Animation2D, Savable {
      * 
      * @param texture animated texture
      * @param frames frame set
-     * @param cols n-columns
-     * @param rows n-rows
+     * @param cs n-columns
+     * @param rs n-rows
      */
-    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cols, int rows) {
+    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs) {
+        this(texture, frames, cs, rs, null, null);
+    }
+    
+    /**
+     * Generates a new object of class <code>RibbonBoxAnimation2D</code> where the
+     * properties of the animated frame are prepared.
+     * 
+     * @param texture animated texture
+     * @param frames frame set
+     * @param cs n-columns
+     * @param rs n-rows
+     * @param nw mesh width
+     * @param nh mesh height
+     */
+    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs, Integer nw, Integer nh) {
+        super(nw, nh);
         this.texture = texture;
         this.frames  = frames;
-        this.cols = cols;
-        this.rows = rows;        
+        this.cols = cs;
+        this.rows = rs;
     }
 
     /**
@@ -147,6 +163,7 @@ public class RibbonBoxAnimation2D implements Animation2D, Savable {
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
+        super.write(ex);
         OutputCapsule out = ex.getCapsule(this);
         out.write(texture, "Texture", null);
         out.write(cols, "Cols", 0);
@@ -163,6 +180,7 @@ public class RibbonBoxAnimation2D implements Animation2D, Savable {
      */
     @Override
     public void read(JmeImporter im) throws IOException {
+        super.read(im);
         InputCapsule in = im.getCapsule(this);
         texture = (Texture) in.readSavable("Texture", texture);
         frames  = in.readIntArray("Frames", new int[0]);
