@@ -281,7 +281,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     protected void controlRender(RenderManager rm, ViewPort vp) { }
     
     /**
-     * Add a new {@link jme3gl2.scene.control.AnimationChangeListener} listener.
+     * Add a new {@link jme3gl2.scene.control.event.AnimationChangeListener} listener.
      * @param changeListener listener
      */
     public void addAnimationChangeListener(AnimationChangeListener<O, A, E> changeListener) {
@@ -289,7 +289,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     }
     
     /**
-     * Removes a previously registered listener of type {@link jme3gl2.scene.control.AnimationChangeListener}.
+     * Removes a previously registered listener of type {@link jme3gl2.scene.control.event.AnimationChangeListener}.
      * @param changeListener listener
      */
     public void removeAnimationChangeListener(AnimationChangeListener<O, A, E> changeListener) {
@@ -297,7 +297,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     }
     
     /**
-     * Add a new {@link jme3gl2.scene.control.AnimationTimeChangeListener} listener.
+     * Add a new {@link jme3gl2.scene.control.event.AnimationTimeChangeListener} listener.
      * @param timeChangeListener listener
      */
     public void addAnimationTimeChangeListener(AnimationTimeChangeListener<O, A, E> timeChangeListener) {
@@ -305,7 +305,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     }
     
     /**
-     * Removes a previously registered listener of type {@link jme3gl2.scene.control.AnimationTimeChangeListener}.
+     * Removes a previously registered listener of type {@link jme3gl2.scene.control.event.AnimationTimeChangeListener}.
      * @param timeChangeListener listener
      */
     public void removeAnimationTimeChangeListener(AnimationTimeChangeListener<O, A, E> timeChangeListener) {
@@ -313,7 +313,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     }
     
     /**
-     * Activate all {@link jme3gl2.scene.control.AnimationChangeListener} listeners.
+     * Activate all {@link jme3gl2.scene.control.event.AnimationChangeListener} listeners.
      * @param post <code>true</code> if after animation; otherwise <code>false</code> if before animation (change)
      * @param animIdx current animation index
      * @param idx current frame index
@@ -332,7 +332,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     }
     
     /**
-     * Activate all {@link jme3gl2.scene.control.AnimationTimeChangeListener} listeners
+     * Activate all {@link jme3gl2.scene.control.event.AnimationTimeChangeListener} listeners
      */
     protected final void fireAnimatedTimeChangeListener() {
         this.timeChangeListeners.stream().filter(Objects::nonNull).forEachOrdered(listener -> {
