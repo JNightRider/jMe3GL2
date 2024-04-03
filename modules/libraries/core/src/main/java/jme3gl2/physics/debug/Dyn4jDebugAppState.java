@@ -151,7 +151,6 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     @Override
     protected void onDisable() {
         if (viewPort != null) {
-            debugNode.detachAllChildren();
             debugNode.getControl(BoundsDebugControl.class).setEnabled(false);
             viewPort.detachScene(debugNode);
         }
