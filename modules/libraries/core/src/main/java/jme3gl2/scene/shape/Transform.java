@@ -54,7 +54,7 @@ public final class Transform implements Cloneable, Savable {
      *
      * @version 1.0.1
      */
-    static enum FlipType {
+    public static enum FlipType {
 
         /**
          * Flip horizontally, making the object face another direction
@@ -213,6 +213,14 @@ public final class Transform implements Cloneable, Savable {
         return texCoord;
     }
 
+    /**
+     * Returns the type of flip.
+     * @return type of flip
+     */
+    public FlipType getFlipType() {
+        return flipType;
+    }
+    
     /**
      * Returns the current scale.
      * @return A {@link com.jme3.math.Vector2f} object
