@@ -32,9 +32,6 @@
 package jme3gl2.physics.control;
 
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
-
 import jme3gl2.util.Converter;
 
 /**
@@ -51,17 +48,6 @@ public class RigidBody2D extends PhysicsBody2D {
      * Class constructor <code>RigidBody2D</code>.
      */
     public RigidBody2D() { }
-    
-    /**
-     * (non-Javadoc).
-     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
-     * @param tpf float
-     */
-    @Override
-    protected void controlUpdate(float tpf) {
-        applyPhysicsLocation(this);
-        applyPhysicsRotation(this);
-    }
 
     /**
      * Detects if this body contains more than one {@link org.dyn4j.collision.Fixture}.
@@ -98,16 +84,5 @@ public class RigidBody2D extends PhysicsBody2D {
         this.clearAccumulatedTorque();
         this.setAngularVelocity(0);
         this.setLinearVelocity(0, 0);
-    }
-    
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.physics.control.RigidBody2D#controlRender(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
-     * @param rm RenderManager
-     * @param vp ViewPort
-     */
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) { 
-        // do nothing
     }
 }

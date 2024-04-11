@@ -29,35 +29,36 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.control;
+package jme3gl2.plugins.asset;
+
+import com.jme3.asset.AssetKey;
+import com.jme3.asset.AssetProcessor;
+import com.jme3.asset.CloneableAssetProcessor;
+import com.jme3.asset.MaterialKey;
+import com.jme3.asset.cache.AssetCache;
+import com.jme3.asset.cache.SimpleAssetCache;
+import com.jme3.scene.Spatial;
 
 /**
- * The bodies <code>KinematicBody2D</code> are special types of bodies intended
- * to be controlled by the user.
- * <p>
- * They are not affected by physics at all; compared to other types of bodies,
- * such as a character or a rigid body, they are the same as a static body.
  *
  * @author wil
- * @version 1.5.5
- * @since 1.2.0
+ * @param <T>
  */
-public class KinematicBody2D extends PhysicsBody2D {
+public class J2OKey<T extends Object> extends AssetKey<T> {
 
-    /**
-     * Class constructor <code>KinematicBody2D</code>.
-     */
-    public KinematicBody2D() {
+    public J2OKey(String name) {
+        super(name);
+    }
+
+    @Override
+    public Class<? extends AssetProcessor> getProcessorType() {
+        return CloneableAssetProcessor.class;
+    }
+
+    @Override
+    public Class<? extends AssetCache> getCacheType() {
+        return SimpleAssetCache.class;
     }
     
-    /*
-     * (non-Javadoc).
-     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
-     */
-    @Override
-    protected void controlUpdate(float tpf) {
-        this.setGravityScale(0);        
-        this.setAtRest(true);        
-        super.controlUpdate(tpf);
-    }
+    
 }

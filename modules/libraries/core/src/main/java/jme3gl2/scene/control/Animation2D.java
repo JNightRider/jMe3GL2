@@ -31,7 +31,7 @@
  */
 package jme3gl2.scene.control;
 
-import jme3gl2.util.NULL;
+import jme3gl2.util.Serializable;
 
 /**
  * Frame interface for animations that use animated controls when applying an 
@@ -41,5 +41,5 @@ import jme3gl2.util.NULL;
  * @version 1.0.0
  * @since 3.0.0
  */
-public interface Animation2D extends NULL {    
+public interface Animation2D extends Serializable {    
 }

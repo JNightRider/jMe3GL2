@@ -32,7 +32,7 @@
 package jme3gl2.scene.control;
 
 import com.jme3.scene.Spatial;
-import jme3gl2.util.NULL;
+import jme3gl2.util.Serializable;
 
 /**
  * An <code>AnimatedMaterialsHandlerFunction</code> interface is responsible for 
@@ -51,7 +51,7 @@ import jme3gl2.util.NULL;
  * @param <A> the type of animation
  * @param <E> the type of animated control
  */
-public interface AnimatedMaterialsHandlerFunction<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> extends NULL {
+public interface AnimatedMaterialsHandlerFunction<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> extends Serializable {
     
     /**
      * Method responsible for applying animation to the 2D model.

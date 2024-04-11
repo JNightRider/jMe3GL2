@@ -29,37 +29,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.plugins;
+package jme3gl2.physics.control;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import com.jme3.scene.Spatial;
-import java.io.IOException;
-import static jme3gl2.plugins.Debugger.*;
+import jme3gl2.util.Serializable;
 
 /**
- *
+ * @param <E>
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class SpriteLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2o".equals(key.getExtension())  || "J2O".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Spatial) {
-                return obj;
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        apiGLLog("Extension " + key.getExtension() + " is not supported");
-        return null;
-    }
+public interface OneWayContactDisabler<E extends PhysicsBody2D> extends Serializable {
+    
+    boolean isDeactivatable(E body);
 }

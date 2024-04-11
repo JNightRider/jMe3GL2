@@ -29,35 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.control;
 
 /**
- * The bodies <code>KinematicBody2D</code> are special types of bodies intended
- * to be controlled by the user.
- * <p>
- * They are not affected by physics at all; compared to other types of bodies,
- * such as a character or a rigid body, they are the same as a static body.
- *
- * @author wil
- * @version 1.5.5
- * @since 1.2.0
+ * 
  */
-public class KinematicBody2D extends PhysicsBody2D {
-
-    /**
-     * Class constructor <code>KinematicBody2D</code>.
-     */
-    public KinematicBody2D() {
-    }
-    
-    /*
-     * (non-Javadoc).
-     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
-     */
-    @Override
-    protected void controlUpdate(float tpf) {
-        this.setGravityScale(0);        
-        this.setAtRest(true);        
-        super.controlUpdate(tpf);
-    }
-}
+package jme3gl2.plugins.asset;

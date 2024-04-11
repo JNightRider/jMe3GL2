@@ -35,6 +35,7 @@ import java.util.Iterator;
 
 import jme3gl2.physics.control.PhysicsBody2D;
 import jme3gl2.physics.control.PhysicsControl;
+import jme3gl2.physics.joint.PhysicsJoint;
 
 import org.dyn4j.collision.Bounds;
 import org.dyn4j.dynamics.Settings;
@@ -125,6 +126,15 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
         }
         super.addJoint(joint);
     }
+    
+    /**
+     * (non-Javadoc)
+     * @see jme3gl2.physics.PhysicsSpace#addJoint(org.dyn4j.dynamics.joint.Joint) 
+     * @param joint joint
+     */
+    public void addJoint(final PhysicsJoint<E, ? extends Joint<E>> joint) {
+        this.addJoint(joint.getJoint());
+    }
 
     /**
      * (non-Javadoc)
@@ -146,6 +156,16 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
             }
         }
         return b;
+    }
+    
+    /**
+     * (non-Javadoc)
+     * @see jme3gl2.physics.PhysicsSpace#removeJoint(org.dyn4j.dynamics.joint.Joint) 
+     * @param joint joint
+     * @return boolean
+     */
+    public boolean removeJoint(final PhysicsJoint<E, ? extends Joint<E>> joint) {
+        return this.removeJoint(joint.getJoint());
     }
     
     /**

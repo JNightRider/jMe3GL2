@@ -178,7 +178,7 @@ public final class Transform implements Cloneable, Savable {
         float colPosition = position.x,
               rowPosition = position.y;
         
-        float uvSpacing = 0.001F;        
+        float uvSpacing = FastMath.FLT_EPSILON;/*0.001F*/   
         float colSize = 1.0F / columns;
         float rowSize = 1.0F / rows;
         

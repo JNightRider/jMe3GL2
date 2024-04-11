@@ -29,35 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.physics.control;
+package jme3gl2.util;
+
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.Savable;
+import java.io.IOException;
 
 /**
- * The bodies <code>KinematicBody2D</code> are special types of bodies intended
- * to be controlled by the user.
- * <p>
- * They are not affected by physics at all; compared to other types of bodies,
- * such as a character or a rigid body, they are the same as a static body.
- *
+ * A class <code>Savable</code> that represents a null value.
  * @author wil
- * @version 1.5.5
- * @since 1.2.0
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class KinematicBody2D extends PhysicsBody2D {
+public interface Serializable extends Savable {
 
     /**
-     * Class constructor <code>KinematicBody2D</code>.
-     */
-    public KinematicBody2D() {
-    }
-    
-    /*
-     * (non-Javadoc).
-     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
+     * 
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
      */
     @Override
-    protected void controlUpdate(float tpf) {
-        this.setGravityScale(0);        
-        this.setAtRest(true);        
-        super.controlUpdate(tpf);
-    }
+    public default void write(JmeExporter ex) throws IOException { }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException throws
+     */
+    @Override
+    public default void read(JmeImporter im) throws IOException { }    
 }

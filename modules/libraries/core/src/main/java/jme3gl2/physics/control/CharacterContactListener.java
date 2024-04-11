@@ -31,33 +31,22 @@
  */
 package jme3gl2.physics.control;
 
-/**
- * The bodies <code>KinematicBody2D</code> are special types of bodies intended
- * to be controlled by the user.
- * <p>
- * They are not affected by physics at all; compared to other types of bodies,
- * such as a character or a rigid body, they are the same as a static body.
- *
- * @author wil
- * @version 1.5.5
- * @since 1.2.0
- */
-public class KinematicBody2D extends PhysicsBody2D {
+import jme3gl2.util.Serializable;
+import org.dyn4j.dynamics.contact.ContactConstraint;
 
-    /**
-     * Class constructor <code>KinematicBody2D</code>.
-     */
-    public KinematicBody2D() {
-    }
+/**
+ *
+ * @param <A>
+ * @param <B>
+ * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
+ */
+public interface CharacterContactListener<A extends CharacterBody2D, B extends PhysicsBody2D> extends Serializable {
     
-    /*
-     * (non-Javadoc).
-     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
-     */
-    @Override
-    protected void controlUpdate(float tpf) {
-        this.setGravityScale(0);        
-        this.setAtRest(true);        
-        super.controlUpdate(tpf);
-    }
+    boolean trackIsOnGround(A character, B platform, ContactConstraint<B> contactConstraint);
+    
+    boolean trackIsOnCeiling(A character, B platform, ContactConstraint<B> contactConstraint);
+    
+    boolean trackIsOnWall(A character, B platform, ContactConstraint<B> contactConstraint);
 }

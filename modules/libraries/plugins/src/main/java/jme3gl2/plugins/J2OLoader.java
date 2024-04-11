@@ -29,38 +29,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jme3gl2.util;
+package jme3gl2.plugins;
 
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
+import com.jme3.asset.AssetInfo;
+import com.jme3.asset.AssetKey;
+import com.jme3.asset.AssetLoader;
 import com.jme3.export.Savable;
+import com.jme3.export.binary.BinaryImporter;
 import java.io.IOException;
+import static jme3gl2.plugins.Debugger.*;
 
 /**
- * A class <code>Savable</code> that represents a null value.
+ *
  * @author wil
- * @version 1.0.0
- * @since 3.0.0
  */
-public interface NULL extends Savable {
+public class J2OLoader implements AssetLoader {
 
-    /**
-     * (non-Javadoc)
-     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
-     * 
-     * @param ex {@link com.jme3.export.JmeExporter}
-     * @throws IOException throws
-     */
     @Override
-    public default void write(JmeExporter ex) throws IOException { }
-
-    /**
-     * (non-Javadoc)
-     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
-     * 
-     * @param im {@link com.jme3.export.JmeImporter}
-     * @throws IOException throws
-     */
-    @Override
-    public default void read(JmeImporter im) throws IOException { }    
+    public Object load(AssetInfo assetInfo) throws IOException {
+        AssetKey<?> key = assetInfo.getKey();
+        if ("j2o".equals(key.getExtension())  || "J2O".equals(key.getExtension())) {
+            BinaryImporter importer = BinaryImporter.getInstance();
+            importer.setAssetManager(assetInfo.getManager());
+            
+            Savable obj = importer.load(assetInfo.openStream());
+            return obj;
+        }
+        apiGLLog("Extension " + key.getExtension() + " is not supported");
+        return null;
+    }
 }

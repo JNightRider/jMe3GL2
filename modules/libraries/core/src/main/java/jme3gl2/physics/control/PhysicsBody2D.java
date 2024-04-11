@@ -79,6 +79,16 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      * physical body from a 2D model.
      */
     public PhysicsBody2D() { }
+
+    /**
+     * Release this physical body from the scene as well as from the physical
+     * space.
+     */
+    public void queueFree() {
+        if (spatial.removeFromParent()) {
+            physicsSpace.removeBody(this);
+        }
+    }
     
     /**
      * (non-Javadoc)
@@ -87,6 +97,9 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      */
     @Override
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
+        if (this.physicsSpace != null && physicsSpace != null && this.physicsSpace != physicsSpace) {
+            throw new IllegalStateException("This body has already been added to a physical space.");
+        }
         this.physicsSpace = physicsSpace;
     }
 
@@ -120,7 +133,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
     @Override
     public void setSpatial(Spatial spatial) {
         if (this.spatial != null && spatial != null && spatial != this.spatial) {
-            throw new IllegalStateException("This control has already been added to a Spatial");
+            throw new IllegalStateException("This control has already been added to a Spatial.");
         }
         this.spatial = spatial;
         
@@ -179,14 +192,17 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      * To be implemented in subclass.
      * @param tpf time per frame (in seconds)
      */
-    protected abstract void controlUpdate(float tpf);
+    protected void controlUpdate(float tpf) {
+        applyPhysicsLocation(this);
+        applyPhysicsRotation(this);
+    }
 
     /**
      * To be implemented in subclass.
      * @param rm the RenderManager rendering the controlled Spatial (not null)
      * @param vp the ViewPort being rendered (not null)
      */
-    protected abstract void controlRender(RenderManager rm, ViewPort vp);
+    protected void controlRender(RenderManager rm, ViewPort vp) {}
     
     /**
      * (non-Javadoc)
