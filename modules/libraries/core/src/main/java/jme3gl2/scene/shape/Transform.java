@@ -104,28 +104,28 @@ public final class Transform implements Cloneable, Savable {
      * Creates an instance of a new <code>Transform</code> object. Set the 
      * dimensions of the mesh vertices.
      * 
-     * @param width the desired width
-     * @param height the desired height
+     * @param nw the desired width
+     * @param nh the desired height
      */
-    public Transform(float width, float height) {
-        this(width, height, 1, 1, 0, 0);
+    public Transform(float nw, float nh) {
+        this(nw, nh, 1, 1, 0, 0);
     }
     
     /**
      * Creates an instance of a new <code>Transform</code> object. Set default 
      * values ​​for the transformation.
      * 
-     * @param width the desired width
-     * @param height the desired height
-     * @param columns mesh columns (used to determine position)
-     * @param rows mesh rows (used to determine position)
-     * @param col_position column position to use (rendering)
-     * @param row_position row position to use (rendering)
+     * @param nw the desired width
+     * @param nh the desired height
+     * @param nc mesh columns (used to determine position)
+     * @param nr mesh rows (used to determine position)
+     * @param ncp column position to use (rendering)
+     * @param nrp row position to use (rendering)
      */
-    public Transform(float width, float height, int columns, int rows, int col_position, int row_position) {
-        this.size.set(width, height);                
-        this.columnsAndRows.set(columns, rows);
-        this.position.set(col_position, row_position);
+    public Transform(float nw, float nh, int nc, int nr, int ncp, int nrp) {
+        this.size.set(nw, nh);                
+        this.columnsAndRows.set(nc, nr);
+        this.position.set(ncp, nrp);
     }
     
     /**

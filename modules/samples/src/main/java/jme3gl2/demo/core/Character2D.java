@@ -32,7 +32,7 @@
 package jme3gl2.demo.core;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.asset.AssetKey;
+import com.jme3.input.KeyInput;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
@@ -44,12 +44,16 @@ import jme3gl2.physics.control.PhysicsBody2D;
 import jme3gl2.physics.control.RigidBody2D;
 import jme3gl2.plugins.J2OLoader;
 import jme3gl2.plugins.asset.J2OKey;
+import jme3gl2.plugins.input.BooleanStateKeyboardInputHandler;
+import jme3gl2.plugins.input.InputHandlerAppState;
+import jme3gl2.plugins.input.Key;
 import jme3gl2.renderer.Camera2DRenderer;
 import jme3gl2.scene.control.AnimatedSprite2D;
 import jme3gl2.scene.shape.Sprite;
 import static jme3gl2.utilities.GeometryUtilities.*;
 import static jme3gl2.utilities.MaterialUtilities.*;
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector2;
 
 /**
  *
@@ -63,7 +67,60 @@ public class Character2D extends SimpleApplication {
         Character2D app = new Character2D();
         app.start();
     }
+    
+    private static final BooleanStateKeyboardInputHandler VK_LEFT = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_A, "left"));
+    private static final BooleanStateKeyboardInputHandler VK_RIGHT = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_D, "right"));
 
+    private static class Player extends CharacterBody2D {
+        
+        private Vector2 velocity = new Vector2(0, 0);
+        private final double speed = 2;
+
+        private boolean doubleJump = true;
+        private boolean previouslyFloored = false;
+        private boolean previouslyDestroyed = false;
+
+        public Player() { }
+        
+        @Override
+        protected void ready() {
+            
+        }
+        
+        @Override
+        protected void physicsProcess(float delta) {
+            applyControls();
+
+            if (velocity.getMagnitude() > 0) {
+                velocity = velocity.getNormalized().multiply(speed);
+            }
+
+            Vector2 position = getTransform().getTranslation();
+            position = position.add(velocity.multiply(delta));
+
+            getTransform().setRotation(0);
+            getTransform().setTranslation(position);
+            setAtRest(false);
+            
+            System.out.println("floot() " + isOnGround());
+            System.out.println("celling() " + isOnCeiling());
+            System.out.println("wall() " + isOnWall() + "\n");
+        }
+        
+        private void applyControls() {
+            velocity = new Vector2(0.0, 0.0);
+            Sprite sprite = (Sprite) ((Geometry) spatial).getMesh();
+
+            if (VK_LEFT.isActive()) {
+                velocity.x -= 1;
+                sprite.flipH(true);
+            } else if (VK_RIGHT.isActive()) {
+                velocity.x += 1;
+                sprite.flipH(false);
+            }
+        }
+    }
+    
     @Override
     public void simpleInitApp() {
         assetManager.registerLoader(J2OLoader.class, "J2O", "j2o");
@@ -74,6 +131,12 @@ public class Character2D extends SimpleApplication {
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.PARALLEL);
         dyn4jAppState.setDebugEnabled(true);        
         stateManager.attach(dyn4jAppState);
+        
+        InputHandlerAppState inputHandlerAppState = new InputHandlerAppState();
+        stateManager.attach(inputHandlerAppState);
+        
+        inputHandlerAppState.addInputHandler(VK_LEFT).install();
+        inputHandlerAppState.addInputHandler(VK_RIGHT).install();
         
         prepareSimpleTerrain();
         prepareCharacter();
@@ -87,15 +150,10 @@ public class Character2D extends SimpleApplication {
         player.getControl(AnimatedSprite2D.class).playAnimation("walk", 10);
         rootNode.attachChild(player);
         
-        CharacterBody2D body2D = new CharacterBody2D() {
-            @Override
-            protected void physicsProcess(float delta) {
-                System.out.println("onGround() " + isOnGround());
-            }
-        };
+        Player body2D = new Player();
         body2D.addFixture(createCapsule(0.8, 1));
         body2D.setMass(MassType.NORMAL);
-        body2D.translate(0, 13);
+        body2D.translate(0, 1);
         player.addControl(body2D);
         
         dyn4jAppState.getPhysicsSpace().addBody(body2D);
@@ -109,17 +167,60 @@ public class Character2D extends SimpleApplication {
     private void prepareSimpleTerrain() {        
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
         
-        Geometry ground = new Geometry("Ground", new Sprite(5, 1));
+        Geometry ground = new Geometry("Ground", new Sprite(10, 1));
         ground.setMaterial(getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.DarkGray));
         ground.setQueueBucket(RenderQueue.Bucket.Transparent);
         
         RigidBody2D body2DGround = new RigidBody2D();
-        body2DGround.addFixture(createRectangle(5, 1));
+        body2DGround.addFixture(createRectangle(10, 1));
         body2DGround.setMass(MassType.INFINITE);
         body2DGround.translate(0, -2);
         ground.addControl(body2DGround);
         
         dyn4jAppState.getPhysicsSpace().addBody(body2DGround);
         rootNode.attachChild(ground);
+        
+        
+        ground = new Geometry("Ground", new Sprite(5, 1));
+        ground.setMaterial(getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.randomColor()));
+        ground.setQueueBucket(RenderQueue.Bucket.Transparent);
+        
+        body2DGround = new RigidBody2D();
+        body2DGround.addFixture(createRectangle(5, 1));
+        body2DGround.setMass(MassType.INFINITE);
+        body2DGround.translate(0, 3);
+        ground.addControl(body2DGround);
+        
+        dyn4jAppState.getPhysicsSpace().addBody(body2DGround);
+        rootNode.attachChild(ground);
+        
+        
+        ground = new Geometry("Ground", new Sprite(1, 1));
+        ground.setMaterial(getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.randomColor()));
+        ground.setQueueBucket(RenderQueue.Bucket.Transparent);
+        
+        body2DGround = new RigidBody2D();
+        body2DGround.addFixture(createRectangle(1, 1));
+        body2DGround.setMass(MassType.INFINITE);
+        body2DGround.setUserData(CharacterBody2D.Type.ONE_WAY_PLATFORM);
+        body2DGround.translate(-2, -1);
+        ground.addControl(body2DGround);
+        
+        dyn4jAppState.getPhysicsSpace().addBody(body2DGround);
+        rootNode.attachChild(ground);
+        
+        ground = new Geometry("Ground", new Sprite(1, 2));
+        ground.setMaterial(getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.randomColor()));
+        ground.setQueueBucket(RenderQueue.Bucket.Transparent);
+        
+        body2DGround = new RigidBody2D();
+        body2DGround.addFixture(createRectangle(1, 2));
+        body2DGround.setMass(MassType.INFINITE);
+        body2DGround.translate(-3, -0.5);
+        ground.addControl(body2DGround);
+        
+        dyn4jAppState.getPhysicsSpace().addBody(body2DGround);
+        rootNode.attachChild(ground);
+        
     }
 }

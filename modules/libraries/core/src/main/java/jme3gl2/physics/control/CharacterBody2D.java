@@ -31,6 +31,7 @@
  */
 package jme3gl2.physics.control;
 
+import com.jme3.scene.Spatial;
 import java.util.List;
 import java.util.logging.Logger;
 import jme3gl2.physics.PhysicsSpace;
@@ -54,6 +55,15 @@ import org.dyn4j.world.listener.StepListenerAdapter;
 public class CharacterBody2D extends PhysicsBody2D {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(CharacterBody2D.class.getName());
+    
+    public static final String VK_USER_DATA = "CharacterBody2D#UserData";
+    
+    public static enum Type {
+        CHARACTER,
+        FLOOR,
+        ONE_WAY_PLATFORM;
+    }
+    
     /** Acceptable error for contact detection. */
     private static final double ERROR = 0.01;
     
@@ -149,7 +159,10 @@ public class CharacterBody2D extends PhysicsBody2D {
         this.downHandler           = new BooleanHandler();
         if (oneWayContactDisabler == null) {
             this.oneWayContactDisabler = (PhysicsBody2D body) -> {
-                return true;
+                if (is(body, Type.ONE_WAY_PLATFORM)) {
+                    return true;
+                }
+                return false;
             };
         } else {
             this.oneWayContactDisabler = oneWayContactDisabler;
@@ -194,14 +207,26 @@ public class CharacterBody2D extends PhysicsBody2D {
                 @Override
                 public boolean trackIsOnWall(CharacterBody2D character, PhysicsBody2D platform, ContactConstraint<PhysicsBody2D> contactConstraint) {
                     AABB wAABB = character.createAABB();
-                    AABB pAABB = platform.createAABB();                    
-                    return Double.compare(Math.abs(pAABB.getMinY() - wAABB.getMaxY()), ERROR) > 0 && 
-                           Double.compare(Math.abs(wAABB.getMinY() - pAABB.getMaxY()), ERROR) > 0;
+                    AABB pAABB = platform.createAABB();
+                    
+                    if ((Double.compare(Math.abs(wAABB.getMinY() - pAABB.getMaxY()), ERROR) < 0) || 
+                        (Double.compare(Math.abs(pAABB.getMinY() - wAABB.getMaxY()), ERROR) < 0)) {
+                        return false;
+                    }
+                    return true;
                 }
             };
         } else {
             this.characterContactListener = characterContactListener;
         }
+    }
+
+    public void setCharacterContactListener(CharacterContactListener<CharacterBody2D, PhysicsBody2D> characterContactListener) {
+        this.characterContactListener = characterContactListener;
+    }
+
+    public void setOneWayContactDisabler(OneWayContactDisabler<PhysicsBody2D> oneWayContactDisabler) {
+        this.oneWayContactDisabler = oneWayContactDisabler;
     }
 
     @Override
@@ -220,12 +245,31 @@ public class CharacterBody2D extends PhysicsBody2D {
         this.physicsSpace = physicsSpace;
     }
     
+    public Type getBodyType() {
+        return Type.CHARACTER;
+    }
+
     public void applyDown() {
         downHandler.activate();
     }
     
-    protected boolean is(PhysicsBody2D body) {
-        return (body instanceof CharacterBody2D);
+    protected boolean is(PhysicsBody2D body, Type... types) {
+        if (!(body.getUserData() instanceof Type) && (body.getJmeObject() != null && !(body.getJmeObject().getUserData(VK_USER_DATA) instanceof Type)) || (types.length == 0)) {
+            return (body instanceof CharacterBody2D);
+        }
+        for (final Type type : types) {
+            if (body.getUserData() != null && body.getUserData() == type) {
+                return true;
+            } else {
+                Spatial sp = body.getJmeObject();
+                if (sp != null && sp.getUserData(VK_USER_DATA) != null) {
+                    if (sp.getUserData(VK_USER_DATA) == type) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     /**
@@ -296,7 +340,7 @@ public class CharacterBody2D extends PhysicsBody2D {
             onWall    = characterContactListener.trackIsOnWall((CharacterBody2D) b2, b1, contactConstraint);
         }
     }
-
+    
     public boolean isOnGround() {
         return onGround;
     }
