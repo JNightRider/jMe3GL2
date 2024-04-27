@@ -49,7 +49,14 @@ import org.dyn4j.world.listener.StepListener;
 import org.dyn4j.world.listener.StepListenerAdapter;
 
 /**
- *
+ * Class <code>CharacterBody2D</code> in charge of managing the control of 2D 
+ * characters where methods are provided to use to manage the different 
+ * flags (floor, ceiling and wall).
+ * <p>
+ * If this object comes into contact (collision) with another object (<code>CharacterBody2D</code>) 
+ * of the same type, the flags will not activate (it would not make sense for 
+ * 2 characters to activate the flags).
+ * 
  * @author wil
  * @version 2.0.0
  * @since 1.0.0
@@ -200,7 +207,7 @@ public class CharacterBody2D extends PhysicsBody2D {
                         AABB pAABB = platform.createAABB();
 
                         if (Double.compare(Math.abs(pAABB.getMinY() - wAABB.getMaxY()), ERROR) < 0) {
-                            onCeiling = true;
+                            return true;
                         }
                     }
                     return false;

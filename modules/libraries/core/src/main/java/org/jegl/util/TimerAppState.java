@@ -120,6 +120,18 @@ public final class TimerAppState extends AbstractAppState {
      * @return <code>true</code> if the changes have been applied, otherwise <code>false</code>
      */
     public boolean setState(String name, State state) {
+        return setState(name, state, true);
+    }
+    
+    /**
+     * Method in charge of setting a timer to a specific {@link org.jegl.util.Timer}.
+     * @param name timer codename
+     * @param state status that it will take
+     * @param force <code>true</code> if you need to force the action; otherwise 
+     *              <code>false</code> if you want to apply the action only once (controlled).
+     * @return <code>true</code> if the changes have been applied, otherwise <code>false</code>
+     */
+    public boolean setState(String name, State state, boolean force) {
         EntryTimer entryTimer = this.timerMap.get(name);
         if ( entryTimer == null ) {
             LOG.log(Level.WARNING, "[ {0} ] Nonexistent timer.", name);
@@ -129,16 +141,40 @@ public final class TimerAppState extends AbstractAppState {
         Timer timer = entryTimer.getTimer();
         switch (state) {
             case Pause:
-                timer.pause(true);
+                if (force) {
+                    timer.pause(true);
+                } else {
+                    if (!timer.isPaused()) {
+                        timer.pause(true);
+                    }
+                }
                 break;
             case Resume:
-                timer.pause(false);
+                if (force) {
+                    timer.pause(false);
+                } else {
+                    if (timer.isPaused()) {
+                        timer.pause(false);
+                    }
+                }
                 break;
             case Start:
-                timer.start();
+                if (force) {
+                    timer.start();
+                } else {
+                    if (!timer.isRun()) {
+                        timer.start();
+                    }
+                }
                 break;
             case Stop:
-                timer.stop();
+                if (force) {
+                    timer.stop();
+                } else {
+                    if (timer.isRun()) {
+                        timer.stop();
+                    }
+                }
                 break;
             default:
                 throw new AssertionError();

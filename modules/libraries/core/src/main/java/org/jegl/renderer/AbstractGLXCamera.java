@@ -34,7 +34,6 @@ package org.jegl.renderer;
 import com.jme3.renderer.Camera;
 import com.jme3.util.SafeArrayList;
 import org.jegl.renderer.effect.GLXEffect;
-import org.ietf.jgss.GSSContext;
 
 /**
  * Abstract class that implements the {@link org.jegl.renderer.GLXCamera} interface.

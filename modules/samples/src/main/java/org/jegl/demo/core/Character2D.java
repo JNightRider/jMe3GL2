@@ -70,7 +70,8 @@ public class Character2D extends SimpleApplication {
     
     private static final BooleanStateKeyboardInputHandler VK_LEFT = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_A, "left"));
     private static final BooleanStateKeyboardInputHandler VK_RIGHT = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_D, "right"));
-
+    private static final BooleanStateKeyboardInputHandler VK_JUMP = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_SPACE, "jump"));
+    
     private static class Player extends CharacterBody2D {
         
         private Vector2 velocity = new Vector2(0, 0);
@@ -118,6 +119,12 @@ public class Character2D extends SimpleApplication {
                 velocity.x += 1;
                 sprite.flipH(false);
             }
+            
+            if (VK_JUMP.isActiveButNotHandled()) {
+                VK_JUMP.setHasBeenHandled(true);
+                
+                applyImpulse(new Vector2(0, 4));
+            }
         }
     }
     
@@ -137,6 +144,7 @@ public class Character2D extends SimpleApplication {
         
         inputHandlerAppState.addInputHandler(VK_LEFT).install();
         inputHandlerAppState.addInputHandler(VK_RIGHT).install();
+        inputHandlerAppState.addInputHandler(VK_JUMP).install();
         
         prepareSimpleTerrain();
         prepareCharacter();
@@ -202,7 +210,6 @@ public class Character2D extends SimpleApplication {
         body2DGround = new RigidBody2D();
         body2DGround.addFixture(createRectangle(1, 1));
         body2DGround.setMass(MassType.INFINITE);
-        body2DGround.setUserData(CharacterBody2D.Type.ONE_WAY_PLATFORM);
         body2DGround.translate(-2, -1);
         ground.addControl(body2DGround);
         
