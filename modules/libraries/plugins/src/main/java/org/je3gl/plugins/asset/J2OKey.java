@@ -29,8 +29,34 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.je3gl.plugins.asset;
+
+import com.jme3.asset.AssetKey;
+import com.jme3.asset.AssetProcessor;
+import com.jme3.asset.CloneableAssetProcessor;
+import com.jme3.asset.cache.AssetCache;
+import com.jme3.asset.cache.SimpleAssetCache;
 
 /**
- * 
+ *
+ * @author wil
+ * @param <T>
  */
-package org.jegl.plugins;
+public class J2OKey<T extends Object> extends AssetKey<T> {
+
+    public J2OKey(String name) {
+        super(name);
+    }
+
+    @Override
+    public Class<? extends AssetProcessor> getProcessorType() {
+        return CloneableAssetProcessor.class;
+    }
+
+    @Override
+    public Class<? extends AssetCache> getCacheType() {
+        return SimpleAssetCache.class;
+    }
+    
+    
+}

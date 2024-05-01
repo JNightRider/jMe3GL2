@@ -68,15 +68,19 @@ public class Vehicle2D extends PhysicsBody2D {
     }
 
     public Vehicle2D(PhysicsBody2D rearWheel, PhysicsBody2D frontWheel) {
-        this(rearWheel, frontWheel, new Vector2(-25.0, -3.0), new Vector2(0.0, -1.0));
+        this(rearWheel, frontWheel, rearWheel.getWorldCenter(), frontWheel.getWorldCenter(), new Vector2(0.0, -1.0));
     }
     
     public Vehicle2D(PhysicsBody2D rearWheel, PhysicsBody2D frontWheel, Vector2 anchor, Vector2 axis) {
+        this(rearWheel, frontWheel, anchor, anchor, axis);
+    }
+    
+    public Vehicle2D(PhysicsBody2D rearWheel, PhysicsBody2D frontWheel, Vector2 anchorRearWheel, Vector2 anchorRrontWheel, Vector2 axis) {
         this.rearWheel  = rearWheel;   // Rear Wheel
         this.frontWheel = frontWheel;  // Front Wheel
         
         // Rear Motor
-        WheelJoint<PhysicsBody2D> rearWheelJoint = new WheelJoint<>(this, rearWheel, anchor.copy(), axis.copy());
+        WheelJoint<PhysicsBody2D> rearWheelJoint = new WheelJoint<>(this, rearWheel, anchorRearWheel.copy(), axis.copy());
         rearWheelJoint.setMotorEnabled(true);
         rearWheelJoint.setMotorSpeed(0.0);
         rearWheelJoint.setMaximumMotorTorqueEnabled(true);
@@ -84,7 +88,7 @@ public class Vehicle2D extends PhysicsBody2D {
         rearWheelPhysicsJoint = new PhysicsJoint<>(rearWheelJoint);
 
         // Front Motor
-        WheelJoint<PhysicsBody2D> frontWheelJoint = new WheelJoint<>(this, frontWheel, anchor.copy(), axis.copy());
+        WheelJoint<PhysicsBody2D> frontWheelJoint = new WheelJoint<>(this, frontWheel, anchorRrontWheel.copy(), axis.copy());
         frontWheelJoint.setMotorEnabled(true);
         frontWheelJoint.setMotorSpeed(0.0);
         frontWheelJoint.setMaximumMotorTorqueEnabled(true);

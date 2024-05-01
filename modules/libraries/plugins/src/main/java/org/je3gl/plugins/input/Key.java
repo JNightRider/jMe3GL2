@@ -29,33 +29,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.plugins.input;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import static org.jegl.plugins.Debugger.*;
+import com.jme3.input.controls.KeyTrigger;
 
 /**
- *
+ * An object of class <code>Key</code> resents a key code.
+ * 
  * @author wil
+ * @version 1.0.1
+ * @since 2.0.0
  */
-public class J2OLoader implements AssetLoader {
+public class Key extends KeyTrigger {
+    
+    /** Key name of the input. */
+    private final String keyName;
+    
+    /**
+     * Instantiate a new object of the class <code>Key</code>.
+     * @param keyCode input code
+     * @param keyName input name
+     */
+    public Key(int keyCode, String keyName) {
+        super(keyCode);
+        this.keyName = keyName;
+    }
 
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2o".equals(key.getExtension())  || "J2O".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            return obj;
-        }
-        apiGLLog("Extension " + key.getExtension() + " is not supported");
-        return null;
+    /**
+     * Method in charge of returning the name of this key.
+     * @return key name
+     */
+    public String getKeyName() {
+        return keyName;
     }
 }

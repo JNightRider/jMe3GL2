@@ -29,37 +29,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins.input;
-
-import com.jme3.input.controls.KeyTrigger;
+package org.je3gl.plugins.input;
 
 /**
- * An object of class <code>Key</code> resents a key code.
+ * Class enumerate <code>InputHandlerType</code> in charge of defining the type
+ * of input that will manage this template.
  * 
  * @author wil
  * @version 1.0.1
  * @since 2.0.0
  */
-public class Key extends KeyTrigger {
-    
-    /** Key name of the input. */
-    private final String keyName;
-    
-    /**
-     * Instantiate a new object of the class <code>Key</code>.
-     * @param keyCode input code
-     * @param keyName input name
-     */
-    public Key(int keyCode, String keyName) {
-        super(keyCode);
-        this.keyName = keyName;
-    }
+public enum InputHandlerType {
 
     /**
-     * Method in charge of returning the name of this key.
-     * @return key name
+     * Input by means of an action using the interface {@code ActionListener}
+     * that JME3 provides.
      */
-    public String getKeyName() {
-        return keyName;
-    }
+    Action,
+    /**
+     * Analog input using the interface {@code AnalogListener} that JME3 provides.
+     */
+    Analog;
 }

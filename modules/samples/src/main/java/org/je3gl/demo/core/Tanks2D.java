@@ -29,25 +29,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins.input;
+package org.je3gl.demo.core;
+
+import com.jme3.app.SimpleApplication;
+import com.jme3.scene.Spatial;
+import org.je3gl.plugins.J2OLoader;
+import org.je3gl.plugins.asset.J2OKey;
 
 /**
- * Class enumerate <code>InputHandlerType</code> in charge of defining the type
- * of input that will manage this template.
- * 
+ *
  * @author wil
- * @version 1.0.1
- * @since 2.0.0
  */
-public enum InputHandlerType {
+public class Tanks2D extends SimpleApplication {
+    
+    public static void main(String[] args) {
+        Tanks2D app = new Tanks2D();
+        app.start();
+    }
 
-    /**
-     * Input by means of an action using the interface {@code ActionListener}
-     * that JME3 provides.
-     */
-    Action,
-    /**
-     * Analog input using the interface {@code AnalogListener} that JME3 provides.
-     */
-    Analog;
+    @Override
+    public void simpleInitApp() {
+        assetManager.registerLoader(J2OLoader.class, "J2O", "j2o");
+        
+        prepareCharacters();
+    }
+    
+    private void prepareCharacters() {
+        Spatial tank = assetManager.loadAsset(new J2OKey<>("Models/TankNavy.j2o"));
+        rootNode.attachChild(tank);
+    }
 }

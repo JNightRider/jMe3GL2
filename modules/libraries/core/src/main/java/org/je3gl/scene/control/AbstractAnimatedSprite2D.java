@@ -124,6 +124,7 @@ public abstract class AbstractAnimatedSprite2D<O extends Spatial, A extends Anim
                     fireAnimation2DChangeListener(true, animation2DIndex, 0, animation2DIndex);
                 }
             }
+            fireAnimatedTimeChangeListener();
         }
     }
 }

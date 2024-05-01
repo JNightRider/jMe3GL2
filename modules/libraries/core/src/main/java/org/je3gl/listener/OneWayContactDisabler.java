@@ -35,12 +35,19 @@ import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.util.Serializable;
 
 /**
- * @param <E>
+ * Interface in charge of deactivating the bodies that are defined as "platforms".
+ * @param <E> type {@link org.je3gl.physics.control.PhysicsBody2D}
+ * 
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public interface OneWayContactDisabler<E extends PhysicsBody2D> extends Serializable {
     
+    /**
+     * Method responsible for managing the deactivation event.
+     * @param body body
+     * @return boolean
+     */
     boolean isDeactivatable(E body);
 }

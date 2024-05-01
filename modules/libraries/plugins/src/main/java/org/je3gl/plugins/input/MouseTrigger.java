@@ -29,12 +29,24 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.je3gl.plugins.input;
+
+import com.jme3.input.controls.Trigger;
 
 /**
- * Utility package that provides help with data input and output by the user.
+ * Interface <code>MouseTrigger</code> that is responsible for preparing a method
+ * with the name of the map when added as an input in the data manager providing
+ * JME3 {@code InputManager}.
  * 
  * @author wil
  * @version 1.0.1
  * @since 2.0.0
  */
-package org.jegl.plugins.input;
+public interface MouseTrigger extends Trigger {
+    
+    /**
+     * Name for this input.
+     * @return input name
+     */
+    public String getInputName();
+}

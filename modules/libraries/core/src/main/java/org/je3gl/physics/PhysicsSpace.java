@@ -86,10 +86,34 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
     @Override
     @SuppressWarnings("unchecked")
     public void addBody(E body) {
-        if (body instanceof PhysicsControl) {
-            ((PhysicsControl)  body).setPhysicsSpace(this);
+        addBody(body, false);
+    }
+    
+    /**
+     * Add a new body to the physical space.
+     * @param body body
+     * @param notifyFirst <code>true</code> if the body is added to the physical
+     * space first and this physical space is notified (set) to the control 
+     * later, and <code>false</code> if the opposite is true.
+     * 
+     * @see org.dyn4j.world.AbstractPhysicsWorld#addBody(org.dyn4j.dynamics.PhysicsBody) 
+     * @see org.je3gl.physics.control.PhysicsControl#setPhysicsSpace(org.je3gl.physics.PhysicsSpace) 
+     * 
+     * @since 3.0.0
+     */
+    @SuppressWarnings("unchecked")
+    public void addBody(E body, boolean notifyFirst) {
+        if (notifyFirst) {
+            super.addBody(body);
+            if (body instanceof PhysicsControl) {
+                ((PhysicsControl)  body).setPhysicsSpace(this);
+            }
+        } else {
+            if (body instanceof PhysicsControl) {
+                ((PhysicsControl)  body).setPhysicsSpace(this);
+            }
+            super.addBody(body);
         }
-        super.addBody(body);
     }
 
     /**
@@ -117,13 +141,13 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
     @Override
     @SuppressWarnings("unchecked")
     public void addJoint(final Joint joint) {
-        Iterator<E> it = joint.getBodyIterator();
-        while (it.hasNext()) {
-            E next = it.next();
-            if ( next != null && (next instanceof PhysicsControl) && (((PhysicsBody2D) next).getPhysicsSpace() == null)) {
-                ((PhysicsControl) next).setPhysicsSpace(this);
-            }
-        }
+        // Iterator<E> it = joint.getBodyIterator();
+        // while (it.hasNext()) {
+        //     E next = it.next();
+        //     if ( next != null && (next instanceof PhysicsControl) && (((PhysicsBody2D) next).getPhysicsSpace() == null)) {
+        //         ((PhysicsControl) next).setPhysicsSpace(this);
+        //     }
+        // }
         super.addJoint(joint);
     }
     

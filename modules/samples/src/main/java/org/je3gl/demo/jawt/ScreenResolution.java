@@ -34,7 +34,7 @@ package org.je3gl.demo.jawt;
 import org.je3gl.jawt.JAWTResolution;
 import org.je3gl.jawt.Jme3GL2DisplaySystem;
 import org.je3gl.jawt.Jme3GL2DefaultDisplaySystem;
-import static org.jegl.plugins.Debugger.*;
+import static org.je3gl.plugins.Debugger.*;
 
 /**
  * Test class for screen resolutions in a desktop environment.

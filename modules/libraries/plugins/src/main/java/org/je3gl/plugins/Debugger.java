@@ -29,24 +29,41 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins.input;
+package org.je3gl.plugins;
 
-import com.jme3.input.controls.Trigger;
+import java.io.PrintStream;
 
 /**
- * Interface <code>MouseTrigger</code> that is responsible for preparing a method
- * with the name of the map when added as an input in the data manager providing
- * JME3 {@code InputManager}.
- * 
+ *
  * @author wil
- * @version 1.0.1
- * @since 2.0.0
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public interface MouseTrigger extends Trigger {
+public final class Debugger {
     
-    /**
-     * Name for this input.
-     * @return input name
-     */
-    public String getInputName();
+    public static final PrintStream DEBUG_STREAM = getDebugStream();
+    
+    private final static Boolean DEBUG;
+    private final static String PREFIX;
+    
+    static {
+        DEBUG = Boolean.valueOf(System.getProperty("jMe3GL2.Debug", "false"));
+        PREFIX = "jMe3GL2";
+    }
+    
+    private static PrintStream getDebugStream() {
+        return System.out;
+    }
+    
+    public static void apiGLLog(CharSequence msg) {
+        if (DEBUG) {
+            DEBUG_STREAM.print("[" + PREFIX + "]" + msg + "\n");
+        }
+    }
+    
+    public static void apiGLLogMore(CharSequence msg) {
+        if (DEBUG) {
+            DEBUG_STREAM.print("\t" + msg + "\n");
+        }
+    }
 }

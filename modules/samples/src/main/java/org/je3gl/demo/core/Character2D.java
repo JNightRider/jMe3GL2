@@ -37,24 +37,27 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+
 import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector2;
+
 import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.CharacterBody2D;
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.RigidBody2D;
-import org.jegl.plugins.J2OLoader;
-import org.jegl.plugins.asset.J2OKey;
-import org.jegl.plugins.input.BooleanStateKeyboardInputHandler;
-import org.jegl.plugins.input.InputHandlerAppState;
-import org.jegl.plugins.input.Key;
+import org.je3gl.plugins.J2OLoader;
+import org.je3gl.plugins.asset.J2OKey;
+import org.je3gl.plugins.input.BooleanStateKeyboardInputHandler;
+import org.je3gl.plugins.input.InputHandlerAppState;
+import org.je3gl.plugins.input.Key;
 import org.je3gl.renderer.Camera2DRenderer;
 import org.je3gl.scene.control.AnimatedSprite2D;
 import org.je3gl.scene.shape.Sprite;
+
 import static org.je3gl.utilities.GeometryUtilities.*;
 import static org.je3gl.utilities.MaterialUtilities.*;
-import org.dyn4j.geometry.MassType;
-import org.dyn4j.geometry.Vector2;
 
 /**
  *
@@ -96,11 +99,9 @@ public class Character2D extends SimpleApplication {
             velocity = velocity.product(delta);
             velocity.y = 0;
             
-            System.out.println("vel="+velocity);
             Vector2 position = getTransform().getTranslation();
             position = position.add(velocity);
-
-            System.out.println("pos="+position);
+            
             getTransform().setRotation(0);
             getTransform().setTranslation(position);
             setAtRest(false);
@@ -171,6 +172,7 @@ public class Character2D extends SimpleApplication {
         rootNode.attachChild(player);
         
         Player body2D = new Player();
+        body2D.setGravityScale(2);
         
         BodyFixture bf = new BodyFixture(createCapsule(0.5, 1));
         

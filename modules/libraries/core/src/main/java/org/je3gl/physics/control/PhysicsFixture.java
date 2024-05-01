@@ -196,10 +196,12 @@ public class PhysicsFixture implements Savable, Cloneable {
         OutputCapsule out = ex.getCapsule(this);        
         Object userObject = bf.getUserData();
         byte userType = -1;
-        try {
-            userType = UserData.getObjectType(userObject);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Unsupported type: {0}", userObject == null ? null : userObject.getClass().getName());
+        if (userObject != null) {
+            try {
+                userType = UserData.getObjectType(userObject);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "[ UserData ] :Unsupported type: {0}", userObject.getClass().getName());
+            }
         }
         
         if (userType != -1) {

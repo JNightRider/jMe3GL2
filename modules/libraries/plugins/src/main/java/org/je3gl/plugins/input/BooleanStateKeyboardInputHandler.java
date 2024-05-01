@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins.input;
+package org.je3gl.plugins.input;
 
 /**
  * Class <code>BooleanStateKeyboardInputHandler</code> which exists from the

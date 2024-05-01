@@ -37,18 +37,45 @@ import org.je3gl.util.Serializable;
 import org.dyn4j.dynamics.contact.ContactConstraint;
 
 /**
- *
- * @param <A>
- * @param <B>
+ * Interface in charge of managing a listener for the contacts that a 
+ * character ({@link org.je3gl.physics.control.CharacterBody2D}) makes in physical space.
+ * 
+ * @param <A> type {@link org.je3gl.physics.control.CharacterBody2D}
+ * @param <B> type {@link org.je3gl.physics.control.PhysicsBody2D}
+ * 
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public interface CharacterContactListener<A extends CharacterBody2D, B extends PhysicsBody2D> extends Serializable {
     
+    /**
+     * Determines if the character is making contact with the ground|floor.
+     * 
+     * @param character the character
+     * @param platform the contact platform
+     * @param contactConstraint contact-constraint
+     * @return boolean
+     */
     boolean trackIsOnGround(A character, B platform, ContactConstraint<B> contactConstraint);
     
+    /**
+     * Determines if the character is making contact with the ceiling.
+     * 
+     * @param character the character
+     * @param platform the contact platform
+     * @param contactConstraint contact-constraint
+     * @return boolean
+     */
     boolean trackIsOnCeiling(A character, B platform, ContactConstraint<B> contactConstraint);
     
+    /**
+     * Determines if the character is making contact with a wall
+     * 
+     * @param character the character
+     * @param platform the contact platform
+     * @param contactConstraint contact-constraint
+     * @return boolean
+     */
     boolean trackIsOnWall(A character, B platform, ContactConstraint<B> contactConstraint);
 }

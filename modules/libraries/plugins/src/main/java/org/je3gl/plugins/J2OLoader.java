@@ -29,43 +29,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins.input;
+package org.je3gl.plugins;
 
-import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.asset.AssetInfo;
+import com.jme3.asset.AssetKey;
+import com.jme3.asset.AssetLoader;
+import com.jme3.export.Savable;
+import com.jme3.export.binary.BinaryImporter;
+import java.io.IOException;
+import static org.je3gl.plugins.Debugger.*;
 
 /**
- * An object of class <code>MouseAxis</code> is responsible for managing mouse
- * inputs.
- * 
- * @see MouseAxisTrigger
- * @see MouseTrigger
- * 
+ *
  * @author wil
- * @version 1.0.1
- * @since 2.0.0
  */
-public class MouseAxis extends MouseAxisTrigger implements MouseTrigger {
+public class J2OLoader implements AssetLoader {
 
-    /** Key name of the input. */
-    private final String inputName;
-    
-    /**
-     * Constructor of the class <code>MouseAxis</code>.
-     * @param mouseAxis int
-     * @param negative boolean
-     * @param name string
-     */
-    public MouseAxis(int mouseAxis, boolean negative, String name) {
-        super(mouseAxis, negative);
-        this.inputName = name;
-    }
-
-    /**
-     * Method in charge of returning the name of this key.
-     * @return key name
-     */
     @Override
-    public String getInputName() {
-        return this.inputName;
-    }    
+    public Object load(AssetInfo assetInfo) throws IOException {
+        AssetKey<?> key = assetInfo.getKey();
+        if ("j2o".equals(key.getExtension())  || "J2O".equals(key.getExtension())) {
+            BinaryImporter importer = BinaryImporter.getInstance();
+            importer.setAssetManager(assetInfo.getManager());
+            
+            Savable obj = importer.load(assetInfo.openStream());
+            return obj;
+        }
+        apiGLLog("Extension " + key.getExtension() + " is not supported");
+        return null;
+    }
 }

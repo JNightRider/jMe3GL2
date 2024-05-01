@@ -175,6 +175,7 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
                     fireAnimation2DChangeListener(true, index, index, animation2DIndex);
                 }
             }
+            fireAnimatedTimeChangeListener();
         }
     }
     

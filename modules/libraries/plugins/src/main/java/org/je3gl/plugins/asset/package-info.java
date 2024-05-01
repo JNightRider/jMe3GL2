@@ -29,42 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins.input;
-
-import com.jme3.input.controls.MouseButtonTrigger;
 
 /**
- * An object of class <code>MouseButton</code> is responsible for managing mouse
- * inputs.
  * 
- * @see MouseButtonTrigger
- * @see MouseTrigger
- *
- * @author wil
- * @version 1.0.1
- * @since 2.0.0
  */
-public class MouseButton extends MouseButtonTrigger implements MouseTrigger {
-    
-    /** Key name of the entry. */
-    private final String inputName;
-    
-    /**
-     * Constructor of the class <code>MouseButton</code>.
-     * @param mouseButton int
-     * @param name string
-     */
-    public MouseButton(int mouseButton, String name) {
-        super(mouseButton);
-        this.inputName = name;
-    }
-    
-    /**
-     * Method in charge of returning the name of this key.
-     * @return key name
-     */
-    @Override
-    public String getInputName() {
-        return this.inputName;
-    }  
-}
+package org.je3gl.plugins.asset;

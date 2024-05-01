@@ -34,13 +34,23 @@ package org.je3gl.demo.core;
 import com.jme3.app.SimpleApplication;
 import com.jme3.export.Savable;
 import com.jme3.export.binary.BinaryExporter;
+import com.jme3.material.Material;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.texture.Texture;
 import java.io.File;
 import java.io.IOException;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector2;
+import org.je3gl.physics.Dyn4jAppState;
+import org.je3gl.physics.ThreadingType;
+import org.je3gl.physics.control.PhysicsBody2D;
+import org.je3gl.physics.control.RigidBody2D;
+import org.je3gl.physics.control.Vehicle2D;
 import org.je3gl.scene.control.AnimatedSprite2D;
 import org.je3gl.scene.shape.Sprite;
+import static org.je3gl.utilities.GeometryUtilities.*;
 import static org.je3gl.utilities.MaterialUtilities.*;
 import static org.je3gl.utilities.TextureUtilities.*;
 
@@ -62,8 +72,131 @@ public class ExportJ2O extends SimpleApplication {
         app.start();
     }
 
+    Dyn4jAppState<PhysicsBody2D> dyn4jAppState;
+    
     @Override
     public void simpleInitApp() {
+        dyn4jAppState = new Dyn4jAppState<>(ThreadingType.SEQUENTIAL);
+        dyn4jAppState.setDebugEnabled(true);
+        stateManager.attach(dyn4jAppState);
+        
+        j2oTanks();
+    }
+    
+    private void j2oTanks() {
+        Node tanks = new Node("Tanks");
+        
+        {
+            Sprite sprite = new Sprite(74.0F/53.0F, 1.0F);
+            sprite.applyScale(1.5F);
+            
+            Geometry geom = new Geometry("TankNavy", sprite);
+            Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_tankNavy_body4.png");
+            
+            geom.setMaterial(mat);
+            geom.setQueueBucket(RenderQueue.Bucket.Transparent);
+            
+            tanks.attachChild(geom);
+        }
+        
+        {
+            Sprite sprite = new Sprite(73.0F/18.0F, 1.0F);
+            sprite.applyScale(0.25F);
+            
+            Geometry geom = new Geometry("Turret", sprite);
+            Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_turret3.png");
+            
+            geom.setMaterial(mat);
+            geom.setQueueBucket(RenderQueue.Bucket.Transparent);
+            geom.move(0.5F, 0.75F - (sprite.getHeight() / 2.0F), -0.01F);
+            
+            tanks.attachChild(geom);
+        }
+        
+        {
+            Sprite sprite = new Sprite(1.0F, 1.0F);
+            sprite.applyScale(0.8F);
+            
+            Geometry geom = new Geometry("TankRearWheel", sprite);
+            Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_tankTracks4.png");
+            mat.setFloat("AlphaDiscardThreshold", MIN_ALPHA_DISCARD_THRESHOLD);
+            
+            geom.setMaterial(mat);
+            geom.setQueueBucket(RenderQueue.Bucket.Transparent);
+            geom.move(0, 0, 0.01F);
+            
+            RigidBody2D rbd = new RigidBody2D();
+            rbd.addFixture(createCircle(sprite.getWidth() / 2.0F));
+            rbd.translate(-0.5, -0.5);
+            rbd.setMass(MassType.NORMAL);
+            
+            geom.addControl(rbd);
+            tanks.attachChild(geom);
+        }
+        
+        {
+            Sprite sprite = new Sprite(1.0F, 0.5F);
+            sprite.applyScale(0.8F);
+            
+            Geometry geom = new Geometry("TankRearTracks", sprite);
+            Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_tankTracks7.png");
+            mat.setFloat("AlphaDiscardThreshold", MIN_ALPHA_DISCARD_THRESHOLD);
+            
+            geom.setMaterial(mat);
+            geom.setQueueBucket(RenderQueue.Bucket.Transparent);
+            geom.move(-0.5F, -0.25F, 0.02F);
+            
+            tanks.attachChild(geom);
+        }
+        
+        {
+            Sprite sprite = new Sprite(1.0F, 1.0F);
+            sprite.applyScale(0.8F);
+            
+            Geometry geom = new Geometry("TankFrontWheel", sprite);
+            Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_tankTracks4.png");
+            mat.setFloat("AlphaDiscardThreshold", MIN_ALPHA_DISCARD_THRESHOLD);
+            
+            geom.setMaterial(mat);
+            geom.setQueueBucket(RenderQueue.Bucket.Transparent);
+            geom.move(0, 0, 0.01F);
+            
+            RigidBody2D rbd = new RigidBody2D();
+            rbd.addFixture(createCircle(sprite.getWidth() / 2.0F));
+            rbd.translate(0.5, -0.5);
+            rbd.setMass(MassType.NORMAL);
+            
+            geom.addControl(rbd);
+            tanks.attachChild(geom);
+        }
+        
+        {
+            Sprite sprite = new Sprite(1.0F, 0.5F);
+            sprite.applyScale(0.8F);
+            
+            Geometry geom = new Geometry("TankFrontTracks", sprite);
+            Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_tankTracks7.png");
+            mat.setFloat("AlphaDiscardThreshold", MIN_ALPHA_DISCARD_THRESHOLD);
+            
+            geom.setMaterial(mat);
+            geom.setQueueBucket(RenderQueue.Bucket.Transparent);
+            geom.move(0.5F, -0.25F, 0.02F);
+            
+            tanks.attachChild(geom);
+        }
+        
+        Vehicle2D vd = new Vehicle2D(tanks.getChild("TankRearWheel").getControl(PhysicsBody2D.class), 
+                                    tanks.getChild("TankFrontWheel").getControl(PhysicsBody2D.class), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5), new Vector2(0, 1.0));
+        
+        vd.addFixture(createRectangle(2.0F, 1.0F));
+        vd.setMass(MassType.NORMAL);
+        tanks.addControl(vd);
+        
+        rootNode.attachChild(tanks);
+        export(tanks, "TankNavy.j2o");
+    }
+    
+    private void j2oRabbit() {
         Geometry player = new Geometry("AnimatedSprite2D", new Sprite(1.0F, 1.0F));
         player.setMaterial(getUnshadedMaterialFromClassPath(assetManager, "Textures/Rabbit/tile_0040.png"));
         player.setQueueBucket(RenderQueue.Bucket.Transparent);

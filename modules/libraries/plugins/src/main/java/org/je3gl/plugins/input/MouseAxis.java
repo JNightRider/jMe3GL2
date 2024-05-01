@@ -29,41 +29,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.plugins.input;
 
-import java.io.PrintStream;
+import com.jme3.input.controls.MouseAxisTrigger;
 
 /**
- *
+ * An object of class <code>MouseAxis</code> is responsible for managing mouse
+ * inputs.
+ * 
+ * @see MouseAxisTrigger
+ * @see MouseTrigger
+ * 
  * @author wil
- * @version 1.0.0
- * @since 3.0.0
+ * @version 1.0.1
+ * @since 2.0.0
  */
-public final class Debugger {
+public class MouseAxis extends MouseAxisTrigger implements MouseTrigger {
+
+    /** Key name of the input. */
+    private final String inputName;
     
-    public static final PrintStream DEBUG_STREAM = getDebugStream();
-    
-    private final static Boolean DEBUG;
-    private final static String PREFIX;
-    
-    static {
-        DEBUG = Boolean.valueOf(System.getProperty("jMe3GL2.Debug", "false"));
-        PREFIX = "jMe3GL2";
+    /**
+     * Constructor of the class <code>MouseAxis</code>.
+     * @param mouseAxis int
+     * @param negative boolean
+     * @param name string
+     */
+    public MouseAxis(int mouseAxis, boolean negative, String name) {
+        super(mouseAxis, negative);
+        this.inputName = name;
     }
-    
-    private static PrintStream getDebugStream() {
-        return System.out;
-    }
-    
-    public static void apiGLLog(CharSequence msg) {
-        if (DEBUG) {
-            DEBUG_STREAM.print("[" + PREFIX + "]" + msg + "\n");
-        }
-    }
-    
-    public static void apiGLLogMore(CharSequence msg) {
-        if (DEBUG) {
-            DEBUG_STREAM.print("\t" + msg + "\n");
-        }
-    }
+
+    /**
+     * Method in charge of returning the name of this key.
+     * @return key name
+     */
+    @Override
+    public String getInputName() {
+        return this.inputName;
+    }    
 }

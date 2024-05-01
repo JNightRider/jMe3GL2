@@ -38,6 +38,8 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.UserData;
 import com.jme3.scene.control.Control;
+import com.jme3.util.clone.Cloner;
+import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -65,7 +67,7 @@ import org.dyn4j.geometry.Vector2;
  * @version 1.5.5
  * @since 1.0.0
  */
-public abstract class PhysicsBody2D extends Body implements Control, Savable, PhysicsControl<PhysicsBody2D> {
+public abstract class PhysicsBody2D extends Body implements Control, Cloneable, JmeCloneable, Savable, PhysicsControl<PhysicsBody2D> {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsBody2D.class.getName());
     
@@ -101,6 +103,21 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
             throw new IllegalStateException("This body has already been added to a physical space.");
         }
         this.physicsSpace = physicsSpace;
+    }
+    
+    @Override
+    public Object jmeClone() {
+        try {
+            PhysicsBody2D clon = (PhysicsBody2D) this.clone();
+            return clon;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
+    }
+
+    @Override
+    public void cloneFields(Cloner cloner, Object o) {
+        spatial = cloner.clone(spatial);
     }
 
     /**
@@ -265,10 +282,12 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         OutputCapsule out = ex.getCapsule(this);      
         Object userObject = this.getUserData();
         byte userType = -1;
-        try {
-            userType = UserData.getObjectType(userObject);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Unsupported type: {0}", userObject == null ? null : userObject.getClass().getName());
+        if (userObject != null) {
+            try {
+                userType = UserData.getObjectType(userObject);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "[ UserData ] :Unsupported type: {0}", userObject.getClass().getName());
+            }
         }
         
         if (userType != -1) {

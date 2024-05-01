@@ -31,9 +31,10 @@
  */
 
 /**
- * Package responsible for listing/containing all listeners used by jMe3GL2.
+ * Utility package that provides help with data input and output by the user.
+ * 
  * @author wil
- * @version 1.0.0
- * @since 3.0.0
+ * @version 1.0.1
+ * @since 2.0.0
  */
-package org.je3gl.listener;
+package org.je3gl.plugins.input;
