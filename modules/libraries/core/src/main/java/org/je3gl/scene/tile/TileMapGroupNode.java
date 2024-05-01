@@ -29,36 +29,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.scene.tile;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.scene.Node;
 
 /**
- *
+ * An object of class <code>TileMapGroupNode</code> can be used as a parent node
+ * for all {@link TileMap} that you want to group into a scene node for better
+ * cleanup.
+ * 
  * @author wil
+ * @version 1.0.5
+ * @since 2.0.0
+ * @param <T> data type
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public class TileMapGroupNode<T extends TileMap> extends Node {
+    /* CODE */
 }

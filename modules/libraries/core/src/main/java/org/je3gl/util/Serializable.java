@@ -29,36 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.util;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
 import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
 import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
 
 /**
- *
+ * A class <code>Serializable</code> that represents a serializable value.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class TileMapLoader implements AssetLoader {
+public interface Serializable extends Savable {
 
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
+     * 
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
+     */
     @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+    public default void write(JmeExporter ex) throws IOException { }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException throws
+     */
+    @Override
+    public default void read(JmeImporter im) throws IOException { }    
 }

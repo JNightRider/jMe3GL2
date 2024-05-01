@@ -29,36 +29,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.demo.jawt;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import org.je3gl.jawt.JAWTResolution;
+import org.je3gl.jawt.Jme3GL2DisplaySystem;
+import org.je3gl.jawt.Jme3GL2DefaultDisplaySystem;
+import static org.jegl.plugins.Debugger.*;
 
 /**
- *
+ * Test class for screen resolutions in a desktop environment.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class TileMapLoader implements AssetLoader {
+public class ScreenResolution {
+    
+    /**
+     * The main method; uses zero arguments in args array
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        System.setProperty("jMe3GL2.Debug", "true");
 
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
+        Jme3GL2DisplaySystem displaySystem = Jme3GL2DefaultDisplaySystem.getDisplaySystem();
+        JAWTResolution resolution = displaySystem.getFullScreenResolution();
+        
+        apiGLLog(" List of available resolutions: ");
+        for (final JAWTResolution element : displaySystem.getResolutions()) {
+            apiGLLogMore("* " + (element.getWidth() + "x" + element.getHeight() + "x" +
+                                (element.getBitDepth() > 0 ? element.getBitDepth() + "bpp": "[Multi depth]")
+                                + "@" + (element.getRefreshRate() > 0 ? element.getRefreshRate() + "Hz" : "[Unknown refresh rate]")));
         }
-        return null;
+
+        apiGLLog(" Full screen resolution: ");
+        apiGLLogMore(" * " + resolution.toString());
+        
+        apiGLLog(" Support:");
+        apiGLLogMore(" * Full Screen Supported    = " + displaySystem.isFullScreenSupported());
+        apiGLLogMore(" * Display Change Supported = " + displaySystem.isDisplayChangeSupported());
     }
 }

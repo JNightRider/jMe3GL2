@@ -29,36 +29,67 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.scene.tile;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.scene.Geometry;
+
+import org.je3gl.physics.PhysicsSpace;
+import org.je3gl.physics.control.PhysicsBody2D;
 
 /**
- *
+ * Convenience class to implement the interface {@link SpritesheetPhysicsAdapter}.
  * @author wil
+ * @version 1.0.5
+ * @since 2.0.0
  */
-public class TileMapLoader implements AssetLoader {
+public abstract class SpritesheetPhysicsAdapter implements SpritesheetPhysics {
 
+    /*
+     * (non-Javadoc)
+     * @see SpritesheetPhysics#setPhysicsSpace(jMe3GL2.physics.PhysicsSpace) 
+     */
     @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+    public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) { }
+
+    /*
+     * (non-Javadoc)
+     * @see SpritesheetPhysics#onDetachTile(com.jme3.scene.Geometry) 
+     */
+    @Override
+    public void onDetachTile(Geometry geom) { }
+
+    /*
+     * (non-Javadoc)
+     * @see SpritesheetPhysics#onAttachTile(com.jme3.scene.Geometry) 
+     */
+    @Override
+    public void onAttachTile(Geometry geom) { }
+
+    /*
+     * (non-Javadoc)
+     * @see SpritesheetPhysics#onTileUnassociated(com.jme3.scene.Geometry) 
+     */
+    @Override
+    public void onTileUnassociated(Geometry geom) { }
+
+    /*
+     * (non-Javadoc)
+     * @see SpritesheetPhysics#onTransformChange(com.jme3.scene.Geometry) 
+     */
+    @Override
+    public void onTransformChange(Geometry geom) { }
+
+    /*
+     * (non-Javadoc)
+     * @see SpritesheetPhysics#onMaterialChange(com.jme3.scene.Geometry) 
+     */
+    @Override
+    public void onMaterialChange(Geometry geom) { }
+
+    /*
+     * (non-Javadoc)
+     * @see SpritesheetPhysics#onMeshChange(com.jme3.scene.Geometry) 
+     */
+    @Override
+    public void onMeshChange(Geometry geom) { }    
 }

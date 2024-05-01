@@ -29,36 +29,48 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.listener;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.scene.Spatial;
+import org.je3gl.scene.control.AbstractAnimation2DControl;
+import org.je3gl.scene.control.Animation2D;
 
 /**
- *
+ * Interface in charge of managing the progress of an animation throughout its 
+ * life cycle. With this interface we can obtain information about the exact time 
+ * in which the frames of a certain animation pass.
+ * <p>
+ * Example:
+ * <pre><code>
+ * AnimationTimeChangeListener&#60;?, ?, ?&#62; listener = new AnimationTimeChangeListener&#60;&#62;() {
+ *     &#64;Override
+ *     public void onTime(float range, float elapsedeTime) {
+ *         System.out.println("[ " + range + "%, "+ elapsedeTime +"tpf ]");
+ *     }
+ * }
+ * </code></pre>
+ * 
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
+ * @param <O> the type of model
+ * @param <A> the type of animation
+ * @param <E> the type of animated control
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public interface AnimationTimeChangeListener<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> {
+    
+    /**
+     * Method responsible for reporting the progress of the animations managed by 
+     * the animated control, normally providing 2 types of data:
+     * <p>
+     * <b>Type of information</b>
+     * <ul>
+     * <li><b>range</b>: A range between 1 and 100%</li>
+     * <li><b>elapsedeTime</b>: Frame time lapse</li>
+     * </ul>
+     * 
+     * @param range percentage range (0 - 100)
+     * @param elapsedeTime elapsed time per frame
+     */
+    void onTime(float range, float elapsedeTime);
 }

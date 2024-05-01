@@ -1,6 +1,6 @@
 allprojects {
 
-    group = 'jmegl2'
+    group = 'org.j3gl'
     version = '3.0.0'
 
     project.ext {

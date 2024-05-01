@@ -29,36 +29,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
-
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+package org.je3gl.util;
 
 /**
- *
+ * A <code>TimerTask</code> is an interface responsible for triggering a timer 
+ * task {@link org.je3gl.util.Timer}.
+ * 
  * @author wil
+ * @version 1.0.5
+ * @since 1.0.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public interface TimerTask {
+    
+    /**
+     * Responsible method of activating a task.
+     * @param timer the timer that executed this task.
+     */
+    void doTask(Timer timer);
 }

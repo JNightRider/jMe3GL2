@@ -29,36 +29,44 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.physics.debug;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.math.ColorRGBA;
 
 /**
- *
+ * Class used to enlist the colors of the physical shape debugger.
  * @author wil
+ * @version 1.0.0
+ * @since 2.5.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
+public final class Dyn4jDebugColor {
+    
+    /** Color used for disabled physical bodies. */
+    public static final ColorRGBA DISABLED = new ColorRGBA(0.2F, 0.2F, 0.2F, 1.0F);
+    
+    /** Color used for bodies defined as: sensor. */
+    public static final ColorRGBA SENSOR = new ColorRGBA(0.5F, 0.5F, 0.5F, 1.0F);
+    
+    /** Color used for bodies defined as: bullet. */
+    public static final ColorRGBA BULLET = new ColorRGBA(1.0F, 0.09F, 0.267F, 1.0F);
+    
+    /** Color used for bodies defined as: static. */
+    public static final ColorRGBA STATIC = new ColorRGBA(0.0F, 0.0F, 1.0F, 1.0F);
+    
+    /** Color used for bodies defined as: kinematic. */
+    public static final ColorRGBA KINEMATIC = new ColorRGBA(0.0F, 1.0F, 1.0F, 1.0F);
+    
+    /** Color used for resetting objects. */
+    public static final ColorRGBA AT_RESET = new ColorRGBA(251.0F / 255.0F, 130.0F / 255.0F, 0.0F, 1.0F);
+    
+    /** Color used by any physical body. */
+    // 0.267F, 0.541F, 1.0F, 1.0F
+    public static final ColorRGBA DEFAULT = new ColorRGBA(1.0F, 0.0F, 1.0F, 1.0F);
+    
+    /** Color used for <code>Bounds</code>. */
+    public static final ColorRGBA BOUNDS = new ColorRGBA(0.502F, 0.0F, 0.502F, 1.0F);
+    
+    /** Constructor owned. */
+    private Dyn4jDebugColor() {
     }
 }

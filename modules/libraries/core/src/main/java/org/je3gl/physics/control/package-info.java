@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024 jMonkeyEngine.
+/* Copyright (c) 2009-2023 jMonkeyEngine.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,36 +29,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
-
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
 
 /**
- *
+ * Package in charge of managing the physical controls that 2D bodies may have.
+ * <p>
+ * Any object that inherits from the <b>PhysicsBody2D</b> class is considered a physical 
+ * body by <a href="https://dyn4j.org/">dyn4j</a> and a <code>Spatial</code> control 
+ * by  <a href="https://jmonkeyengine.org/">jMonkeyEngine3</a>.
+ * 
  * @author wil
+ * @version 1.5.0
+ * @since 1.5.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
-}
+package org.je3gl.physics.control;

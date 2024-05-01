@@ -29,36 +29,40 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.scene.debug.custom;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
+import com.jme3.math.ColorRGBA;
 
 /**
- *
+ * Interface in charge of managing a graphical debugger of the bodies of the 
+ * debugged scene.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public interface DebugGraphics {
+     
+    /**
+     * Returns a font for displaying text.
+     * @param name the font path
+     * @return font
+     */
+    public BitmapFont getBitmapFont(String name);
+    
+    /**
+     * Create a 2D object where text can be displayed.
+     * @param font the font of the text
+     * @param value the content
+     * @return text
+     */
+    public BitmapText createBitmapText(BitmapFont font, String value);
+    
+    /**
+     * Returns a custom color for the bodies in the scene.
+     * @param name string
+     * @return color
+     */
+    public ColorRGBA getColor(String name);
 }

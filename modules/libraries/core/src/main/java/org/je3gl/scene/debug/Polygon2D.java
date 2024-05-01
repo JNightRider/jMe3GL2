@@ -29,36 +29,34 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.scene.debug;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.math.Vector3f;
 
 /**
- *
+ * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
  * @author wil
+ * @version 1.0.5
+ * @since 2.5.0
  */
-public class TileMapLoader implements AssetLoader {
+public class Polygon2D extends AbstractShape2D {
 
+    /**
+     * Class constructor <code>Polygon2D</code> where a polygonal shape is
+     * initialized.
+     * @param vertices vertices
+     */
+    public Polygon2D(Vector3f ...vertices) {
+        Polygon2D.this.updateGeometry(vertices);
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see jme3gl2.scene.debug.AbstractShape2D#updateGeometry(com.jme3.math.Vector3f[]) 
+     * @param vertices vertices
+     */
     @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
+    public void updateGeometry(Vector3f ...vertices) {
+        super.updateGeometry(vertices);
     }
 }

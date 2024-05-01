@@ -29,36 +29,75 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.renderer;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.renderer.Camera;
+import org.je3gl.renderer.Camera2DRenderer.GLRendererType;
+import org.je3gl.renderer.effect.GLXEffect;
 
 /**
- *
+ * Interface in charge of representing the camera of a 2D world.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public interface GLXCamera {
+    
+    /**
+     * Sets a camera to be managed by this object.
+     * @param camera a camera
+     */
+    public void setCamera(Camera camera);
+    
+    /**
+     * Returns the managed camera.
+     * @return camera
+     */
+    public Camera getCamera();
+    
+    /**
+     * Update camera status.
+     * @param tpf float
+     */
+    public void update(float tpf);
+    
+    /**
+     * Add an effect to the camera.
+     * @param effect glx-effect
+     */
+    public void addEffect(GLXEffect effect);
+    
+    /**
+     * Remove a camera effect.
+     * @param effect glx-effect
+     */
+    public void removeEffect(GLXEffect effect);
+    
+    /**
+     * Returns a camera effect through its index.
+     * @param <T> type
+     * @param index int
+     * @return glx-effect
+     */
+    public <T extends GLXEffect> T getEffect(int index);
+    
+    /**
+     * Returns a camera effect through its class.
+     * @param <T> type
+     * @param clazz effect-class
+     * @return glx-effect
+     */
+    public <T extends GLXEffect> T getEffect(Class<T> clazz);
+    
+    /**
+     * Returns the number of effects loaded in this manager.
+     * @return int
+     */
+    public int getEffectQuantity();
+    
+    /**
+     * Returns the type of camera used.
+     * @return rendering type
+     */
+    public GLRendererType getType();
 }

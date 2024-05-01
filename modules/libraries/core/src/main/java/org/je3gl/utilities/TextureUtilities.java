@@ -29,36 +29,49 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.utilities;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.asset.AssetManager;
+import com.jme3.asset.TextureKey;
+import com.jme3.texture.Texture;
 
 /**
- *
+ * Utility class for loading, managing and modifying textures.
  * @author wil
+ * @version 1.0.5
+ * @since 2.5.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
+public final class TextureUtilities {
+    
+    /**
+     * Returns a texture stored in the classpath given the path.
+     *
+     * @param assetManager asset manager
+     * @param path the path within the classpath
+     * @return texture
+     */
+    public static final Texture getTextureFromClassPath(AssetManager assetManager, String path){
+        Texture tex = assetManager.loadTexture(new TextureKey(path, false));
+        tex.setMagFilter(Texture.MagFilter.Nearest);
+        tex.setWrap(Texture.WrapMode.Repeat);
+        return tex;
+    }
+    
+    /**
+     * Returns an array of textures stored in the classpath given the path
+     * 
+     * @param assetManager asset manager
+     * @param paths the path within the classpath
+     * @return texture array
+     */
+    public static final Texture[] getArrayTextureFromClassPath(AssetManager assetManager, String ...paths) {
+        if (paths == null) {
+            throw new NullPointerException("The paths are not valid: null");
         }
-        return null;
+        Texture[] texts = new Texture[paths.length];
+        for (int i = 0; i < texts.length; i++) {
+            texts[i] = getTextureFromClassPath(assetManager, paths[i]);
+        }
+        return texts;
     }
 }

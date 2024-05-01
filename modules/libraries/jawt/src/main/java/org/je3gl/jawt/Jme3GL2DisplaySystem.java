@@ -29,36 +29,44 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
-
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+package org.je3gl.jawt;
 
 /**
- *
+ * An interface in charge of managing the user's screen to determine the resolutions 
+ * of the monitor where the game is run.
+ * <p>
+ * This feature uses <code>AWT</code> components to determine screen resolutions, so 
+ * it only works in a desktop environment (typically Android and IOS run games in full screen).
+ * 
  * @author wil
+ * @version 1.1.5
+ * @since 2.0.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public interface Jme3GL2DisplaySystem {
+    
+    /**
+     * Returns a series of resolutions that can be used.
+     * @return {@link org.je3gl.jawt.JAWTResolution}
+     */
+    public JAWTResolution[] getResolutions();
+    
+    /**
+     * Returns the resolution of the full screen, this solution will be the screen 
+     * where the game is running.
+     * 
+     * @return {@link org.je3gl.jawt.JAWTResolution}
+     */
+    public JAWTResolution getFullScreenResolution();
+    
+    /**
+     * Method responsible for determining whether the device supports full screen.
+     * @return {@code true} if full screen; otherwise {@code false}
+     */
+    public boolean isFullScreenSupported();
+    
+    /**
+     * Method responsible for determining whether display changes are supported.
+     * @return boolean
+     */
+    public boolean isDisplayChangeSupported();
 }

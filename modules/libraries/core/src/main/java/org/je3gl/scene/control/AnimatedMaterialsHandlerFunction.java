@@ -29,36 +29,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.scene.control;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.scene.Spatial;
+import org.je3gl.util.Serializable;
 
 /**
- *
+ * An <code>AnimatedMaterialsHandlerFunction</code> interface is responsible for 
+ * managing a 2D model which is animated using an animation control. With this
+ * interface you will be able to independently manage each 2D model and its animated behavior.
+ * <p>
+ * This interface is useful because if you interact with the materials of the
+ * objects (models), each of them has different properties that may or may not 
+ * match. Therefore, it is important to maintain independence when applying 
+ * animations to each model.
+ * 
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
+ * @param <O> the type of model
+ * @param <A> the type of animation
+ * @param <E> the type of animated control
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public interface AnimatedMaterialsHandlerFunction<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> extends Serializable {
+    
+    /**
+     * Method responsible for applying animation to the 2D model.
+     * @param model the 2D model
+     * @param animation the animation
+     * @param control the animated control
+     */
+    void applyAnimation2DControl(O model, A animation, E control);
 }

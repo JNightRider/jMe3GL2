@@ -29,36 +29,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
-
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+package org.je3gl.physics.control;
 
 /**
+ * The bodies <code>KinematicBody2D</code> are special types of bodies intended
+ * to be controlled by the user.
+ * <p>
+ * They are not affected by physics at all; compared to other types of bodies,
+ * such as a character or a rigid body, they are the same as a static body.
  *
  * @author wil
+ * @version 1.5.5
+ * @since 1.2.0
  */
-public class TileMapLoader implements AssetLoader {
+public class KinematicBody2D extends PhysicsBody2D {
 
+    /**
+     * Class constructor <code>KinematicBody2D</code>.
+     */
+    public KinematicBody2D() {
+    }
+    
+    /*
+     * (non-Javadoc).
+     * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 
+     */
     @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
+    protected void controlUpdate(float tpf) {
+        this.setGravityScale(0);        
+        this.setAtRest(true);        
+        super.controlUpdate(tpf);
     }
 }

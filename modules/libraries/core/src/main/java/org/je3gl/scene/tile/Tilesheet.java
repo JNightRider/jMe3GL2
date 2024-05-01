@@ -29,36 +29,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
-
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+package org.je3gl.scene.tile;
 
 /**
- *
+ * An <code>Tilesheet</code> is an interface with a method that returns the
+ * administrators in charge of the creation and management of the 2D model space
+ * of a {@link TileMap}.
+ * 
  * @author wil
+ * @version 1.0.5
+ * @since 2.0.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+public interface Tilesheet {
+    
+    /**
+     * Returns a {@link Spritesheet} for the map node.
+     * @return tile model
+     */
+    public Spritesheet getSpritesheet();
+    
+    /**
+     * Returns a {@link SpritesheetPhysics} for the map node.
+     * @return tile space
+     */
+    public SpritesheetPhysics getSpritesheetPhysics();
 }

@@ -29,36 +29,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.scene.tile;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.asset.AssetManager;
+import com.jme3.scene.Geometry;
 
 /**
- *
+ * Convenience class to implement the interface {@link Spritesheet}. 
  * @author wil
+ * @version 1.0.5
+ * @since 2.0.0
  */
-public class TileMapLoader implements AssetLoader {
+public abstract class SpritesheetAdapter implements Spritesheet {
 
+    /*
+     * (non-Javadoc)
+     * @see Spritesheet#render(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager) 
+     */
     @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
-    }
+    public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager) { return null; }
+
+    /*
+     * (non-Javadoc)
+     * @see Spritesheet#update(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager, com.jme3.scene.Geometry) 
+     */
+    @Override
+    public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) { }
 }

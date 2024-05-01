@@ -29,36 +29,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
-
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+package org.je3gl.jawt;
 
 /**
- *
+ * Class responsible for managing the default screen resolution system.
  * @author wil
+ * @version 1.1.0
+ * @since 2.0.0
  */
-public class TileMapLoader implements AssetLoader {
-
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
-        }
-        return null;
+public final class Jme3GL2DefaultDisplaySystem {
+    
+    /**
+     * Constructor for internal use only.
+     */
+    private Jme3GL2DefaultDisplaySystem() {}
+    
+    /**
+     * Returns the default setting for screen resolution.
+     * @return A {@link org.je3gl.jawt.Jme3GL2DisplaySystem} object
+     */
+    public static Jme3GL2DisplaySystem getDisplaySystem() {
+        return new Jme3GL2DesktopDisplaySystem();
     }
 }

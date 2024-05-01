@@ -29,36 +29,52 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jegl.plugins;
+package org.je3gl.renderer;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
-import com.jme3.export.Savable;
-import com.jme3.export.binary.BinaryImporter;
-import java.io.IOException;
-import org.je3gl.scene.tile.Properties;
+import com.jme3.math.Vector3f;
+import org.je3gl.renderer.Camera2DRenderer.GLRendererType;
+import org.je3gl.renderer.effect.GLXDistanceFrustum;
 
 /**
- *
+ * Class in charge of handling a fake 2D camera.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class TileMapLoader implements AssetLoader {
+final class GLXCamera25D extends AbstractGLXCamera {
 
+    /**
+     * Constructor
+     */
+    public GLXCamera25D() {
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.AbstractGLXCamera#initialize() 
+     */
     @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
-        if ("j2tm".equals(key.getExtension())  || "J2TM".equals(key.getExtension())) {
-            BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
-            
-            Savable obj = importer.load(assetInfo.openStream());
-            if (obj instanceof Properties) {
-                Properties pMap = ((Properties) obj).optSavable("jMe3GL2.TileMap", new Properties()),
-                        pTiles = ((Properties) obj).optSavable("jme3GL2.Tiles", null);
-            }            
-            throw new IOException("Binaries do not belong to a 2D object");
+    protected void initialize() {
+        camera.setParallelProjection(true);
+        
+        float aspect = (float)camera.getWidth() / (float)camera.getHeight();
+        float cameraDistanceFrustum = 10.0F;
+        
+        GLXDistanceFrustum glxdf = getEffect(GLXDistanceFrustum.class);
+        if (glxdf != null) {
+            cameraDistanceFrustum = glxdf.getDistanceFrustum();
         }
-        return null;
+        
+        camera.setFrustum(-1000, 1000, -aspect * cameraDistanceFrustum, aspect * cameraDistanceFrustum, cameraDistanceFrustum, -cameraDistanceFrustum);
+        camera.setLocation(new Vector3f(0, 0, 0));
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see jme3gl2.renderer.GLXCamera#getType() 
+     */
+    @Override
+    public GLRendererType getType() {
+        return GLRendererType.GLX_25D;
     }
 }
