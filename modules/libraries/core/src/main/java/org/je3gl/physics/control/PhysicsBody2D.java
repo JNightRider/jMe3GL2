@@ -45,15 +45,16 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.je3gl.physics.PhysicsSpace;
-import org.je3gl.util.Converter;
-
+import org.dyn4j.Copyable;
 import org.dyn4j.Epsilon;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
+
+import org.je3gl.physics.PhysicsSpace;
+import org.je3gl.util.Converter;
 
 /**
  * An abstract implementation of the {@link org.je3gl.physics.control.PhysicsControl} 
@@ -117,6 +118,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
 
     @Override
     public void cloneFields(Cloner cloner, Object o) {
+        PhysicsBody2D original = (PhysicsBody2D) o;
         spatial = cloner.clone(spatial);
     }
 
