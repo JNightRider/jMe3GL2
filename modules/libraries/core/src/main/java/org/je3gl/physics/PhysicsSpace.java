@@ -170,15 +170,15 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
     @SuppressWarnings("unchecked")
     public boolean removeJoint(Joint<E> joint) {
         boolean b = super.removeJoint(joint);
-        if (b) {
-            Iterator<E> it = joint.getBodyIterator();
-            while (it.hasNext()) {
-                E next = it.next();
-                if ( next != null && (next instanceof PhysicsControl)) {
-                    ((PhysicsControl) next).setPhysicsSpace(null);
-                }
-            }
-        }
+        // if (b) {
+        //     Iterator<E> it = joint.getBodyIterator();
+        //     while (it.hasNext()) {
+        //         E next = it.next();
+        //         if ( next != null && (next instanceof PhysicsControl)) {
+        //             ((PhysicsControl) next).setPhysicsSpace(null);
+        //         }
+        //     }
+        // }
         return b;
     }
     

@@ -37,6 +37,8 @@ import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.export.Savable;
 import com.jme3.math.Vector2f;
+import com.jme3.util.clone.Cloner;
+import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -69,7 +71,7 @@ import org.dyn4j.geometry.Vector2;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implements Savable {
+public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implements Savable, Cloneable, JmeCloneable {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsJoint.class.getName());
 
@@ -194,6 +196,16 @@ public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implement
         this.joint = joint;
     }
 
+    @Override
+    public Object jmeClone() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void cloneFields(Cloner cloner, Object original) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
     /**
      * Returns the joint type.
      * @return type

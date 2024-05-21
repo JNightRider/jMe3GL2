@@ -5,6 +5,7 @@ allprojects {
 
     project.ext {
         // global dependencies
+        stephengoldHeartVersion = '9.0.0'
         jmonkeyengineVersion = '3.6.1-stable'
         dyn4jVersion = '5.0.2'
     }

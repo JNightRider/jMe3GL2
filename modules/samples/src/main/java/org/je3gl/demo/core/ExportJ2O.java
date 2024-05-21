@@ -35,6 +35,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.export.Savable;
 import com.jme3.export.binary.BinaryExporter;
 import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -62,9 +63,11 @@ import static org.je3gl.utilities.TextureUtilities.*;
  */
 public class ExportJ2O extends SimpleApplication {
     
-    private static final String ROOT_PATH ;    
+    private static final String ROOT_PATH ;
+    private static final float ALPHA_DISCARD_THRESHOLD;
     static {
         ROOT_PATH = System.getProperty("user.dir") + "/src/main/resources/Models/";
+        ALPHA_DISCARD_THRESHOLD = 0.01f;
     }
     
     public static void main(String[] args) {
@@ -85,6 +88,7 @@ public class ExportJ2O extends SimpleApplication {
     
     private void j2oTanks() {
         Node tanks = new Node("Tanks");
+        tanks.setQueueBucket(RenderQueue.Bucket.Transparent);
         
         {
             Sprite sprite = new Sprite(74.0F/53.0F, 1.0F);
@@ -119,11 +123,11 @@ public class ExportJ2O extends SimpleApplication {
             
             Geometry geom = new Geometry("TankRearWheel", sprite);
             Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_tankTracks4.png");
-            mat.setFloat("AlphaDiscardThreshold", MIN_ALPHA_DISCARD_THRESHOLD);
+            mat.setFloat("AlphaDiscardThreshold", ALPHA_DISCARD_THRESHOLD);
             
             geom.setMaterial(mat);
             geom.setQueueBucket(RenderQueue.Bucket.Transparent);
-            geom.move(0, 0, 0.01F);
+            geom.move(0, 0, 0.1F);
             
             RigidBody2D rbd = new RigidBody2D();
             rbd.addFixture(createCircle(sprite.getWidth() / 2.0F));
@@ -140,11 +144,11 @@ public class ExportJ2O extends SimpleApplication {
             
             Geometry geom = new Geometry("TankRearTracks", sprite);
             Material mat  = getUnshadedMaterialFromClassPath(assetManager, "Textures/Tanks/tanks_tankTracks7.png");
-            mat.setFloat("AlphaDiscardThreshold", MIN_ALPHA_DISCARD_THRESHOLD);
+            mat.setFloat("AlphaDiscardThreshold", ALPHA_DISCARD_THRESHOLD);
             
             geom.setMaterial(mat);
             geom.setQueueBucket(RenderQueue.Bucket.Transparent);
-            geom.move(-0.5F, -0.25F, 0.02F);
+            geom.move(-0.5F, -0.25F, 0.2F);
             
             tanks.attachChild(geom);
         }
@@ -159,7 +163,7 @@ public class ExportJ2O extends SimpleApplication {
             
             geom.setMaterial(mat);
             geom.setQueueBucket(RenderQueue.Bucket.Transparent);
-            geom.move(0, 0, 0.01F);
+            geom.move(0, 0, 0.1F);
             
             RigidBody2D rbd = new RigidBody2D();
             rbd.addFixture(createCircle(sprite.getWidth() / 2.0F));
@@ -180,19 +184,34 @@ public class ExportJ2O extends SimpleApplication {
             
             geom.setMaterial(mat);
             geom.setQueueBucket(RenderQueue.Bucket.Transparent);
-            geom.move(0.5F, -0.25F, 0.02F);
+            geom.move(0.5F, -0.25F, 0.2F);
             
             tanks.attachChild(geom);
         }
         
+//        {
+//            Geometry geom = new Geometry("1", new Sprite(10, 0.5f));
+//            geom.setMaterial(MaterialUtilities.getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.randomColor()));
+//            
+//            RigidBody2D rbd = new RigidBody2D();
+//            rbd.addFixture(GeometryUtilities.createRectangle(10, 0.5));
+//            rbd.setMass(MassType.INFINITE);
+//            rbd.translate(0, -3);
+//            geom.addControl(rbd);
+//            
+//            dyn4jAppState.getPhysicsSpace().addBody(rbd);
+//            rootNode.attachChild(geom);
+//        }
+        
         Vehicle2D vd = new Vehicle2D(tanks.getChild("TankRearWheel").getControl(PhysicsBody2D.class), 
-                                    tanks.getChild("TankFrontWheel").getControl(PhysicsBody2D.class), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5), new Vector2(0, 1.0));
+                                    tanks.getChild("TankFrontWheel").getControl(PhysicsBody2D.class), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5), new Vector2(0, -1.0));
         
         vd.addFixture(createRectangle(2.0F, 1.0F));
         vd.setMass(MassType.NORMAL);
         tanks.addControl(vd);
         
         rootNode.attachChild(tanks);
+        //dyn4jAppState.getPhysicsSpace().addBody(vd, true);
         export(tanks, "TankNavy.j2o");
     }
     

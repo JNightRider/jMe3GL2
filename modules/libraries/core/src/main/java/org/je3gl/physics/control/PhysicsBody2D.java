@@ -32,25 +32,29 @@
 package org.je3gl.physics.control;
 
 import com.jme3.export.*;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.UserData;
 import com.jme3.scene.control.Control;
+import com.jme3.util.TempVars;
 import com.jme3.util.clone.Cloner;
 import com.jme3.util.clone.JmeCloneable;
+import jme3utilities.math.MyQuaternion;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.dyn4j.Copyable;
 import org.dyn4j.Epsilon;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Transform;
 import org.dyn4j.geometry.Vector2;
 
 import org.je3gl.physics.PhysicsSpace;
@@ -76,12 +80,108 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     protected PhysicsSpace<PhysicsBody2D> physicsSpace;
     /** The 2D model. */
     protected Spatial spatial;
+    
+    /**
+     * true &rarr; physics-space coordinates match local transform, false &rarr;
+     * physics-space coordinates match world transform
+     */
+    private boolean localPhysics = false;
         
     /**
      * Generates a new object of class <code>PhysicsBody2D</code> to generate a 
      * physical body from a 2D model.
      */
     public PhysicsBody2D() { }
+
+    protected Vector3f getSpatialTranslation() {
+        Vector3f result;
+         if (localPhysics) {
+            result = spatial.getLocalTranslation(); // alias
+        } else {
+            result = spatial.getWorldTranslation(); // alias
+        }
+        return result;
+    }
+    
+    protected Quaternion getSpatialRotation() {
+        Quaternion result; 
+        if (localPhysics) {
+            result = spatial.getLocalRotation(); // alias
+        } else {
+            result = spatial.getWorldRotation(); // alias
+        }
+
+        return result;
+    }
+    
+    public boolean isLocalPhysics() {
+        return localPhysics;
+    }
+
+    public void setLocalPhysics(boolean localPhysics) {
+        this.localPhysics = localPhysics;
+    }
+
+    @Override
+    public void applyPhysicsRotation(PhysicsBody2D physicBody) {
+        if (!isEnabled() && spatial == null)
+            return;
+        
+        final Transform trans = physicBody.getTransform();
+        final float rotation = Converter.toFloatValue(trans.getRotationAngle());
+
+        final TempVars tempVars = TempVars.get();
+        final Quaternion tmpInverseWorldRotation = new Quaternion(),
+                         physicsOrientation = tempVars.quat1;
+        
+        Vector3f localLocation = spatial.getLocalTranslation();
+        Quaternion localRotationQuat = spatial.getLocalRotation(); // alias
+        if (!localPhysics && spatial.getParent() != null) {
+            tmpInverseWorldRotation
+                    .set(spatial.getParent().getWorldRotation())
+                    .inverseLocal();
+            MyQuaternion.rotate(
+                    tmpInverseWorldRotation, localLocation, localLocation);
+            localRotationQuat.set(physicsOrientation.fromAngleAxis(rotation, Vector3f.UNIT_Z));
+            tmpInverseWorldRotation
+                    .set(spatial.getParent().getWorldRotation())
+                    .inverseLocal()
+                    .mult(localRotationQuat, localRotationQuat);
+
+            spatial.setLocalRotation(localRotationQuat);
+        } else {
+            physicsOrientation.fromAngleAxis(rotation, Vector3f.UNIT_Z);
+            getJmeObject().setLocalRotation(physicsOrientation);
+        }
+        tempVars.release();
+    }
+
+    @Override
+    public void applyPhysicsLocation(PhysicsBody2D physicBody) {
+        if (!isEnabled() && spatial == null)
+            return;
+        
+        final Transform trans = physicBody.getTransform();
+
+        final float posX = Converter.toFloatValue(trans.getTranslationX());
+        final float posY = Converter.toFloatValue(trans.getTranslationY());
+
+        Vector3f physicsLocation = new Vector3f(posX, posY, spatial.getLocalTranslation().z);
+        if (! localPhysics && spatial.getParent() != null) {
+            Vector3f localLocation = spatial.getLocalTranslation();
+            localLocation
+                    .set(physicsLocation)
+                    .subtractLocal(
+                            spatial.getParent()
+                                    .getWorldTranslation());
+            localLocation.divideLocal(
+                    spatial.getParent().getWorldScale());
+
+            spatial.setLocalTranslation(localLocation);
+        } else {
+            spatial.setLocalTranslation(posX, posY, spatial.getLocalTranslation().z);
+        }
+    }
 
     /**
      * Release this physical body from the scene as well as from the physical
@@ -106,16 +206,19 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
         this.physicsSpace = physicsSpace;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#jmeClone() 
+     */
     @Override
     public Object jmeClone() {
-        try {
-            PhysicsBody2D clon = (PhysicsBody2D) this.clone();
-            return clon;
-        } catch (CloneNotSupportedException e) {
-            throw new InternalError(e);
-        }
+        return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
     @Override
     public void cloneFields(Cloner cloner, Object o) {
         PhysicsBody2D original = (PhysicsBody2D) o;
@@ -262,6 +365,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
         Mass myMass     = new Mass(mCenter, in.readDouble("Mass", 0.0), in.readDouble("Inertia", 0.0));
         myMass.setType(in.readEnum("MassType", MassType.class, MassType.INFINITE));
         
+        setMass(myMass);        
         applyForce(Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("AccumulatedForce", new Vector2f(0.0F, 0.0F))));
         applyTorque(in.readDouble("AccumulatedTorque", 0));
         
