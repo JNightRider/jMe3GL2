@@ -39,7 +39,10 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector2;
 import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.PhysicsBody2D;
@@ -114,6 +117,7 @@ public class Tanks2D extends SimpleApplication {
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
         
         Spatial tank = assetManager.loadAsset(new J2OKey<>("Models/TankNavy.j2o"));
+        tank.getControl(PhysicsBody2D.class).setMass(new Mass(new Vector2(), 10, 0));
         tank.addControl(new TanksControl());
         
         dyn4jAppState.getPhysicsSpace().addBody(tank.getControl(Vehicle2D.class), true);
@@ -128,8 +132,12 @@ public class Tanks2D extends SimpleApplication {
             Geometry geom = new Geometry("1", new Sprite(10, 0.5f));
             geom.setMaterial(getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.randomColor()));
             
+            BodyFixture bf = new BodyFixture(createRectangle(10, 0.5));
+            bf.setFriction(5);
+                
+            
             RigidBody2D rbd = new RigidBody2D();
-            rbd.addFixture(createRectangle(10, 0.5));
+            rbd.addFixture(bf);
             rbd.setMass(MassType.INFINITE);
             rbd.translate(0, -3);
             geom.addControl(rbd);

@@ -43,7 +43,6 @@ import com.jme3.scene.control.Control;
 import com.jme3.util.TempVars;
 import com.jme3.util.clone.Cloner;
 import com.jme3.util.clone.JmeCloneable;
-import jme3utilities.math.MyQuaternion;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -59,6 +58,7 @@ import org.dyn4j.geometry.Vector2;
 
 import org.je3gl.physics.PhysicsSpace;
 import org.je3gl.util.Converter;
+import org.je3gl.utilities.TransformUtilities;
 
 /**
  * An abstract implementation of the {@link org.je3gl.physics.control.PhysicsControl} 
@@ -140,8 +140,8 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
             tmpInverseWorldRotation
                     .set(spatial.getParent().getWorldRotation())
                     .inverseLocal();
-            MyQuaternion.rotate(
-                    tmpInverseWorldRotation, localLocation, localLocation);
+            TransformUtilities.rotate(
+                        tmpInverseWorldRotation, localLocation, localLocation);
             localRotationQuat.set(physicsOrientation.fromAngleAxis(rotation, Vector3f.UNIT_Z));
             tmpInverseWorldRotation
                     .set(spatial.getParent().getWorldRotation())

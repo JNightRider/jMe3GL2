@@ -71,7 +71,7 @@ import org.dyn4j.geometry.Vector2;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implements Savable, Cloneable, JmeCloneable {
+public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implements Savable, Cloneable {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsJoint.class.getName());
 
@@ -194,16 +194,6 @@ public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implement
     public PhysicsJoint(E joint) {
         this.type  = Type.valueOf(joint);
         this.joint = joint;
-    }
-
-    @Override
-    public Object jmeClone() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void cloneFields(Cloner cloner, Object original) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
     /**
