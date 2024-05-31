@@ -37,8 +37,6 @@ import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.export.Savable;
 import com.jme3.math.Vector2f;
-import com.jme3.util.clone.Cloner;
-import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -194,6 +192,186 @@ public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implement
     public PhysicsJoint(E joint) {
         this.type  = Type.valueOf(joint);
         this.joint = joint;
+    }
+    
+    /**
+     * (non-Javadoc)
+     * @see java.lang.Object#clone() 
+     * @return clon
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public PhysicsJoint<T, E> clone() {
+        try {
+            
+            PhysicsJoint<T, E> clon = (PhysicsJoint<T, E>) super.clone();
+            clon.type = type;
+            
+            switch (type) {
+                case AngleJoint:
+                    AngleJoint<T> clonaj = (AngleJoint<T>) joint;                    
+                    T ajBody1 = (T) clonaj.getBody1().clone();
+                    T ajBody2 = (T) clonaj.getBody2().clone();
+                    
+                    AngleJoint<T> aj = new AngleJoint<>(ajBody1, ajBody2);
+                    aj.setLimits(clonaj.getLowerLimit(), clonaj.getUpperLimit());
+                    aj.setLimitsEnabled(clonaj.isLimitsEnabled());
+                    aj.setLimitsReferenceAngle(clonaj.getLimitsReferenceAngle());
+                    aj.setRatio(clonaj.getRatio());
+
+                    clon.joint = (E) aj;
+                    break;
+                case DistanceJoint:
+                    DistanceJoint<T> clondj = (DistanceJoint<T>) joint;                    
+                    T djBody1 = (T) clondj.getBody1().clone();
+                    T djBody2 = (T) clondj.getBody2().clone();
+
+                    Vector2 djAnchor1 = clondj.getAnchor1().copy(),
+                            djAnchor2 = clondj.getAnchor2().copy();
+
+                    DistanceJoint<T> dj = new DistanceJoint<>(djBody1, djBody2, djAnchor1, djAnchor2);
+                    dj.setSpringFrequency(clondj.getSpringFrequency());
+                    dj.setSpringDampingRatio(clondj.getSpringDampingRatio());
+                    dj.setRestDistance(clondj.getRestDistance());
+
+                    clon.joint = (E) dj;
+                    break;
+                case FrictionJoint:
+                    FrictionJoint<T> clonfj = (FrictionJoint<T>) joint;
+                    T fjBody1 = (T) clonfj.getBody1().clone();
+                    T fjBody2 = (T) clonfj.getBody2().clone();
+
+                    Vector2 fjAnchor = clonfj.getAnchor1().copy();
+
+                    FrictionJoint<T> fj = new FrictionJoint<>(fjBody1, fjBody2, fjAnchor);
+                    fj.setMaximumForce(clonfj.getMaximumForce());
+                    fj.setMaximumTorque(clonfj.getMaximumTorque());
+
+                    clon.joint = (E) fj;
+                    break;
+                case PinJoint:
+                    PinJoint<T> clonmj = (PinJoint<T>) joint;
+                    T mjBody           = (T) clonmj.getBody().clone();
+                    Vector2 mjAnchor   = clonmj.getAnchor().copy();
+
+                    PinJoint<T> mj = new PinJoint<>(mjBody, mjAnchor);
+                    mj.setSpringFrequency(clonmj.getSpringFrequency());
+                    mj.setSpringDampingRatio(clonmj.getSpringDampingRatio());
+                    mj.setMaximumSpringForce(clonmj.getMaximumSpringForce());
+                    mj.setTarget(clonmj.getTarget().copy());
+
+                    clon.joint = (E) mj;
+                    break;
+                case PrismaticJoint:
+                    PrismaticJoint<T> clonpj = (PrismaticJoint<T>) joint;
+                    T pjBody1 = (T) clonpj.getBody1().clone();
+                    T pjBody2 = (T) clonpj.getBody2().clone();
+
+                    Vector2 pjAnchor = clonpj.getAnchor1().copy(),
+                            pjAxis   = clonpj.getAxis().copy();
+
+                    PrismaticJoint<T> pj = new PrismaticJoint<>(pjBody1, pjBody2, pjAnchor, pjAxis);
+                    pj.setLowerLimitEnabled(clonpj.isLowerLimitEnabled());
+                    pj.setUpperLimitEnabled(clonpj.isUpperLimitEnabled());
+                    pj.setLimits(clonpj.getLowerLimit(), clonpj.getUpperLimit());
+                    pj.setReferenceAngle(clonpj.getReferenceAngle());
+                    pj.setMotorEnabled(clonpj.isMotorEnabled());
+                    pj.setMotorSpeed(clonpj.getMotorSpeed());
+                    pj.setMaximumMotorForce(clonpj.getMaximumMotorForce());
+
+                    clon.joint = (E) pj;
+                    break;
+                case PulleyJoint:
+                    PulleyJoint<T> clonpyj = (PulleyJoint<T>) joint;
+                    T pyjBody1 = (T) clonpyj.getBody1().clone();
+                    T pyjBody2 = (T) clonpyj.getBody2().clone();
+
+                    Vector2 pulleyAnchor1 = clonpyj.getPulleyAnchor1().copy(),
+                            pulleyAnchor2 = clonpyj.getPulleyAnchor2().copy();
+
+                    Vector2 pyjAnchor1 = clonpyj.getAnchor1().copy(),
+                            pyjAnchor2 = clonpyj.getAnchor2().copy();
+
+                    PulleyJoint<T> pyj = new PulleyJoint<>(pyjBody1, pyjBody2, pulleyAnchor1, pulleyAnchor2, pyjAnchor1, pyjAnchor2);
+                    pyj.setRatio(clonpyj.getRatio());
+
+                    clon.joint = (E) pyj;
+                    break;
+                case RevoluteJoint:
+                    RevoluteJoint<T> clonrj = (RevoluteJoint<T>) joint;
+                    T rjBody1 = (T) clonrj.getBody1().clone();
+                    T rjBody2 = (T) clonrj.getBody2().clone();
+
+                    Vector2 rjAnchor = clonrj.getAnchor1().copy();
+
+                    RevoluteJoint<T> rj = new RevoluteJoint<>(rjBody1, rjBody2, rjAnchor);
+                    rj.setLimitsEnabled(clonrj.isLimitsEnabled());
+                    rj.setLimits(clonrj.getLowerLimit(), clonrj.getUpperLimit());
+                    rj.setLimitsReferenceAngle(clonrj.getLimitsReferenceAngle());
+                    rj.setMotorEnabled(clonrj.isMotorEnabled());
+                    rj.setMotorSpeed(clonrj.getMotorSpeed());
+
+                    clon.joint = (E) rj;
+                    break;
+                case WeldJoint:
+                    WeldJoint<T> clonwj = (WeldJoint<T>) joint;
+                    T wjBody1 = (T) clonwj.getBody1().clone();
+                    T wjBody2 = (T) clonwj.getBody2().clone();
+
+                    Vector2 wjAnchor = clonwj.getAnchor1().copy();
+
+                    WeldJoint<T> wj = new WeldJoint<>(wjBody1, wjBody2, wjAnchor);
+                    wj.setSpringFrequency(clonwj.getSpringFrequency());
+                    wj.setSpringDampingRatio(clonwj.getSpringDampingRatio());
+                    wj.setLimitsReferenceAngle(clonwj.getLimitsReferenceAngle());
+
+                    clon.joint = (E) wj;
+                    break;
+                case WheelJoint:
+                    WheelJoint<T> clonwhj = (WheelJoint<T>) joint;
+                    T whjBody1 = (T) clonwhj.getBody1().clone();
+                    T whjBody2 = (T) clonwhj.getBody2().clone();
+
+                    Vector2 whjAnchor = clonwhj.getAnchor1().copy(),
+                            whjAxis   = clonwhj.getAxis().copy();
+
+                    WheelJoint<T> whj = new WheelJoint<>(whjBody1, whjBody2, whjAnchor, whjAxis);
+                    whj.setSpringFrequency(clonwhj.getSpringFrequency());
+                    whj.setSpringDampingRatio(clonwhj.getSpringDampingRatio());
+                    whj.setMotorEnabled(clonwhj.isMotorEnabled());
+                    whj.setMotorSpeed(clonwhj.getMotorSpeed());
+                    whj.setMaximumMotorTorque(clonwhj.getMaximumMotorTorque());
+
+                    clon.joint = (E) whj;
+                    break;
+                case MotorJoint:
+                    MotorJoint<T> clonmtj = (MotorJoint<T>) joint;
+                    T mtjBody1 = (T) clonmtj.getBody1().clone();
+                    T mtjBody2 = (T) clonmtj.getBody2().clone();
+
+                    MotorJoint<T> mtj = new MotorJoint<>(mtjBody1, mtjBody2);
+                    mtj.setLinearTarget(clonmtj.getLinearTarget().copy());
+                    mtj.setAngularTarget(clonmtj.getAngularTarget());
+                    mtj.setCorrectionFactor(clonmtj.getCorrectionFactor());
+                    mtj.setMaximumForce(clonmtj.getMaximumForce());
+                    mtj.setMaximumTorque(clonmtj.getMaximumTorque());
+
+                    clon.joint = (E) mtj;
+                    break;
+                case Custom:
+                    LOGGER.log(Level.WARNING, "Unknown joint class: clone({0})", joint.getClass().getName());
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+
+            if (type != Type.Custom) {
+                clon.joint.setCollisionAllowed(joint.isCollisionAllowed());
+            }
+            return clon;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     /**

@@ -93,6 +93,11 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
      */
     public PhysicsBody2D() { }
 
+    @Override
+    public PhysicsBody2D clone() throws CloneNotSupportedException {
+        return (PhysicsBody2D) super.clone(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    }
+
     protected Vector3f getSpatialTranslation() {
         Vector3f result;
          if (localPhysics) {

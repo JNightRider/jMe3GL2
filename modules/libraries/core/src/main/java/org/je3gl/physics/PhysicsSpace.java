@@ -31,8 +31,6 @@
  */
 package org.je3gl.physics;
 
-import java.util.Iterator;
-
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.PhysicsControl;
 import org.je3gl.physics.joint.PhysicsJoint;
@@ -135,51 +133,11 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
     
     /**
      * (non-Javadoc)
-     * @see org.dyn4j.world.PhysicsWorld#addJoint(org.dyn4j.dynamics.joint.Joint)
-     * @param joint joint
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void addJoint(final Joint joint) {
-        // Iterator<E> it = joint.getBodyIterator();
-        // while (it.hasNext()) {
-        //     E next = it.next();
-        //     if ( next != null && (next instanceof PhysicsControl) && (((PhysicsBody2D) next).getPhysicsSpace() == null)) {
-        //         ((PhysicsControl) next).setPhysicsSpace(this);
-        //     }
-        // }
-        super.addJoint(joint);
-    }
-    
-    /**
-     * (non-Javadoc)
      * @see jme3gl2.physics.PhysicsSpace#addJoint(org.dyn4j.dynamics.joint.Joint) 
      * @param joint joint
      */
     public void addJoint(final PhysicsJoint<E, ? extends Joint<E>> joint) {
         this.addJoint(joint.getJoint());
-    }
-
-    /**
-     * (non-Javadoc)
-     * @see org.dyn4j.world.PhysicsWorld#removeJoint(org.dyn4j.dynamics.joint.Joint) 
-     * @param joint joint
-     * @return boolean
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean removeJoint(Joint<E> joint) {
-        boolean b = super.removeJoint(joint);
-        // if (b) {
-        //     Iterator<E> it = joint.getBodyIterator();
-        //     while (it.hasNext()) {
-        //         E next = it.next();
-        //         if ( next != null && (next instanceof PhysicsControl)) {
-        //             ((PhysicsControl) next).setPhysicsSpace(null);
-        //         }
-        //     }
-        // }
-        return b;
     }
     
     /**
