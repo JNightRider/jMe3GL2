@@ -42,12 +42,22 @@ import org.je3gl.util.Converter;
  * @version 1.0.2
  * @since 1.0.0
  */
-public class RigidBody2D extends PhysicsBody2D {
+public class RigidBody2D extends PhysicsBody2D implements Cloneable {
 
     /**
      * Class constructor <code>RigidBody2D</code>.
      */
     public RigidBody2D() { }
+
+    @Override
+    public RigidBody2D clone(boolean cloneForce) {
+        return (RigidBody2D) super.clone(cloneForce);
+    }
+
+    @Override
+    public RigidBody2D clone() {
+        return this.clone(false);
+    }
 
     /**
      * Detects if this body contains more than one {@link org.dyn4j.collision.Fixture}.

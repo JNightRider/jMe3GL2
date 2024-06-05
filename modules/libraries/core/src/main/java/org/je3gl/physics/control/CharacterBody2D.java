@@ -70,7 +70,7 @@ import org.dyn4j.world.listener.StepListenerAdapter;
  * @version 2.0.0
  * @since 1.0.0
  */
-public class CharacterBody2D extends PhysicsBody2D {
+public class CharacterBody2D extends PhysicsBody2D implements Cloneable {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(CharacterBody2D.class.getName());    
     /** Key for user data that defines the type of the character (optional). */
@@ -109,7 +109,7 @@ public class CharacterBody2D extends PhysicsBody2D {
      * 
      * @since 3.0.0
      */
-    protected class BooleanHandler {
+    protected class BooleanHandler implements Cloneable {
         
         /** If the flag is active. */
         private boolean active;
@@ -120,6 +120,19 @@ public class CharacterBody2D extends PhysicsBody2D {
          * Constructor.
          */
         public BooleanHandler() {
+        }
+
+        @Override
+        protected BooleanHandler clone() {
+            try {
+                BooleanHandler clon = (BooleanHandler) 
+                                        BooleanHandler.super.clone();
+                clon.active = active;
+                clon.hasBeenHandled = hasBeenHandled;
+                return clon;
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
         }
         
         /**
@@ -356,6 +369,24 @@ public class CharacterBody2D extends PhysicsBody2D {
             physicsSpace.addContactListener(contactListener);
         }
         this.physicsSpace = physicsSpace;
+    }
+
+    @Override
+    public CharacterBody2D clone(boolean cloneForce) {
+        CharacterBody2D clon = (CharacterBody2D) super.clone(cloneForce);
+        clon.onCeiling = onCeiling;
+        clon.onGround  = onGround;
+        clon.onWall    = onWall;
+        
+        clon.characterContactListener = characterContactListener;
+        clon.oneWayContactDisabler    = oneWayContactDisabler;
+        clon.downHandler              = downHandler.clone();
+        return clon;
+    }
+
+    @Override
+    public CharacterBody2D clone() {
+        return this.clone(false);
     }
     
     /**

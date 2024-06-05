@@ -49,7 +49,7 @@ import org.dyn4j.geometry.Vector2;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class Vehicle2D extends PhysicsBody2D {
+public class Vehicle2D extends PhysicsBody2D implements Cloneable {
 
     private static final Logger LOGGER = Logger.getLogger(Vehicle2D.class.getName());
 
@@ -133,14 +133,14 @@ public class Vehicle2D extends PhysicsBody2D {
             getPhysicsSpace().removeBody(rearWheel);
             getPhysicsSpace().removeBody(frontWheel);
             
-            getPhysicsSpace().removeJoint(rearWheelPhysicsJoint);
-            getPhysicsSpace().removeJoint(frontWheelPhysicsJoint);
+            getPhysicsSpace().removePhysicsJoint(rearWheelPhysicsJoint);
+            getPhysicsSpace().removePhysicsJoint(frontWheelPhysicsJoint);
         } else if ((physicsSpace != null && getPhysicsSpace() == null) && (rearWheel != null && frontWheel != null)) {
             physicsSpace.addBody(rearWheel);
             physicsSpace.addBody(frontWheel);
             
-            physicsSpace.addJoint(rearWheelPhysicsJoint);
-            physicsSpace.addJoint(frontWheelPhysicsJoint);
+            physicsSpace.addPhysicsJoint(rearWheelPhysicsJoint);
+            physicsSpace.addPhysicsJoint(frontWheelPhysicsJoint);
         }        
         super.setPhysicsSpace(physicsSpace);
     }
@@ -193,6 +193,28 @@ public class Vehicle2D extends PhysicsBody2D {
         if (frontWheelPhysicsJoint != null) {
             frontWheelPhysicsJoint.getJoint().setMotorSpeed(this.speed);
         }
+    }
+
+    @Override
+    public Vehicle2D clone(boolean cloneForce) {
+        Vehicle2D clon = (Vehicle2D) super.clone(cloneForce);
+        clon.rearWheelPhysicsJoint = rearWheelPhysicsJoint.clone();
+        clon.rearWheel = clon.rearWheelPhysicsJoint.getJoint().getBody2();
+        
+        clon.frontWheelPhysicsJoint = frontWheelPhysicsJoint.clone();
+        clon.frontWheel = clon.frontWheelPhysicsJoint.getJoint().getBody2();
+        
+        clon.speed    = speed;
+        clon.maxSpeed = maxSpeed;
+        
+        clon.acceleration  = acceleration;
+        clon.decceleration = decceleration;
+        return clon;
+    }
+
+    @Override
+    public Vehicle2D clone() {
+        return this.clone(false);
     }
 
     public double getSpeed() {
