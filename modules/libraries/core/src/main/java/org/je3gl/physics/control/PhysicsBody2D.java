@@ -45,6 +45,8 @@ import com.jme3.util.clone.Cloner;
 import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,9 +75,14 @@ import org.je3gl.utilities.TransformUtilities;
  * @version 1.5.5
  * @since 1.0.0
  */
-public abstract class PhysicsBody2D extends Body implements Control, Cloneable, Savable, PhysicsControl<PhysicsBody2D> {
+public abstract class PhysicsBody2D extends Body implements Control, Cloneable, Savable, JmeCloneable, PhysicsControl<PhysicsBody2D> {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsBody2D.class.getName());
+    
+    /**
+     * temporary storage during calculations TODO thread safety
+     */
+    private Quaternion tmpInverseWorldRotation = new Quaternion();
     
     /** Physical space. */
     protected PhysicsSpace<PhysicsBody2D> physicsSpace;
@@ -101,98 +108,94 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     public boolean removeFixture(PhysicsFixture fixture) {
         return this.removeFixture(fixture.getFixture());
     }
-    
+
+    /*
+     * (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#jmeClone() 
+     */
     @Override
-    public PhysicsBody2D clone() {
-        return clone(false);
-    }
-    
-    public PhysicsBody2D clone(boolean cloneForce) {
+    public PhysicsBody2D jmeClone() {
         try {
-            final Cloner cloner      = new Cloner();            
-            final PhysicsBody2D clon = (PhysicsBody2D) super.clone();
-            
-            clon.spatial = cloner.clone(spatial);
-            clon.physicsSpace = physicsSpace;
-
-            Object myuserObject = getUserData();
-            if ((myuserObject instanceof JmeCloneable) || (myuserObject instanceof Cloneable)) {
-                myuserObject = cloner.clone(myuserObject);
-            }
-
-            clon.setUserData(myuserObject);
-            clon.removeAllFixtures();
-
-            int fSize = this.getFixtureCount();
-            for (int j = 0; j < fSize; j++) {
-                BodyFixture bf  = this.getFixture(j);
-                clon.addFixture(new PhysicsFixture(bf).clone());
-            }
-            
-            // set the transform
-            if (Math.abs(getTransform().getRotationAngle()) > Epsilon.E) {
-                clon.getTransform().setRotation(getTransform().getRotationAngle());
-            }
-            if (!getTransform().getTranslation().isZero()) {
-                clon.getTransform().setTranslation(getTransform().getTranslation().copy());
-            }
-        
-            // set velocity
-            if (!getLinearVelocity().isZero()) {
-                clon.setLinearVelocity(getLinearVelocity().copy());
-            }
-            if (Math.abs(getAngularVelocity()) > Epsilon.E) {
-                clon.setAngularVelocity(getAngularVelocity());
-            }
-            
-            // set state properties
-            if (!isEnabled()) {
-                clon.setEnabled(true);
-            } // by default the body is active
-            if (isAtRest()) {
-                clon.setAtRest(true);
-            } // by default the body is awake
-            if (!isAtRestDetectionEnabled()) {
-                clon.setAtRestDetectionEnabled(false);
-            } // by default auto sleeping is true
-            if (isBullet()) {
-                clon.setBullet(true);
-            } // by default the body is not a bullet
-            
-            // set damping
-            if (getLinearDamping() != Body.DEFAULT_LINEAR_DAMPING) {
-                clon.setLinearDamping(getLinearDamping());
-            }
-            if (getAngularDamping() != Body.DEFAULT_ANGULAR_DAMPING) {
-                clon.setAngularDamping(getAngularDamping());
-            }
-            // set gravity scale
-            if (getGravityScale() != 1.0) {
-                clon.setGravityScale(getGravityScale());
-            }
-            
-            // set mass properties last
-            Mass myMass = getMass();
-            Mass iMass = new Mass(myMass.getCenter().copy(), myMass.getMass(), myMass.getInertia());
-            iMass.setType(myMass.getType());   
-            
-            // new mass
-            clon.setMass(iMass);
-            
-            if (cloneForce) {
-                // set force/torque accumulators
-                if (!getAccumulatedForce().isZero()) {
-                    clon.applyForce(getAccumulatedForce().copy());
-                }
-                if (Math.abs(getAccumulatedTorque()) > Epsilon.E) {
-                    applyTorque(getAccumulatedTorque());
-                }
-            }
-       
+            PhysicsBody2D clon = (PhysicsBody2D) super.clone();
             return clon;
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("cloning error", e);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
+    @Override
+    public void cloneFields(Cloner cloner, Object object) {
+        PhysicsBody2D original = (PhysicsBody2D) object;
+        setOwner(null);
+        physicsSpace = null;
+        spatial      = cloner.clone(spatial);
+        
+        Object mmUD = original.getUserData();
+        if ((mmUD instanceof JmeCloneable) || (mmUD instanceof Cloneable)) {
+            mmUD = cloner.clone(mmUD);
+        }
+        setUserData(mmUD);
+                
+        int fSize = original.getFixtureCount();
+        for (int j = 0; j < fSize; j++) {
+            BodyFixture bf = original.getFixture(j);
+            fixtures.set(j, new PhysicsFixture(bf).clone().getFixture());
+        }
+        
+        // set the transform
+        getTransform().setTranslation(original.getTransform().getTranslation().copy());
+        if (Math.abs(original.getTransform().getRotationAngle()) > Epsilon.E) {
+            getTransform().setRotation(original.getTransform().getRotationAngle());
+        }
+        
+        // set velocity
+        setLinearVelocity(original.getLinearVelocity().copy());
+        if (Math.abs(original.getAngularVelocity()) > Epsilon.E) {
+            setAngularVelocity(original.getAngularVelocity());
+        }
+
+        // set state properties
+        if (!original.isEnabled()) {
+            setEnabled(true);
+        } // by default the body is active
+        if (original.isAtRest()) {
+            setAtRest(true);
+        } // by default the body is awake
+        if (!original.isAtRestDetectionEnabled()) {
+            setAtRestDetectionEnabled(false);
+        } // by default auto sleeping is true
+        if (original.isBullet()) {
+            setBullet(true);
+        } // by default the body is not a bullet
+
+        // set damping
+        if (original.getLinearDamping() != Body.DEFAULT_LINEAR_DAMPING) {
+            setLinearDamping(original.getLinearDamping());
+        }
+        if (original.getAngularDamping() != Body.DEFAULT_ANGULAR_DAMPING) {
+            setAngularDamping(original.getAngularDamping());
+        }
+        // set gravity scale
+        if (original.getGravityScale() != 1.0) {
+            setGravityScale(original.getGravityScale());
+        }
+
+        // set mass properties last
+        Mass myMass = original.getMass();
+        Mass iMass = new Mass(myMass.getCenter().copy(), myMass.getMass(), myMass.getInertia());
+        iMass.setType(myMass.getType());
+
+        // new mass
+        setMass(iMass);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + String.valueOf(spatial) + ") " + super.toString();
     }
 
     protected Vector3f getSpatialTranslation() {
@@ -223,65 +226,37 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     public void setLocalPhysics(boolean localPhysics) {
         this.localPhysics = localPhysics;
     }
-
-    @Override
-    public void applyPhysicsRotation(PhysicsBody2D physicBody) {
-        if (!isEnabled() && spatial == null)
-            return;
-        
-        final Transform trans = physicBody.getTransform();
-        final float rotation = Converter.toFloatValue(trans.getRotationAngle());
-
-        final TempVars tempVars = TempVars.get();
-        final Quaternion tmpInverseWorldRotation = new Quaternion(),
-                         physicsOrientation = tempVars.quat1;
-        
-        Vector3f localLocation = spatial.getLocalTranslation();
-        Quaternion localRotationQuat = spatial.getLocalRotation(); // alias
-        if (!localPhysics && spatial.getParent() != null) {
-            tmpInverseWorldRotation
-                    .set(spatial.getParent().getWorldRotation())
-                    .inverseLocal();
-            TransformUtilities.rotate(
-                        tmpInverseWorldRotation, localLocation, localLocation);
-            localRotationQuat.set(physicsOrientation.fromAngleAxis(rotation, Vector3f.UNIT_Z));
-            tmpInverseWorldRotation
-                    .set(spatial.getParent().getWorldRotation())
-                    .inverseLocal()
-                    .mult(localRotationQuat, localRotationQuat);
-
-            spatial.setLocalRotation(localRotationQuat);
-        } else {
-            physicsOrientation.fromAngleAxis(rotation, Vector3f.UNIT_Z);
-            getJmeObject().setLocalRotation(physicsOrientation);
-        }
-        tempVars.release();
-    }
-
-    @Override
-    public void applyPhysicsLocation(PhysicsBody2D physicBody) {
-        if (!isEnabled() && spatial == null)
-            return;
-        
-        final Transform trans = physicBody.getTransform();
-
-        final float posX = Converter.toFloatValue(trans.getTranslationX());
-        final float posY = Converter.toFloatValue(trans.getTranslationY());
-
-        Vector3f physicsLocation = new Vector3f(posX, posY, spatial.getLocalTranslation().z);
-        if (! localPhysics && spatial.getParent() != null) {
+    
+    protected void applyPhysicsTransform(Vector3f physicsLocation, Quaternion physicsOrientation) {
+        if (isEnabled() && spatial != null) {
             Vector3f localLocation = spatial.getLocalTranslation();
-            localLocation
-                    .set(physicsLocation)
-                    .subtractLocal(
-                            spatial.getParent()
-                                    .getWorldTranslation());
-            localLocation.divideLocal(
-                    spatial.getParent().getWorldScale());
+            Quaternion localRotationQuat = spatial.getLocalRotation();
+                        
+            if (!localPhysics && spatial.getParent() != null) {
+                localLocation
+                        .set(physicsLocation)
+                        .subtractLocal(
+                                spatial.getParent()
+                                        .getWorldTranslation());
+                localLocation.divideLocal(
+                        spatial.getParent().getWorldScale());
+                tmpInverseWorldRotation
+                        .set(spatial.getParent().getWorldRotation())
+                        .inverseLocal();
+                TransformUtilities.rotate(
+                        tmpInverseWorldRotation, localLocation, localLocation);
+                localRotationQuat.set(physicsOrientation);
+                tmpInverseWorldRotation
+                        .set(spatial.getParent().getWorldRotation())
+                        .inverseLocal()
+                        .mult(localRotationQuat, localRotationQuat);
 
-            spatial.setLocalTranslation(localLocation);
-        } else {
-            spatial.setLocalTranslation(posX, posY, spatial.getLocalTranslation().z);
+                spatial.setLocalTranslation(localLocation);
+                spatial.setLocalRotation(localRotationQuat);
+            } else {
+                spatial.setLocalTranslation(physicsLocation);
+                spatial.setLocalRotation(physicsOrientation);
+            }
         }
     }
 
@@ -341,9 +316,13 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
             throw new IllegalStateException("This control has already been added to a Spatial.");
         }
         this.spatial = spatial;
-        
-        this.applyPhysicsLocation(this);
-        this.applyPhysicsRotation(this);
+        float deep   = this.spatial.getLocalTranslation().z;
+        Quaternion rot = new Quaternion().fromAngleAxis(
+                Converter.toFloatValue(getTransform().getRotationAngle()),
+                 Vector3f.UNIT_Z);
+        Vector3f loc   = Converter.toVector3fValueOfJME3(getTransform().getTranslation());
+        loc.setZ(deep);
+        applyPhysicsTransform(loc, rot);
         this.ready();
     }
 
@@ -398,8 +377,13 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
      * @param tpf time per frame (in seconds)
      */
     protected void controlUpdate(float tpf) {
-        applyPhysicsLocation(this);
-        applyPhysicsRotation(this);
+        float deep     = this.spatial.getLocalTranslation().z;
+        Quaternion rot = new Quaternion().fromAngleAxis(
+                Converter.toFloatValue(getTransform().getRotationAngle()),
+                 Vector3f.UNIT_Z);
+        Vector3f loc   = Converter.toVector3fValueOfJME3(getTransform().getTranslation());
+        loc.setZ(deep);
+        applyPhysicsTransform(loc, rot);
     }
 
     /**

@@ -201,9 +201,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 case Circle:
                     Circle circle = (Circle) shape;
                     clon.shape    = (E) GeometryUtilities.createCircle(circle.getRadius());
-                    if (!circle.getCenter().isZero()) {
-                        clon.shape.translate(circle.getCenter().copy());
-                    }
+                    clon.shape.translate(circle.getCenter().copy());
                     break;
                 case Rectangle:
                     Rectangle rectangle = (Rectangle) shape;
@@ -211,9 +209,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     if (Math.abs(rectangle.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(rectangle.getRotationAngle());
                     }
-                    if (!rectangle.getCenter().isZero()) {
-                        clon.shape.translate(rectangle.getCenter().copy());
-                    }
+                    clon.shape.translate(rectangle.getCenter().copy());
                     break;
                 case Triangle:
                     Triangle triangle   = (Triangle) shape;
@@ -240,9 +236,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     if (Math.abs(capsule.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(capsule.getRotationAngle());
                     }
-                    if (!capsule.getCenter().isZero()) {
-                        clon.shape.translate(capsule.getCenter().copy());
-                    }
+                    clon.shape.translate(capsule.getCenter().copy());
                     break;
                 case Ellipse:
                     Ellipse ellipse = (Ellipse) shape;
@@ -250,9 +244,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     if (Math.abs(ellipse.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(ellipse.getRotationAngle());
                     }
-                    if (!ellipse.getCenter().isZero()) {
-                        clon.shape.translate(ellipse.getCenter().copy());
-                    }
+                    clon.shape.translate(ellipse.getCenter().copy());
                     break;
                 case HalfEllipse:
                     HalfEllipse halfEllipse = (HalfEllipse) shape;
@@ -265,9 +257,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     if (Math.abs(halfEllipse.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(halfEllipse.getRotationAngle());
                     }
-                    if (halfEllipse.getCenter().y != originalY) {
-                        clon.shape.translate(halfEllipse.getCenter().copy());
-                    }
+                    clon.shape.translate(halfEllipse.getCenter().copy());
                     break;
                 case Slice:
                     Slice slice = (Slice) shape;
@@ -281,9 +271,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     if (Math.abs(slice.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(slice.getRotationAngle());
                     }
-                    if (slice.getCenter().x != originalX) {
-                        clon.shape.translate(slice.getCenter().copy());
-                    }
+                    clon.shape.translate(slice.getCenter().copy());
                     break;
                 case Custom:
                     LOGGER.log(Level.WARNING, "This physical shape cannot be cloned");

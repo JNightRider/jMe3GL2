@@ -32,6 +32,7 @@
 package org.je3gl.physics.control;
 
 import com.jme3.export.*;
+import com.jme3.util.clone.Cloner;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -49,7 +50,7 @@ import org.dyn4j.geometry.Vector2;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class Vehicle2D extends PhysicsBody2D implements Cloneable {
+public class Vehicle2D extends PhysicsBody2D {
 
     private static final Logger LOGGER = Logger.getLogger(Vehicle2D.class.getName());
 
@@ -122,6 +123,11 @@ public class Vehicle2D extends PhysicsBody2D implements Cloneable {
         rearWheelPhysicsJoint.getJoint().setMaximumMotorTorque(torque);
         frontWheelPhysicsJoint.getJoint().setMaximumMotorTorque(torque);
     }
+
+    @Override
+    public PhysicsBody2D jmeClone() {
+        return new Vehicle2D();
+    }
     
     @Override
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
@@ -133,14 +139,17 @@ public class Vehicle2D extends PhysicsBody2D implements Cloneable {
             getPhysicsSpace().removeBody(rearWheel);
             getPhysicsSpace().removeBody(frontWheel);
             
-            getPhysicsSpace().removePhysicsJoint(rearWheelPhysicsJoint);
-            getPhysicsSpace().removePhysicsJoint(frontWheelPhysicsJoint);
+            //getPhysicsSpace().removePhysicsJoint(rearWheelPhysicsJoint);
+            //getPhysicsSpace().removePhysicsJoint(frontWheelPhysicsJoint);
         } else if ((physicsSpace != null && getPhysicsSpace() == null) && (rearWheel != null && frontWheel != null)) {
             physicsSpace.addBody(rearWheel);
             physicsSpace.addBody(frontWheel);
             
-            physicsSpace.addPhysicsJoint(rearWheelPhysicsJoint);
-            physicsSpace.addPhysicsJoint(frontWheelPhysicsJoint);
+            System.out.println(this.hashCode());
+            System.out.println(rearWheelPhysicsJoint.getJoint().getBody1().hashCode());
+            
+            //physicsSpace.addPhysicsJoint(rearWheelPhysicsJoint);
+            //physicsSpace.addPhysicsJoint(frontWheelPhysicsJoint);
         }        
         super.setPhysicsSpace(physicsSpace);
     }
@@ -185,6 +194,16 @@ public class Vehicle2D extends PhysicsBody2D implements Cloneable {
     }
     
     @Override
+    public void cloneFields(Cloner cloner, Object object) {
+        super.cloneFields(cloner, object);        
+        rearWheel  = cloner.clone(rearWheel);        
+        frontWheel = cloner.clone(frontWheel);
+        
+        rearWheelPhysicsJoint  = cloner.clone(rearWheelPhysicsJoint);
+        frontWheelPhysicsJoint = cloner.clone(frontWheelPhysicsJoint);
+    }
+    
+    @Override
     protected void controlUpdate(float tpf) {
         super.controlUpdate(tpf);
         if (rearWheelPhysicsJoint != null) {
@@ -194,29 +213,7 @@ public class Vehicle2D extends PhysicsBody2D implements Cloneable {
             frontWheelPhysicsJoint.getJoint().setMotorSpeed(this.speed);
         }
     }
-
-    @Override
-    public Vehicle2D clone(boolean cloneForce) {
-        Vehicle2D clon = (Vehicle2D) super.clone(cloneForce);
-        clon.rearWheelPhysicsJoint = rearWheelPhysicsJoint.clone();
-        clon.rearWheel = clon.rearWheelPhysicsJoint.getJoint().getBody2();
-        
-        clon.frontWheelPhysicsJoint = frontWheelPhysicsJoint.clone();
-        clon.frontWheel = clon.frontWheelPhysicsJoint.getJoint().getBody2();
-        
-        clon.speed    = speed;
-        clon.maxSpeed = maxSpeed;
-        
-        clon.acceleration  = acceleration;
-        clon.decceleration = decceleration;
-        return clon;
-    }
-
-    @Override
-    public Vehicle2D clone() {
-        return this.clone(false);
-    }
-
+    
     public double getSpeed() {
         return speed;
     }
@@ -249,6 +246,10 @@ public class Vehicle2D extends PhysicsBody2D implements Cloneable {
         return frontWheelPhysicsJoint.getJoint();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
+     */
     @Override
     public void write(JmeExporter ex) throws IOException {
         super.write(ex);
@@ -265,6 +266,10 @@ public class Vehicle2D extends PhysicsBody2D implements Cloneable {
         out.write(decceleration, "Decceleration", 0.5);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void read(JmeImporter im) throws IOException {

@@ -36,6 +36,8 @@ import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.scene.Spatial;
+import com.jme3.util.clone.Cloner;
+import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
 import java.util.List;
@@ -70,7 +72,7 @@ import org.dyn4j.world.listener.StepListenerAdapter;
  * @version 2.0.0
  * @since 1.0.0
  */
-public class CharacterBody2D extends PhysicsBody2D implements Cloneable {
+public class CharacterBody2D extends PhysicsBody2D implements Cloneable, JmeCloneable {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(CharacterBody2D.class.getName());    
     /** Key for user data that defines the type of the character (optional). */
@@ -122,6 +124,10 @@ public class CharacterBody2D extends PhysicsBody2D implements Cloneable {
         public BooleanHandler() {
         }
 
+        /*
+         * (non-Javadoc)
+         * @see java.lang.Object#clone() 
+         */
         @Override
         protected BooleanHandler clone() {
             try {
@@ -371,22 +377,19 @@ public class CharacterBody2D extends PhysicsBody2D implements Cloneable {
         this.physicsSpace = physicsSpace;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
     @Override
-    public CharacterBody2D clone(boolean cloneForce) {
-        CharacterBody2D clon = (CharacterBody2D) super.clone(cloneForce);
-        clon.onCeiling = onCeiling;
-        clon.onGround  = onGround;
-        clon.onWall    = onWall;
+    public void cloneFields(Cloner cloner, Object object) {
+        super.cloneFields(cloner, object);
+        CharacterBody2D original = (CharacterBody2D) object;
+        onCeiling = onGround = onWall = false;
         
-        clon.characterContactListener = characterContactListener;
-        clon.oneWayContactDisabler    = oneWayContactDisabler;
-        clon.downHandler              = downHandler.clone();
-        return clon;
-    }
-
-    @Override
-    public CharacterBody2D clone() {
-        return this.clone(false);
+        characterContactListener = original.characterContactListener;
+        oneWayContactDisabler    = original.oneWayContactDisabler;
+        downHandler              = cloner.clone(downHandler);
     }
     
     /**

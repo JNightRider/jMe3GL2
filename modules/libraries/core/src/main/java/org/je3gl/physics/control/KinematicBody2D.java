@@ -42,24 +42,14 @@ package org.je3gl.physics.control;
  * @version 1.5.5
  * @since 1.2.0
  */
-public class KinematicBody2D extends PhysicsBody2D implements Cloneable {
+public class KinematicBody2D extends PhysicsBody2D {
 
     /**
      * Class constructor <code>KinematicBody2D</code>.
      */
     public KinematicBody2D() {
     }
-    
-    @Override
-    public KinematicBody2D clone(boolean cloneForce) {
-        return (KinematicBody2D) super.clone(cloneForce);
-    }
-
-    @Override
-    public KinematicBody2D clone() {
-        return this.clone(false);
-    }
-    
+        
     /*
      * (non-Javadoc).
      * @see jme3gl2.physics.control.RigidBody2D#controlUpdate(float) 

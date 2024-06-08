@@ -65,6 +65,7 @@ public interface PhysicsControl<E extends PhysicsBody2D> extends Control {
      * associated with the body.
      * @param physicBody body
      */
+    @Deprecated(since = "3.0.0")
     default void applyPhysicsRotation(final E physicBody) {
         final Transform trans = physicBody.getTransform();
         final float rotation = Converter.toFloatValue(trans.getRotationAngle());
@@ -82,6 +83,7 @@ public interface PhysicsControl<E extends PhysicsBody2D> extends Control {
      * associated with the body.
      * @param physicBody body
      */
+    @Deprecated(since = "3.0.0")
     default void applyPhysicsLocation(final E physicBody) {
         final Transform trans = physicBody.getTransform();
 
