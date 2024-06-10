@@ -40,13 +40,10 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.UserData;
 import com.jme3.scene.control.Control;
-import com.jme3.util.TempVars;
 import com.jme3.util.clone.Cloner;
 import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +53,6 @@ import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
-import org.dyn4j.geometry.Transform;
 import org.dyn4j.geometry.Vector2;
 
 import org.je3gl.physics.PhysicsSpace;
@@ -131,6 +127,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     public void cloneFields(Cloner cloner, Object object) {
         PhysicsBody2D original = (PhysicsBody2D) object;
         setOwner(null);
+        
         physicsSpace = null;
         spatial      = cloner.clone(spatial);
         
@@ -139,12 +136,13 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
             mmUD = cloner.clone(mmUD);
         }
         setUserData(mmUD);
-                
-        int fSize = original.getFixtureCount();
-        for (int j = 0; j < fSize; j++) {
-            BodyFixture bf = original.getFixture(j);
-            fixtures.set(j, new PhysicsFixture(bf).clone().getFixture());
-        }
+        
+        
+        //int fSize = original.getFixtureCount();
+        //for (int j = 0; j < fSize; j++) {
+        //    BodyFixture bf = original.getFixture(j);
+        //    fixtures.set(j, new PhysicsFixture(bf).clone().getFixture());
+        //}
         
         // set the transform
         getTransform().setTranslation(original.getTransform().getTranslation().copy());
@@ -184,12 +182,8 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
             setGravityScale(original.getGravityScale());
         }
 
-        // set mass properties last
-        Mass myMass = original.getMass();
-        Mass iMass = new Mass(myMass.getCenter().copy(), myMass.getMass(), myMass.getInertia());
-        iMass.setType(myMass.getType());
-
         // new mass
+        Mass iMass = original.getMass().copy();
         setMass(iMass);
     }
 
