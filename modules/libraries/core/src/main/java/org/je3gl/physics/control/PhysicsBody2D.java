@@ -40,8 +40,6 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.UserData;
 import com.jme3.scene.control.Control;
-import com.jme3.util.clone.Cloner;
-import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -97,19 +95,36 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      */
     public PhysicsBody2D() { }
 
+    /**
+     * Adds a new object with the physical form of this physical body.
+     * @param fixture An object of type {@code PhysicsFixture}
+     * @return An object of type {@code CollisionBody}
+     */
     public CollisionBody<BodyFixture> addFixture(PhysicsFixture fixture) {
         return this.addFixture(fixture.getFixture());
     }
     
+    /**
+     * Delete an object of type  {@code PhysicsFixture}
+     * @param fixture An object of type {@code PhysicsFixture}
+     * @return boolean
+     */
     public boolean removeFixture(PhysicsFixture fixture) {
         return this.removeFixture(fixture.getFixture());
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString() 
+     */
     @Override
     public String toString() {
         return "(" + String.valueOf(spatial) + ") " + super.toString();
     }
 
+    /**
+     * Returns the translation of the spatial.
+     * @return Vector3f
+     */
     protected Vector3f getSpatialTranslation() {
         Vector3f result;
          if (localPhysics) {
@@ -120,6 +135,10 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         return result;
     }
     
+    /**
+     * Returns spatial rotation
+     * @return Quaternion
+     */
     protected Quaternion getSpatialRotation() {
         Quaternion result; 
         if (localPhysics) {
@@ -131,14 +150,32 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         return result;
     }
     
+    /**
+     * Returns the physics state, <code>true</code> if the physics is applied with 
+     * local coordinates; otherwise <code>false</code> if world coordinates are used.
+     * 
+     * @return boolean
+     */
     public boolean isLocalPhysics() {
         return localPhysics;
     }
 
+    /**
+     * Set the behavior.
+     * @param localPhysics <code>true</code> if the physics is applied with 
+     * local coordinates; otherwise <code>false</code> if world coordinates are used.
+     */
     public void setLocalPhysics(boolean localPhysics) {
         this.localPhysics = localPhysics;
     }
     
+    /**
+     * Method responsible for applying the transformation of physical control to
+     * the body (2D model).
+     * 
+     * @param physicsLocation physical control position
+     * @param physicsOrientation physical control rotation
+     */
     protected void applyPhysicsTransform(Vector3f physicsLocation, Quaternion physicsOrientation) {
         if (isEnabled() && spatial != null) {
             Vector3f localLocation = spatial.getLocalTranslation();
@@ -348,10 +385,11 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         applyForce(Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("AccumulatedForce", new Vector2f(0.0F, 0.0F))));
         applyTorque(in.readDouble("AccumulatedTorque", 0));
         
-        spatial    = (Spatial) in.readSavable("Spatial", null);        
+        spatial    = (Spatial) in.readSavable("Spatial", null);
         if (spatial == null) {
             LOGGER.log(Level.SEVERE, "There is NO 'Spatial' to represent this physical body");
         }
+        localPhysics = in.readBoolean("LocalPhysics", false);
     }
     
     /**
@@ -443,5 +481,6 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         
         // jme3
         out.write(spatial, "Spatial", null);
+        out.write(localPhysics, "LocalPhysics", false);
     }
 }
