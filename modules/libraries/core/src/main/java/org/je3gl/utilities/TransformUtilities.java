@@ -35,13 +35,29 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 
 /**
- *
+ *  Utility class responsible for providing transformation methods.
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public class TransformUtilities {
     
+    /**
+     * Rotate the input vector using the specified quaternion.
+     * <p>
+     * Unlike {@link com.jme3.math.Quaternion#mult(com.jme3.math.Vector3f,
+     * com.jme3.math.Vector3f)}, this method doesn't assume the quaternion is
+     * normalized. Instead, rotation is performed using a normalized version of
+     * the quaternion.
+     *
+     * @param rotation the desired rotation (not null, not zero, unaffected)
+     * @param input the vector to rotate (not null, finite, unaffected unless
+     * it's {@code storeResult})     * 
+     * @param storeResult storage for the result (modified if not null, may be
+     * {@code input})
+     * 
+     * @return the rotated vector (either {@code storeResult} or a new instance)
+     */
     public static Vector3f rotate(Quaternion rotation, Vector3f input, Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
@@ -91,8 +107,6 @@ public class TransformUtilities {
         double yy = q.getY();
         double zz = q.getZ();
         double ww = q.getW();
-        double result = xx * xx + yy * yy + zz * zz + ww * ww;
-
-        return result;
+        return(xx * xx + yy * yy + zz * zz + ww * ww);
     }
 }
