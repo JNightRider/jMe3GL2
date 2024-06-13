@@ -33,6 +33,8 @@ package org.je3gl.scene.control;
 
 import com.jme3.export.*;
 import com.jme3.texture.Texture;
+import com.jme3.util.clone.Cloner;
+
 import java.io.IOException;
 
 /**
@@ -81,6 +83,14 @@ public class SpriteAnimation2D extends AbstractAnimation2D<SpriteAnimation2D> im
      */
     public Texture getTexture() {
         return this.texture;
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
+    @Override
+    public void cloneFields(Cloner cloner, Object original) {
+        texture = cloner.clone(texture);
     }
 
     /**

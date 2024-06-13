@@ -32,6 +32,7 @@
 package org.je3gl.scene.control;
 
 import com.jme3.export.*;
+import com.jme3.util.clone.Cloner;
 import java.io.IOException;
 
 /**
@@ -72,6 +73,13 @@ public class SingleAnimation2D extends AbstractAnimation2D<SingleAnimation2D> im
     public SingleAnimation2D(int index, Float nw, Float nh) {
         super(nw, nh);
         this.index = index;
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
+    @Override
+    public void cloneFields(Cloner cloner, Object original) {
     }
 
     /**

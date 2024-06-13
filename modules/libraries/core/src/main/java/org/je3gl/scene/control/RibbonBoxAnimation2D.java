@@ -33,6 +33,9 @@ package org.je3gl.scene.control;
 
 import com.jme3.export.*;
 import com.jme3.texture.Texture;
+import com.jme3.util.clone.Cloner;
+import com.jme3.util.clone.JmeCloneable;
+
 import java.io.IOException;
 
 /**
@@ -44,7 +47,7 @@ import java.io.IOException;
  * @version 1.0.0
  * @since 3.0.0
  */
-public class RibbonBoxAnimation2D extends AbstractAnimation2D<RibbonBoxAnimation2D> implements Animation2D, Savable {
+public class RibbonBoxAnimation2D extends AbstractAnimation2D<RibbonBoxAnimation2D> implements Animation2D, Savable, Cloneable, JmeCloneable {
 
     /** Animated texture. */
     private Texture texture;
@@ -101,6 +104,15 @@ public class RibbonBoxAnimation2D extends AbstractAnimation2D<RibbonBoxAnimation
         this.frames  = frames;
         this.cols = cs;
         this.rows = rs;
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
+    @Override
+    public void cloneFields(Cloner cloner, Object original) {
+        texture = cloner.clone(texture);
+        frames = cloner.clone(frames);
     }
 
     /**

@@ -36,6 +36,8 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.util.clone.Cloner;
+import com.jme3.util.clone.JmeCloneable;
 
 import org.je3gl.listener.AnimationChangeListener;
 import org.je3gl.listener.AnimationTimeChangeListener;
@@ -73,7 +75,7 @@ import java.util.logging.Logger;
  * @param <A> the type of animation
  * @param <E> the type of animated control
  */
-public abstract class AbstractAnimation2DControl<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> extends AbstractControl implements Savable {
+public abstract class AbstractAnimation2DControl<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> extends AbstractControl implements Savable, Cloneable, JmeCloneable {
 
     /** Class logger. */
     private static final Logger LOG = Logger.getLogger(AbstractAnimation2DControl.class.getName());
@@ -111,16 +113,16 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     protected AnimatedMaterialsHandlerFunction<O, A, E> handlerFunction;
     
     /** List of listeners responsible for notifying the change of an animation (sprite). */
-    protected final List<AnimationChangeListener<O, A, E>> changeListeners;
+    protected List<AnimationChangeListener<O, A, E>> changeListeners;
     
     /** 
      * List of listeners responsible for reporting the progress of changing an 
      * animation (sprite). 
      */
-    protected final List<AnimationTimeChangeListener<O, A, E>> timeChangeListeners;
+    protected List<AnimationTimeChangeListener<O, A, E>> timeChangeListeners;
     
     /** Map where all the animations of the 2D model are recorded. */
-    protected final Map<String, A[]> animations;
+    protected Map<String, A[]> animations;
 
     /** Current animation name. */
     protected String currentNameAnimation2D;
@@ -191,6 +193,29 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
         this.handlerFunction  = handlerFunction;
         this.animation2Dloop  = true;
         this.animation2DSpeed = 60F;
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
+    @Override
+    public void cloneFields(Cloner cloner, Object original) {
+        super.cloneFields(cloner, original);
+        try {
+            changeListeners = cloner.javaClone(changeListeners);
+            timeChangeListeners = cloner.javaClone(timeChangeListeners);
+            
+            changeListeners.clear();
+            timeChangeListeners.clear();
+        
+            animations = cloner.javaClone(animations);
+            for (final Map.Entry<String, A[]> entry : this.animations.entrySet()) {
+                animations.put(entry.getKey(), cloner.clone(entry.getValue()));
+            }
+            currentAnimation2D = cloner.clone(currentAnimation2D);
+        } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException("The properties of this object cannot be cloned: " + this.getClass(), ex);
+        }
     }
     
     /**

@@ -32,6 +32,7 @@
 package org.je3gl.scene.control;
 
 import com.jme3.export.*;
+import com.jme3.util.clone.JmeCloneable;
 import java.io.IOException;
 
 /**
@@ -42,7 +43,7 @@ import java.io.IOException;
  * @version 1.0.0
  * @since 3.0.0
  */
-public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> implements Animation2D, Savable {
+public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> implements Animation2D, Savable, Cloneable, JmeCloneable {
     
     /* size (mesh). **/
     private Float width,  // <- mesh width (Sprite)
@@ -56,6 +57,18 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
     public AbstractAnimation2D(Float width, Float height) {
         this.width  = width;
         this.height = height;
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#jmeClone() 
+     */
+    @Override
+    public Object jmeClone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Error cloning this object: " + this.getClass(), e);
+        }
     }
     
     /**
