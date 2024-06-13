@@ -47,7 +47,6 @@ import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.CharacterBody2D;
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.RigidBody2D;
-import org.je3gl.plugins.J2OLoader;
 import org.je3gl.plugins.asset.J2OKey;
 import org.je3gl.plugins.input.BooleanStateKeyboardInputHandler;
 import org.je3gl.plugins.input.InputHandlerAppState;
