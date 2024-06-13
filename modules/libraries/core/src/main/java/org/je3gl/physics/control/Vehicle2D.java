@@ -44,37 +44,82 @@ import org.dyn4j.dynamics.joint.WheelJoint;
 import org.dyn4j.geometry.Vector2;
 
 /**
- *
+ * Class in charge of managing 3 physical bodies where they interact with each 
+ * other to form a 2D vehicle. It has a rear wheel + front wheel, the third object 
+ * is the complete body of the vehicle.
+ * 
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public class Vehicle2D extends PhysicsBody2D {
-
+    /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Vehicle2D.class.getName());
 
+    /** rear wheel. */
     protected PhysicsBody2D rearWheel;
+    /** front wheel.*/
     protected PhysicsBody2D frontWheel;
     
+    /** Joint used for the rear wheel. */
     private PhysicsJoint<PhysicsBody2D, WheelJoint<PhysicsBody2D>> rearWheelPhysicsJoint;
+    /** Joint used for the front wheel. */
     private PhysicsJoint<PhysicsBody2D, WheelJoint<PhysicsBody2D>> frontWheelPhysicsJoint;
 
+    //primitive
+    
+    /** Vehicle speed. */
     protected double speed;
+    /** Maximum speed that this vehicle can have. */
     protected double maxSpeed = 20.0;
+    /** Acceleration level to move the vehicle. */
     protected double acceleration = 0.1;
+    /** Speed ​​to decelerate the vehicle (stop it). */
     protected double decceleration = 0.5;
     
+    /**
+     * Constructor.
+     */
     protected Vehicle2D() {
     }
 
+    /**
+     * Generate a new vehicle through class <code>Vehicle2D</code> where you specify 
+     * the 2 wheels it will have, given the width between the axles as well as the
+     * distances to the vehicle.
+     * 
+     * @param rearWheel rear wheel
+     * @param frontWheel front wheel
+     */
     public Vehicle2D(PhysicsBody2D rearWheel, PhysicsBody2D frontWheel) {
         this(rearWheel, frontWheel, rearWheel.getWorldCenter(), frontWheel.getWorldCenter(), new Vector2(0.0, -1.0));
     }
     
+    /**
+     * Generate a new vehicle through class <code>Vehicle2D</code> where you specify 
+     * the 2 wheels it will have, given the width between the axles as well as the
+     * distances to the vehicle.
+     * 
+     * @param rearWheel rear wheel
+     * @param frontWheel front wheel
+     * @param anchor the anchor point for the 2 wheels
+     * @param axis the axis of allowed motion
+     */
     public Vehicle2D(PhysicsBody2D rearWheel, PhysicsBody2D frontWheel, Vector2 anchor, Vector2 axis) {
         this(rearWheel, frontWheel, anchor, anchor, axis);
     }
     
+    /**
+     * Generate a new vehicle through class <code>Vehicle2D</code> where you specify 
+     * the 2 wheels it will have, given the width between the axles as well as the
+     * distances to the vehicle.
+     * 
+     * @param rearWheel rear wheel
+     * @param frontWheel front wheel
+     * @param anchorRearWheel the anchor point for the rear wheel
+     * @param anchorRrontWheel the anchor point for the front wheel
+     * @param axis the axis of allowed motion
+     */
     public Vehicle2D(PhysicsBody2D rearWheel, PhysicsBody2D frontWheel, Vector2 anchorRearWheel, Vector2 anchorRrontWheel, Vector2 axis) {
         this.rearWheel  = rearWheel;   // Rear Wheel
         this.frontWheel = frontWheel;  // Front Wheel
@@ -96,33 +141,60 @@ public class Vehicle2D extends PhysicsBody2D {
         frontWheelPhysicsJoint = new PhysicsJoint<>(frontWheelJoint);
     }
 
+    /**
+     * Set a new speed.
+     * @param maxSpeed double
+     */
     public void setMaxSpeed(double maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
 
+    /**
+     * Set a new value for acceleration.
+     * @param acceleration double
+     */
     public void setAcceleration(double acceleration) {
         this.acceleration = acceleration;
     }
 
+    /**
+     * Set a new value for deceleration.
+     * @param decceleration double
+     */
     public void setDecceleration(double decceleration) {
         this.decceleration = decceleration;
     }
 
+    /**
+     * Activates or deactivates the motors (joints) of this vehicle.
+     * @param enabled boolean
+     */
     public void setMotorEnabled(boolean enabled) {
         rearWheelPhysicsJoint.getJoint().setMotorEnabled(enabled);
         frontWheelPhysicsJoint.getJoint().setMotorEnabled(enabled);
     }
     
+    /**
+     * Sets the maximum state of the motors (Joints)
+     * @param enabled boolean
+     */
     public void setMaximumMotorTorqueEnabled(boolean enabled) {
         rearWheelPhysicsJoint.getJoint().setMaximumMotorTorqueEnabled(enabled);
         frontWheelPhysicsJoint.getJoint().setMaximumMotorTorqueEnabled(enabled);
     }
     
+    /**
+     * Sets the minimum state of the motors (Joints)
+     * @param torque double
+     */
     public void setMaximumMotorTorque(double torque) {
         rearWheelPhysicsJoint.getJoint().setMaximumMotorTorque(torque);
         frontWheelPhysicsJoint.getJoint().setMaximumMotorTorque(torque);
     }
     
+    /* (non-Javadoc)
+     * @see org.je3gl.physics.control.PhysicsControl#setPhysicsSpace(org.je3gl.physics.PhysicsSpace) 
+     */
     @Override
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
         if (physicsSpace == getPhysicsSpace()) {
@@ -174,6 +246,9 @@ public class Vehicle2D extends PhysicsBody2D {
         }
     }
     
+    /**
+     * Stop the vehicle.
+     */
     public void brake() {
         if (speed > 0.0) {
             reverse();
@@ -184,6 +259,9 @@ public class Vehicle2D extends PhysicsBody2D {
         }
     }
     
+    /* (non-Javadoc)
+     * @see com.jme3.scene.control.AbstractControl#controlUpdate(float) 
+     */
     @Override
     protected void controlUpdate(float tpf) {
         super.controlUpdate(tpf);
@@ -195,34 +273,66 @@ public class Vehicle2D extends PhysicsBody2D {
         }
     }
     
+    /**
+     * Returns the current vehicle speed
+     * @return double
+     */
     public double getSpeed() {
         return speed;
     }
 
+    /**
+     * Returns the maximum speed of the vehicle
+     * @return double
+     */
     public double getMaxSpeed() {
         return maxSpeed;
     }
 
+    /**
+     * Returns acceleration speed
+     * @return double
+     */
     public double getAcceleration() {
         return acceleration;
     }
 
+    /**
+     * Returns the deceleration speed
+     * @return double
+     */
     public double getDecceleration() {
         return decceleration;
     }
-
+    
+    /**
+     * Returns the rear wheel (body)
+     * @return body
+     */
     public PhysicsBody2D getRearWheel() {
         return rearWheel;
     }
 
+    /**
+     * Returns the front wheel (body)
+     * @return body
+     */
     public PhysicsBody2D getFrontWheel() {
         return frontWheel;
     }
 
+    /**
+     * Returns the rear wheel joint.
+     * @return joint
+     */
     public WheelJoint<PhysicsBody2D> getRearWheelJoint() {
         return rearWheelPhysicsJoint.getJoint();
     }
 
+    /**
+     * Returns the front wheel joint.
+     * @return joint
+     */
     public WheelJoint<PhysicsBody2D> getFrontWheelJoint() {
         return frontWheelPhysicsJoint.getJoint();
     }
