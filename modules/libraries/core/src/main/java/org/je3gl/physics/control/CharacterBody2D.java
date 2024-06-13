@@ -36,8 +36,6 @@ import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.scene.Spatial;
-import com.jme3.util.clone.Cloner;
-import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
 import java.util.List;
@@ -72,7 +70,7 @@ import org.dyn4j.world.listener.StepListenerAdapter;
  * @version 2.0.0
  * @since 1.0.0
  */
-public class CharacterBody2D extends PhysicsBody2D implements Cloneable, JmeCloneable {
+public class CharacterBody2D extends PhysicsBody2D {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(CharacterBody2D.class.getName());    
     /** Key for user data that defines the type of the character (optional). */
@@ -375,21 +373,6 @@ public class CharacterBody2D extends PhysicsBody2D implements Cloneable, JmeClon
             physicsSpace.addContactListener(contactListener);
         }
         this.physicsSpace = physicsSpace;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
-     */
-    @Override
-    public void cloneFields(Cloner cloner, Object object) {
-        super.cloneFields(cloner, object);
-        CharacterBody2D original = (CharacterBody2D) object;
-        onCeiling = onGround = onWall = false;
-        
-        characterContactListener = original.characterContactListener;
-        oneWayContactDisabler    = original.oneWayContactDisabler;
-        downHandler              = cloner.clone(downHandler);
     }
     
     /**

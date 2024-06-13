@@ -71,7 +71,7 @@ import org.je3gl.utilities.TransformUtilities;
  * @version 1.5.5
  * @since 1.0.0
  */
-public abstract class PhysicsBody2D extends Body implements Control, Cloneable, Savable, JmeCloneable, PhysicsControl<PhysicsBody2D> {
+public abstract class PhysicsBody2D extends Body implements Control, Savable, PhysicsControl<PhysicsBody2D> {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsBody2D.class.getName());
     
@@ -103,88 +103,6 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     
     public boolean removeFixture(PhysicsFixture fixture) {
         return this.removeFixture(fixture.getFixture());
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.jme3.util.clone.JmeCloneable#jmeClone() 
-     */
-    @Override
-    public PhysicsBody2D jmeClone() {
-        try {
-            PhysicsBody2D clon = (PhysicsBody2D) super.clone();
-            return clon;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("cloning error", e);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
-     */
-    @Override
-    public void cloneFields(Cloner cloner, Object object) {
-        PhysicsBody2D original = (PhysicsBody2D) object;
-        setOwner(null);
-        
-        physicsSpace = null;
-        spatial      = cloner.clone(spatial);
-        
-        Object mmUD = original.getUserData();
-        if ((mmUD instanceof JmeCloneable) || (mmUD instanceof Cloneable)) {
-            mmUD = cloner.clone(mmUD);
-        }
-        setUserData(mmUD);
-        
-        
-        //int fSize = original.getFixtureCount();
-        //for (int j = 0; j < fSize; j++) {
-        //    BodyFixture bf = original.getFixture(j);
-        //    fixtures.set(j, new PhysicsFixture(bf).clone().getFixture());
-        //}
-        
-        // set the transform
-        getTransform().setTranslation(original.getTransform().getTranslation().copy());
-        if (Math.abs(original.getTransform().getRotationAngle()) > Epsilon.E) {
-            getTransform().setRotation(original.getTransform().getRotationAngle());
-        }
-        
-        // set velocity
-        setLinearVelocity(original.getLinearVelocity().copy());
-        if (Math.abs(original.getAngularVelocity()) > Epsilon.E) {
-            setAngularVelocity(original.getAngularVelocity());
-        }
-
-        // set state properties
-        if (!original.isEnabled()) {
-            setEnabled(true);
-        } // by default the body is active
-        if (original.isAtRest()) {
-            setAtRest(true);
-        } // by default the body is awake
-        if (!original.isAtRestDetectionEnabled()) {
-            setAtRestDetectionEnabled(false);
-        } // by default auto sleeping is true
-        if (original.isBullet()) {
-            setBullet(true);
-        } // by default the body is not a bullet
-
-        // set damping
-        if (original.getLinearDamping() != Body.DEFAULT_LINEAR_DAMPING) {
-            setLinearDamping(original.getLinearDamping());
-        }
-        if (original.getAngularDamping() != Body.DEFAULT_ANGULAR_DAMPING) {
-            setAngularDamping(original.getAngularDamping());
-        }
-        // set gravity scale
-        if (original.getGravityScale() != 1.0) {
-            setGravityScale(original.getGravityScale());
-        }
-
-        // new mass
-        Mass iMass = original.getMass().copy();
-        setMass(iMass);
     }
 
     @Override

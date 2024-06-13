@@ -35,7 +35,6 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.export.Savable;
 import com.jme3.export.binary.BinaryExporter;
 import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -83,7 +82,8 @@ public class ExportJ2O extends SimpleApplication {
         dyn4jAppState.setDebugEnabled(true);
         stateManager.attach(dyn4jAppState);
         
-        j2oTanks();
+        j3oRabbit();
+        //j2oTanks();
     }
     
     private void j2oTanks() {
@@ -215,7 +215,7 @@ public class ExportJ2O extends SimpleApplication {
         export(tanks, "TankNavy.j2o");
     }
     
-    private void j2oRabbit() {
+    private void j3oRabbit() {
         Geometry player = new Geometry("AnimatedSprite2D", new Sprite(1.0F, 1.0F));
         player.setMaterial(getUnshadedMaterialFromClassPath(assetManager, "Textures/Rabbit/tile_0040.png"));
         player.setQueueBucket(RenderQueue.Bucket.Transparent);
@@ -237,7 +237,7 @@ public class ExportJ2O extends SimpleApplication {
         animatedSprite2D.playAnimation("walk", 10);
         rootNode.attachChild(player);
         
-        export(player, "Rabbit.j2o");
+        export(player, "Rabbit.j3o");
     }
     
     private static void export(Savable obj, String name) {

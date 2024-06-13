@@ -32,7 +32,6 @@
 package org.je3gl.physics.control;
 
 import com.jme3.export.*;
-import com.jme3.util.clone.Cloner;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -123,11 +122,6 @@ public class Vehicle2D extends PhysicsBody2D {
         rearWheelPhysicsJoint.getJoint().setMaximumMotorTorque(torque);
         frontWheelPhysicsJoint.getJoint().setMaximumMotorTorque(torque);
     }
-
-    @Override
-    public PhysicsBody2D jmeClone() {
-        return new Vehicle2D();
-    }
     
     @Override
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
@@ -139,17 +133,14 @@ public class Vehicle2D extends PhysicsBody2D {
             getPhysicsSpace().removeBody(rearWheel);
             getPhysicsSpace().removeBody(frontWheel);
             
-            //getPhysicsSpace().removePhysicsJoint(rearWheelPhysicsJoint);
-            //getPhysicsSpace().removePhysicsJoint(frontWheelPhysicsJoint);
+            getPhysicsSpace().removePhysicsJoint(rearWheelPhysicsJoint);
+            getPhysicsSpace().removePhysicsJoint(frontWheelPhysicsJoint);
         } else if ((physicsSpace != null && getPhysicsSpace() == null) && (rearWheel != null && frontWheel != null)) {
             physicsSpace.addBody(rearWheel);
             physicsSpace.addBody(frontWheel);
-            
-            System.out.println(this.hashCode());
-            System.out.println(rearWheelPhysicsJoint.getJoint().getBody1().hashCode());
-            
-            //physicsSpace.addPhysicsJoint(rearWheelPhysicsJoint);
-            //physicsSpace.addPhysicsJoint(frontWheelPhysicsJoint);
+                        
+            physicsSpace.addPhysicsJoint(rearWheelPhysicsJoint);
+            physicsSpace.addPhysicsJoint(frontWheelPhysicsJoint);
         }        
         super.setPhysicsSpace(physicsSpace);
     }
@@ -191,16 +182,6 @@ public class Vehicle2D extends PhysicsBody2D {
         } else {
             speed = 0.0;
         }
-    }
-    
-    @Override
-    public void cloneFields(Cloner cloner, Object object) {
-        super.cloneFields(cloner, object);        
-        rearWheel  = cloner.clone(rearWheel);        
-        frontWheel = cloner.clone(frontWheel);
-        
-        rearWheelPhysicsJoint  = cloner.clone(rearWheelPhysicsJoint);
-        frontWheelPhysicsJoint = cloner.clone(frontWheelPhysicsJoint);
     }
     
     @Override

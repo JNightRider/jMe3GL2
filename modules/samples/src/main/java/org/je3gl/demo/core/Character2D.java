@@ -142,9 +142,7 @@ public class Character2D extends SimpleApplication {
     }
     
     @Override
-    public void simpleInitApp() {
-        assetManager.registerLoader(J2OLoader.class, "J2O", "j2o");
-        
+    public void simpleInitApp() {        
         Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
         stateManager.attach(camera2DRenderer);
         
@@ -167,7 +165,7 @@ public class Character2D extends SimpleApplication {
     private void prepareCharacter() {
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
         
-        Spatial player = assetManager.loadAsset(new J2OKey<>("Models/Rabbit.j2o"));
+        Spatial player = assetManager.loadAsset(new J2OKey<>("Models/Rabbit.j3o"));
         player.getControl(AnimatedSprite2D.class).playAnimation("walk", 10);
         rootNode.attachChild(player);
         

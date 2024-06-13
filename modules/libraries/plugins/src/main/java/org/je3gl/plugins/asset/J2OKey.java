@@ -35,7 +35,7 @@ import com.jme3.asset.AssetKey;
 import com.jme3.asset.AssetProcessor;
 import com.jme3.asset.CloneableAssetProcessor;
 import com.jme3.asset.cache.AssetCache;
-import com.jme3.asset.cache.SimpleAssetCache;
+import com.jme3.asset.cache.WeakRefCloneAssetCache;
 
 /**
  *
@@ -55,8 +55,6 @@ public class J2OKey<T extends Object> extends AssetKey<T> {
 
     @Override
     public Class<? extends AssetCache> getCacheType() {
-        return SimpleAssetCache.class;
+        return WeakRefCloneAssetCache.class;
     }
-    
-    
 }

@@ -31,29 +31,41 @@
  */
 package org.je3gl.plugins;
 
-import com.jme3.asset.AssetInfo;
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetLoader;
+import com.jme3.app.Application;
+import com.jme3.asset.AssetManager;
 import com.jme3.export.Savable;
 import com.jme3.export.binary.BinaryImporter;
+import com.jme3.system.JmeSystem;
+import java.io.File;
 import java.io.IOException;
+import org.je3gl.plugins.asset.J2OKey;
 import static org.je3gl.plugins.Debugger.*;
 
 /**
  *
  * @author wil
  */
-public class J2OLoader implements AssetLoader {
+public class J2OLoader {
 
-    @Override
-    public Object load(AssetInfo assetInfo) throws IOException {
-        AssetKey<?> key = assetInfo.getKey();
+    private static AssetManager assetManager;
+    
+    public static void initialize(Application app) {
+        J2OLoader.assetManager = app.getAssetManager();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T load(J2OKey key) {
         if ("j2o".equals(key.getExtension())  || "J2O".equals(key.getExtension())) {
             BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetInfo.getManager());
+            importer.setAssetManager(assetManager);
             
-            Savable obj = importer.load(assetInfo.openStream());
-            return obj;
+            try {
+                String fullPath = File.separator + key.getName();                
+                Savable obj = importer.load(JmeSystem.getResourceAsStream(fullPath));
+                return (T) obj;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         apiGLLog("Extension " + key.getExtension() + " is not supported");
         return null;

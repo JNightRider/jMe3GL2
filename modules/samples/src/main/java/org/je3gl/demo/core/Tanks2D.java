@@ -93,7 +93,7 @@ public class Tanks2D extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        assetManager.registerLoader(J2OLoader.class, "J2O", "j2o");
+        J2OLoader.initialize(this);
         
         Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
         stateManager.attach(camera2DRenderer);
@@ -116,12 +116,21 @@ public class Tanks2D extends SimpleApplication {
     private void prepareCharacters() {
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
         
-        Spatial tank = assetManager.loadAsset(new J2OKey<>("Models/TankNavy.j2o"));
+        Spatial tank = J2OLoader.load(new J2OKey<>("Models/TankNavy.j2o"));
         tank.getControl(PhysicsBody2D.class).setMass(new Mass(new Vector2(), 10, 0));
+        tank.getControl(PhysicsBody2D.class).translate(-3, 0);
         tank.addControl(new TanksControl());
         
-        dyn4jAppState.getPhysicsSpace().addBody(tank.getControl(Vehicle2D.class), true);
+        dyn4jAppState.getPhysicsSpace().addPhysicsBody(tank, true);
         rootNode.attachChild(tank);
+  
+        Spatial tank2 = J2OLoader.load(new J2OKey<>("Models/TankNavy.j2o"));
+        
+        tank2.getControl(PhysicsBody2D.class).setMass(new Mass(new Vector2(), 10, 0));
+        tank2.getControl(PhysicsBody2D.class).translate(3, 0);
+        
+        dyn4jAppState.getPhysicsSpace().addPhysicsBody(tank2, true);
+        rootNode.attachChild(tank2);
     }
     
     @SuppressWarnings("unchecked")
