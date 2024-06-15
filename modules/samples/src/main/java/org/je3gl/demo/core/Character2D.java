@@ -170,7 +170,7 @@ public class Character2D extends SimpleApplication {
         Player body2D = new Player();
         body2D.setGravityScale(2);
         
-        BodyFixture bf = new BodyFixture(createCapsule(0.5, 1));
+        BodyFixture bf = new BodyFixture(dyn4jCreateCapsule(0.5, 1));
         
         
         body2D.addFixture(bf);
@@ -194,7 +194,7 @@ public class Character2D extends SimpleApplication {
         ground.setQueueBucket(RenderQueue.Bucket.Transparent);
         
         RigidBody2D body2DGround = new RigidBody2D();
-        body2DGround.addFixture(createRectangle(10, 1));
+        body2DGround.addFixture(dyn4jCreateRectangle(10, 1));
         body2DGround.setMass(MassType.INFINITE);
         body2DGround.translate(0, -2);
         ground.addControl(body2DGround);
@@ -208,7 +208,7 @@ public class Character2D extends SimpleApplication {
         ground.setQueueBucket(RenderQueue.Bucket.Transparent);
         
         body2DGround = new RigidBody2D();
-        body2DGround.addFixture(createRectangle(5, 1));
+        body2DGround.addFixture(dyn4jCreateRectangle(5, 1));
         body2DGround.setMass(MassType.INFINITE);
         body2DGround.translate(0, 3);
         ground.addControl(body2DGround);
@@ -222,7 +222,7 @@ public class Character2D extends SimpleApplication {
         ground.setQueueBucket(RenderQueue.Bucket.Transparent);
         
         body2DGround = new RigidBody2D();
-        body2DGround.addFixture(createRectangle(1, 1));
+        body2DGround.addFixture(dyn4jCreateRectangle(1, 1));
         body2DGround.setMass(MassType.INFINITE);
         body2DGround.translate(-2, -1);
         ground.addControl(body2DGround);
@@ -235,7 +235,7 @@ public class Character2D extends SimpleApplication {
         ground.setQueueBucket(RenderQueue.Bucket.Transparent);
         
         body2DGround = new RigidBody2D();
-        body2DGround.addFixture(createRectangle(1, 2));
+        body2DGround.addFixture(dyn4jCreateRectangle(1, 2));
         body2DGround.setMass(MassType.INFINITE);
         body2DGround.translate(-3, -0.5);
         ground.addControl(body2DGround);

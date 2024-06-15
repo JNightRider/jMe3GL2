@@ -130,7 +130,7 @@ public class ExportJ2O extends SimpleApplication {
             geom.move(0, 0, 0.1F);
             
             RigidBody2D rbd = new RigidBody2D();
-            rbd.addFixture(createCircle(sprite.getWidth() / 2.0F));
+            rbd.addFixture(dyn4jCreateCircle(sprite.getWidth() / 2.0F));
             rbd.translate(-0.5, -0.5);
             rbd.setMass(MassType.NORMAL);
             
@@ -166,7 +166,7 @@ public class ExportJ2O extends SimpleApplication {
             geom.move(0, 0, 0.1F);
             
             RigidBody2D rbd = new RigidBody2D();
-            rbd.addFixture(createCircle(sprite.getWidth() / 2.0F));
+            rbd.addFixture(dyn4jCreateCircle(sprite.getWidth() / 2.0F));
             rbd.translate(0.5, -0.5);
             rbd.setMass(MassType.NORMAL);
             
@@ -206,7 +206,7 @@ public class ExportJ2O extends SimpleApplication {
         Vehicle2D vd = new Vehicle2D(tanks.getChild("TankRearWheel").getControl(PhysicsBody2D.class), 
                                     tanks.getChild("TankFrontWheel").getControl(PhysicsBody2D.class), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5), new Vector2(0, -1.0));
         
-        vd.addFixture(createRectangle(2.0F, 1.0F));
+        vd.addFixture(dyn4jCreateRectangle(2.0F, 1.0F));
         vd.setMass(MassType.NORMAL);
         tanks.addControl(vd);
         

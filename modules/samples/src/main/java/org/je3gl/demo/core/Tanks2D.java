@@ -141,7 +141,7 @@ public class Tanks2D extends SimpleApplication {
             Geometry geom = new Geometry("1", new Sprite(10, 0.5f));
             geom.setMaterial(getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.randomColor()));
             
-            BodyFixture bf = new BodyFixture(createRectangle(10, 0.5));
+            BodyFixture bf = new BodyFixture(dyn4jCreateRectangle(10, 0.5));
             bf.setFriction(5);
                 
             

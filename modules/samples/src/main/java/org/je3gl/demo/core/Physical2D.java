@@ -75,8 +75,8 @@ public class Physical2D extends SimpleApplication {
         Geometry cube = new Geometry("Cube", new Sprite(1, 1, 22, 12, 17, 9));
         cube.setMaterial(getUnshadedMaterialFromClassPath(assetManager, "Textures/tilesheet_complete_2X.png"));
         
-        BodyFixture bf1 = new BodyFixture(createRectangle(1, 1));
-        BodyFixture bf2 = new BodyFixture(createCircle(1));
+        BodyFixture bf1 = new BodyFixture(dyn4jCreateRectangle(1, 1));
+        BodyFixture bf2 = new BodyFixture(dyn4jCreateCircle(1));
         
         bf2.setSensor(false);
         bf1.setSensor(true);
