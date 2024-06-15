@@ -105,10 +105,8 @@ public class AnimatedSingleSprite2D extends AbstractAnimatedSprite2D<Spatial, Si
         
     }    
 
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.control.AbstractAnimation2DControl#getType() 
-     * @return Type
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.control.AbstractAnimation2DControl#getType() 
      */
     @Override
     public Type getType() {

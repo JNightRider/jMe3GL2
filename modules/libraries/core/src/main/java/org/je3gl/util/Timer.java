@@ -244,7 +244,7 @@ public class Timer {
     /**
      * (non-Javadoc)
      * @return boolean
-     * @deprecated Use a {@link jme3gl2.util.TimerTask} to determine if your status
+     * @deprecated Use a {@link org.je3gl.util.TimerTask} to determine if your status
      */
     @Deprecated(since = "3.0.0")
     public boolean finished() {

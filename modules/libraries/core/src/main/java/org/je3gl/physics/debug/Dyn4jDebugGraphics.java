@@ -81,12 +81,8 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
         this.assetManager = assetManager;
     }
     
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.debug.custom.DebugGraphics#getColor(java.lang.String) 
-     * 
-     * @param name string
-     * @return color
+    /*(non-Javadoc)
+     * @see org.je3gl.scene.debug.custom.DebugGraphics#getColor(java.lang.String) 
      */
     @Override
     public ColorRGBA getColor(String name) {
@@ -104,12 +100,8 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
         }
     }
 
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.debug.custom.DebugGraphics#getBitmapFont(java.lang.String) 
-     * 
-     * @param name string
-     * @return font
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.debug.custom.DebugGraphics#getBitmapFont(java.lang.String) 
      */
     @Override
     public BitmapFont getBitmapFont(String name) {
@@ -119,13 +111,8 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
         return assetManager.loadFont("Interface/Fonts/Default.fnt");
     }
 
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.debug.custom.DebugGraphics#createBitmapText(com.jme3.font.BitmapFont, java.lang.String) 
-     * 
-     * @param font font
-     * @param value string
-     * @return text
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.debug.custom.DebugGraphics#createBitmapText(com.jme3.font.BitmapFont, java.lang.String) 
      */
     @Override
     public BitmapText createBitmapText(BitmapFont font, String value) {

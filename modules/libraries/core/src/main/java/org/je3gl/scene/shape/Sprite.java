@@ -228,11 +228,11 @@ public class Sprite extends Mesh implements Cloneable {
     
     /**
      * (non-Javadoc)
-     * @see jme3gl2.scene.shape.Sprite#showIndex(int) 
-     * @see jme3gl2.scene.shape.Sprite#applyCoords(int, int) 
+     * @see org.je3gl.scene.shape.Sprite#showIndex(int) 
+     * @see org.je3gl.scene.shape.Sprite#applyCoords(int, int) 
      * @param cp int
      * @param rp int
-     * @deprecated Use {@link jme3gl2.scene.shape.Sprite#applyCoords(int, int) } instead
+     * @deprecated Use {@link org.je3gl.scene.shape.Sprite#applyCoords(int, int) } instead
      */
     @Deprecated(since = "3.0.0")
     public void showIndex(int cp, int rp) {

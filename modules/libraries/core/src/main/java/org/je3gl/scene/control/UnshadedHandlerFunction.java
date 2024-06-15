@@ -57,12 +57,8 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
     /** Class logger. */
     private static final Logger LOG = Logger.getLogger(UnshadedHandlerFunction.class.getName());
 
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.control.AnimatedMaterialsHandlerFunction#applyAnimation2DControl(com.jme3.scene.Spatial, jme3gl2.scene.control.Animation2D, jme3gl2.scene.control.AbstractAnimation2DControl) 
-     * @param model object
-     * @param animation object
-     * @param control object
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.control.AnimatedMaterialsHandlerFunction#applyAnimation2DControl(com.jme3.scene.Spatial, jme3gl2.scene.control.Animation2D, jme3gl2.scene.control.AbstractAnimation2DControl) 
      */
     @Override
     public void applyAnimation2DControl(O model, A animation, E control) {        

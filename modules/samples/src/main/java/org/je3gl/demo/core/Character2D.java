@@ -47,7 +47,6 @@ import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.CharacterBody2D;
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.RigidBody2D;
-import org.je3gl.plugins.asset.J2OKey;
 import org.je3gl.plugins.input.BooleanStateKeyboardInputHandler;
 import org.je3gl.plugins.input.InputHandlerAppState;
 import org.je3gl.plugins.input.Key;
@@ -164,7 +163,7 @@ public class Character2D extends SimpleApplication {
     private void prepareCharacter() {
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
         
-        Spatial player = assetManager.loadAsset(new J2OKey<>("Models/Rabbit.j3o"));
+        Spatial player = assetManager.loadModel("Models/Rabbit.j3o");
         player.getControl(AnimatedSprite2D.class).playAnimation("walk", 10);
         rootNode.attachChild(player);
         

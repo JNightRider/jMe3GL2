@@ -148,7 +148,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     
     /** 
      * The duration of the animation (maximum), this factor depends on the set speed level. 
-     * @see jme3gl2.scene.control.AbstractAnimation2DControl#animation2DSpeed
+     * @see org.je3gl.scene.control.AbstractAnimation2DControl#animation2DSpeed
      */
     protected float animationFrameTime;
 
@@ -291,7 +291,7 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
 
     /**
      * Returns the type of the animation control.
-     * @see jme3gl2.scene.control.AbstractAnimation2DControl.Type
+     * @see org.je3gl.scene.control.AbstractAnimation2DControl.Type
      * @return Type
      */
     public abstract Type getType();

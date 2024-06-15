@@ -40,7 +40,7 @@ import com.jme3.asset.cache.WeakRefCloneAssetCache;
 /**
  *
  * @author wil
- * @param <T>
+ * @param <T> tipo del objetos
  */
 public class J2OKey<T extends Object> extends AssetKey<T> {
 

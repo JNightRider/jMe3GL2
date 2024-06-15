@@ -239,7 +239,7 @@ public final class TimerAppState extends AbstractAppState {
     
     /**
      * Adds a new task to a specific timer.
-     * @see jme3gl2.util.Timer#addTask(jMe3GL2.util.TimerTask) 
+     * @see org.je3gl.util.Timer#addTask(org.je3gl.util.TimerTask) 
      * @param name timer codename
      * @param task task timer
      * @return <code>true</code> if the task has been successfully added, otherwise <code>false</code>
@@ -255,7 +255,7 @@ public final class TimerAppState extends AbstractAppState {
     
     /**
      * Deletes a task at a specific timer.
-     * @see jme3gl2.util.Timer#removeTask(jMe3GL2.util.TimerTask)  
+     * @see org.je3gl.util.Timer#removeTask(org.je3gl.util.TimerTask)  
      * @param name timer codename
      * @param task task timer
      * @return <code>true</code> if the task has been deleted correctly, otherwise <code>false</code>

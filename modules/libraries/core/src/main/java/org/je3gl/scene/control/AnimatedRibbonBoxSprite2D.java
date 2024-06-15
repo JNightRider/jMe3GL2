@@ -101,12 +101,8 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
         super.addAnimation(name, frames);
     }
     
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.control.AbstractAnimation2DControl#playAnimation(java.lang.String, float) 
-     * @param name string
-     * @param timePerFrame float
-     * @return boolean
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.control.AbstractAnimation2DControl#playAnimation(java.lang.String, float) 
      */
     @Override
     @SuppressWarnings("unchecked")    
@@ -179,10 +175,8 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
         }
     }
     
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.control.AbstractAnimation2DControl#getType() 
-     * @return Type
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.control.AbstractAnimation2DControl#getType() 
      */
     @Override
     public Type getType() {

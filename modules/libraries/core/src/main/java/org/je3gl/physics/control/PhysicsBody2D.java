@@ -219,10 +219,8 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         }
     }
     
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.physics.control.PhysicsControl#setPhysicsSpace(jme3gl2.physics.PhysicsSpace) 
-     * @param physicsSpace A {@link org.je3gl.physics.PhysicsSpace} object
+    /* (non-Javadoc)
+     * @see org.je3gl.physics.control.PhysicsControl#setPhysicsSpace(org.je3gl.physics.PhysicsSpace) 
      */
     @Override
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
@@ -232,20 +230,15 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         this.physicsSpace = physicsSpace;
     }
     
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.physics.control.PhysicsControl#getPhysicsSpace() 
-     * @return A {@link org.je3gl.physics.PhysicsSpace} object
+    /* (non-Javadoc)
+     * @see org.je3gl.physics.control.PhysicsControl#getPhysicsSpace() 
      */
     @Override
     public PhysicsSpace<PhysicsBody2D> getPhysicsSpace() {
         return physicsSpace;
     }
 
-    /**
-     * (non-Javadoc)
-     * @param spatial object
-     * @return object
+    /* (non-Javadoc)
      * @deprecated (?,?)
      */
     @Override

@@ -50,10 +50,8 @@ public class Polygon2D extends AbstractShape2D {
         Polygon2D.this.updateGeometry(vertices);
     }
 
-    /**
-     * (non-Javadoc)
-     * @see jme3gl2.scene.debug.AbstractShape2D#updateGeometry(com.jme3.math.Vector3f[]) 
-     * @param vertices vertices
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.debug.AbstractShape2D#updateGeometry(com.jme3.math.Vector3f[]) 
      */
     @Override
     public void updateGeometry(Vector3f ...vertices) {
