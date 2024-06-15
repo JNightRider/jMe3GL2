@@ -74,7 +74,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return double
      */
-    public static final double getWinding(List<Vector2> points) {
+    public static final double dyn4jGetWinding(List<Vector2> points) {
         return Geometry.getWinding(points);
     }
 
@@ -85,7 +85,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return double
      */
-    public static final double getWinding(Vector2... points) {
+    public static final double dyn4jGetWinding(Vector2... points) {
         return Geometry.getWinding(points);
     }
 
@@ -95,7 +95,7 @@ public final class GeometryUtilities {
      * 
      * @param points list
      */
-    public static final void reverseWinding(Vector2... points) {
+    public static final void dyn4jReverseWinding(Vector2... points) {
         Geometry.reverseWinding(points);
     }
 
@@ -105,7 +105,7 @@ public final class GeometryUtilities {
      * 
      * @param points list
      */
-    public static final void reverseWinding(List<Vector2> points) {
+    public static final void dyn4jReverseWinding(List<Vector2> points) {
         Geometry.reverseWinding(points);
     }
 
@@ -116,7 +116,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return vector2
      */
-    public static final Vector2 getAverageCenter(List<Vector2> points) {
+    public static final Vector2 dyn4jGetAverageCenter(List<Vector2> points) {
         return Geometry.getAverageCenter(points);
     }
 
@@ -127,7 +127,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return vector2
      */
-    public static final Vector2 getAverageCenter(Vector2... points) {
+    public static final Vector2 dyn4jGetAverageCenter(Vector2... points) {
         return Geometry.getAverageCenter(points);
     }
 
@@ -138,7 +138,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return vector2
      */
-    public static final Vector2 getAreaWeightedCenter(List<Vector2> points) {
+    public static final Vector2 dyn4jGetAreaWeightedCenter(List<Vector2> points) {
         return Geometry.getAreaWeightedCenter(points);
     }
 
@@ -149,7 +149,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return vector2
      */
-    public static final Vector2 getAreaWeightedCenter(Vector2... points) {
+    public static final Vector2 dyn4jGetAreaWeightedCenter(Vector2... points) {
         return Geometry.getAreaWeightedCenter(points);
     }
 
@@ -160,7 +160,7 @@ public final class GeometryUtilities {
      * @param vertices list
      * @return double
      */
-    public static final double getRotationRadius(Vector2... vertices) {
+    public static final double dyn4jGetRotationRadius(Vector2... vertices) {
         return Geometry.getRotationRadius(new Vector2(), vertices);
     }
 
@@ -172,7 +172,7 @@ public final class GeometryUtilities {
      * @param vertices list
      * @return double
      */
-    public static final double getRotationRadius(Vector2 center, Vector2... vertices) {
+    public static final double dyn4jGetRotationRadius(Vector2 center, Vector2... vertices) {
         return Geometry.getRotationRadius(center, vertices);
     }
 
@@ -183,7 +183,7 @@ public final class GeometryUtilities {
      * @param vertices list
      * @return array
      */
-    public static final Vector2[] getCounterClockwiseEdgeNormals(Vector2... vertices) {
+    public static final Vector2[] dyn4jGetCounterClockwiseEdgeNormals(Vector2... vertices) {
         return Geometry.getCounterClockwiseEdgeNormals(vertices);
     }
 
@@ -195,7 +195,7 @@ public final class GeometryUtilities {
      * @param radius double
      * @return circle
      */
-    public static final Circle createCircle(double radius) {
+    public static final Circle dyn4jCreateCircle(double radius) {
         return Geometry.createCircle(radius);
     }
 
@@ -206,7 +206,7 @@ public final class GeometryUtilities {
      * @param vertices list
      * @return polygon
      */
-    public static final Polygon createPolygon(Vector2... vertices) {
+    public static final Polygon dyn4jCreatePolygon(Vector2... vertices) {
         return Geometry.createPolygon(vertices);
     }
 
@@ -217,7 +217,7 @@ public final class GeometryUtilities {
      * @param vertices list
      * @return polygon
      */
-    public static final Polygon createPolygonAtOrigin(Vector2... vertices) {
+    public static final Polygon dyn4jCreatePolygonAtOrigin(Vector2... vertices) {
         return Geometry.createPolygonAtOrigin(vertices);
     }
 
@@ -229,7 +229,7 @@ public final class GeometryUtilities {
      * @param radius double
      * @return polygon
      */
-    public static final Polygon createUnitCirclePolygon(int count, double radius) {
+    public static final Polygon dyn4jCreateUnitCirclePolygon(int count, double radius) {
         return Geometry.createUnitCirclePolygon(count, radius);
     }
 
@@ -242,7 +242,7 @@ public final class GeometryUtilities {
      * @param theta double
      * @return polygon
      */
-    public static final Polygon createUnitCirclePolygon(int count, double radius, double theta) {
+    public static final Polygon dyn4jCreateUnitCirclePolygon(int count, double radius, double theta) {
         return Geometry.createUnitCirclePolygon(count, radius, theta);
     }
 
@@ -253,7 +253,7 @@ public final class GeometryUtilities {
      * @param size double
      * @return rectangle
      */
-    public static final Rectangle createSquare(double size) {
+    public static final Rectangle dyn4jCreateSquare(double size) {
         return Geometry.createSquare(size);
     }
 
@@ -265,7 +265,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return rectangle
      */
-    public static final Rectangle createRectangle(double width, double height) {
+    public static final Rectangle dyn4jCreateRectangle(double width, double height) {
         return Geometry.createRectangle(width, height);
     }
 
@@ -278,7 +278,7 @@ public final class GeometryUtilities {
      * @param p3 vector2
      * @return triangle
      */
-    public static final Triangle createTriangle(Vector2 p1, Vector2 p2, Vector2 p3) {
+    public static final Triangle dyn4jCreateTriangle(Vector2 p1, Vector2 p2, Vector2 p3) {
         return Geometry.createTriangle(p1, p2, p3);
     }
 
@@ -291,7 +291,7 @@ public final class GeometryUtilities {
      * @param p3 vector2
      * @return triangle
      */
-    public static final Triangle createTriangleAtOrigin(Vector2 p1, Vector2 p2, Vector2 p3) {
+    public static final Triangle dyn4jCreateTriangleAtOrigin(Vector2 p1, Vector2 p2, Vector2 p3) {
         return Geometry.createTriangleAtOrigin(p1, p2, p3);
     }
 
@@ -303,7 +303,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return triangle
      */
-    public static final Triangle createRightTriangle(double width, double height) {
+    public static final Triangle dyn4jCreateRightTriangle(double width, double height) {
         return Geometry.createRightTriangle(width, height);
     }
 
@@ -316,7 +316,7 @@ public final class GeometryUtilities {
      * @param mirror double
      * @return triangle
      */
-    public static final Triangle createRightTriangle(double width, double height, boolean mirror) {
+    public static final Triangle dyn4jCreateRightTriangle(double width, double height, boolean mirror) {
         return Geometry.createRightTriangle(width, height, mirror);
     }
 
@@ -327,7 +327,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return triangle
      */
-    public static final Triangle createEquilateralTriangle(double height) {
+    public static final Triangle dyn4jCreateEquilateralTriangle(double height) {
         return Geometry.createEquilateralTriangle(height);
     }
 
@@ -339,7 +339,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return triangle
      */
-    public static final Triangle createIsoscelesTriangle(double width, double height) {
+    public static final Triangle dyn4jCreateIsoscelesTriangle(double width, double height) {
         return Geometry.createIsoscelesTriangle(width, height);
     }
 
@@ -351,7 +351,7 @@ public final class GeometryUtilities {
      * @param p2 vector2
      * @return segment
      */
-    public static final Segment createSegment(Vector2 p1, Vector2 p2) {
+    public static final Segment dyn4jCreateSegment(Vector2 p1, Vector2 p2) {
         return Geometry.createSegment(p1, p2);
     }
 
@@ -363,7 +363,7 @@ public final class GeometryUtilities {
      * @param p2 vector2
      * @return segment
      */
-    public static final Segment createSegmentAtOrigin(Vector2 p1, Vector2 p2) {
+    public static final Segment dyn4jCreateSegmentAtOrigin(Vector2 p1, Vector2 p2) {
         return Geometry.createSegmentAtOrigin(p1, p2);
     }
 
@@ -374,7 +374,7 @@ public final class GeometryUtilities {
      * @param end vector2
      * @return segment
      */
-    public static final Segment createSegment(Vector2 end) {
+    public static final Segment dyn4jCreateSegment(Vector2 end) {
         return Geometry.createSegment(end);
     }
 
@@ -384,7 +384,7 @@ public final class GeometryUtilities {
      * @param length double
      * @return segment
      */
-    public static final Segment createHorizontalSegment(double length) {
+    public static final Segment dyn4jCreateHorizontalSegment(double length) {
         return Geometry.createHorizontalSegment(length);
     }
 
@@ -394,7 +394,7 @@ public final class GeometryUtilities {
      * @param length double
      * @return segment
      */
-    public static final Segment createVerticalSegment(double length) {
+    public static final Segment dyn4jCreateVerticalSegment(double length) {
         return Geometry.createVerticalSegment(length);
     }
 
@@ -406,7 +406,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return capsule
      */
-    public static final Capsule createCapsule(double width, double height) {
+    public static final Capsule dyn4jCreateCapsule(double width, double height) {
         return new Capsule(width, height);
     }
 
@@ -418,7 +418,7 @@ public final class GeometryUtilities {
      * @param theta double
      * @return slice
      */
-    public static final Slice createSlice(double radius, double theta) {
+    public static final Slice dyn4jCreateSlice(double radius, double theta) {
         return new Slice(radius, theta);
     }
 
@@ -430,7 +430,7 @@ public final class GeometryUtilities {
      * @param theta double
      * @return slice
      */
-    public static final Slice createSliceAtOrigin(double radius, double theta) {
+    public static final Slice dyn4jCreateSliceAtOrigin(double radius, double theta) {
         return Geometry.createSliceAtOrigin(radius, theta);
     }
 
@@ -442,7 +442,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return ellipse
      */
-    public static final Ellipse createEllipse(double width, double height) {
+    public static final Ellipse dyn4jCreateEllipse(double width, double height) {
         return  Geometry.createEllipse(width, height);
     }
 
@@ -454,7 +454,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return half ellipse
      */
-    public static final HalfEllipse createHalfEllipse(double width, double height) {
+    public static final HalfEllipse dyn4jCreateHalfEllipse(double width, double height) {
         return Geometry.createHalfEllipse(width, height);
     }
 
@@ -466,7 +466,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return half ellipse
      */
-    public static final HalfEllipse createHalfEllipseAtOrigin(double width, double height) {
+    public static final HalfEllipse dyn4jCreateHalfEllipseAtOrigin(double width, double height) {
         return Geometry.createHalfEllipseAtOrigin(width, height);
     }
 
@@ -478,7 +478,7 @@ public final class GeometryUtilities {
      * @param radius double
      * @return polygon
      */
-    public static final Polygon createPolygonalCircle(int count, double radius) {
+    public static final Polygon dyn4jCreatePolygonalCircle(int count, double radius) {
         return Geometry.createPolygonalCircle(count, radius);
     }
 
@@ -491,7 +491,7 @@ public final class GeometryUtilities {
      * @param theta double
      * @return polygon
      */
-    public static final Polygon createPolygonalCircle(int count, double radius, double theta) {
+    public static final Polygon dyn4jCreatePolygonalCircle(int count, double radius, double theta) {
         return Geometry.createPolygonalCircle(count, radius, theta);
     }
 
@@ -504,7 +504,7 @@ public final class GeometryUtilities {
      * @param theta double
      * @return polygon
      */
-    public static final Polygon createPolygonalSlice(int count, double radius, double theta) {
+    public static final Polygon dyn4jCreatePolygonalSlice(int count, double radius, double theta) {
         return Geometry.createPolygonalSlice(count, radius, theta);
     }
 
@@ -517,7 +517,7 @@ public final class GeometryUtilities {
      * @param theta double
      * @return polygon
      */
-    public static final Polygon createPolygonalSliceAtOrigin(int count, double radius, double theta) {
+    public static final Polygon dyn4jCreatePolygonalSliceAtOrigin(int count, double radius, double theta) {
         return Geometry.createPolygonalSliceAtOrigin(count, radius, theta);
     }
 
@@ -530,7 +530,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return polygon
      */
-    public static final Polygon createPolygonalEllipse(int count, double width, double height) {
+    public static final Polygon dyn4jCreatePolygonalEllipse(int count, double width, double height) {
         return Geometry.createPolygonalEllipse(count, width, height);
     }
 
@@ -543,7 +543,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return polygon
      */
-    public static final Polygon createPolygonalHalfEllipse(int count, double width, double height) {
+    public static final Polygon dyn4jCreatePolygonalHalfEllipse(int count, double width, double height) {
         return Geometry.createPolygonalHalfEllipse(count, width, height);
     }
 
@@ -556,7 +556,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return polygon
      */
-    public static final Polygon createPolygonalHalfEllipseAtOrigin(int count, double width, double height) {
+    public static final Polygon dyn4jCreatePolygonalHalfEllipseAtOrigin(int count, double width, double height) {
         return Geometry.createPolygonalHalfEllipseAtOrigin(count, width, height);
     }
 
@@ -569,7 +569,7 @@ public final class GeometryUtilities {
      * @param height double
      * @return polygon
      */
-    public static final Polygon createPolygonalCapsule(int count, double width, double height) {
+    public static final Polygon dyn4jCreatePolygonalCapsule(int count, double width, double height) {
         return Geometry.createPolygonalCapsule(count, width, height);
     }
 
@@ -580,7 +580,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return list
      */
-    public static final List<Vector2> cleanse(List<Vector2> points) {
+    public static final List<Vector2> dyn4jCleanse(List<Vector2> points) {
         return Geometry.cleanse(points);
     }
 
@@ -591,7 +591,7 @@ public final class GeometryUtilities {
      * @param points list
      * @return array
      */
-    public static final Vector2[] cleanse(Vector2... points) {
+    public static final Vector2[] dyn4jCleanse(Vector2... points) {
         return Geometry.cleanse(points);
     }
 
@@ -602,7 +602,7 @@ public final class GeometryUtilities {
      * @param polygon polygon
      * @return polygon
      */
-    public static final Polygon flipAlongTheXAxis(Polygon polygon) {
+    public static final Polygon dyn4jFlipAlongTheXAxis(Polygon polygon) {
         return Geometry.flipAlongTheXAxis(polygon);
     }
 
@@ -613,7 +613,7 @@ public final class GeometryUtilities {
      * @param polygon polygon
      * @return polygon
      */
-    public static final Polygon flipAlongTheYAxis(Polygon polygon) {
+    public static final Polygon dyn4jFlipAlongTheYAxis(Polygon polygon) {
         return Geometry.flipAlongTheYAxis(polygon);
     }
 
@@ -625,7 +625,7 @@ public final class GeometryUtilities {
      * @param point vector2
      * @return polugon
      */
-    public static final Polygon flipAlongTheXAxis(Polygon polygon, Vector2 point) {
+    public static final Polygon dyn4jFlipAlongTheXAxis(Polygon polygon, Vector2 point) {
         return Geometry.flipAlongTheXAxis(polygon, point);
     }
 
@@ -637,7 +637,7 @@ public final class GeometryUtilities {
      * @param point vector2
      * @return polygon
      */
-    public static final Polygon flipAlongTheYAxis(Polygon polygon, Vector2 point) {
+    public static final Polygon dyn4jFlipAlongTheYAxis(Polygon polygon, Vector2 point) {
         return Geometry.flipAlongTheYAxis(polygon, point);
     }
 
@@ -649,7 +649,7 @@ public final class GeometryUtilities {
      * @param axis vector2
      * @return polygon
      */
-    public static final Polygon flip(Polygon polygon, Vector2 axis) {
+    public static final Polygon dyn4jFlip(Polygon polygon, Vector2 axis) {
         return Geometry.flip(polygon, axis);
     }
 
@@ -662,7 +662,7 @@ public final class GeometryUtilities {
      * @param point vector2
      * @return polygon
      */
-    public static final Polygon flip(Polygon polygon, Vector2 axis, Vector2 point) {
+    public static final Polygon dyn4jFlip(Polygon polygon, Vector2 axis, Vector2 point) {
         return Geometry.flip(polygon, axis, point);
     }
 
@@ -673,7 +673,7 @@ public final class GeometryUtilities {
      * @param convex2 convex
      * @return polygon
      */
-    public static final <E extends Wound & Convex> Polygon minkowskiSum(E convex1, E convex2) {
+    public static final <E extends Wound & Convex> Polygon dyn4jMinkowskiSum(E convex1, E convex2) {
         return Geometry.minkowskiSum(convex1, convex2);
     }
 
@@ -686,7 +686,7 @@ public final class GeometryUtilities {
      * @param count int
      * @return polygon
      */
-    public static final Polygon minkowskiSum(Circle circle, Polygon polygon, int count) {
+    public static final Polygon dyn4jMinkowskiSum(Circle circle, Polygon polygon, int count) {
         return Geometry.minkowskiSum(circle, polygon, count);
     }
 
@@ -699,7 +699,7 @@ public final class GeometryUtilities {
      * @param count int
      * @return polygon
      */
-    public static final Polygon minkowskiSum(Polygon polygon, Circle circle, int count) {
+    public static final Polygon dyn4jMinkowskiSum(Polygon polygon, Circle circle, int count) {
         return Geometry.minkowskiSum(polygon, circle, count);
     }
 
@@ -712,7 +712,7 @@ public final class GeometryUtilities {
      * @param count int
      * @return polygon
      */
-    public static final Polygon minkowskiSum(Polygon polygon, double radius, int count) {
+    public static final Polygon dyn4jMinkowskiSum(Polygon polygon, double radius, int count) {
         return Geometry.minkowskiSum(polygon, radius, count);
     }
 
@@ -724,7 +724,7 @@ public final class GeometryUtilities {
      * @param scale double
      * @return circle
      */
-    public static final Circle scale(Circle circle, double scale) {
+    public static final Circle dyn4jScale(Circle circle, double scale) {
         return Geometry.scale(circle, scale);
     }
 
@@ -736,7 +736,7 @@ public final class GeometryUtilities {
      * @param scale double
      * @return capsule
      */
-    public static final Capsule scale(Capsule capsule, double scale) {
+    public static final Capsule dyn4jScale(Capsule capsule, double scale) {
         return Geometry.scale(capsule, scale);
     }
 
@@ -748,7 +748,7 @@ public final class GeometryUtilities {
      * @param scale double
      * @return ellipse
      */
-    public static final Ellipse scale(Ellipse ellipse, double scale) {
+    public static final Ellipse dyn4jScale(Ellipse ellipse, double scale) {
         return Geometry.scale(ellipse, scale);
     }
 
@@ -760,7 +760,7 @@ public final class GeometryUtilities {
      * @param scale double
      * @return half-ellipse.
      */
-    public static final HalfEllipse scale(HalfEllipse halfEllipse, double scale) {
+    public static final HalfEllipse dyn4jScale(HalfEllipse halfEllipse, double scale) {
         return Geometry.scale(halfEllipse, scale);
     }
 
@@ -772,7 +772,7 @@ public final class GeometryUtilities {
      * @param scale double
      * @return slice
      */
-    public static final Slice scale(Slice slice, double scale) {
+    public static final Slice dyn4jScale(Slice slice, double scale) {
         return Geometry.scale(slice, scale);
     }
 
@@ -784,7 +784,7 @@ public final class GeometryUtilities {
      * @param scale double
      * @return polygon
      */
-    public static final Polygon scale(Polygon polygon, double scale) {
+    public static final Polygon dyn4jScale(Polygon polygon, double scale) {
         return Geometry.scale(polygon, scale);
     }
 
@@ -796,7 +796,7 @@ public final class GeometryUtilities {
      * @param scale double
      * @return segment
      */
-    public static final Segment scale(Segment segment, double scale) {
+    public static final Segment dyn4jScale(Segment segment, double scale) {
         return Geometry.scale(segment, scale);
     }
 
@@ -808,7 +808,7 @@ public final class GeometryUtilities {
      * @param closed boolean
      * @return list
      */
-    public static final List<Link> createLinks(List<Vector2> vertices, boolean closed) {
+    public static final List<Link> dyn4jCreateLinks(List<Vector2> vertices, boolean closed) {
         return Geometry.createLinks(vertices, closed);
     }
 
@@ -820,7 +820,7 @@ public final class GeometryUtilities {
      * @param closed boolean
      * @return list
      */
-    public static final List<Link> createLinks(Vector2[] vertices, boolean closed) {
+    public static final List<Link> dyn4jCreateLinks(Vector2[] vertices, boolean closed) {
         return Geometry.createLinks(vertices, closed);
     }
 }

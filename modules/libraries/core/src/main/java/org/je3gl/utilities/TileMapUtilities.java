@@ -157,7 +157,7 @@ public final class TileMapUtilities {
      * @return Tile
      */
     public static Tile gl2GetTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
-        return gl2GetTile(cp, rp, w, h, x, y, z, coll ? GeometryUtilities.createRectangle(w, h) : null);
+        return gl2GetTile(cp, rp, w, h, x, y, z, coll ? GeometryUtilities.dyn4jCreateRectangle(w, h) : null);
     }
     
     /**
@@ -213,7 +213,7 @@ public final class TileMapUtilities {
      * @return Tile
      */
     public static Tile gl2GetTile(String id, int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
-        return gl2GetTile(id, cp, rp, w, h, x, y, z, coll ? GeometryUtilities.createRectangle(w, h) : null);
+        return gl2GetTile(id, cp, rp, w, h, x, y, z, coll ? GeometryUtilities.dyn4jCreateRectangle(w, h) : null);
     }
     
     /**

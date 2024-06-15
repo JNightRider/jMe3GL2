@@ -43,7 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.je3gl.util.Converter;
-import org.je3gl.utilities.GeometryUtilities;
+import static org.je3gl.utilities.GeometryUtilities.*;
 
 import org.dyn4j.Epsilon;
 import org.dyn4j.geometry.Capsule;
@@ -200,12 +200,12 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
             switch (type) {
                 case Circle:
                     Circle circle = (Circle) shape;
-                    clon.shape    = (E) GeometryUtilities.createCircle(circle.getRadius());
+                    clon.shape    = (E) dyn4jCreateCircle(circle.getRadius());
                     clon.shape.translate(circle.getCenter().copy());
                     break;
                 case Rectangle:
                     Rectangle rectangle = (Rectangle) shape;
-                    clon.shape = (E) GeometryUtilities.createRectangle(rectangle.getWidth(), rectangle.getHeight());
+                    clon.shape = (E) dyn4jCreateRectangle(rectangle.getWidth(), rectangle.getHeight());
                     if (Math.abs(rectangle.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(rectangle.getRotationAngle());
                     }
@@ -214,7 +214,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 case Triangle:
                     Triangle triangle   = (Triangle) shape;
                     Vector2[] tVertices = triangle.getVertices();                    
-                    clon.shape = (E) GeometryUtilities.createTriangle(tVertices[0].copy(), tVertices[1].copy(), tVertices[2].copy());
+                    clon.shape = (E) dyn4jCreateTriangle(tVertices[0].copy(), tVertices[1].copy(), tVertices[2].copy());
                     break;
                 case Polygon:
                     Polygon polygon     = (Polygon) shape;
@@ -223,16 +223,16 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     for (int i = 0; i < pVertices.length; i++) {
                         pVertices[i] = polygon.getVertices()[i].copy();
                     }
-                    clon.shape = (E) GeometryUtilities.createPolygon(pVertices);
+                    clon.shape = (E) dyn4jCreatePolygon(pVertices);
                     break;
                 case Segment: /*case Link:*/
                     Segment segment   = (Segment) shape;
                     Vector2[] segVert = segment.getVertices();                    
-                    clon.shape = (E) GeometryUtilities.createSegment(segVert[0].copy(), segVert[1].copy());
+                    clon.shape = (E) dyn4jCreateSegment(segVert[0].copy(), segVert[1].copy());
                     break;
                 case Capsule:
                     Capsule capsule = (Capsule) shape;
-                    clon.shape      = (E) GeometryUtilities.createCapsule(capsule.getLength(), capsule.getCapRadius() * 2.0);
+                    clon.shape      = (E) dyn4jCreateCapsule(capsule.getLength(), capsule.getCapRadius() * 2.0);
                     if (Math.abs(capsule.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(capsule.getRotationAngle());
                     }
@@ -240,7 +240,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     break;
                 case Ellipse:
                     Ellipse ellipse = (Ellipse) shape;
-                    clon.shape      = (E) GeometryUtilities.createEllipse(ellipse.getHalfWidth() * 2.0, ellipse.getHalfHeight() * 2.0);
+                    clon.shape      = (E) dyn4jCreateEllipse(ellipse.getHalfWidth() * 2.0, ellipse.getHalfHeight() * 2.0);
                     if (Math.abs(ellipse.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(ellipse.getRotationAngle());
                     }
@@ -251,9 +251,8 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
 
                     double width = halfEllipse.getHalfWidth() * 2.0;
                     double height = halfEllipse.getHeight();
-                    double originalY = (4.0 * height) / (3.0 * Math.PI);
 
-                    clon.shape = (E) GeometryUtilities.createHalfEllipse(width, height);
+                    clon.shape = (E) dyn4jCreateHalfEllipse(width, height);
                     if (Math.abs(halfEllipse.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(halfEllipse.getRotationAngle());
                     }
@@ -266,7 +265,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     double radius = slice.getSliceRadius();
                     double originalX = 2.0 * radius * Math.sin(theta * 0.5) / (1.5 * theta);
 
-                    clon.shape = (E) GeometryUtilities.createSlice(radius, theta);
+                    clon.shape = (E) dyn4jCreateSlice(radius, theta);
 
                     if (Math.abs(slice.getRotationAngle()) > Epsilon.E) {
                         clon.shape.rotate(slice.getRotationAngle());
@@ -323,7 +322,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 double cRadius    = in.readDouble("Radius", 0.5);
                 Vector2 cTraslate = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Translate", new Vector2f()));
                 
-                shape = (E) GeometryUtilities.createCircle(cRadius);
+                shape = (E) dyn4jCreateCircle(cRadius);
                 shape.translate(cTraslate);
                 break;
             case Rectangle:
@@ -333,7 +332,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 double rRotationAngle = in.readDouble("RotationAngle", 0);
                 Vector2 rTraslate     = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Translate", new Vector2f()));
                 
-                shape = (E) GeometryUtilities.createRectangle(rWidth, rHeight);
+                shape = (E) dyn4jCreateRectangle(rWidth, rHeight);
                 shape.rotate(rRotationAngle);
                 shape.translate(rTraslate);
                 break;
@@ -343,7 +342,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("P2", new Vector2f(-0.5F, -0.0F))),
                     Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("P3", new Vector2f(0.5F, 0.0F)))
                 };
-                shape = (E) GeometryUtilities.createTriangle(tVertices[0], tVertices[1], tVertices[2]);
+                shape = (E) dyn4jCreateTriangle(tVertices[0], tVertices[1], tVertices[2]);
                 break;
             case Polygon:
                 int vSize = in.readInt("vSize", 0);
@@ -352,12 +351,12 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                     pVertices[i] = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable(String.valueOf(i), new Vector2f()));
                 }
                 
-                shape = (E) GeometryUtilities.createPolygon(pVertices);
+                shape = (E) dyn4jCreatePolygon(pVertices);
                 break;
             case Segment: /*case Link:*/
                 Vector2 sP1 = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("P1", new Vector2f())), 
                         sP2 = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("P2", new Vector2f()));
-                shape = (E) GeometryUtilities.createSegment(sP1, sP2);
+                shape = (E) dyn4jCreateSegment(sP1, sP2);
                 break;
             case Capsule:
                 double capWidth  = in.readDouble("Width", 0.5),
@@ -366,7 +365,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 double capRotationAngle = in.readDouble("RotationAngle", 0);
                 Vector2 capTraslate     = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Translate", new Vector2f()));
                 
-                shape = (E) GeometryUtilities.createCapsule(capWidth, capHeight);
+                shape = (E) dyn4jCreateCapsule(capWidth, capHeight);
                 shape.rotate(capRotationAngle);
                 shape.translate(capTraslate);
                 break;
@@ -377,7 +376,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 double eRotationAngle = in.readDouble("RotationAngle", 0);
                 Vector2 eTraslate     = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Translate", new Vector2f()));
                 
-                shape = (E) GeometryUtilities.createEllipse(eWidth, eHeight);
+                shape = (E) dyn4jCreateEllipse(eWidth, eHeight);
                 shape.rotate(eRotationAngle);
                 shape.translate(eTraslate);
                 break;
@@ -388,7 +387,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 double hRotationAngle = in.readDouble("RotationAngle", 0);
                 Vector2 hTraslate     = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Translate", new Vector2f()));
                 
-                shape = (E) GeometryUtilities.createHalfEllipse(hWidth, hHeight);
+                shape = (E) dyn4jCreateHalfEllipse(hWidth, hHeight);
                 shape.rotate(hRotationAngle);
                 shape.translate(hTraslate);
                 break;
@@ -399,7 +398,7 @@ public class CollisionShape<E extends Convex> implements Savable, Cloneable {
                 double sRotationAngle = in.readDouble("RotationAngle", 0);
                 Vector2 sTraslate     = Converter.toVector2ValueOfDyn4j((Vector2f) in.readSavable("Translate", new Vector2f()));
                 
-                shape = (E) GeometryUtilities.createSlice(sRadius, sTheta);
+                shape = (E) dyn4jCreateSlice(sRadius, sTheta);
                 shape.rotate(sRotationAngle);
                 shape.translate(sTraslate);
                 break;
