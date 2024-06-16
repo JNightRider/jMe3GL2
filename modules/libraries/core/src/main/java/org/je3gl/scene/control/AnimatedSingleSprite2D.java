@@ -60,8 +60,7 @@ public class AnimatedSingleSprite2D extends AbstractAnimatedSprite2D<Spatial, Si
     /**
      * Default constructor of class <code>AnimatedSingleSprite2D</code>.
      */
-    public AnimatedSingleSprite2D() {
-    }
+    public AnimatedSingleSprite2D() { }
 
     /**
      * Generate a new instance of the <code>AnimatedSingleSprite2D</code> class 

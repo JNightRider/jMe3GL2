@@ -60,8 +60,7 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
     /**
      * Default constructor of class <code>AnimatedRibbonBoxSprite2D</code>.
      */
-    public AnimatedRibbonBoxSprite2D() {
-    }
+    public AnimatedRibbonBoxSprite2D() { }
 
     /**
      * Generate a new instance of the <code>AnimatedRibbonBoxSprite2D</code> class 

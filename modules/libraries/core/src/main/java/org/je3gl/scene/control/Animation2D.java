@@ -41,5 +41,5 @@ import org.je3gl.util.Serializable;
  * @version 1.0.0
  * @since 3.0.0
  */
-public interface Animation2D extends Serializable {    
+public interface Animation2D extends Serializable {
 }
