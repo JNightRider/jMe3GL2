@@ -42,4 +42,47 @@ import org.je3gl.util.Serializable;
  * @since 3.0.0
  */
 public interface Animation2D extends Serializable {
+    
+    /**
+     * An <code>Type</code> is responsible for defining the type of scale for a
+     * <code>Animation2D</code>.
+     *
+     * @author wil
+     * @version 1.0.5
+     * @since 1.0.0
+     */
+    public enum Type {
+
+        /**
+         * It takes the width of the texture as a reference point, i.e. the width is
+         * 100%, while the height will be scaled.
+         */
+        GLXW,
+
+        /**
+         * It takes the height of the texture as a reference point, i.e. the height
+         * is 100%, while the width will be scaled.
+         */
+        GLXH,
+
+        /**
+         * The maximum value (width or height) is taken as a reference.
+         */
+        Max,
+
+        /**
+         * The minimum value (width or height) is taken as a reference.
+         */
+        Min,
+        
+        /**
+         * No type of scale is applied.
+         */
+        Nothing,
+        
+        /**
+         * Use a custom scale.
+         */
+        Custom;
+    }
 }

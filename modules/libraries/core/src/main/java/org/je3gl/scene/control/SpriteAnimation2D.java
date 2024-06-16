@@ -36,6 +36,7 @@ import com.jme3.texture.Texture;
 import com.jme3.util.clone.Cloner;
 
 import java.io.IOException;
+import org.je3gl.scene.shape.Sprite;
 
 /**
  * A class in charge of managing the frames of the animated control 
@@ -63,7 +64,17 @@ public class SpriteAnimation2D extends AbstractAnimation2D<SpriteAnimation2D> im
      * @param texture object-teture
      */
     public SpriteAnimation2D(Texture texture) {
-        this(texture, null, null);
+        this(texture, null, null, Type.Nothing);
+    }
+    
+    /**
+     * Generate a <code>SpriteAnimation2D</code> object and initialize its parameters.
+     * @param texture object-teture
+     * @param sprite the model mesh
+     * @param type scale type
+     */
+    public SpriteAnimation2D(Texture texture, Sprite sprite, Type type) {
+        this(texture, sprite.getNativeWidth(), sprite.getNativeHeight(), type);
     }
     
     /**
@@ -71,9 +82,10 @@ public class SpriteAnimation2D extends AbstractAnimation2D<SpriteAnimation2D> im
      * @param texture object-teture
      * @param nw mesh width
      * @param nh mesh height
+     * @param type scale type
      */
-    public SpriteAnimation2D(Texture texture, Float nw, Float nh) {
-        super(nw, nh);
+    public SpriteAnimation2D(Texture texture, Float nw, Float nh, Type type) {
+        super(nw, nh, type);
         this.texture = texture;
     }
     

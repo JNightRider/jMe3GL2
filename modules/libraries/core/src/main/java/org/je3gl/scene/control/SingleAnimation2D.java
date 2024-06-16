@@ -33,7 +33,9 @@ package org.je3gl.scene.control;
 
 import com.jme3.export.*;
 import com.jme3.util.clone.Cloner;
+
 import java.io.IOException;
+import org.je3gl.scene.shape.Sprite;
 
 /**
  * A class in charge of managing the frames of the animated control 
@@ -61,7 +63,17 @@ public class SingleAnimation2D extends AbstractAnimation2D<SingleAnimation2D> im
      * @param index int
      */
     public SingleAnimation2D(int index) {
-        this(index, null, null);
+        this(index, null, null, Type.Nothing);
+    }
+    
+    /**
+     * Generate a <code>SingleAnimation2D</code> object and initialize its parameters.
+     * @param index int
+     * @param sprite the model mesh
+     * @param type scale type
+     */
+    public SingleAnimation2D(int index, Sprite sprite, Type type) {
+        this(index, sprite.getNativeWidth(), sprite.getNativeHeight(), type);
     }
     
     /**
@@ -69,9 +81,10 @@ public class SingleAnimation2D extends AbstractAnimation2D<SingleAnimation2D> im
      * @param index int
      * @param nw mesh width
      * @param nh mesh height
+     * @param type scale type
      */
-    public SingleAnimation2D(int index, Float nw, Float nh) {
-        super(nw, nh);
+    public SingleAnimation2D(int index, Float nw, Float nh, Type type) {
+        super(nw, nh, type);
         this.index = index;
     }
 

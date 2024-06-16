@@ -32,10 +32,13 @@
 package org.je3gl.scene.control;
 
 import com.jme3.material.Material;
+import com.jme3.math.Vector2f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.texture.Image;
+import com.jme3.texture.Texture;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,29 +95,33 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
      * @param control the animated control
      */
     protected void applyAnimation2DGeometry(Geometry geom, A animation, E control) {
-        Material mat = geom.getMaterial();
+        Material mat = geom.getMaterial();        
+        Texture text;
         Mesh mesh;
+        
         switch (control.getType()) {
             case Sprite:
-                reshape(geom.getMesh(), animation);
-                mat.setTexture("ColorMap", ((SpriteAnimation2D) animation).getTexture());
+                text = ((SpriteAnimation2D) animation).getTexture();
+                reshape(geom.getMesh(), animation, text);
+                mat.setTexture("ColorMap", text);
                 break;
             case Single:
                 mesh = geom.getMesh();
                 if (mesh instanceof Sprite) {
-                    reshape(mesh, animation);
+                    reshape(mesh, animation, null);
                     ((Sprite) mesh).showIndex(((SingleAnimation2D) animation).getIndex());
                 }
                 break;
             case RibbonBox:
                 RibbonBoxAnimation2D rbad = (RibbonBoxAnimation2D) animation;                
                 mesh = geom.getMesh();
+                text = rbad.getTexture();
                 
-                mat.setTexture("ColorMap", rbad.getTexture());
+                mat.setTexture("ColorMap", text);
                 if (mesh instanceof Sprite) {
                     Sprite sprite = (Sprite) mesh;
                     
-                    reshape(mesh, animation);
+                    reshape(mesh, animation, text);
                     sprite.applyCoords(rbad.getColumns(), rbad.getRows(), sprite.getTransform().getColPosition(), sprite.getTransform().getRowPosition());
                     sprite.showIndex(rbad.getFrame());
                 }
@@ -131,14 +138,30 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
      * If possible, change the mesh size.
      * @param mesh mesh (Sprite)
      * @param animation the animated control
+     * @param ref reference texture
      */
-    protected void reshape(Mesh mesh, A animation) {
+    protected void reshape(Mesh mesh, A animation, Texture ref) {
         if ((animation instanceof AbstractAnimation2D<?>) && (mesh instanceof Sprite)) {
             float sw = ((Sprite) mesh).getNativeWidth(), 
                   sh = ((Sprite) mesh).getNativeHeight();
             
-            Float nw = ((AbstractAnimation2D<?>) animation).getWidth(), 
-                  nh = ((AbstractAnimation2D<?>) animation).getHeight();
+            AbstractAnimation2D<?> aad = (AbstractAnimation2D<?>) animation;
+            Float nw = null;
+            Float nh = null;
+            
+            if (ref != null) {
+                if (aad.getType() != AbstractAnimation2D.Type.Nothing) {
+                    Image image  = ref.getImage();
+                    Vector2f dim = aad.getSize(new Vector2f(image.getWidth(), image.getHeight()));
+
+                    nw = dim.x;
+                    nh = dim.y;
+                }
+            } else {
+                nw = aad.getNativeWidth();
+                nh = aad.getNativeHeight();
+            }
+            
             if ((nw != null && sw != nw) && (nh != null && sh != nh)) {
                 ((Sprite) mesh).applySize(nw, nh);
             }

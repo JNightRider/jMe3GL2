@@ -32,6 +32,7 @@
 package org.je3gl.scene.control;
 
 import com.jme3.export.*;
+import com.jme3.math.Vector2f;
 import com.jme3.util.clone.JmeCloneable;
 import java.io.IOException;
 
@@ -50,13 +51,82 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
                   height; // <- mesh height (Sprite)
     
     /**
+     * Scaling type.
+     * @see Type
+     */
+    private Type type;
+    
+    /**
      * Generate a new instance of class <code>AbstractAnimation2D</code>,
      * @param width mesh width (Sprite)
      * @param height mesh height (Sprite)
+     * @param type scale type
      */
-    public AbstractAnimation2D(Float width, Float height) {
+    public AbstractAnimation2D(Float width, Float height, Type type) {
+        if (type != null && Type.Nothing != type) {
+            if (width == null || height == null) {
+                throw new IllegalArgumentException("It is necessary to have the dimensions to apply the animation scale.");
+            }
+        }        
         this.width  = width;
         this.height = height;
+        this.type   = type;
+    }
+
+    /**
+     * Returns the scale type of the animation
+     * @return type
+     */
+    public Type getType() {
+        return type;
+    }
+    
+    /**
+     * Method responsible for returning the size of the new animation, said size
+     * is relative to a given reference to determine the corresponding scale.
+     * 
+     * @param ref reference
+     * @return vector2f
+     */
+    public Vector2f getSize(Vector2f ref) {
+        float max, min;
+        float mm_dim;
+        if (null == type || Type.Nothing == type) {
+            return null;
+        } else switch (type) {
+            case GLXH:
+                max = ref.y;
+                mm_dim = getNativeHeight();
+                return new Vector2f((ref.x / max) *  mm_dim, mm_dim);
+            case GLXW:
+                max = ref.x;
+                mm_dim = getNativeWidth();
+                return new Vector2f(mm_dim, (ref.y / max) * mm_dim);
+            case Max:
+                max = ref.y;
+                min = ref.x;
+                if (max >= min) {
+                    mm_dim = getNativeHeight();
+                    return new Vector2f((min / max) * mm_dim, mm_dim);
+                } else {
+                    mm_dim = getNativeWidth();
+                    return new Vector2f(mm_dim, (max / min) * mm_dim);
+                }
+            case Min:
+                max = ref.y;
+                min = ref.x;
+                if (max >= min) {
+                    mm_dim = getNativeWidth();
+                    return new Vector2f(mm_dim, (max / min) * mm_dim);
+                } else {
+                    mm_dim = getNativeHeight();
+                    return new Vector2f((min / max) * mm_dim, mm_dim);
+                }
+            case Custom:
+                return new Vector2f(getNativeWidth(), getNativeHeight());
+            default:
+                throw new AssertionError();
+        }
     }
 
     /* (non-Javadoc)
@@ -75,20 +145,32 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
      * Set a new size for the animation mesh
      * @param width mesh width (Sprite)
      * @param height mesh height (Sprite)
+     * @param type scale type
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public T size(Float width, Float height) {
+    public T size(Float width, Float height, Type type) {
         this.width = width;
         this.height = height;
         return (T) this;
     }
     
     /**
+     * Set a new size for the animation mesh
+     * @param width mesh width (Sprite)
+     * @param height mesh height (Sprite)
+     * @return this
+     */
+    @SuppressWarnings("unchecked")
+    public T size(Float width, Float height) {
+        return this.size(width, height, Type.Custom);
+    }
+    
+    /**
      * Returns the width, <code>null</code> by default.
      * @return float|Float
      */
-    public Float getWidth() {
+    public Float getNativeWidth() {
         return width;
     }
 
@@ -96,7 +178,7 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
      * Returns the height, <code>null</code> by default.
      * @return float|Float
      */
-    public Float getHeight() {
+    public Float getNativeHeight() {
         return height;
     }
 
@@ -116,6 +198,7 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
         if (height != null) {
             out.write(height, "Heigh", -1);
         }
+        out.write(type, "Type", null);
     }
 
     /**
@@ -136,5 +219,6 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
         if (nh > -1) {
             height = nh;
         }
+        type = in.readEnum("Type", Type.class, Type.Nothing);
     }
 }

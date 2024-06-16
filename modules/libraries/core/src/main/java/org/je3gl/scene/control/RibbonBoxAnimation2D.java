@@ -37,6 +37,7 @@ import com.jme3.util.clone.Cloner;
 import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
+import org.je3gl.scene.shape.Sprite;
 
 /**
  * A class in charge of managing the frames of the animated control 
@@ -84,8 +85,23 @@ public class RibbonBoxAnimation2D extends AbstractAnimation2D<RibbonBoxAnimation
      * @param rs n-rows
      */
     public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs) {
-        this(texture, frames, cs, rs, null, null);
+        this(texture, frames, cs, rs, null, null, Type.Nothing);
     }
+    /**
+     * Generates a new object of class <code>RibbonBoxAnimation2D</code> where the
+     * properties of the animated frame are prepared.
+     * 
+     * @param texture animated texture
+     * @param frames frame set
+     * @param cs n-columns
+     * @param rs n-rows
+     * @param sprite the model mesh
+     * @param type scale type
+     */
+    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs, Sprite sprite, Type type) {
+        this(texture, frames, cs, rs, sprite.getNativeWidth(), sprite.getNativeHeight(), type);
+    }
+    
     
     /**
      * Generates a new object of class <code>RibbonBoxAnimation2D</code> where the
@@ -97,9 +113,10 @@ public class RibbonBoxAnimation2D extends AbstractAnimation2D<RibbonBoxAnimation
      * @param rs n-rows
      * @param nw mesh width
      * @param nh mesh height
+     * @param type scale type
      */
-    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs, Float nw, Float nh) {
-        super(nw, nh);
+    public RibbonBoxAnimation2D(Texture texture, int[] frames, int cs, int rs, Float nw, Float nh, Type type) {
+        super(nw, nh, type);
         this.texture = texture;
         this.frames  = frames;
         this.cols = cs;
