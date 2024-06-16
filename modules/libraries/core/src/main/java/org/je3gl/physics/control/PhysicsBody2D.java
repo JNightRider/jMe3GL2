@@ -88,7 +88,13 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      * physics-space coordinates match world transform
      */
     private boolean localPhysics = false;
-        
+    
+    /**
+     * <code>true</code> if the physical control is disabled, otherwise <code>@code false</code>
+     * if it's in operation.
+     */
+    protected boolean enabledPhysics = true;
+    
     /**
      * Generates a new object of class <code>PhysicsBody2D</code> to generate a 
      * physical body from a 2D model.
@@ -177,7 +183,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      * @param physicsOrientation physical control rotation
      */
     protected void applyPhysicsTransform(Vector3f physicsLocation, Quaternion physicsOrientation) {
-        if (isEnabled() && spatial != null) {
+        if (isEnabledPhysicsControl() && spatial != null) {
             Vector3f localLocation = spatial.getLocalTranslation();
             Quaternion localRotationQuat = spatial.getLocalRotation();
                         
@@ -275,7 +281,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
      */
     @Override
     public void update(float tpf) {
-        if (!isEnabled())
+        if (!isEnabledPhysicsControl())
             return;        
         controlUpdate(tpf);
         physicsProcess(tpf);
@@ -328,6 +334,22 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         applyPhysicsTransform(loc, rot);
     }
 
+    /* (non-JavaDoc)
+     * @see PhysicsControl#setEnabledPhysicsControl(boolean) 
+     */
+    @Override
+    public void setEnabledPhysicsControl(boolean enabled) {
+        this.enabledPhysics = enabled;
+    }
+
+    /* (non-JavaDoc)
+     * @see PhysicsControl#isEnabledPhysicsControl() 
+     */
+    @Override
+    public boolean isEnabledPhysicsControl() {
+        return this.enabledPhysics;
+    }
+    
     /**
      * To be implemented in subclass.
      * @param rm the RenderManager rendering the controlled Spatial (not null)

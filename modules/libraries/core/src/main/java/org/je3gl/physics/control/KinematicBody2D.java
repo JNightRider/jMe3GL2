@@ -57,7 +57,7 @@ public class KinematicBody2D extends PhysicsBody2D {
     @Override
     protected void controlUpdate(float tpf) {
         this.setGravityScale(0);        
-        this.setAtRest(true);        
+        this.setAtRest(true);     
         super.controlUpdate(tpf);
     }
 }

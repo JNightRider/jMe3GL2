@@ -105,4 +105,16 @@ public interface PhysicsControl<E extends PhysicsBody2D> extends Control {
      * @return a physical space
      */
     public PhysicsSpace<E> getPhysicsSpace();
+    
+    /**
+     * Method in charge of enabling or disabling the control.
+     * @param enabled control status
+     */
+    public void setEnabledPhysicsControl(boolean enabled);
+    
+    /**
+     * Returns the current status of this control.
+     * @return control status
+     */
+    public boolean isEnabledPhysicsControl();
 }
