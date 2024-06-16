@@ -48,7 +48,7 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
     /* size (mesh). **/
     private Float width,  // <- mesh width (Sprite)
                   height; // <- mesh height (Sprite)
-
+    
     /**
      * Generate a new instance of class <code>AbstractAnimation2D</code>,
      * @param width mesh width (Sprite)
@@ -83,7 +83,7 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
         this.height = height;
         return (T) this;
     }
-
+    
     /**
      * Returns the width, <code>null</code> by default.
      * @return float|Float
