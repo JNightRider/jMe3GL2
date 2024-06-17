@@ -38,21 +38,35 @@ import com.jme3.asset.cache.AssetCache;
 import com.jme3.asset.cache.WeakRefCloneAssetCache;
 
 /**
- *
+ * Class for asset keys with extension: j2o | J2O.
+ * 
  * @author wil
- * @param <T> tipo del objetos
+ * @version 1.0.0
+ * @since 3.0.0
+ * 
+ * @param <T> object type
  */
 public class J2OKey<T extends Object> extends AssetKey<T> {
 
+    /**
+     * Constructor.
+     * @param name string
+     */
     public J2OKey(String name) {
         super(name);
     }
 
+    /* (non-Javaodc)
+     * @see com.jme3.asset.AssetKey#getProcessorType() 
+     */
     @Override
     public Class<? extends AssetProcessor> getProcessorType() {
         return CloneableAssetProcessor.class;
     }
 
+    /* (non-Javaodc)
+     * @see com.jme3.asset.AssetKey#getCacheType() 
+     */
     @Override
     public Class<? extends AssetCache> getCacheType() {
         return WeakRefCloneAssetCache.class;

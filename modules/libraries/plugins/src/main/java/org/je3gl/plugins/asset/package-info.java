@@ -31,10 +31,10 @@
  */
 
 /**
- * Utility package where some complementary classes are hosted.
+ * Package where everything related to the assets of a 2D game is housed.
  * 
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
-package org.je3gl.plugins;
+package org.je3gl.plugins.asset;

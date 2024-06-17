@@ -32,37 +32,58 @@
 package org.je3gl.plugins;
 
 import com.jme3.app.Application;
-import com.jme3.asset.AssetManager;
+import com.jme3.asset.AssetInfo;
+import com.jme3.asset.AssetKey;
+import com.jme3.asset.AssetLoader;
 import com.jme3.export.Savable;
 import com.jme3.export.binary.BinaryImporter;
-import com.jme3.system.JmeSystem;
-import java.io.File;
+
 import java.io.IOException;
-import org.je3gl.plugins.asset.J2OKey;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static org.je3gl.plugins.Debugger.*;
 
 /**
- *
+ * A small asset loader.
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public class J2OLoader {
-
-    private static AssetManager assetManager;
+public class J2OLoader implements AssetLoader {
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(J2OLoader.class.getName());
     
+    /** Initialization flag. */
+    private static boolean J2O_INIT = false;
+    
+    /**
+     *Register the loader of the assets with extension: ".j2o" | ".J2O"
+     * @param app application
+     */
     public static void initialize(Application app) {
-        J2OLoader.assetManager = app.getAssetManager();
+        if (!J2OLoader.J2O_INIT) {
+            J2OLoader.J2O_INIT = true;
+            app.getAssetManager().registerLoader(J2OLoader.class, "j2o", "J2O");
+            LOGGER.log(Level.INFO, "Registered J2OLoader: {0}", J2OLoader.class);
+        } else {
+            LOGGER.log(Level.WARNING, "Asset Loader {0} is now up and running (registered)", J2OLoader.class);
+        }
     }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> T load(J2OKey key) {
+
+    /* (non-Javadoc)
+     * @see com.jme3.asset.AssetLoader#load(com.jme3.asset.AssetInfo) 
+     */
+    @Override
+    public Object load(AssetInfo assetInfo) throws IOException {
+        AssetKey<?> key = assetInfo.getKey();        
         if ("j2o".equals(key.getExtension())  || "J2O".equals(key.getExtension())) {
             BinaryImporter importer = BinaryImporter.getInstance();
-            importer.setAssetManager(assetManager);
+            importer.setAssetManager(assetInfo.getManager());
             
-            try {
-                String fullPath = File.separator + key.getName();                
-                Savable obj = importer.load(JmeSystem.getResourceAsStream(fullPath));
-                return (T) obj;
+            try {             
+                Savable obj = importer.load(assetInfo.openStream());
+                return obj;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

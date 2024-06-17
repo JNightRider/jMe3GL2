@@ -34,33 +34,53 @@ package org.je3gl.plugins;
 import java.io.PrintStream;
 
 /**
- *
+ * A small debugger that can be enabled or disabled as follows:<pre><code>
+ * System.getProperty("jMe3GL2.Debug", "true")
+ * ...
+ * System.getProperty("jMe3GL2.Debug", "false")
+ * </code></pre>
+ * 
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public final class Debugger {
     
+    /**Object responsible for printing the message via console (screen). */
     public static final PrintStream DEBUG_STREAM = getDebugStream();
     
+    /** Flag - state */
     private final static Boolean DEBUG;
+    /** Prefix that is added to messages. */
     private final static String PREFIX;
-    
+    // init
     static {
         DEBUG = Boolean.valueOf(System.getProperty("jMe3GL2.Debug", "false"));
         PREFIX = "jMe3GL2";
     }
     
+    /**
+     * Returns a default output.
+     * @return stream
+     */
     private static PrintStream getDebugStream() {
         return System.out;
     }
     
+    /**
+     * Print a message.
+     * @param msg message
+     */
     public static void apiGLLog(CharSequence msg) {
         if (DEBUG) {
             DEBUG_STREAM.print("[" + PREFIX + "]" + msg + "\n");
         }
     }
     
+    /**
+     *Print a message with a format.
+     * @param msg message
+     */
     public static void apiGLLogMore(CharSequence msg) {
         if (DEBUG) {
             DEBUG_STREAM.print("\t" + msg + "\n");
