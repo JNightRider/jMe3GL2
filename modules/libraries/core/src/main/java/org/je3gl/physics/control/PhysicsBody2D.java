@@ -40,6 +40,8 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.UserData;
 import com.jme3.scene.control.Control;
+import com.jme3.util.clone.Cloner;
+import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -69,7 +71,7 @@ import org.je3gl.utilities.TransformUtilities;
  * @version 1.5.5
  * @since 1.0.0
  */
-public abstract class PhysicsBody2D extends Body implements Control, Savable, PhysicsControl<PhysicsBody2D> {
+public abstract class PhysicsBody2D extends Body implements Control, Cloneable, JmeCloneable, Savable, PhysicsControl<PhysicsBody2D> {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsBody2D.class.getName());
     
@@ -253,10 +255,8 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    /**
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.jme3.scene.control.Control#setSpatial(com.jme3.scene.Spatial) 
-     * @param spatial object
      */
     @Override
     public void setSpatial(Spatial spatial) {
@@ -274,10 +274,8 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         this.ready();
     }
 
-    /**
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.jme3.scene.control.Control#update(float) 
-     * @param tpf float
      */
     @Override
     public void update(float tpf) {
@@ -287,11 +285,8 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
         physicsProcess(tpf);
     }
 
-    /**
-     * (non-Javadoc)
-     *  @see com.jme3.scene.control.Control#render(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
-     * @param rm render-manager
-     * @param vp view-port
+    /* (non-Javadoc)
+     * @see com.jme3.scene.control.Control#render(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
      */
     @Override
     public void render(RenderManager rm, ViewPort vp) {
@@ -349,13 +344,92 @@ public abstract class PhysicsBody2D extends Body implements Control, Savable, Ph
     public boolean isEnabledPhysicsControl() {
         return this.enabledPhysics;
     }
+
+    /**
+     * Do not use this method to clone, since this generated clone is partial 
+     * which implies that its attributes are not cloned; They remain intertwined
+     * with the original object.
+     * <p>
+     * <b>WARNING:</b> Any changes applied to this copy will affect the original object.
+     * 
+     * @see com.jme3.util.clone.Cloner
+     * @return partial clone/copy
+     */
+    @Override
+    protected Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
+    }
+    
+    /* non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#jmeClone() 
+     */
+    @Override
+    public Object jmeClone() {
+        return PhysicsBody2DCloner.clone(this.getClass());
+    }
+
+    /* non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
+    @Override
+    public void cloneFields(Cloner cloner, Object object) {
+        PhysicsBody2D original = (PhysicsBody2D) object;
+        
+        // jme3
+        spatial      = cloner.clone(original.spatial);
+        localPhysics = original.localPhysics;
+        
+        int fSize = original.getFixtureCount();        
+        for (int j = 0; j < fSize; j++) {
+            BodyFixture bf  = original.getFixture(j);
+            addFixture(new PhysicsFixture(bf).clone());
+        }
+        
+        // set the transform
+        setTransform(original.getTransform().copy());
+        
+        // set velocity
+        setLinearVelocity(original.getLinearVelocity().copy());
+        setAngularVelocity(original.getAngularVelocity());
+        
+        // set state properties
+        setEnabled(original.isEnabled()); // by default the body is active
+        setAtRest(original.isAtRest());     // by default the body is awake
+        setAtRestDetectionEnabled(original.isAtRestDetectionEnabled());     // by default auto sleeping is true
+        setBullet(original.isBullet());                                     // by default the body is not a bullet
+        
+        // set damping
+        setLinearDamping(original.getLinearDamping());
+        setAngularDamping(original.getAngularDamping());
+        
+        // set gravity scale
+        setGravityScale(original.getGravityScale());
+        
+        // set mass properties last
+        Mass myMass = original.getMass().copy();
+        setMass(myMass);
+        
+         // set force/torque accumulators
+        if (!original.getAccumulatedForce().isZero()) {
+            applyForce(original.getAccumulatedForce().copy());
+        }
+        if (Math.abs(original.getAccumulatedTorque()) > Epsilon.E) {
+            applyTorque(original.getAccumulatedTorque());
+        }
+    }
     
     /**
      * To be implemented in subclass.
      * @param rm the RenderManager rendering the controlled Spatial (not null)
      * @param vp the ViewPort being rendered (not null)
      */
-    protected void controlRender(RenderManager rm, ViewPort vp) {}
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+        // nothing
+    }
     
     /**
      * (non-Javadoc)

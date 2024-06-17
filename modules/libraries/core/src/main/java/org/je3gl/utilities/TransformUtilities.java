@@ -35,7 +35,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 
 /**
- *  Utility class responsible for providing transformation methods.
+ * Utility class responsible for providing transformation methods.
  * @author wil
  * @version 1.0.0
  * @since 3.0.0

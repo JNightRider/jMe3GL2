@@ -32,6 +32,7 @@
 package org.je3gl.physics.control;
 
 import com.jme3.export.*;
+import com.jme3.util.clone.Cloner;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -215,6 +216,25 @@ public class Vehicle2D extends PhysicsBody2D {
             physicsSpace.addPhysicsJoint(frontWheelPhysicsJoint);
         }        
         super.setPhysicsSpace(physicsSpace);
+    }
+    
+    /* non-Javadoc)
+     * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
+     */
+    @Override
+    public void cloneFields(Cloner cloner, Object object) {
+        super.cloneFields(cloner, object);
+        Vehicle2D original = (Vehicle2D) object;
+        
+        rearWheel  = cloner.clone(original.rearWheel);
+        frontWheel = cloner.clone(original.frontWheel);        
+        rearWheelPhysicsJoint  = cloner.clone(original.rearWheelPhysicsJoint);
+        frontWheelPhysicsJoint = cloner.clone(original.frontWheelPhysicsJoint);
+        
+        speed    = original.speed;
+        maxSpeed = original.maxSpeed;
+        acceleration  = original.acceleration;
+        decceleration = original.decceleration;
     }
     
     /**
