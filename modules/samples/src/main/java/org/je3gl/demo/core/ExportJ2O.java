@@ -55,27 +55,38 @@ import static org.je3gl.utilities.MaterialUtilities.*;
 import static org.je3gl.utilities.TextureUtilities.*;
 
 /**
- *
+ * Class where the export (serialization) of objects is exemplified.
  * @author wil
  * @version 1.0.0
  * @since 3.0.0
  */
 public class ExportJ2O extends SimpleApplication {
     
+    /** root path (absolute). */
     private static final String ROOT_PATH ;
+    /** Margin used by JME materials (transparency). */
     private static final float ALPHA_DISCARD_THRESHOLD;
+    // init
     static {
         ROOT_PATH = System.getProperty("user.dir") + "/src/main/resources/Models/";
         ALPHA_DISCARD_THRESHOLD = 0.01f;
     }
     
+    /**
+     * The main method; uses zero arguments in args array
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         ExportJ2O app = new ExportJ2O();
         app.start();
     }
 
+    /** physical space dyn4j. */
     Dyn4jAppState<PhysicsBody2D> dyn4jAppState;
     
+    /* (non-Javadoc)
+     * @see com.jme3.app.SimpleApplication#simpleInitApp() 
+     */
     @Override
     public void simpleInitApp() {
         dyn4jAppState = new Dyn4jAppState<>(ThreadingType.SEQUENTIAL);
@@ -86,6 +97,9 @@ public class ExportJ2O extends SimpleApplication {
         //j2oTanks();
     }
     
+    /**
+     * Building a j2o model.
+     */
     private void j2oTanks() {
         Node tanks = new Node("Tanks");
         tanks.setQueueBucket(RenderQueue.Bucket.Transparent);
@@ -215,6 +229,9 @@ public class ExportJ2O extends SimpleApplication {
         export(tanks, "TankNavy.j2o");
     }
     
+    /**
+     * Building a j3o model.
+     */
     private void j3oRabbit() {
         Geometry player = new Geometry("AnimatedSprite2D", new Sprite(1.0F, 1.0F));
         player.setMaterial(getUnshadedMaterialFromClassPath(assetManager, "Textures/Rabbit/tile_0040.png"));
@@ -240,6 +257,11 @@ public class ExportJ2O extends SimpleApplication {
         export(player, "Rabbit.j3o");
     }
     
+    /**
+     * Save the models to disk.
+     * @param obj model
+     * @param name path-name
+     */
     private static void export(Savable obj, String name) {
         try {
             BinaryExporter exporter = BinaryExporter.getInstance();

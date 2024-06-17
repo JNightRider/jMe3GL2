@@ -39,10 +39,12 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
+
 import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.PhysicsBody2D;
@@ -59,21 +61,37 @@ import static org.je3gl.utilities.GeometryUtilities.*;
 import static org.je3gl.utilities.MaterialUtilities.*;
 
 /**
- *
+ * Class where the use of class {@link org.je3gl.physics.control.Vehicle2D} is 
+ * exemplified, using articulations (Joint).
+ * 
  * @author wil
+ * @version 1.0.0
+ * @since 3.0.0
  */
 public class Tanks2D extends SimpleApplication {
     
+    /**
+     * The main method; uses zero arguments in args array
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         Tanks2D app = new Tanks2D();
         app.start();
     }
     
+    /** Object in charge of managing the 'T' key */
     private static final BooleanStateKeyboardInputHandler VK_LEFT = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_T, "left"));
+    /** Object in charge of managing the 'Y' key */
     private static final BooleanStateKeyboardInputHandler VK_RIGHT = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_Y, "right"));
     
-    private static class TanksControl extends AbstractControl {
+    /**
+     * Vehicle control (Tank).
+     */
+    private static class TankControl extends AbstractControl {
 
+        /* (non-Javadoc)
+         * @see com.jme3.scene.control.AbstractControl#controlUpdate(float) 
+         */
         @Override
         protected void controlUpdate(float tpf) {
             if (VK_LEFT.isActive()) {
@@ -85,16 +103,21 @@ public class Tanks2D extends SimpleApplication {
             }
         }
 
+        /* (non-Javadoc)
+         * @see com.jme3.scene.control.AbstractControl#controlRender(com.jme3.renderer.RenderManager, com.jme3.renderer.ViewPort) 
+         */
         @Override
         protected void controlRender(RenderManager rm, ViewPort vp) {
-            
+            // nothing
         }
     }
 
+    /* (non-Javadoc)
+     * @see com.jme3.app.SimpleApplication#simpleInitApp() 
+     */
     @Override
     public void simpleInitApp() {
-        J2OLoader.initialize(this);
-        
+        J2OLoader.initialize(this);        
         Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
         stateManager.attach(camera2DRenderer);
         
@@ -112,19 +135,22 @@ public class Tanks2D extends SimpleApplication {
         prepareCharacters();
     }
     
+    /**
+     * Prepare the character (2D model) and animations.
+     */
     @SuppressWarnings("unchecked")
     private void prepareCharacters() {
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
         
-        Spatial tank = J2OLoader.load(new J2OKey<>("Models/TankNavy.j2o"));
+        Spatial tank = assetManager.loadAsset(new J2OKey<>("Models/TankNavy.j2o"));
         tank.getControl(PhysicsBody2D.class).setMass(new Mass(new Vector2(), 10, 0));
         tank.getControl(PhysicsBody2D.class).translate(-3, 0);
-        tank.addControl(new TanksControl());
-        
+        tank.addControl(new TankControl());
+                
         dyn4jAppState.getPhysicsSpace().addPhysicsBody(tank, true);
         rootNode.attachChild(tank);
   
-        Spatial tank2 = J2OLoader.load(new J2OKey<>("Models/TankNavy.j2o"));
+        Spatial tank2 = assetManager.loadAsset(new J2OKey<>("Models/TankNavy.j2o"));
         
         tank2.getControl(PhysicsBody2D.class).setMass(new Mass(new Vector2(), 10, 0));
         tank2.getControl(PhysicsBody2D.class).translate(3, 0);
@@ -133,6 +159,9 @@ public class Tanks2D extends SimpleApplication {
         rootNode.attachChild(tank2);
     }
     
+    /**
+     * Prepare a simple terrain.
+     */
     @SuppressWarnings("unchecked")
     private void prepareSimpleTerrain() {  
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);

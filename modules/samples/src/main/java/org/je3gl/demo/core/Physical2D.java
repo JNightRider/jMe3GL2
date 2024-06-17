@@ -33,6 +33,7 @@ package org.je3gl.demo.core;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.scene.Geometry;
+
 import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.PhysicsBody2D;
@@ -42,6 +43,7 @@ import org.je3gl.scene.tile.TileMap;
 import static org.je3gl.utilities.GeometryUtilities.*;
 import static org.je3gl.utilities.MaterialUtilities.*;
 import static org.je3gl.utilities.TileMapUtilities.*;
+
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 

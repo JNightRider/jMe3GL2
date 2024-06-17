@@ -59,8 +59,7 @@ public class Sprite2D extends SimpleApplication {
         app.start();
     }
     
-    /*
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.jme3.app.SimpleApplication#simpleInitApp() 
      */
     @Override
