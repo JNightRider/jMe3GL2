@@ -288,7 +288,9 @@ public class Timer {
      */
     public void setMaxTime(float maxTime) {
         this.maxTime = maxTime;
-        reset();
+        if (isRun()) {
+            reset();
+        }
     }
     
     /**
