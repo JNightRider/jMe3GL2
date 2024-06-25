@@ -150,8 +150,9 @@ public abstract class AbstractAnimation2D<T extends AbstractAnimation2D<T>> impl
      */
     @SuppressWarnings("unchecked")
     public T size(Float width, Float height, Type type) {
-        this.width = width;
+        this.width  = width;
         this.height = height;
+        this.type   = type;
         return (T) this;
     }
     
