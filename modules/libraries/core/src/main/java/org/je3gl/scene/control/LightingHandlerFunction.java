@@ -161,7 +161,7 @@ public class LightingHandlerFunction<O extends Spatial, A extends Animation2D, E
                 nw = aad.getNativeWidth();
                 nh = aad.getNativeHeight();
             }
-            if ((nw != null && sw != nw) && (nh != null && sh != nh)) {
+            if ((nw != null && nh != null) && (sw != nw || sh != nh)) {
                 ((Sprite) mesh).applySize(nw, nh);
             }
         }

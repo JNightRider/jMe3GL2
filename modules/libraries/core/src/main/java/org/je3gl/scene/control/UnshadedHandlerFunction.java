@@ -162,7 +162,7 @@ public class UnshadedHandlerFunction<O extends Spatial, A extends Animation2D, E
                 nh = aad.getNativeHeight();
             }
             
-            if ((nw != null && sw != nw) && (nh != null && sh != nh)) {
+            if ((nw != null && nh != null) && (sw != nw || sh != nh)) {
                 ((Sprite) mesh).applySize(nw, nh);
             }
         }
