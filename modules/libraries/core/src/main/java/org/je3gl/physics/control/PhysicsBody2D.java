@@ -85,6 +85,8 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     /** The 2D model. */
     protected Spatial spatial;
     
+    private boolean initialized;
+    
     /**
      * true &rarr; physics-space coordinates match local transform, false &rarr;
      * physics-space coordinates match world transform
@@ -305,6 +307,12 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     public <T extends Spatial> T getJmeObject() {
         return (T) spatial;
     }
+    
+    /**
+     * It is used to initialize data when it is certain that the body is in sync
+     * with the model.
+     */
+    protected void postReady() {};
 
     /** Data initialization for this body (optional). */
     protected void ready() {}
@@ -320,6 +328,11 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
      * @param tpf time per frame (in seconds)
      */
     protected void controlUpdate(float tpf) {
+        if (!initialized) {
+            initialized = true;
+            this.postReady();
+        }
+        
         float deep     = this.spatial.getLocalTranslation().z;
         Quaternion rot = new Quaternion().fromAngleAxis(
                 Converter.toFloatValue(getTransform().getRotationAngle()),

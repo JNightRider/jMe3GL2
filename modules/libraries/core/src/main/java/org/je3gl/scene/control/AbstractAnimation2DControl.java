@@ -196,6 +196,15 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#clone() 
+     */
+    @Override
+    public Object clone() {
+        final Cloner cloner = new Cloner();
+        return cloner.clone(this);
+    }
+
+    /* (non-Javadoc)
      * @see com.jme3.util.clone.JmeCloneable#cloneFields(com.jme3.util.clone.Cloner, java.lang.Object) 
      */
     @Override
