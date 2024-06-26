@@ -124,9 +124,7 @@ public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatia
      */
     @Override
     protected void controlUpdate(float tpf) {
-        if (currentAnimation2D != null) {
-            fireAnimatedTimeChangeListener();
-            
+        if (currentAnimation2D != null) {            
             int old_index = animation2DIndex,
                 old_anim  = index;
             elapsedeTime += (tpf * animation2DSpeed);

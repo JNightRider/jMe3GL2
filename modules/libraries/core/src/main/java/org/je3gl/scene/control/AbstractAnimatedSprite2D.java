@@ -95,9 +95,7 @@ public abstract class AbstractAnimatedSprite2D<O extends Spatial, A extends Anim
     @Override
     @SuppressWarnings("unchecked")
     protected void controlUpdate(float tpf) {
-        if (currentAnimation2D != null) {
-            fireAnimatedTimeChangeListener();
-            
+        if (currentAnimation2D != null) {            
             int old_index = animation2DIndex;
             elapsedeTime += (tpf * animation2DSpeed);
             
