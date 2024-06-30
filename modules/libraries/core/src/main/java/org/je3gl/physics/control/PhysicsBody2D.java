@@ -44,6 +44,8 @@ import com.jme3.util.clone.Cloner;
 import com.jme3.util.clone.JmeCloneable;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,6 +56,7 @@ import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
+import org.je3gl.listener.SpaceListener;
 
 import org.je3gl.physics.PhysicsSpace;
 import org.je3gl.util.Converter;
@@ -74,6 +77,8 @@ import org.je3gl.utilities.TransformUtilities;
 public abstract class PhysicsBody2D extends Body implements Control, Cloneable, JmeCloneable, Savable, PhysicsControl<PhysicsBody2D> {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsBody2D.class.getName());
+    /** List of physical space listeners. */
+    private List<SpaceListener<PhysicsBody2D>> spaceListeners = new ArrayList<>();
     
     /**
      * temporary storage during calculations TODO thread safety
@@ -85,6 +90,11 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     /** The 2D model. */
     protected Spatial spatial;
     
+    /**
+     * A flag that is responsible for managing the states of the bodies, so it 
+     * is only used to indicate if the bodies have been initialized correctly
+     * to call method <code>postReady(void)</code>.
+     */
     private boolean initialized;
     
     /**
@@ -131,6 +141,42 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
         return "(" + String.valueOf(spatial) + ") " + super.toString();
     }
 
+    /**
+     * Add a new listener for the physical space.
+     * @param listener a listener
+     */
+    public void addSpaceListener(SpaceListener<PhysicsBody2D> listener) {
+        this.spaceListeners.add(listener);
+    }
+    
+    /**
+     * Delete a listener for physical space.
+     * @param listener the listener
+     * @return boolean
+     */
+    public boolean removeSpaceListener(SpaceListener<PhysicsBody2D> listener) {
+        return this.spaceListeners.remove(listener);
+    }
+    
+    /**
+     * Method responsible for activating listeners, where it will notify the state 
+     * of this body (in physical space)
+     * @param physicsSpace the current physical space
+     * @param attach Flag indicating whether the body is being removed or added (from physical space).
+     */
+    protected final void fireSpaceListener(PhysicsSpace<PhysicsBody2D> physicsSpace, boolean attach) {
+        for (int i = 0; i < this.spaceListeners.size(); i++) {
+            SpaceListener<PhysicsBody2D> sl = this.spaceListeners.get(i);
+            if (sl != null) {
+                if (attach) {
+                    sl.spaceAttached(physicsSpace);
+                } else {
+                    sl.stateDetached(physicsSpace);
+                }
+            }
+        }
+    }
+    
     /**
      * Returns the translation of the spatial.
      * @return Vector3f
@@ -236,6 +282,11 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
     public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
         if (this.physicsSpace != null && physicsSpace != null && this.physicsSpace != physicsSpace) {
             throw new IllegalStateException("This body has already been added to a physical space.");
+        }
+        if (physicsSpace == null && this.physicsSpace != null) {
+            fireSpaceListener(this.physicsSpace, false);
+        } else {
+            fireSpaceListener(physicsSpace, true);
         }
         this.physicsSpace = physicsSpace;
     }

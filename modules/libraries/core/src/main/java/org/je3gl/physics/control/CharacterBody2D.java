@@ -368,9 +368,11 @@ public class CharacterBody2D extends PhysicsBody2D {
         if (physicsSpace == null && this.physicsSpace != null) {
             this.physicsSpace.removeStepListener(stepListener);
             this.physicsSpace.removeContactListener(contactListener);
+            fireSpaceListener(physicsSpace, false);
         } else if (physicsSpace != null && this.physicsSpace == null) {
             physicsSpace.addStepListener(stepListener);
             physicsSpace.addContactListener(contactListener);
+            fireSpaceListener(physicsSpace, true);
         }
         this.physicsSpace = physicsSpace;
     }
