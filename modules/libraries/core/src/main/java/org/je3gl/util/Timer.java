@@ -51,6 +51,11 @@ public class Timer {
     /** Counter. */
     private float counter = 0.0F;
     
+    /** A reference to the object {@link org.je3gl.util.TimerAppState} to which
+     * this timer belongs (only if it exists) 
+     */
+    TimerAppState timerState = null;
+    
     /**
      * {@code true} if the timer is stopped, i.e., it will stop counting, 
      * otherwise {@code false}.
@@ -66,6 +71,16 @@ public class Timer {
     public Timer(float maxTime) {
         this.maxTime = maxTime;
         this.counter = 0;        
+    }
+
+    /**
+     * Establede el estado que gestiona este temporizador.
+     * 
+     * @param timerState state
+     * @since 3.0.0
+     */
+    final void setAppState(TimerAppState timerState) {
+        this.timerState = timerState;
     }
     
     /**
@@ -191,7 +206,7 @@ public class Timer {
      */
     public void start() {
         counter = 0;
-        paused = false;
+        pause(false); // -> paused = false;
     }
     
     /**
@@ -199,6 +214,9 @@ public class Timer {
      * @param pause boolean
      */
     public void pause(boolean pause) {
+        if (timerState != null && !pause) {
+            timerState.tempTimer.remove(this);
+        }
         paused = pause;
     }
     
@@ -206,7 +224,7 @@ public class Timer {
      * Reset this timer.
      */
     public void reset() {
-        paused = false;
+        pause(false); // -> paused = false;
         counter = 0;
     }
     
@@ -214,7 +232,7 @@ public class Timer {
      * Stops the timer completely.
      */
     public void stop() {
-        paused = true;
+        pause(true); // -> used = true;
         counter = 0;
     }
     

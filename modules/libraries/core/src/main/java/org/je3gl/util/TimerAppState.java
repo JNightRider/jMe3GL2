@@ -32,8 +32,10 @@
 package org.je3gl.util;
 
 import com.jme3.app.state.AbstractAppState;
+import java.util.ArrayList;
 
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,6 +94,12 @@ public final class TimerAppState extends AbstractAppState {
     
     /** Map of the timers. */
     private final Map<String, EntryTimer> timerMap = new IdentityHashMap<>();
+    
+    /**
+     * Temporary list containing all paused timers that were previously executed 
+     * when the <code>setEnabled()</code> method was called.
+     */
+    final List<Timer> tempTimer = new ArrayList<>();
     /** Default delay. */
     private float defaultDelay = 0.5F;
     
@@ -135,6 +143,11 @@ public final class TimerAppState extends AbstractAppState {
         EntryTimer entryTimer = this.timerMap.get(name);
         if ( entryTimer == null ) {
             LOG.log(Level.WARNING, "[ {0} ] Nonexistent timer.", name);
+            return false;
+        }
+        
+        if (! isEnabled()) {
+            LOG.log(Level.WARNING, "The state is stopped, enable it first to start any timer.");
             return false;
         }
         
@@ -219,7 +232,9 @@ public final class TimerAppState extends AbstractAppState {
     public Timer detachTimer(String name) {
         EntryTimer entryTimer = this.timerMap.remove(name);
         if ( entryTimer != null ) {
-            return entryTimer.getTimer();
+            Timer tm = entryTimer.getTimer();
+            tm.setAppState(null);
+            return tm;
         }
         return null;
     }
@@ -293,13 +308,29 @@ public final class TimerAppState extends AbstractAppState {
      */
     @Override
     public void setEnabled(boolean enabled) {
-        for (final Map.Entry<String, EntryTimer> entry : this.timerMap.entrySet()) {
-            EntryTimer timer = entry.getValue();
-            if (timer == null) {
-                continue;
+        if (enabled) {
+            for (int i = 0; i < tempTimer.size(); i++) {
+                Timer etm = tempTimer.get(i);
+                etm.setAppState(null);
+                etm.pause(false);
+                                
+                tempTimer.remove(i);
+                i--;
             }
-            
-            timer.getTimer().pause(!enabled);
+        } else {
+            for (final Map.Entry<String, EntryTimer> entry : this.timerMap.entrySet()) {
+                EntryTimer timer = entry.getValue();
+                if (timer == null) {
+                    continue;
+                }
+
+                Timer tm = timer.getTimer();
+                if (tm.isRun()) {
+                    tm.pause(true);
+                    tm.setAppState(this);
+                    tempTimer.add(tm);
+                }
+            }
         }
         super.setEnabled(enabled);
     }
@@ -309,7 +340,11 @@ public final class TimerAppState extends AbstractAppState {
      * manager/administrator.
      */
     public void detachAllTimer() {
-        this.timerMap.clear();
+        for (final Map.Entry<?, EntryTimer> entry : timerMap.entrySet()) {
+            Timer timer = entry.getValue().getTimer();
+            timer.setAppState(null);
+        }
+        timerMap.clear();
     }
     
     /**
