@@ -18,8 +18,8 @@ to create wonderful 2D worlds.
 As mentioned, jMe3GL2 uses Dyn4J as its physics engine. If you are not familiar 
 with this topic, we advise you to check out the following resources:
 
-- **[Documentación dyn4j](https://dyn4j.org/pages/getting-started)**
-- **[Ejemplos dyn4j](https://github.com/dyn4j/dyn4j-samples)**
+- **[Documentación - Dyn4j](https://dyn4j.org/pages/getting-started)**
+- **[Samples - Dyn4j](https://github.com/dyn4j/dyn4j-samples)**
   
 ## Requirements
 - Java 11 or higher.
