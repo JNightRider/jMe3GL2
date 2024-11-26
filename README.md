@@ -40,7 +40,7 @@ jar files or using 'JitPack' as follows:
 **Step 2. Add the necessary dependencies**
 
 ```gradle
-    implementation 'com.github.JNightRide.jMe3GL2:jMe3GL2-core:3.0.0'
-    implementation 'com.github.JNightRide.jMe3GL2:jMe3GL2-jawt:3.0.0'
-    implementation 'com.github.JNightRide.jMe3GL2:jMe3GL2-plugins:3.0.0'
+    implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-core:3.0.0'
+    implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-jawt:3.0.0'
+    implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-plugins:3.0.0'
 ```
