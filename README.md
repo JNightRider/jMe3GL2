@@ -23,7 +23,7 @@ with this topic, we advise you to check out the following resources:
   
 ## Requirements
 - Java 11 or higher.
-- jMonkeyEngine3 version 3.6.1-stable.
+- jMonkeyEngine3 version 3.7.0-stable.
 - Dyn4J version 5.0.2
 
 ## Building with jMe3GL2

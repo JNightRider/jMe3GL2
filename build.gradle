@@ -5,7 +5,7 @@ allprojects {
 
     project.ext {
         // global dependencies
-        jmonkeyengineVersion = '3.6.1-stable'
+        jmonkeyengineVersion = '3.7.0-stable'
         dyn4jVersion = '5.0.2'
     }
 
