@@ -14,7 +14,7 @@ to create wonderful 2D worlds.
 5. Support for exporting and importing 2D (binary) models.
 6. Has a built-in debugger.
 
-![jMe3GL2-Sample](https://github.com/JNightRider/jMe3GL2/tree/master/modules/samples/src/main/resources/Textures/jme3gl2-sample.jpeg)
+![jMe3GL2-Sample](https://github.com/JNightRider/jMe3GL2/blob/master/modules/samples/src/main/resources/Textures/jme3gl2-sample.jpeg)
 
 ## Dyn4j
 As mentioned, jMe3GL2 uses Dyn4J as its physics engine. If you are not familiar 
