@@ -28,7 +28,7 @@ with this topic, we advise you to check out the following resources:
 
 ## Building with jMe3GL2
 
-jMe3GL2 can be added as a normal dependency using the [stable](https://github.com/JNightRide/jMe3GL2/releases/tag/v2.5.0) 
+jMe3GL2 can be added as a normal dependency using the [stable](https://github.com/JNightRider/jMe3GL2/releases/tag/v3.0.0) 
 jar files or using 'JitPack' as follows:
 
 **Step 1. Add the JitPack maven repository**
