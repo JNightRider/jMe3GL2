@@ -53,5 +53,5 @@ public interface SpaceListener<E extends PhysicsBody2D> {
      * It is activated when a body is removed from physical space.
      * @param physicsSpace space
      */
-    public void stateDetached(PhysicsSpace<E> physicsSpace);
+    public void spaceDetached(PhysicsSpace<E> physicsSpace);
 }

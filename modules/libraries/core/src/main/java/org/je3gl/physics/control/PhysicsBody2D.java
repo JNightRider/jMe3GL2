@@ -171,7 +171,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
                 if (attach) {
                     sl.spaceAttached(physicsSpace);
                 } else {
-                    sl.stateDetached(physicsSpace);
+                    sl.spaceDetached(physicsSpace);
                 }
             }
         }
