@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -282,6 +283,14 @@ public final class TimerAppState extends AbstractAppState {
             return false;
         }
         return entryTimer.getTimer().removeTask(task);
+    }
+    
+    /**
+     * Returns the names of the timers.
+     * @return a <code>Set</code> of keys | names
+     */
+    public Set<String> keySet() {
+        return this.timerMap.keySet();
     }
     
     /**
