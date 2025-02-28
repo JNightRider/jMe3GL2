@@ -84,7 +84,10 @@ import java.util.logging.Logger;
  * @author wil
  * @version 1.8.5
  * @since 1.5.0
+ * 
+ * @deprecated Choose to use <a href="https://github.com/jmecn/TMXLoader">TMXLoader</a> for 2D tilemaps
  */
+@Deprecated(since = "3.1.0")
 public class TileMap extends GeometryGroupNode {
     /** Class logger. */
     private static final Logger LOG = Logger.getLogger(TileMap.class.getName());

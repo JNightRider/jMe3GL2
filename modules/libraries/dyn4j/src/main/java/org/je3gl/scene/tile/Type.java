@@ -39,6 +39,7 @@ package org.je3gl.scene.tile;
  * @version 1.0.5
  * @since 2.0.0
  */
+@Deprecated(since = "3.1.0")
 enum Type {
     
     /**

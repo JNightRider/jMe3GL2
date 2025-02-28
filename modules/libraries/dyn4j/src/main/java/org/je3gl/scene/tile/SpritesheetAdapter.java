@@ -31,26 +31,31 @@
  */
 package org.je3gl.scene.tile;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.scene.Geometry;
+
 /**
- * An <code>Tilesheet</code> is an interface with a method that returns the
- * administrators in charge of the creation and management of the 2D model space
- * of a {@link TileMap}.
- * 
+ * Convenience class to implement the interface {@link Spritesheet}. 
  * @author wil
  * @version 1.0.5
  * @since 2.0.0
+ * 
+ * @deprecated Choose to use <a href="https://github.com/jmecn/TMXLoader">TMXLoader</a> for 2D tilemaps
  */
-public interface Tilesheet {
-    
-    /**
-     * Returns a {@link Spritesheet} for the map node.
-     * @return tile model
+@Deprecated(since = "3.1.0")
+public abstract class SpritesheetAdapter implements Spritesheet {
+
+    /*
+     * (non-Javadoc)
+     * @see Spritesheet#render(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager) 
      */
-    public Spritesheet getSpritesheet();
-    
-    /**
-     * Returns a {@link SpritesheetPhysics} for the map node.
-     * @return tile space
+    @Override
+    public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager) { return null; }
+
+    /*
+     * (non-Javadoc)
+     * @see Spritesheet#update(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager, com.jme3.scene.Geometry) 
      */
-    public SpritesheetPhysics getSpritesheetPhysics();
+    @Override
+    public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) { }
 }

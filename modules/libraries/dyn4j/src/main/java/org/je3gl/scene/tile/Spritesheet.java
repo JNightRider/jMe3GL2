@@ -35,24 +35,40 @@ import com.jme3.asset.AssetManager;
 import com.jme3.scene.Geometry;
 
 /**
- * Convenience class to implement the interface {@link Spritesheet}. 
+ * An <code>Spritesheet</code> is an interface responsible for managing the
+ * creation of 2D models for a {@link TileMap}.
+ * <p>
+ * Each {@link Tile} added to the scene node has a list of properties to customize
+ * the generated 2D model.
+ * 
  * @author wil
  * @version 1.0.5
  * @since 2.0.0
+ * 
+ * @deprecated Choose to use <a href="https://github.com/jmecn/TMXLoader">TMXLoader</a> for 2D tilemaps
  */
-public abstract class SpritesheetAdapter implements Spritesheet {
-
-    /*
-     * (non-Javadoc)
-     * @see Spritesheet#render(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager) 
+@Deprecated(since = "3.1.0")
+public interface Spritesheet {
+    
+    /**
+     * Method in charge of creating a model in a geometry to add it in a scene.
+     * Each {@link TileMap} that is generated uses this method to create its
+     * child nodes.
+     * 
+     * @param tileMap parent map node
+     * @param tile information of the tile to be created
+     * @param assetManager resource manager
+     * @return 2D model
      */
-    @Override
-    public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager) { return null; }
-
-    /*
-     * (non-Javadoc)
-     * @see Spritesheet#update(jMe3GL2.scene.tile.TileMap, jMe3GL2.scene.tile.Tile, com.jme3.asset.AssetManager, com.jme3.scene.Geometry) 
+    public Geometry render(TileMap tileMap, Tile tile, AssetManager assetManager);
+    
+    /**
+     * Method in charge of updating a model with new properties.
+     * 
+     * @param tileMap parent map node
+     * @param tile information of the tile to be created
+     * @param assetManager resource manager
+     * @param geom geometry to be modified
      */
-    @Override
-    public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom) { }
+    public void update(TileMap tileMap, Tile tile, AssetManager assetManager, Geometry geom);
 }

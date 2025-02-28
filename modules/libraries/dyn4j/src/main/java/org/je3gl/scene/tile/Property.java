@@ -57,7 +57,10 @@ import java.util.Objects;
  * @author wil
  * @version 1.0.5
  * @since 2.0.0
+ * 
+ * @deprecated Choose to use <a href="https://github.com/jmecn/TMXLoader">TMXLoader</a> for 2D tilemaps
  */
+@Deprecated(since = "3.1.0")
 final class Property implements Savable, Cloneable {
     
     /** Type of data being wrapped. */

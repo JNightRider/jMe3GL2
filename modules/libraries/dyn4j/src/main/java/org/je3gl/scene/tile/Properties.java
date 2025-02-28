@@ -65,7 +65,10 @@ import java.util.logging.Logger;
  * @author wil
  * @version 1.0.1
  * @since 2.0.0
+ * 
+ * @deprecated Choose to use <a href="https://github.com/jmecn/TMXLoader">TMXLoader</a> for 2D tilemaps
  */
+@Deprecated(since = "3.1.0")
 public class Properties implements Savable, Cloneable {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Properties.class.getName());
