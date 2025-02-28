@@ -40,12 +40,13 @@ import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.RigidBody2D;
 import org.je3gl.scene.shape.Sprite;
 import org.je3gl.scene.tile.TileMap;
+import org.je3gl.utilities.TileMapUtilities;
 import static org.je3gl.utilities.GeometryUtilities.*;
 import static org.je3gl.utilities.MaterialUtilities.*;
-import static org.je3gl.utilities.TileMapUtilities.*;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
+
 
 /**
  * Test class where the use of physics is exemplified.
@@ -99,37 +100,37 @@ public class Physical2D extends SimpleApplication {
     /**
      * Prepare a simple terrain.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(value = {"unchecked", "deprecation"})
     private void prepareGround() {
-        TileMap map = gl2GetTileMap("Map01", "Textures/tilesheet_complete_2X.png", 22, 12, assetManager);
+        TileMap map = TileMapUtilities.gl2GetTileMap("Map01", "Textures/tilesheet_complete_2X.png", 22, 12, assetManager);
         map.setPhysicsSpace(stateManager.getState(Dyn4jAppState.class).getPhysicsSpace());
         rootNode.attachChild(map);
         
         //----------------------------------------------------------------------
         //                              Block - 1
         //----------------------------------------------------------------------
-        map.addTile(gl2GetTile(1, 0, 1, 1, -1, -3, 0, true));
-        map.addTile(gl2GetTile(2, 0, 1, 1, 0, -3, 0, true));
-        map.addTile(gl2GetTile(5, 1, 1, 1, 1, -3, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(1, 0, 1, 1, -1, -3, 0, true));
+        map.addTile(TileMapUtilities.gl2GetTile(2, 0, 1, 1, 0, -3, 0, true));
+        map.addTile(TileMapUtilities.gl2GetTile(5, 1, 1, 1, 1, -3, 0, false));
         
-        map.addTile(gl2GetTile(0, 0, 1, 1, -1, -4, 0, false));
-        map.addTile(gl2GetTile(0, 0, 1, 1, 0, -4, 0, false));
-        map.addTile(gl2GetTile(0, 2, 1, 1, 1, -4, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(0, 0, 1, 1, -1, -4, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(0, 0, 1, 1, 0, -4, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(0, 2, 1, 1, 1, -4, 0, false));
         
-        map.addTile(gl2GetTile(10, 1, 1, 1, -1, -2, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(10, 1, 1, 1, -1, -2, 0, false));
         
         //----------------------------------------------------------------------
         //                              Block - 2
         //----------------------------------------------------------------------
-        map.addTile(gl2GetTile(1, 0, 1, 1, 1, -2, 0, true));
-        map.addTile(gl2GetTile(2, 0, 1, 1, 2, -2, 0, true));
-        map.addTile(gl2GetTile(3, 0, 1, 1, 3, -2, 0, true));
+        map.addTile(TileMapUtilities.gl2GetTile(1, 0, 1, 1, 1, -2, 0, true));
+        map.addTile(TileMapUtilities.gl2GetTile(2, 0, 1, 1, 2, -2, 0, true));
+        map.addTile(TileMapUtilities.gl2GetTile(3, 0, 1, 1, 3, -2, 0, true));
         
-        map.addTile(gl2GetTile(0, 0, 1, 1, 2, -3, 0, false));
-        map.addTile(gl2GetTile(0, 1, 1, 1, 3, -3, 0, false));
-        map.addTile(gl2GetTile(0, 0, 1, 1, 2, -4, 0, false));
-        map.addTile(gl2GetTile(0, 0, 1, 1, 3, -4, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(0, 0, 1, 1, 2, -3, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(0, 1, 1, 1, 3, -3, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(0, 0, 1, 1, 2, -4, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(0, 0, 1, 1, 3, -4, 0, false));
         
-        map.addTile(gl2GetTile(9, 0, 1, 1, 3, -1, 0, false));
+        map.addTile(TileMapUtilities.gl2GetTile(9, 0, 1, 1, 3, -1, 0, false));
     }
 }

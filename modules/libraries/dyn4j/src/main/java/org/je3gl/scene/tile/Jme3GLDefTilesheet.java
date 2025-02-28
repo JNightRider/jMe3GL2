@@ -129,12 +129,16 @@ import org.dyn4j.geometry.MassType;
  * @author wil
  * @version 1.5.1
  * @since 2.0.0
+ * 
+ * @deprecated Choose to use <a href="https://github.com/jmecn/TMXLoader">TMXLoader</a> for 2D tilemaps
  */
+@Deprecated(since = "3.1.0")
 class Jme3GLDefTilesheet implements Tilesheet {
     
     /**
      * Internal class responsible for implementing the interface {@link Spritesheet}.
      */
+    @Deprecated(since = "3.1.0")
     class Jme3GLDefTileModel implements Spritesheet {
 
         /* (non-Javadoc)*/

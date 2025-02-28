@@ -174,26 +174,6 @@ public class Sprite extends Mesh implements Cloneable {
         updateBound();
     }
     
-    /* Use {@link jme3gl2.scene.shape.Sprite#applySize(float, float) } */
-    @Deprecated(since = "3.0.0")
-    public void updateVertexSize(float width, float height) { applySize(width, height); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyCoords(int, int) } */
-    @Deprecated(since = "3.0.0")
-    public void updateMeshCoords(int columns, int rows) { applyCoords(columns, rows); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyCoords(int, int, int, int) } */
-    @Deprecated(since = "3.0.0")
-    public void updateMeshCoords(int columns, int rows, int colPosition, int rowPosition) { applyCoords(columns, rows, colPosition, rowPosition); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyTextureCoords(int, int) } */
-    @Deprecated(since = "3.0.0")
-    public void updateTextureCoords(int colPosition, int rowPosition) {  applyTextureCoords(colPosition, rowPosition); }
-    
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyScale(float) } */
-    @Deprecated(since = "3.0.0")
-    public void scale(float scale) { applyScale(scale); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyScale(float, float) } */
-    @Deprecated(since = "3.0.0")
-    public void scale(float scaleX, float scaleY) { applyScale(scaleX, scaleY); }
-    
     /**
      * Method responsible for verifying the type of flip ({@link jme3gl2.scene.shape.Transform.FlipType}) 
      * that the <code>Sprite</code> mesh transformer ({@link org.je3gl.scene.shape.Transform}) will apply.
@@ -224,19 +204,6 @@ public class Sprite extends Mesh implements Cloneable {
      */
     public void showIndex(int index) {
         applyCoords(index % transform.getColumns(), index / transform.getColumns());
-    }
-    
-    /**
-     * (non-Javadoc)
-     * @see org.je3gl.scene.shape.Sprite#showIndex(int) 
-     * @see org.je3gl.scene.shape.Sprite#applyCoords(int, int) 
-     * @param cp int
-     * @param rp int
-     * @deprecated Use {@link org.je3gl.scene.shape.Sprite#applyCoords(int, int) } instead
-     */
-    @Deprecated(since = "3.0.0")
-    public void showIndex(int cp, int rp) {
-        applyCoords(cp, rp);
     }
     
     /**
@@ -358,12 +325,8 @@ public class Sprite extends Mesh implements Cloneable {
         }
     }
     
-    /**
-     * (non-Javadoc)
-     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
-     * 
-     * @param im {@link com.jme3.export.JmeImporter}
-     * @throws IOException hrows
+    /* (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter)
      */
     @Override
     public void read(JmeImporter im) throws IOException {
@@ -375,12 +338,8 @@ public class Sprite extends Mesh implements Cloneable {
         initializeMesh();
     }
     
-    /**
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
-     * 
-     * @param ex {@link com.jme3.export.JmeExporter}
-     * @throws IOException throws
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
@@ -391,20 +350,16 @@ public class Sprite extends Mesh implements Cloneable {
         out.write(flipV, "flipV", Boolean.FALSE);
     }
     
-    /**
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.jme3.scene.Mesh#jmeClone() 
-     * @return this
      */
     @Override
     public Sprite jmeClone() {
         return (Sprite) super.jmeClone();
     }
     
-    /**
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.jme3.scene.Mesh#deepClone() 
-     * @return this
      */
     @Override
     public Sprite deepClone() {
@@ -415,10 +370,8 @@ public class Sprite extends Mesh implements Cloneable {
         return clon;
     }
     
-    /**
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.jme3.scene.Mesh#clone() 
-     * @return this
      */
     @Override
     public Sprite clone() {
