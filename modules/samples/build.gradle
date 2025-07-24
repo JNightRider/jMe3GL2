@@ -21,15 +21,8 @@ dependencies {
     // You can read more about how to add dependencies here:
     //   https://docs.gradle.org/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
 
-    implementation 'org.jmonkeyengine:jme3-core:' + jmonkeyengineVersion
-    implementation 'org.jmonkeyengine:jme3-desktop:' + jmonkeyengineVersion
-    runtimeOnly 'org.jmonkeyengine:jme3-jogg:' + jmonkeyengineVersion
-    runtimeOnly 'org.jmonkeyengine:jme3-plugins:' + jmonkeyengineVersion
-
-    implementation 'org.jmonkeyengine:jme3-effects:' + jmonkeyengineVersion
-    runtimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmonkeyengineVersion
-
-    implementation 'org.dyn4j:dyn4j:' + dyn4jVersion
+    implementation(libs.bundles.je3gl.base)
+    runtimeOnly(libs.bundles.je3gl.runtime)
 
     implementation project(':modules:libraries:jMe3GL2-core')
     implementation project(':modules:libraries:jMe3GL2-jawt')

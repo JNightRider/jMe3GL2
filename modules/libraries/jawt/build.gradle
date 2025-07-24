@@ -9,6 +9,6 @@
 description = 'jMe3GL2 - jawt'
 
 dependencies {
-    implementation 'org.jmonkeyengine:jme3-core:' + jmonkeyengineVersion
+    implementation(libs.jme3.core)
     testImplementation project(':modules:libraries:jMe3GL2-plugins')
 }

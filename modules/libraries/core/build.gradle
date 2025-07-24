@@ -9,10 +9,10 @@
 description = 'jMe3GL2 - core'
 
 dependencies {
-    implementation 'org.jmonkeyengine:jme3-core:' + jmonkeyengineVersion
-    implementation 'org.dyn4j:dyn4j:' + dyn4jVersion
+    implementation(libs.jme3.core)
+    implementation(libs.dyn4j)
 
-    testImplementation 'org.jmonkeyengine:jme3-desktop:' + jmonkeyengineVersion
-    testRuntimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmonkeyengineVersion
-    testRuntimeOnly 'org.jmonkeyengine:jme3-plugins:' + jmonkeyengineVersion
+    testImplementation(libs.jme3.desktop)
+    testRuntimeOnly(libs.jme3.lwjgl3)
+    testRuntimeOnly(libs.jme3.plugins)
 }

@@ -1,0 +1,24 @@
+## Catálogo de bibliotecas y complementos utilizados para construir y ejecutar el proyecto WMS-Backend
+
+[versions]
+
+jmonkeyengineVersion = "3.8.1-stable"
+dyn4jVersion = "5.0.2"
+
+[libraries]
+
+dyn4j = { module = "org.dyn4j:dyn4j", version.ref = "dyn4jVersion" }
+
+jme3-core      = { module = "org.jmonkeyengine:jme3-core",    version.ref = "jmonkeyengineVersion" }
+jme3-desktop   = { module = "org.jmonkeyengine:jme3-desktop", version.ref = "jmonkeyengineVersion" }
+jme3-lwjgl3    = { module = "org.jmonkeyengine:jme3-lwjgl3",  version.ref = "jmonkeyengineVersion" }
+jme3-plugins   = { module = "org.jmonkeyengine:jme3-plugins", version.ref = "jmonkeyengineVersion" }
+jme3-jogg      = { module = "org.jmonkeyengine:jme3-jogg",    version.ref = "jmonkeyengineVersion" }
+jme3-effects   = { module = "org.jmonkeyengine:jme3-effects", version.ref = "jmonkeyengineVersion" }
+
+[bundles]
+
+je3gl-base    = [ "jme3-core", "jme3-desktop", "jme3-effects", "dyn4j"  ]
+je3gl-runtime = [ "jme3-jogg", "jme3-plugins", "jme3-lwjgl3"            ]
+
+[plugins]
