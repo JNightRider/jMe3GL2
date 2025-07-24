@@ -8,7 +8,7 @@ description = 'jMe3GL2 - samples'
 repositories {
     mavenCentral()
     mavenLocal()
-    maven { url "https://jitpack.io" }
+    maven { url = uri("https://jitpack.io") }
 }
 
 application {
