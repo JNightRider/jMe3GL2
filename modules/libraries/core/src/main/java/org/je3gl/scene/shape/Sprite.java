@@ -173,26 +173,6 @@ public class Sprite extends Mesh implements Cloneable {
         updateBound();
     }
     
-    /* Use {@link jme3gl2.scene.shape.Sprite#applySize(float, float) } */
-    @Deprecated(since = "3.0.0")
-    public void updateVertexSize(float width, float height) { applySize(width, height); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyCoords(int, int) } */
-    @Deprecated(since = "3.0.0")
-    public void updateMeshCoords(int columns, int rows) { applyCoords(columns, rows); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyCoords(int, int, int, int) } */
-    @Deprecated(since = "3.0.0")
-    public void updateMeshCoords(int columns, int rows, int colPosition, int rowPosition) { applyCoords(columns, rows, colPosition, rowPosition); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyTextureCoords(int, int) } */
-    @Deprecated(since = "3.0.0")
-    public void updateTextureCoords(int colPosition, int rowPosition) {  applyTextureCoords(colPosition, rowPosition); }
-    
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyScale(float) } */
-    @Deprecated(since = "3.0.0")
-    public void scale(float scale) { applyScale(scale); }
-    /* Use {@link jme3gl2.scene.shape.Sprite#applyScale(float, float) } */
-    @Deprecated(since = "3.0.0")
-    public void scale(float scaleX, float scaleY) { applyScale(scaleX, scaleY); }
-    
     /**
      * Method responsible for verifying the type of flip ({@link jme3gl2.scene.shape.Transform.FlipType}) 
      * that the <code>Sprite</code> mesh transformer ({@link org.je3gl.scene.shape.Transform}) will apply.

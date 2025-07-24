@@ -52,35 +52,7 @@ import org.dyn4j.geometry.MassType;
  * @since 2.5.0
  */
 public final class TileMapUtilities {
-    
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetStrigRandomUUID() } */
-    @Deprecated(since = "3.0.0")
-    public static final String getStrigRandomUUID() { return gl2GetStrigRandomUUID(); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTileMap(java.lang.String, int, int, com.jme3.asset.AssetManager)  } */
-    @Deprecated(since = "3.0.0")
-    public static final TileMap getTileMap(String path, int cs, int rs, AssetManager assetManager) {  return gl2GetTileMap(path, cs, rs, assetManager); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTileMap(java.lang.String, java.lang.String, int, int, com.jme3.asset.AssetManager)  } */
-    @Deprecated(since = "3.0.0")
-    public static final TileMap getTileMap(String id, String path, int cs, int rs, AssetManager assetManager) { return gl2GetTileMap(id, path, cs, rs, assetManager); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTile(int, int, float, float, float, float, float) } */
-    @Deprecated(since = "3.0.0")
-    public static Tile getTile(int cp, int rp, float w, float h, float x, float y, float z) { return gl2GetTile(cp, rp, w, h, x, y, z); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTile(int, int, float, float, float, float, float, boolean) } */
-    @Deprecated(since = "3.0.0")
-    public static Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) { return gl2GetTile(cp, rp, w, h, x, y, z, coll); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTile(int, int, float, float, float, float, float, org.dyn4j.geometry.Convex) } */
-    @Deprecated(since = "3.0.0")
-    public static <T extends Convex> Tile getTile(int cp, int rp, float w, float h, float x, float y, float z, Convex acs) { return gl2GetTile(cp, rp, w, h, x, y, z, acs); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTile(java.lang.String, int, int, float, float, float, float, float) } */
-    @Deprecated(since = "3.0.0")
-    public static Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z) { return gl2GetTile(id, cp, rp, w, h, x, y, z); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTile(java.lang.String, int, int, float, float, float, float, float, boolean) } */
-    @Deprecated(since = "3.0.0")
-    public static Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, boolean coll) { return gl2GetTile(id, cp, rp, w, h, x, y, z, coll); }
-    /* Use {@link jme3gl2.utilities.TileMapUtilities#gl2GetTile(java.lang.String, int, int, float, float, float, float, float, org.dyn4j.geometry.Convex) } */
-    @Deprecated(since = "3.0.0")
-    public static <T extends Convex> Tile getTile(String id, int cp, int rp, float w, float h, float x, float y, float z, Convex acs) { return gl2GetTile(id, cp, rp, w, h, x, y, z, acs); }
-    
+
     /**
      * Returns a UUID to be used as ID, for objects <code>TileMap</code> and
      * <code>Tile</code>.

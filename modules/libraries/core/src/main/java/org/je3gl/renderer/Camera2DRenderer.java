@@ -159,22 +159,6 @@ public class Camera2DRenderer extends BaseAppState {
         xCamera.setCamera(camera);
     }
     
-    /* Use {@link jme3gl2.renderer.effect.GLXFollowing#setTarget(com.jme3.scene.Spatial) }. */
-    @Deprecated(since = "3.0.0")
-    public void setTarget(Spatial s) { getEffect(GLXFollowing.class).setTarget(s); }
-    /* Use {@link jme3gl2.renderer.effect.GLXFollowing#setFollowInterpolationAmount(float) }. */
-    @Deprecated(since = "3.0.0")
-    public void setFollowInterpolationAmount(float follow) { getEffect(GLXFollowing.class).setInterpolationAmount(follow); }    
-    /* Use {@link jme3gl2.renderer.effect.GLXDistanceFrustum#setDistanceFrustum(float). */
-    @Deprecated(since = "3.0.0")
-    public void setDistanceFrustum(float frustum) { getEffect(GLXDistanceFrustum.class).setDistanceFrustum(frustum); }    
-    /* Use {@link jme3gl2.renderer.effect.GLXFollowing#setOffset(com.jme3.math.Vector2f). */
-    @Deprecated(since = "3.0.0")
-    public void setOffset(Vector2f offset) { getEffect(GLXFollowing.class).setOffset(offset); }    
-    /*  Use {@link jme3gl2.renderer.effect.GLXClipping#setMaximumClipping(com.jme3.math.Vector2f)|Use {@link jme3gl2.renderer.effect.GLXClipping#setMinimumClipping(com.jme3.math.Vector2f). */
-    @Deprecated(since = "3.0.0")
-    public void setClipping(Vector2f minimumClipping, Vector2f maxClipping) { getEffect(GLXClipping.class).setClipping(minimumClipping, maxClipping); }
-
     /*
      * (non-Javadoc)
      * @see com.jme3.app.state.BaseAppState#update(float)
