@@ -33,6 +33,7 @@ package org.je3gl.demo.core;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
@@ -50,6 +51,7 @@ import org.je3gl.plugins.input.BooleanStateKeyboardInputHandler;
 import org.je3gl.plugins.input.InputHandlerAppState;
 import org.je3gl.plugins.input.Key;
 import org.je3gl.renderer.Camera2DRenderer;
+import org.je3gl.renderer.UnitComparator;
 import org.je3gl.scene.control.AnimatedSprite2D;
 import org.je3gl.scene.shape.Sprite;
 import static org.je3gl.utilities.GeometryUtilities.*;
@@ -171,6 +173,10 @@ public class Character2D extends SimpleApplication {
     @Override
     public void simpleInitApp() {        
         Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
+        viewPort.getQueue()
+                .setGeometryComparator(RenderQueue.Bucket.Transparent, 
+                        new UnitComparator(Vector3f.UNIT_Z, 
+                                UnitComparator.UType.World));
         stateManager.attach(camera2DRenderer);
         
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.PARALLEL);

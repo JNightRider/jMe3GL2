@@ -33,8 +33,10 @@ package org.je3gl.demo.core;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
@@ -55,6 +57,7 @@ import org.je3gl.plugins.input.BooleanStateKeyboardInputHandler;
 import org.je3gl.plugins.input.InputHandlerAppState;
 import org.je3gl.plugins.input.Key;
 import org.je3gl.renderer.Camera2DRenderer;
+import org.je3gl.renderer.UnitComparator;
 import org.je3gl.scene.shape.Sprite;
 import static org.je3gl.utilities.GeometryUtilities.*;
 import static org.je3gl.utilities.MaterialUtilities.*;
@@ -118,6 +121,10 @@ public class Tanks2D extends SimpleApplication {
     public void simpleInitApp() {
         J2OLoader.initialize(this);        
         Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
+        viewPort.getQueue()
+                .setGeometryComparator(RenderQueue.Bucket.Transparent, 
+                        new UnitComparator(Vector3f.UNIT_Z, 
+                                UnitComparator.UType.World));
         stateManager.attach(camera2DRenderer);
         
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.PARALLEL);
