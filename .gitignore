@@ -6,6 +6,7 @@ build
 dist
 
 # Other
+.DS_Store
 /.gradle/
 /.idea/
 /.nb-gradle/
