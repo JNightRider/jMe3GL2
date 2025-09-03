@@ -1,34 +1,33 @@
-/* Copyright (c) 2009-2024 jMonkeyEngine.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/*
+BSD 3-Clause License
+
+Copyright (c) 2023-2025, Night Rider (Wilson)
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package org.je3gl.scene.shape;
 
 import com.jme3.export.*;
@@ -207,6 +206,19 @@ public class Sprite extends Mesh implements Cloneable {
     }
     
     /**
+     * (non-Javadoc)
+     * @see org.je3gl.scene.shape.Sprite#showIndex(int) 
+     * @see org.je3gl.scene.shape.Sprite#applyCoords(int, int) 
+     * @param cp int
+     * @param rp int
+     * @deprecated Use {@link org.je3gl.scene.shape.Sprite#applyCoords(int, int) } instead
+     */
+    @Deprecated(since = "3.0.0")
+    public void showIndex(int cp, int rp) {
+        applyCoords(cp, rp);
+    }
+    
+    /**
      * Apply a new size for this mesh.
      * @param nw new width
      * @param nh new height
@@ -325,8 +337,12 @@ public class Sprite extends Mesh implements Cloneable {
         }
     }
     
-    /* (non-Javadoc)
-     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter)
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
+     * 
+     * @param im {@link com.jme3.export.JmeImporter}
+     * @throws IOException hrows
      */
     @Override
     public void read(JmeImporter im) throws IOException {
@@ -338,8 +354,12 @@ public class Sprite extends Mesh implements Cloneable {
         initializeMesh();
     }
     
-    /* (non-Javadoc)
+    /**
+     * (non-Javadoc)
      * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
+     * 
+     * @param ex {@link com.jme3.export.JmeExporter}
+     * @throws IOException throws
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
@@ -350,16 +370,20 @@ public class Sprite extends Mesh implements Cloneable {
         out.write(flipV, "flipV", Boolean.FALSE);
     }
     
-    /* (non-Javadoc)
+    /**
+     * (non-Javadoc)
      * @see com.jme3.scene.Mesh#jmeClone() 
+     * @return this
      */
     @Override
     public Sprite jmeClone() {
         return (Sprite) super.jmeClone();
     }
     
-    /* (non-Javadoc)
+    /**
+     * (non-Javadoc)
      * @see com.jme3.scene.Mesh#deepClone() 
+     * @return this
      */
     @Override
     public Sprite deepClone() {
@@ -370,8 +394,10 @@ public class Sprite extends Mesh implements Cloneable {
         return clon;
     }
     
-    /* (non-Javadoc)
+    /**
+     * (non-Javadoc)
      * @see com.jme3.scene.Mesh#clone() 
+     * @return this
      */
     @Override
     public Sprite clone() {

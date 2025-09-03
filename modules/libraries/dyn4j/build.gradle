@@ -1,8 +1,0 @@
-description = 'jMe3GL2 - dyn4j'
-
-dependencies {
-    implementation project(':modules:libraries:jMe3GL2-core')
-
-    implementation 'org.jmonkeyengine:jme3-core:' + jmonkeyengineVersion
-    implementation 'org.dyn4j:dyn4j:' + dyn4jVersion
-}

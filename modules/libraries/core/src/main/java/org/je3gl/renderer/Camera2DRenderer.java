@@ -1,34 +1,33 @@
-/* Copyright (c) 2009-2024 jMonkeyEngine.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/*
+BSD 3-Clause License
+
+Copyright (c) 2023-2025, Night Rider (Wilson)
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package org.je3gl.renderer;
 
 import com.jme3.app.Application;
@@ -160,22 +159,6 @@ public class Camera2DRenderer extends BaseAppState {
         xCamera.setCamera(camera);
     }
     
-    /* Use {@link jme3gl2.renderer.effect.GLXFollowing#setTarget(com.jme3.scene.Spatial) }. */
-    @Deprecated(since = "3.0.0")
-    public void setTarget(Spatial s) { getEffect(GLXFollowing.class).setTarget(s); }
-    /* Use {@link jme3gl2.renderer.effect.GLXFollowing#setFollowInterpolationAmount(float) }. */
-    @Deprecated(since = "3.0.0")
-    public void setFollowInterpolationAmount(float follow) { getEffect(GLXFollowing.class).setInterpolationAmount(follow); }    
-    /* Use {@link jme3gl2.renderer.effect.GLXDistanceFrustum#setDistanceFrustum(float). */
-    @Deprecated(since = "3.0.0")
-    public void setDistanceFrustum(float frustum) { getEffect(GLXDistanceFrustum.class).setDistanceFrustum(frustum); }    
-    /* Use {@link jme3gl2.renderer.effect.GLXFollowing#setOffset(com.jme3.math.Vector2f). */
-    @Deprecated(since = "3.0.0")
-    public void setOffset(Vector2f offset) { getEffect(GLXFollowing.class).setOffset(offset); }    
-    /*  Use {@link jme3gl2.renderer.effect.GLXClipping#setMaximumClipping(com.jme3.math.Vector2f)|Use {@link jme3gl2.renderer.effect.GLXClipping#setMinimumClipping(com.jme3.math.Vector2f). */
-    @Deprecated(since = "3.0.0")
-    public void setClipping(Vector2f minimumClipping, Vector2f maxClipping) { getEffect(GLXClipping.class).setClipping(minimumClipping, maxClipping); }
-
     /*
      * (non-Javadoc)
      * @see com.jme3.app.state.BaseAppState#update(float)

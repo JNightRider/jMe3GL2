@@ -3,12 +3,6 @@ allprojects {
     group = 'org.j3gl'
     version = '3.0.0'
 
-    project.ext {
-        // global dependencies
-        jmonkeyengineVersion = '3.7.0-stable'
-        dyn4jVersion = '5.0.2'
-    }
-
     repositories {
         mavenCentral()
         mavenLocal()
@@ -21,7 +15,7 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(11)
+            languageVersion = JavaLanguageVersion.of(17)
         }
 
         withJavadocJar()
@@ -39,7 +33,7 @@ subprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                groupId = 'com.github.JNightRide'
+                groupId = 'com.github.JNightRider'
                 artifactId = project.name
                 version = project.version
                 from components.java

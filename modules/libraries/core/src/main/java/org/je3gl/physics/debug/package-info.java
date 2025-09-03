@@ -28,49 +28,11 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.utilities;
-
-import com.jme3.asset.AssetManager;
-import com.jme3.asset.TextureKey;
-import com.jme3.texture.Texture;
 
 /**
- * Utility class for loading, managing and modifying textures.
+ * Package in charge of managing objects for the debugging of physical bodies.
  * @author wil
- * @version 1.0.5
+ * @version 1.5.5
  * @since 2.5.0
  */
-public final class TextureUtilities {
-    
-    /**
-     * Returns a texture stored in the classpath given the path.
-     *
-     * @param assetManager asset manager
-     * @param path the path within the classpath
-     * @return texture
-     */
-    public static final Texture getTextureFromClassPath(AssetManager assetManager, String path){
-        Texture tex = assetManager.loadTexture(new TextureKey(path, false));
-        tex.setMagFilter(Texture.MagFilter.Nearest);
-        tex.setWrap(Texture.WrapMode.Repeat);
-        return tex;
-    }
-    
-    /**
-     * Returns an array of textures stored in the classpath given the path
-     * 
-     * @param assetManager asset manager
-     * @param paths the path within the classpath
-     * @return texture array
-     */
-    public static final Texture[] getArrayTextureFromClassPath(AssetManager assetManager, String ...paths) {
-        if (paths == null) {
-            throw new NullPointerException("The paths are not valid: null");
-        }
-        Texture[] texts = new Texture[paths.length];
-        for (int i = 0; i < texts.length; i++) {
-            texts[i] = getTextureFromClassPath(assetManager, paths[i]);
-        }
-        return texts;
-    }
-}
+package org.je3gl.physics.debug;

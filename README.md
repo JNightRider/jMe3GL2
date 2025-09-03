@@ -1,4 +1,4 @@
-# jMe3GL2 - [jMonkeyEngine3 Graphics Library 2D]
+# jMe3GL2 - (jMonkeyEngine3 Graphics Library 2D)
 
 jMe3GL2 is a set of classes that can be used to develop a 2D game in jMonkeyEngine3. 
 It is a mapping library for JME3 to Dyn4J.
@@ -21,12 +21,12 @@ to create wonderful 2D worlds.
 As mentioned, jMe3GL2 uses Dyn4J as its physics engine. If you are not familiar 
 with this topic, we advise you to check out the following resources:
 
-- **[Documentación - Dyn4j](https://dyn4j.org/pages/getting-started)**
+- **[Documentation - Dyn4j](https://dyn4j.org/pages/getting-started)**
 - **[Samples - Dyn4j](https://github.com/dyn4j/dyn4j-samples)**
   
 ## Requirements
-- Java 11 or higher.
-- jMonkeyEngine3 version 3.7.0-stable.
+- Java 17 or higher.
+- jMonkeyEngine3 version 3.8.1-stable.
 - Dyn4J version 5.0.2
 
 ## Building with jMe3GL2
