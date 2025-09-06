@@ -30,62 +30,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.scene.tile;
 
-import com.jme3.scene.Geometry;
+import org.je3gl.util.Arg;
 
 /**
- * Convenience class to implement the interface {@link SpritesheetPhysicsAdapter}.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.0.0
+ * @param <R>
  */
-public abstract class SpritesheetPhysicsAdapter implements SpritesheetPhysics {
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#setPhysicsSpace(jMe3GL2.physics.PhysicsSpace) 
-     */
-    @Override
-    public void setPhysicsSpace(Object physicsSpace) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onDetachTile(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onDetachTile(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onAttachTile(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onAttachTile(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onTileUnassociated(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onTileUnassociated(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onTransformChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onTransformChange(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onMaterialChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onMaterialChange(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onMeshChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onMeshChange(Geometry geom) { }    
+@FunctionalInterface
+public interface TilePhysicsSystemI<R> {
+    
+    R invoke(String name, Arg<?> ...args);
 }

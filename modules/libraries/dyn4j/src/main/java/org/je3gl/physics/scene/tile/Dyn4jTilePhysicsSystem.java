@@ -28,64 +28,41 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.tile;
+package org.je3gl.physics.scene.tile;
 
-import com.jme3.scene.Geometry;
+import org.dyn4j.geometry.Convex;
+
+import org.je3gl.physics.collision.CollisionShape;
+import org.je3gl.scene.tile.TilePhysicsSystemI;
+import org.je3gl.util.Arg;
+import static org.je3gl.scene.tile.TilePhysicsSystem.*;
+import static org.je3gl.utilities.GeometryUtilities.*;
 
 /**
- * Convenience class to implement the interface {@link SpritesheetPhysicsAdapter}.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.0.0
  */
-public abstract class SpritesheetPhysicsAdapter implements SpritesheetPhysics {
+public final class Dyn4jTilePhysicsSystem implements TilePhysicsSystemI<Object> {
+    
+    private static final String VF_CREATE_RECTANGLE   = "CreateRectangle";
+    private static final String VF_WRAP_COLLISION     = "WrapCollision";
+    
+    public static void initialize() {
+        System.setProperty(VKF_CREATE_RECTANGLE, VF_CREATE_RECTANGLE);
+        System.setProperty(VKF_WRAP_COLLISION, VF_WRAP_COLLISION);
+        System.setProperty(VKF_NEW_INSTANCE, Dyn4jTilePhysicsSystem.class.getName());
+    }
 
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#setPhysicsSpace(jMe3GL2.physics.PhysicsSpace) 
-     */
     @Override
-    public void setPhysicsSpace(Object physicsSpace) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onDetachTile(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onDetachTile(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onAttachTile(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onAttachTile(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onTileUnassociated(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onTileUnassociated(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onTransformChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onTransformChange(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onMaterialChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onMaterialChange(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onMeshChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onMeshChange(Geometry geom) { }    
+    @SuppressWarnings("unchecked")
+    public Object invoke(String name, Arg<?>... args) {
+        if (name == null) {
+            return null;
+        }        
+        return switch (name) {
+            case VF_CREATE_RECTANGLE -> dyn4jCreateRectangle(args[0].getDouble(), args[1].getDouble());
+            case VF_WRAP_COLLISION -> new CollisionShape((Convex) args[0].getSource());
+            default -> null;
+        };
+    }
 }

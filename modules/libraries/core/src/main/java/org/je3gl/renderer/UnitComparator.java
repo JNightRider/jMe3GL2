@@ -33,6 +33,7 @@ package org.je3gl.renderer;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.GeometryComparator;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 
 /**
@@ -66,6 +67,8 @@ public final class UnitComparator implements GeometryComparator {
     /** The type of positioning to which the comparator will be applied. */
     private final UType type;
 
+    private RenderQueue.Bucket[] layers;
+    
     /**
      * Generate a new unitary comparison with an axis {@code UnitComparator}.
      *
@@ -75,6 +78,10 @@ public final class UnitComparator implements GeometryComparator {
     public UnitComparator(Vector3f unit, UType type) {
         this.unit = unit.clone();
         this.type = type;
+    }
+
+    public void setLayers(RenderQueue.Bucket[] layers) {
+        this.layers = layers;
     }
 
     /**
@@ -100,6 +107,10 @@ public final class UnitComparator implements GeometryComparator {
         float na = getVectValue(va),
               nb = getVectValue(vb);
         return Float.compare(na, nb);
+    }
+
+    public RenderQueue.Bucket[] getLayers() {
+        return layers;
     }
     
     /**

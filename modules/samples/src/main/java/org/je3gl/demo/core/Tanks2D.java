@@ -121,10 +121,7 @@ public class Tanks2D extends SimpleApplication {
     public void simpleInitApp() {
         J2OLoader.initialize(this);        
         Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
-        viewPort.getQueue()
-                .setGeometryComparator(RenderQueue.Bucket.Transparent, 
-                        new UnitComparator(Vector3f.UNIT_Z, 
-                                UnitComparator.UType.World));
+        camera2DRenderer.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Transparent);
         stateManager.attach(camera2DRenderer);
         
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.PARALLEL);

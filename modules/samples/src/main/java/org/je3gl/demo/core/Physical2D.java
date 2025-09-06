@@ -37,6 +37,7 @@ import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.RigidBody2D;
+import org.je3gl.physics.scene.tile.Dyn4jTilesheet;
 import org.je3gl.scene.shape.Sprite;
 import org.je3gl.scene.tile.TileMap;
 import static org.je3gl.utilities.GeometryUtilities.*;
@@ -100,7 +101,7 @@ public class Physical2D extends SimpleApplication {
      */
     @SuppressWarnings("unchecked")
     private void prepareGround() {
-        TileMap map = gl2GetTileMap("Map01", "Textures/tilesheet_complete_2X.png", 22, 12, assetManager);
+        TileMap map = gl2GetTileMap("Map01", "Textures/tilesheet_complete_2X.png", 22, 12, Dyn4jTilesheet.getInstance() ,assetManager);
         map.setPhysicsSpace(stateManager.getState(Dyn4jAppState.class).getPhysicsSpace());
         rootNode.attachChild(map);
         

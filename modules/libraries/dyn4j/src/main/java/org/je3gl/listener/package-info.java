@@ -28,64 +28,11 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.tile;
-
-import com.jme3.scene.Geometry;
 
 /**
- * Convenience class to implement the interface {@link SpritesheetPhysicsAdapter}.
+ * Package responsible for listing/containing all listeners used by jMe3GL2 (dyn4j).
  * @author wil
- * @version 1.0.5
- * @since 2.0.0
+ * @version 1.0.0
+ * @since 3.0.0
  */
-public abstract class SpritesheetPhysicsAdapter implements SpritesheetPhysics {
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#setPhysicsSpace(jMe3GL2.physics.PhysicsSpace) 
-     */
-    @Override
-    public void setPhysicsSpace(Object physicsSpace) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onDetachTile(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onDetachTile(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onAttachTile(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onAttachTile(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onTileUnassociated(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onTileUnassociated(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onTransformChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onTransformChange(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onMaterialChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onMaterialChange(Geometry geom) { }
-
-    /*
-     * (non-Javadoc)
-     * @see SpritesheetPhysics#onMeshChange(com.jme3.scene.Geometry) 
-     */
-    @Override
-    public void onMeshChange(Geometry geom) { }    
-}
+package org.je3gl.listener;

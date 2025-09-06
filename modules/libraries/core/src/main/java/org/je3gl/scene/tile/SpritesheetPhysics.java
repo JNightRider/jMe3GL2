@@ -32,9 +32,6 @@ package org.je3gl.scene.tile;
 
 import com.jme3.scene.Geometry;
 
-import org.je3gl.physics.PhysicsSpace;
-import org.je3gl.physics.control.PhysicsBody2D;
-
 /**
  * Interface <code>SpritesheetPhysics</code> is in charge of managing the changes
  * of a {@link TileMap}.
@@ -61,7 +58,7 @@ public interface SpritesheetPhysics {
      * of the tile map.
      * @param physicsSpace physical space
      */
-    public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace);
+    public void setPhysicsSpace(Object physicsSpace);
     
     /**
      * It is activated when a geometry is removed from the parent node.

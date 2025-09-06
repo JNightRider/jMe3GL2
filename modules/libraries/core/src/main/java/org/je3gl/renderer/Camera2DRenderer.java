@@ -33,9 +33,9 @@ package org.je3gl.renderer;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
-import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.Spatial;
+import com.jme3.renderer.queue.RenderQueue;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,6 +94,7 @@ public class Camera2DRenderer extends BaseAppState {
     private GLRendererType rendererType;
      /** 2D camera. */
     private GLXCamera xCamera;
+    private UnitComparator unitComparator;
     
     /**
      * Class constructor <code>Camera2DRenderer</code> where the type of
@@ -157,6 +158,27 @@ public class Camera2DRenderer extends BaseAppState {
             LOGGER.log(Level.INFO, "PlatformerCameraState is removing default fly camera");
         }
         xCamera.setCamera(camera);
+        applyUnitComparator();
+    }
+    
+    public void setUnitComparator(Vector3f unit, UnitComparator.UType type, RenderQueue.Bucket ...buckets) {
+        unitComparator = new UnitComparator(unit, type);
+        unitComparator.setLayers(buckets);
+        if (isInitialized()) {
+            applyUnitComparator();
+        }
+    }
+    
+    private void applyUnitComparator() {
+        if (unitComparator == null) {
+            return;
+        }
+        
+        for (final RenderQueue.Bucket bucket : unitComparator.getLayers()) {
+            getApplication().getViewPort()
+                    .getQueue()
+                    .setGeometryComparator(bucket, unitComparator);
+        }
     }
     
     /*

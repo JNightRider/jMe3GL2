@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.je3gl.physics.control.PhysicsBody2D;
-import org.je3gl.util.Converter;
+import org.je3gl.physics.util.Converter;
 
 import org.dyn4j.dynamics.joint.AngleJoint;
 import org.dyn4j.dynamics.joint.DistanceJoint;

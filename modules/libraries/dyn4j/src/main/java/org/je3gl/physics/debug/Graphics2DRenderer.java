@@ -53,7 +53,7 @@ import org.je3gl.scene.debug.HalfEllipse2D;
 import org.je3gl.scene.debug.Polygon2D;
 import org.je3gl.scene.debug.Slice2D;
 import org.je3gl.scene.debug.custom.DebugGraphics;
-import org.je3gl.util.Converter;
+import org.je3gl.physics.util.Converter;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Capsule;

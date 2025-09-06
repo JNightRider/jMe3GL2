@@ -58,7 +58,7 @@ import org.dyn4j.geometry.Vector2;
 import org.je3gl.listener.SpaceListener;
 
 import org.je3gl.physics.PhysicsSpace;
-import org.je3gl.util.Converter;
+import org.je3gl.physics.util.Converter;
 import org.je3gl.utilities.TransformUtilities;
 
 /**

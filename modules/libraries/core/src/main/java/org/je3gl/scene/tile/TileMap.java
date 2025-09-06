@@ -35,9 +35,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.GeometryGroupNode;
 import com.jme3.scene.Spatial;
 
-import org.je3gl.physics.PhysicsSpace;
-import org.je3gl.physics.control.PhysicsBody2D;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -130,11 +127,13 @@ public class TileMap extends GeometryGroupNode {
      * 
      * @param assetManager JME3 manager
      * @param name name for this scene map
+     * @param tilesheet
      */
-    public TileMap(AssetManager assetManager, String name) {
+    @SuppressWarnings("deprecation")
+    public TileMap(AssetManager assetManager, String name, Tilesheet tilesheet) {
         super(name);
         this.assetManager = assetManager;        
-        this.tilesHeet  = Jme3GLDefTilesheet.getInstance();
+        this.tilesHeet  = tilesheet;
         this.properties = new Properties();
         this.tiles      = new ArrayList<>();
     }
@@ -186,7 +185,7 @@ public class TileMap extends GeometryGroupNode {
      * 
      * @param physicsSpace physical space
      */
-    public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
+    public void setPhysicsSpace(Object physicsSpace) {
         tilesHeet.getSpritesheetPhysics().setPhysicsSpace(physicsSpace);
     }
     

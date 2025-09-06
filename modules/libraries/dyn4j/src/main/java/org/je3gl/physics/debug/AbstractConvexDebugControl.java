@@ -37,10 +37,10 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.util.TempVars;
 
+import org.je3gl.physics.util.Converter;
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 import static org.je3gl.physics.debug.Dyn4jDebugGraphics.*;
-import org.je3gl.util.Converter;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Capsule;

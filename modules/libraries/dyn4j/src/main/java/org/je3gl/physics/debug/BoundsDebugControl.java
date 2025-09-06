@@ -35,7 +35,7 @@ import com.jme3.scene.Spatial;
 
 import org.je3gl.physics.PhysicsSpace;
 import org.je3gl.physics.control.PhysicsBody2D;
-import org.je3gl.util.Converter;
+import org.je3gl.physics.util.Converter;
 
 import org.dyn4j.collision.AxisAlignedBounds;
 import org.dyn4j.collision.Bounds;

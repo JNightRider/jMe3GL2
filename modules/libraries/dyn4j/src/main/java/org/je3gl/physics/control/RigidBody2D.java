@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.physics.control;
 
 import com.jme3.math.Vector3f;
-import org.je3gl.util.Converter;
+import org.je3gl.physics.util.Converter;
 
 /**
  * An object of the class <code>RigidBody2D</code> is responsible for the control

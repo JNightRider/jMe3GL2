@@ -49,6 +49,7 @@ import org.dyn4j.collision.Bounds;
 import org.dyn4j.dynamics.Settings;
 import org.dyn4j.world.CollisionWorld;
 import org.dyn4j.world.PhysicsWorld;
+import org.je3gl.physics.scene.tile.Dyn4jTilePhysicsSystem;
 
 /**
  * An object (an instance) of the class <code>Dyn4jAppState</code> is a state that 
@@ -296,6 +297,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             this.printInformation();
         }
 
+        Dyn4jTilePhysicsSystem.initialize();
         this.initialized = true;
     }
     

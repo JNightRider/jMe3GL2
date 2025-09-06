@@ -30,10 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.listener;
 
+import org.dyn4j.dynamics.contact.ContactConstraint;
+
+import org.je3gl.util.Serializable;
 import org.je3gl.physics.control.CharacterBody2D;
 import org.je3gl.physics.control.PhysicsBody2D;
-import org.je3gl.util.Serializable;
-import org.dyn4j.dynamics.contact.ContactConstraint;
 
 /**
  * Interface in charge of managing a listener for the contacts that a 
