@@ -138,7 +138,7 @@ public class Dyn4jTilesheet implements Tilesheet {
     /**
      * Internal class responsible for implementing the interface {@link Spritesheet}.
      */
-    class Jme3GLDefTileModel implements Spritesheet {
+    private static class Jme3GLDefTileModel implements Spritesheet {
 
         /* (non-Javadoc)*/
         @Override
@@ -284,7 +284,7 @@ public class Dyn4jTilesheet implements Tilesheet {
     /**
      * Internal class responsible for implementing the interface {@link SpritesheetPhysics}.
      */
-    class Jme3GLDefTileSpace implements SpritesheetPhysics {
+    private static class Jme3GLDefTileSpace implements SpritesheetPhysics {
 
         /** The physical space. */
         protected PhysicsSpace<PhysicsBody2D> physicsSpace;

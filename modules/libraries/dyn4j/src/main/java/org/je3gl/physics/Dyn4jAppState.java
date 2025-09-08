@@ -306,7 +306,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      */
     protected void printInformation() {
         StringBuilder buff = new StringBuilder();
-        buff.append("[jMe3GL2] :Physical engine initialized with the following properties")
+        buff.append("[jMe3GL2] : (Dyn4j) Physical engine initialized with the following properties")
              .append('\n');
         buff.append(" *  Threading Type: ").append(threadingType)
             .append('\n');
