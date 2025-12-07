@@ -32,27 +32,43 @@ package org.je3gl.physics.scene.tile;
 
 import org.dyn4j.geometry.Convex;
 
-import org.je3gl.physics.collision.CollisionShape;
-import org.je3gl.scene.tile.TilePhysicsSystemI;
 import org.je3gl.util.Arg;
+import org.je3gl.scene.tile.TilePhysicsProvider;
+import org.je3gl.physics.collision.CollisionShape;
+
 import static org.je3gl.scene.tile.TilePhysicsSystem.*;
 import static org.je3gl.utilities.GeometryUtilities.*;
 
 /**
- *
+ * Class that implements the interface {@code TilePhysicsProvider}
+ * 
  * @author wil
+ * @version 1.0.0
+ * @since 3.1.0
  */
-public final class Dyn4jTilePhysicsSystem implements TilePhysicsSystemI<Object> {
+public final class Dyn4jTilePhysicsSystem implements TilePhysicsProvider<Object> {
     
+    /**Method name:  {@code CreateRectangle}. */
     private static final String VF_CREATE_RECTANGLE   = "CreateRectangle";
+    /**Method name:  {@code WrapCollision}. */
     private static final String VF_WRAP_COLLISION     = "WrapCollision";
     
+    /**
+     *Initialize the values ​​for the provider.
+     */
     public static void initialize() {
         System.setProperty(VKF_CREATE_RECTANGLE, VF_CREATE_RECTANGLE);
         System.setProperty(VKF_WRAP_COLLISION, VF_WRAP_COLLISION);
         System.setProperty(VKF_NEW_INSTANCE, Dyn4jTilePhysicsSystem.class.getName());
     }
 
+    /**
+     * Invoke a method by its name in the physical context.
+     * 
+     * @param name method name
+     * @param args arguments
+     * @return result
+     */
     @Override
     @SuppressWarnings("unchecked")
     public Object invoke(String name, Arg<?>... args) {

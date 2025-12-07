@@ -31,12 +31,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.util;
 
 /**
- *
+ * Class responsible for managing the value of an argument (method).
+ * 
  * @author wil
- * @param <T>
+ * @version 1.0.0
+ * @since 3.1.0
+ * 
+ * @param <T> type
  */
 public class Arg<T> {
     
+    /**
+     * Build a list of {@code Arg} based on objects as values.
+     * 
+     * @param args values
+     * @return {@code Arg[]}
+     */
     @SuppressWarnings("unchecked")
     public static Arg[] buildArgs(Object ...args) {
         Arg[] list = new Arg[args.length];
@@ -46,19 +56,36 @@ public class Arg<T> {
         return list;
     }
     
+    /** The value. */
     private final T source;
+    /**
+     * Constructor (privaye)
+     * @param source  value
+     */
     private Arg(T source) {
         this.source = source;
     }
     
+    /**
+     * Returns the value as: float 
+     * @return float
+     */
     public float getFloat() {
         return (float) source;
     }
-    
+
+    /**
+     * Returns the value as: double 
+     * @return double
+     */
     public double getDouble() {
         return (double) source;
     }
 
+    /**
+     * Returns the value as: native (Object)
+     * @return native|Object
+     */
     public T getSource() {
         return source;
     }

@@ -33,12 +33,23 @@ package org.je3gl.scene.tile;
 import org.je3gl.util.Arg;
 
 /**
+ * An interface that provides utility methods for TileMaps to access physical
+ * space in any context.
  *
  * @author wil
- * @param <R>
+ * @version 1.0.0
+ * @since 3.1.0
+ * 
+ * @param <R> return type
  */
 @FunctionalInterface
-public interface TilePhysicsSystemI<R> {
-    
+public interface TilePhysicsProvider<R> {    
+    /**
+     * Invoke a method by its name in the physical context.
+     * 
+     * @param name method name
+     * @param args arguments
+     * @return result
+     */
     R invoke(String name, Arg<?> ...args);
 }
