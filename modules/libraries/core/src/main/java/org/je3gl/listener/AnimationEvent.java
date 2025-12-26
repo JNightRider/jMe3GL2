@@ -47,18 +47,23 @@ import org.je3gl.scene.control.Animation2D;
 public class AnimationEvent<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> {
     
     /** 2D model. */
-    private O model;
+    private final O model;
     /** Frame animation. */
-    private A animation;
+    private final A animation;
     /** Animated control. */
-    private E control;
+    private final E control;
     
     /** current animation name. */
-    private String name;
+    private final String name;
     /** animation frame index. */
-    private int index;
+    private final int index;
     /** current frame of the animation. */
-    private int frame;
+    private final int frame;
+    /**
+     * Check the animation status; {@code true} if the animated segment has
+     * finished.
+     */
+    private final boolean finished;
 
     /**
      * Generate a new animated event with class <code>AnimationEvent</code>.
@@ -68,11 +73,14 @@ public class AnimationEvent<O extends Spatial, A extends Animation2D, E extends 
      * @param name current animation name
      * @param index animation frame index
      * @param frame current frame of the animation
+     * @param finished Check the animation status; {@code true} if the animated 
+     *                 segment has finished.
      */
-    public AnimationEvent(O model, A animation, E control, String name, int index, int frame) {
+    public AnimationEvent(O model, A animation, E control, String name, int index, int frame, boolean finished) {
         this.model     = model;
         this.animation = animation;
         this.control   = control;
+        this.finished  = finished;
         this.name  = name;
         this.index = index;
         this.frame = frame;
@@ -124,5 +132,13 @@ public class AnimationEvent<O extends Spatial, A extends Animation2D, E extends 
      */
     public int getFrame() {
         return frame;
+    }
+
+    /**
+     * Returns the state.
+     * @return boolean
+     */
+    public boolean isFinished() {
+        return finished;
     }
 }
