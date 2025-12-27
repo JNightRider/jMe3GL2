@@ -35,17 +35,22 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.je3gl.scene.debug.custom.DebugGraphics;
 import static org.je3gl.physics.debug.Dyn4jDebugColor.*;
 
 /**
  * Class responsible for implementing the {@link org.je3gl.scene.debug.custom.DebugGraphics} interface
  * @author wil
- * @version 1.0.0
+ * @version 1.1.0
  * @since 3.0.03
  */
 public class Dyn4jDebugGraphics implements DebugGraphics {
-    
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(Dyn4jDebugGraphics.class.getName());
+  
     //--------------------------------------------------------------------------
     //                        Constants - Dyn4jDebugGraphics
     //--------------------------------------------------------------------------
@@ -105,9 +110,12 @@ public class Dyn4jDebugGraphics implements DebugGraphics {
     @Override
     public BitmapFont getBitmapFont(String name) {
         if (name.startsWith("path//")) {
+            LOGGER.log(Level.WARNING, "It is recommended to use 'path://'");
             return assetManager.loadFont(name.substring(6, name.length()));
+        } else if (name.startsWith("path://")) {
+            return assetManager.loadFont(name.substring(7, name.length()));
         }
-        return assetManager.loadFont("Interface/Fonts/Default.fnt");
+        return assetManager.loadFont("Interface/Fonts/Console.fnt");
     }
 
     /* (non-Javadoc)
