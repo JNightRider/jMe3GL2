@@ -41,7 +41,7 @@ import org.je3gl.scene.control.Animation2D;
  * @param <E> the type of animated control
  * 
  * @author wil
- * @version 3.0.0
+ * @version 3.0.1
  * @since 1.0.0
  */
 public class AnimationEvent<O extends Spatial, A extends Animation2D, E extends AbstractAnimation2DControl<O, A, E>> {

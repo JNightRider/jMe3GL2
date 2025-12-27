@@ -44,7 +44,7 @@ import com.jme3.scene.Spatial;
  * 
  * @author wil
  * @since 1.0.0
- * @version 3.0.0
+ * @version 3.0.1
  * @param <O> the type of model
  * @param <A> the type of animation
  * @param <E> the type of animated control

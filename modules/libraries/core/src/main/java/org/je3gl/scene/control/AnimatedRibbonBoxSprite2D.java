@@ -48,7 +48,7 @@ import com.jme3.scene.Spatial;
  * Each frame corresponds to a movement of the animation, through the frames we can animate a 2D model, it is like a film strip.
  * 
  * @author wil
- * @version 1.5.5
+ * @version 1.5.1
  * @since 2.0.0
  */
 public class AnimatedRibbonBoxSprite2D extends AbstractAnimation2DControl<Spatial, RibbonBoxAnimation2D, AnimatedRibbonBoxSprite2D> {

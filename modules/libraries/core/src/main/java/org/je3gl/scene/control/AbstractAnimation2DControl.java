@@ -68,7 +68,7 @@ import java.util.logging.Logger;
  * </li>
  * </ul>
  * @author wil
- * @version 2.0.0
+ * @version 2.0.1
  * @since 1.0.0
  * @param <O> the type of model
  * @param <A> the type of animation
