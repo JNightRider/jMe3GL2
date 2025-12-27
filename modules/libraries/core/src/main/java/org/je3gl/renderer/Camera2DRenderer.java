@@ -33,9 +33,11 @@ package org.je3gl.renderer;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,7 +55,7 @@ import org.je3gl.renderer.effect.GLXEffect;
  * world.
  * 
  * @author wil
- * @version 2.5.0
+ * @version 2.5.1
  * @since 2.0.0
  */
 public class Camera2DRenderer extends BaseAppState {
@@ -94,6 +96,7 @@ public class Camera2DRenderer extends BaseAppState {
     private GLRendererType rendererType;
      /** 2D camera. */
     private GLXCamera xCamera;
+    /** comparator */
     private UnitComparator unitComparator;
     
     /**
@@ -161,6 +164,13 @@ public class Camera2DRenderer extends BaseAppState {
         applyUnitComparator();
     }
     
+    /**
+     * Configure a distance comparator on a specific axis for the camera.
+     * 
+     * @param unit axis for the comparator
+     * @param type comparator type
+     * @param buckets the application layer
+     */
     public void setUnitComparator(Vector3f unit, UnitComparator.UType type, RenderQueue.Bucket ...buckets) {
         unitComparator = new UnitComparator(unit, type);
         unitComparator.setLayers(buckets);
@@ -169,6 +179,9 @@ public class Camera2DRenderer extends BaseAppState {
         }
     }
     
+    /**
+     * Apply the comparator
+     */
     private void applyUnitComparator() {
         if (unitComparator == null) {
             return;
@@ -268,5 +281,79 @@ public class Camera2DRenderer extends BaseAppState {
      */
     public GLRendererType getRendererType() {
         return rendererType;
+    }
+    
+    /**
+     * Set an object that the camera can track.
+     * 
+     * @see #getEffect(java.lang.Class) 
+     * 
+     * @param model target
+     */
+    public void setCameraTarget(Spatial model) {
+        GLXFollowing following = getEffect(GLXFollowing.class);
+        if (following == null) {
+            LOGGER.log(Level.WARNING, "The driver could not be found: GLXFollowing");
+            return;
+        }
+        following.setTarget(model);
+    }
+    
+    /**
+     * Set the camera interpolation speed, which defines the speed at which the
+     * camera moves.
+     * 
+     * @param speed float
+     */
+    public void setCameraInterpolationSpeed(float speed) {
+        GLXFollowing following = getEffect(GLXFollowing.class);
+        if (following == null) {
+            LOGGER.log(Level.WARNING, "The driver could not be found: GLXFollowing");
+            return;
+        }
+        following.setInterpolationAmount(speed);
+    }
+    
+    /**
+     * Set the camera distance.
+     * 
+     * @param distance float
+     */
+    public void setCameraDistance(float distance) {
+        GLXDistanceFrustum frustum = getEffect(GLXDistanceFrustum.class);
+        if (frustum == null) {
+            LOGGER.log(Level.WARNING, "The driver could not be found: GLXDistanceFrustum");
+            return;
+        }
+        frustum.setDistanceFrustum(distance);
+    }
+    
+    /**
+     * Set a camera shift to the left
+     * 
+     * @param offset vector2f
+     */
+    public void setCameraOffset(Vector2f offset) {
+        GLXFollowing following = getEffect(GLXFollowing.class);
+        if (following == null) {
+            LOGGER.log(Level.WARNING, "The driver could not be found: GLXFollowing");
+            return;
+        }
+        following.setOffset(offset);
+    }
+    
+    /**
+     * Set a clipping on camera movements.
+     * 
+     * @param min minimum cut
+     * @param max maximum cut
+     */
+    public void setCameraClipping(Vector2f min, Vector2f max) {
+        GLXClipping clipping = getEffect(GLXClipping.class);
+        if (clipping == null) {
+            LOGGER.log(Level.WARNING, "The driver could not be found: GLXClipping");
+            return;
+        }
+        clipping.setClipping(min, max);
     }
 }

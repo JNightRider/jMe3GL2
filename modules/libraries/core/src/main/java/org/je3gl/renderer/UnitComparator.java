@@ -66,7 +66,7 @@ public final class UnitComparator implements GeometryComparator {
     private final Vector3f unit;
     /** The type of positioning to which the comparator will be applied. */
     private final UType type;
-
+    /** layers */
     private RenderQueue.Bucket[] layers;
     
     /**
@@ -80,6 +80,10 @@ public final class UnitComparator implements GeometryComparator {
         this.type = type;
     }
 
+    /**
+     * Set the application layers for this comparator
+     * @param layers layers
+     */
     public void setLayers(RenderQueue.Bucket[] layers) {
         this.layers = layers;
     }
