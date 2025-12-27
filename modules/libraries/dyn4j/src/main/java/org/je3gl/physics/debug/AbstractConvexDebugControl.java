@@ -35,12 +35,9 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.Node;
 import com.jme3.util.TempVars;
-
-import org.je3gl.physics.util.Converter;
-import org.je3gl.physics.control.PhysicsBody2D;
-import org.je3gl.scene.debug.custom.DebugGraphics;
-import static org.je3gl.physics.debug.Dyn4jDebugGraphics.*;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Capsule;
@@ -52,6 +49,11 @@ import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Slice;
 import org.dyn4j.geometry.Vector2;
+
+import org.je3gl.physics.util.Converter;
+import org.je3gl.physics.control.PhysicsBody2D;
+import org.je3gl.scene.debug.custom.DebugGraphics;
+import static org.je3gl.physics.debug.Dyn4jDebugGraphics.*;
 
 /**
  * Class <code>AbstractConvexDebugControl</code> in charge of controlling the
@@ -78,10 +80,15 @@ import org.dyn4j.geometry.Vector2;
  * @param <E> body type
  * 
  * @author wil
- * @version 1.5.5
+ * @version 1.5.6
  * @since 2.5.0
  */
 public abstract class AbstractConvexDebugControl<E extends Convex> extends AbstractPhysicsDebugControl<PhysicsBody2D>  {
+    
+    /** Name of the geometry that manages physical shape. */
+    public static final String GM_BODY_SHAPE = "BodyShape";
+    /** Node name (model) of the axes of the 2.5D plane */
+    public static final String GM_ORIGIN_AXES = "OriginAxes";
     
     /**
      * Internal class <code>RectangleDebugControl</code> responsible for managing
@@ -319,11 +326,15 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
     void renderMaterial() {
         DebugGraphics dg = dyn4jDebugAppState.getGraphics2DRenderer().getDebugGraphics();
         ColorRGBA color  = dg.getColor(GL_DEBUG_DISABLED);
-        
+
         if (body2D.isEnabled()) {
             MassType mt = body2D.getMass().getType();
             if ((mt == MassType.INFINITE || body2D.isStatic()) && !(body2D.isKinematic())) {
                 color = dg.getColor(GL_DEBUG_STATIC);
+                
+                if (fixture.isSensor()) {
+                    color = dg.getColor(GL_DEBUG_SENSOR);
+                }
             } else {
                 if (fixture.isSensor()) {
                     color = dg.getColor(GL_DEBUG_SENSOR);
@@ -341,8 +352,28 @@ public abstract class AbstractConvexDebugControl<E extends Convex> extends Abstr
             }
         }
         
-        Material mat = ((Geometry) spatial).getMaterial();   
-        mat.setColor("Color", color);
+        Geometry shape = getGeometry(GM_BODY_SHAPE);
+        if (shape != null) {
+            Mesh.Mode mode = shape.getMesh().getMode();
+            if (fixture.isSensor() && mode != Mesh.Mode.Points) {
+                shape.getMesh().setMode(Mesh.Mode.Points);
+            }
+            
+            Material mat = shape.getMaterial();   
+            mat.setColor("Color", color);
+        }
+    }
+    
+    /**
+     * Search for a child {@code Spatial} in the model by name
+     * @param name the name
+     * @return model
+     */
+    protected Geometry getGeometry(String name) {
+        if (spatial instanceof Node) {
+            return (Geometry) ((Node) spatial).getChild(name);
+        }
+        return null;
     }
     
     /**
