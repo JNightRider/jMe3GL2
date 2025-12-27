@@ -171,7 +171,7 @@ public class PhysicsJoint<T extends PhysicsBody2D, E extends Joint<T>> implement
             } else if (joint instanceof org.dyn4j.dynamics.joint.MotorJoint) {
                 return MotorJoint;
             }
-            return null;
+            return Custom;
         }
     }
     

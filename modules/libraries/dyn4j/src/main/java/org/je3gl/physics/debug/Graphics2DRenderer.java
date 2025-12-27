@@ -37,23 +37,14 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Arrow;
+import com.jme3.scene.shape.Line;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.je3gl.physics.debug.Dyn4jDebugGraphics.*;
-import org.je3gl.physics.control.PhysicsBody2D;
-import org.je3gl.scene.debug.Capsule2D;
-import org.je3gl.scene.debug.Circle2D;
-import org.je3gl.scene.debug.Ellipse2D;
-import org.je3gl.scene.debug.HalfEllipse2D;
-import org.je3gl.scene.debug.Polygon2D;
-import org.je3gl.scene.debug.Slice2D;
-import org.je3gl.scene.debug.custom.DebugGraphics;
-import org.je3gl.physics.util.Converter;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Capsule;
@@ -65,6 +56,20 @@ import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Slice;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.geometry.Wound;
+
+import org.je3gl.scene.debug.Cross;
+import org.je3gl.scene.debug.Capsule2D;
+import org.je3gl.scene.debug.Circle2D;
+import org.je3gl.scene.debug.Ellipse2D;
+import org.je3gl.scene.debug.HalfEllipse2D;
+import org.je3gl.scene.debug.Polygon2D;
+import org.je3gl.scene.debug.Slice2D;
+import org.je3gl.scene.debug.custom.DebugGraphics;
+import org.je3gl.physics.util.Converter;
+import org.je3gl.physics.control.PhysicsBody2D;
+import static org.je3gl.physics.debug.Dyn4jDebugGraphics.*;
+import static org.je3gl.physics.debug.AbstractConvexDebugControl.*;
+
 /**
  * An object of the class <code>Graphics2DRenderer</code> is in charge of
  * rendering physical bodies, i.e. it is in charge of finding a form for it.
@@ -73,7 +78,7 @@ import org.dyn4j.geometry.Wound;
  * body to debug it in real time.
  * </p>
  * @author wil
- * @version 1.5.0
+ * @version 1.6.0
  * @since 2.5.0
  */
 public final class Graphics2DRenderer {
@@ -190,7 +195,10 @@ public final class Graphics2DRenderer {
         String uid = String.valueOf(fixture);
         
         final Node node = new Node(uid);
-        node.attachChild(createOriginAxes(shape.getCenter()));
+        final Node shapeNode = new Node("Shape");
+
+        shapeNode.attachChild(createOriginAxes(shape.getCenter()));
+        node.attachChild(shapeNode);
         
         if (color == null) {
             color = Dyn4jDebugColor.DEFAULT;
@@ -203,11 +211,11 @@ public final class Graphics2DRenderer {
             final Vector3f[] vertices = Converter.allToVector3fValueOfJME3(wound.getVertices());
             final Polygon2D woundDebug = new Polygon2D(vertices);
             
-            geom = new Geometry(uid, woundDebug);
+            geom = new Geometry(GM_BODY_SHAPE, woundDebug);
             if (shape instanceof Rectangle) {
-                geom.addControl(new AbstractConvexDebugControl.RectangleDebugControl(dyn4jDebugAppState,fixture, body));
+                shapeNode.addControl(new AbstractConvexDebugControl.RectangleDebugControl(dyn4jDebugAppState,fixture, body));
             } else {
-                geom.addControl(new AbstractConvexDebugControl.ConvexDebugControl(dyn4jDebugAppState,fixture, body));
+                shapeNode.addControl(new AbstractConvexDebugControl.ConvexDebugControl(dyn4jDebugAppState,fixture, body));
             }
         } else if (shape instanceof Circle) {
             final Circle circle = (Circle) shape;
@@ -215,8 +223,8 @@ public final class Graphics2DRenderer {
             final float radius = Converter.toFloatValue(circle.getRadius());
             final Circle2D circleDebug = new Circle2D(Circle2D.COUNT, radius, 0);
             
-            geom = new Geometry(uid, circleDebug);
-            geom.addControl(new AbstractConvexDebugControl.CircleDebugControl(dyn4jDebugAppState, fixture, body));
+            geom = new Geometry(GM_BODY_SHAPE, circleDebug);
+            shapeNode.addControl(new AbstractConvexDebugControl.CircleDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof Capsule) {
             final Capsule capsule = (Capsule) shape;
 
@@ -225,8 +233,8 @@ public final class Graphics2DRenderer {
             
             final Capsule2D capsuleDebug = new Capsule2D(Capsule2D.COUNT, width, height);
             
-            geom = new Geometry(uid, capsuleDebug);
-            geom.addControl(new AbstractConvexDebugControl.CapsuleDebugControl(dyn4jDebugAppState, fixture, body));
+            geom = new Geometry(GM_BODY_SHAPE, capsuleDebug);
+            shapeNode.addControl(new AbstractConvexDebugControl.CapsuleDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof Ellipse) {
             final Ellipse ellipse = (Ellipse) shape;
 
@@ -235,8 +243,8 @@ public final class Graphics2DRenderer {
 
             final Ellipse2D ellipseDebug = new Ellipse2D(Ellipse2D.COUNT, width, height);
             
-            geom = new Geometry(uid, ellipseDebug);
-            geom.addControl(new AbstractConvexDebugControl.EllipseDebugControl(dyn4jDebugAppState, fixture, body));
+            geom = new Geometry(GM_BODY_SHAPE, ellipseDebug);
+            shapeNode.addControl(new AbstractConvexDebugControl.EllipseDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof HalfEllipse) {
             final HalfEllipse halfEllipse = (HalfEllipse) shape;
 
@@ -245,8 +253,8 @@ public final class Graphics2DRenderer {
             
             final HalfEllipse2D halfEllipseDebug = new HalfEllipse2D(HalfEllipse2D.COUNT, width, height);
             
-            geom = new Geometry(uid, halfEllipseDebug);
-            geom.addControl(new AbstractConvexDebugControl.HalfEllipseDebugControl(dyn4jDebugAppState, fixture, body));
+            geom = new Geometry(GM_BODY_SHAPE, halfEllipseDebug);
+            shapeNode.addControl(new AbstractConvexDebugControl.HalfEllipseDebugControl(dyn4jDebugAppState, fixture, body));
         } else if (shape instanceof Slice) {
             final Slice slice = (Slice) shape;
             
@@ -255,17 +263,113 @@ public final class Graphics2DRenderer {
             
             final Slice2D sliceDebug = new Slice2D(Slice2D.COUNT, radius, angle);
             
-            geom = new Geometry(uid, sliceDebug);
-            geom.addControl(new AbstractConvexDebugControl.SliceDebugControl(dyn4jDebugAppState, fixture, body));
+            geom = new Geometry(GM_BODY_SHAPE, sliceDebug);
+            shapeNode.addControl(new AbstractConvexDebugControl.SliceDebugControl(dyn4jDebugAppState, fixture, body));
         } else {
             LOGGER.log(Level.WARNING, "#### Shape ''{0}'' not supported. ####", shape.getClass().getSimpleName());
         }        
         if (geom != null) {
             geom.setMaterial(createMat(color));
             geom.setQueueBucket(RenderQueue.Bucket.Translucent);
-            node.attachChild(geom);
+            shapeNode.attachChild(geom);
         }
         return node;
+    }
+    
+    /**
+     * Method responsible for rendering a shape using geometry.
+     * 
+     * @param <T> the type of form to represent
+     * @param type shape class
+     * @param args arguments used by the shape:<pre><code>
+     * Line: 
+     *  - Vector3f
+     *  - Vector3f
+     * 
+     * Circle2D:
+     *  - Vector3f
+     *  - float
+     *  - float
+     * 
+     * Cross:
+     *  - Vector3f
+     *  - float
+     *  - boolean
+     * 
+     * Polygon2D
+     *  - boolean (true)
+     *      - float
+     *      - float
+     * 
+     *  // otherwise
+     *      - Vector3f[]
+     * 
+     * </code></pre>
+     * @return model
+     */
+    public <T> Geometry renderMesh(Class<T> type, Object ...args) {
+        if (type == null) {
+            return null;
+        }
+        Geometry geometry = null;
+        if (Line.class.isAssignableFrom(type)) {            
+            Vector3f start = (Vector3f) args[0];
+            Vector3f end   = (Vector3f) args[1];
+            
+            Line line = new Line(start, end);
+            geometry  = new Geometry("Line", line);            
+        } else if (Circle2D.class.isAssignableFrom(type)) {
+           Vector3f center = (Vector3f) args[0];
+           float radius    = (float)    args[1];
+           float theta     = (float)    args[2];
+           
+           Circle2D circle2D = new Circle2D(Circle2D.COUNT, radius, theta);
+           circle2D.setMode(Mesh.Mode.LineLoop);
+           
+           geometry = new Geometry("Circle", circle2D);
+           geometry.setLocalTranslation(center);
+        } else if (Cross.class.isAssignableFrom(type)) {
+            Vector3f center   = (Vector3f) args[0];
+            float segmentSize = (float)    args[1];
+            boolean pulley    = (boolean)  args[2];
+            
+            Cross cross = new Cross(segmentSize, pulley ? Mesh.Mode.LineLoop : Mesh.Mode.Lines);
+            geometry    = new Geometry("Cross", cross);
+            geometry.setLocalTranslation(center);
+        } else if (Polygon2D.class.isAssignableFrom(type)) {            
+            boolean square = (boolean) args[0];
+            Vector3f[] vertices;
+            
+            if (!square) {
+                vertices = new Vector3f[args.length - 1];
+                for (int i = 1; i < args.length; i++) {
+                    vertices[i] = (Vector3f) args[i];
+                }
+            } else {
+                vertices = new Vector3f[4];
+                float segment = (float) args[1];
+                float size = segment / 2;
+                
+                vertices[0] = new Vector3f(size, size, 0);
+                vertices[1] = new Vector3f(-size, size, 0);
+                vertices[2] = new Vector3f(-size, -size, 0);
+                vertices[3] = new Vector3f(size, -size, 0);
+            }
+            
+            Polygon2D polygon2D = new Polygon2D(vertices);
+            geometry = new Geometry("Polugon", polygon2D);
+            
+            if (square) {
+                Vector3f center = (Vector3f) args[2];
+                float segment   = (float) args[1];
+                center.x -= segment / 2;
+                center.y -= segment / 2;
+                
+                geometry.setLocalTranslation(center);
+            }
+        }
+        
+        return geometry;
     }
     
     /**
@@ -275,7 +379,7 @@ public final class Graphics2DRenderer {
      * @return centered node
      */
     private Node createOriginAxes(final Vector2 center) {
-        final Node node = new Node("Origin");
+        final Node node = new Node(GM_ORIGIN_AXES);
         node.attachChild(createAxisArrow(Vector3f.UNIT_X.mult(.25f), ColorRGBA.Red));
         node.attachChild(createAxisArrow(Vector3f.UNIT_Y.mult(.25f), ColorRGBA.Green));
         node.setLocalTranslation(Converter.toVector3fValueOfJME3(center));

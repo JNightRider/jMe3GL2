@@ -38,6 +38,8 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
+import org.dyn4j.dynamics.joint.Joint;
+
 import org.je3gl.physics.PhysicsSpace;
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.scene.debug.custom.DebugGraphics;
@@ -55,7 +57,7 @@ import java.util.logging.Logger;
  * @param <E> body types
  * 
  * @author wil
- * @version 1.5.0
+ * @version 1.5.1
  * @since 2.5.0
  */
 public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
@@ -82,6 +84,8 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     // Physical bodies and joints.    
     /** Map of physical bodies. */
     protected Map<E, Spatial> bodies = new HashMap<>();
+    /** Joint physical map. */
+    protected Map<Joint<E>, Spatial> joints = new HashMap<>();
     
     /** Debugger view. */
     protected ViewPort viewPort;
@@ -175,6 +179,7 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
     public void update(float tpf) {
         // Update all object links
         updateBodies();
+        updateJoints();
         
         // Update debug root node
         debugNode.updateLogicalState(tpf);
@@ -201,10 +206,8 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
         final Map<E, Spatial> oldBodies = this.bodies;        
         this.bodies = new HashMap<>();
         
-        final Collection<E> currentBodies 
-                = this.physicsSpace.getBodies();
-
         // Create new body map
+        final Collection<E> currentBodies = this.physicsSpace.getBodies();
         for (final E body : currentBodies) {            
             if (oldBodies.containsKey(body)) {
 
@@ -224,6 +227,42 @@ public class Dyn4jDebugAppState<E extends PhysicsBody2D> extends BaseAppState {
             }
         }
         for (final Spatial spatial : oldBodies.values()) {
+            spatial.removeFromParent();
+        }
+    }
+    
+    /**
+     * Method responsible for updating physical joints.
+     */
+    @SuppressWarnings("unchecked")
+    private void updateJoints() {
+        final Map<Joint<E>, Spatial> oldObjects = this.joints;
+        this.joints = new HashMap<>();
+        
+        // Create new map of joints
+        for (int i = 0; i < this.physicsSpace.getJointCount(); i++) {
+            Joint<E> joint = this.physicsSpace.getJoint(i);
+            if (oldObjects.containsKey(joint)) {
+                // Copy existing spatial
+                final Spatial spat = oldObjects.get(joint);
+                this.joints.put(joint, spat);
+                oldObjects.remove(joint);
+            } else {
+                // Create new spatial
+                Dyn4jJointControl<?> jointControl = Dyn4jJointControl.getNewInstance((Dyn4jDebugAppState<PhysicsBody2D>) this, (Joint<PhysicsBody2D>) joint);
+                if (jointControl == null) {
+                    continue;
+                }
+                
+                final Node node = new Node(joint.toString());
+                node.addControl(jointControl);
+                this.joints.put(joint, node);
+                this.debugNode.attachChild(node);
+            }
+        }
+        
+        // Remove leftover spatials
+        for (final Spatial spatial : oldObjects.values()) {
             spatial.removeFromParent();
         }
     }
