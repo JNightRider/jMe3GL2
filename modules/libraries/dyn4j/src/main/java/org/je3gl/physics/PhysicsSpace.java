@@ -31,8 +31,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.physics;
 
 import com.jme3.scene.Spatial;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.PhysicsControl;
 import org.je3gl.physics.joint.PhysicsJoint;
@@ -49,7 +51,7 @@ import org.dyn4j.world.World;
  * <b>JME3</b> where physical bodies can be formed.
  * @param <E> of type {@link org.je3gl.physics.control.PhysicsBody2D}
  * @author wil
- * @version 2.0.0
+ * @version 2.0.1
  * @since 1.0.0
  */
 public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
@@ -63,6 +65,14 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
      * The speed with which updates to the physical world are applied (<b>dyn4j</b>).
      */
     protected float speed = DEFAULT_SPEED;
+    
+    /**
+     * The axis type is the way in which the positions of physical objects are
+     * applied with respect to the three coordinates of JME3's 3D space; changing
+     * this axis implies a change in the way objects are controlled at the three
+     * points (x, y, z).
+     */
+    protected AxisType axisType;
     
     /**
      * Generates a new instance of the <code>PhysicsSpace</code> class where to 
@@ -249,5 +259,21 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
      */
     public float getSpeed() {
         return this.speed;
+    }
+    
+    /**
+     * Set the axis that will be used in the physical space.
+     * @param axisType axis type
+     */
+    protected void setAxisType(AxisType axisType) {        
+        this.axisType = axisType;
+    }
+    
+    /**
+     * Returns the axis used in physical space.
+     * @return axis type
+     */
+    public AxisType getAxisType() {
+        return axisType;
     }
 }

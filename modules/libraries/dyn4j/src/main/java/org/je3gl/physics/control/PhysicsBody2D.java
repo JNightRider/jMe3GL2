@@ -39,6 +39,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.UserData;
 import com.jme3.scene.control.Control;
+import com.jme3.util.TempVars;
 import com.jme3.util.clone.Cloner;
 import com.jme3.util.clone.JmeCloneable;
 
@@ -55,8 +56,9 @@ import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
-import org.je3gl.listener.SpaceListener;
 
+import org.je3gl.listener.SpaceListener;
+import org.je3gl.physics.AxisType;
 import org.je3gl.physics.PhysicsSpace;
 import org.je3gl.physics.util.Converter;
 import org.je3gl.utilities.TransformUtilities;
@@ -70,19 +72,19 @@ import org.je3gl.utilities.TransformUtilities;
  * 2D model with or without physics.
  * 
  * @author wil
- * @version 1.5.5
+ * @version 1.6.0
  * @since 1.0.0
  */
 public abstract class PhysicsBody2D extends Body implements Control, Cloneable, JmeCloneable, Savable, PhysicsControl<PhysicsBody2D> {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsBody2D.class.getName());
     /** List of physical space listeners. */
-    private List<SpaceListener<PhysicsBody2D>> spaceListeners = new ArrayList<>();
+    private final List<SpaceListener<PhysicsBody2D>> spaceListeners = new ArrayList<>();
     
     /**
      * temporary storage during calculations TODO thread safety
      */
-    private Quaternion tmpInverseWorldRotation = new Quaternion();
+    private final Quaternion tmpInverseWorldRotation = new Quaternion();
     
     /** Physical space. */
     protected PhysicsSpace<PhysicsBody2D> physicsSpace;
@@ -263,6 +265,33 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
             }
         }
     }
+    
+    /**
+     * Method responsible for applying coordinates based on information from the
+     * physical body, this includes rotation and location.
+     */
+    private void checkAppliedPhysicalTransformation() {
+        AxisType axisType = physicsSpace == null 
+                         ? null : physicsSpace.getAxisType();
+        
+        TempVars temp = TempVars.get();
+        if (axisType == null) {
+            axisType = AxisType.getDefault();
+        }
+        
+        Quaternion rotation = temp.quat1;        
+        rotation.fromAngleAxis(
+                Converter.toFloatValue(getTransform().getRotationAngle()) * axisType.getMultiplier(),
+                axisType.getUnit()
+        );
+        
+        Vector3f locDeep  = spatial.getLocalTranslation().mult(axisType.getUnit());
+        Vector3f location = Converter.toVector3fValueOfJME3(getTransform().getTranslation(), axisType);
+        location.add(locDeep);
+        
+        applyPhysicsTransform(location, rotation);        
+        temp.release();
+    }
 
     /**
      * Release this physical body from the scene as well as from the physical
@@ -316,13 +345,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
             throw new IllegalStateException("This control has already been added to a Spatial.");
         }
         this.spatial = spatial;
-        float deep   = this.spatial.getLocalTranslation().z;
-        Quaternion rot = new Quaternion().fromAngleAxis(
-                Converter.toFloatValue(getTransform().getRotationAngle()),
-                 Vector3f.UNIT_Z);
-        Vector3f loc   = Converter.toVector3fValueOfJME3(getTransform().getTranslation());
-        loc.setZ(deep);
-        applyPhysicsTransform(loc, rot);
+        checkAppliedPhysicalTransformation();
         this.ready();
     }
 
@@ -383,13 +406,7 @@ public abstract class PhysicsBody2D extends Body implements Control, Cloneable, 
             this.postReady();
         }
         
-        float deep     = this.spatial.getLocalTranslation().z;
-        Quaternion rot = new Quaternion().fromAngleAxis(
-                Converter.toFloatValue(getTransform().getRotationAngle()),
-                 Vector3f.UNIT_Z);
-        Vector3f loc   = Converter.toVector3fValueOfJME3(getTransform().getTranslation());
-        loc.setZ(deep);
-        applyPhysicsTransform(loc, rot);
+        checkAppliedPhysicalTransformation();
     }
 
     /* (non-JavaDoc)
