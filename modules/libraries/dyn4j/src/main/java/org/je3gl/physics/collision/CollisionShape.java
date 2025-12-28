@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.je3gl.util.Converter;
+import org.je3gl.physics.util.Converter;
 import static org.je3gl.utilities.GeometryUtilities.*;
 
 import org.dyn4j.Epsilon;

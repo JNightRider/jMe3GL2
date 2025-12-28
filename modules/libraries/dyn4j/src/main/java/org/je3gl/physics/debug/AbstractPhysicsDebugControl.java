@@ -38,7 +38,7 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.util.TempVars;
 
 import org.je3gl.physics.control.PhysicsBody2D;
-import org.je3gl.util.Converter;
+import org.je3gl.physics.util.Converter;
 
 import org.dyn4j.geometry.Transform;
 

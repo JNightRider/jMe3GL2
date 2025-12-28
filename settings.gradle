@@ -12,12 +12,13 @@ rootProject.name = 'jMe3GL2'
 include 'modules:libraries:jawt'
 include 'modules:libraries:core'
 include 'modules:libraries:plugins'
+include 'modules:libraries:dyn4j'
 
 // examples module (functionality test)
 include 'modules:samples'
 
 // More sensible sub-project names for jars an dstuff
-project(':modules:libraries:core').name = 'jMe3GL2-core'
-project(':modules:libraries:jawt').name = 'jMe3GL2-jawt'
-project(':modules:libraries:plugins').name = 'jMe3GL2-plugins'
-
+project(':modules:libraries:core').name     = 'jMe3GL2-core'
+project(':modules:libraries:jawt').name     = 'jMe3GL2-jawt'
+project(':modules:libraries:dyn4j').name    = 'jMe3GL2-dyn4j'
+project(':modules:libraries:plugins').name  = 'jMe3GL2-plugins'

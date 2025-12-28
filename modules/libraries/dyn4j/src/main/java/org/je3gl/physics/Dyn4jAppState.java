@@ -49,6 +49,7 @@ import org.dyn4j.collision.Bounds;
 import org.dyn4j.dynamics.Settings;
 import org.dyn4j.world.CollisionWorld;
 import org.dyn4j.world.PhysicsWorld;
+import org.je3gl.physics.scene.tile.Dyn4jTilePhysicsSystem;
 
 /**
  * An object (an instance) of the class <code>Dyn4jAppState</code> is a state that 
@@ -59,7 +60,7 @@ import org.dyn4j.world.PhysicsWorld;
  * knowledge of how to handle both.
  * @param <E> of type {@link org.je3gl.physics.control.PhysicsBody2D}
  * @author wil
- * @version 1.5.0
+ * @version 1.5.1
  * @since 1.0.0
  */
 public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
@@ -146,7 +147,18 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      * joints in physical space; otherwise it is <code>false</code> to disable.
      */
     protected boolean debug;
-     
+    
+    //--------------------------------------------------------------------------
+    //                              Axis
+    //--------------------------------------------------------------------------
+    /**
+     * The axis type is the way in which the positions of physical objects are
+     * applied with respect to the three coordinates of JME3's 3D space; changing
+     * this axis implies a change in the way objects are controlled at the three
+     * points (x, y, z).
+     */
+    protected AxisType axisType = AxisType.getDefault();
+    
     /**
      * Generate a new instance of the <code>Dyn4jAppState</code> class to create 
      * a physics engine that can handle all physical bodies in a 2D world or scene 
@@ -290,12 +302,14 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             startPhysicsOnExecutor();
         } else {
             this.physicsSpace = new PhysicsSpace<>(initialCapacity, initialJointCapacity, bounds);
+            this.physicsSpace.setAxisType(axisType);
             if (this.settings != null) {
                 this.physicsSpace.setSettings(this.settings);
             }
             this.printInformation();
         }
 
+        Dyn4jTilePhysicsSystem.initialize();
         this.initialized = true;
     }
     
@@ -304,7 +318,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
      */
     protected void printInformation() {
         StringBuilder buff = new StringBuilder();
-        buff.append("[jMe3GL2] :Physical engine initialized with the following properties")
+        buff.append("[jMe3GL2] : (Dyn4j) Physical engine initialized with the following properties")
              .append('\n');
         buff.append(" *  Threading Type: ").append(threadingType)
             .append('\n');
@@ -315,6 +329,8 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
         buff.append(" *  Bounds: ").append(bounds != null ? bounds.getClass().getName() : null)
             .append('\n');
         buff.append(" *  Debugger Enabled: ").append(debug)
+            .append('\n');
+        buff.append(" *  Axis Type: ").append(axisType)
             .append('\n');
         buff.append(" *  ").append(physicsSpace.getSettings());
         LOGGER.log(Level.INFO, String.valueOf(buff));
@@ -333,6 +349,7 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
         final Callable<Boolean> call = () -> {
             Dyn4jAppState.this.physicsSpace = new PhysicsSpace(Dyn4jAppState.this.initialCapacity, Dyn4jAppState.this.initialJointCapacity,
                     Dyn4jAppState.this.bounds);
+            Dyn4jAppState.this.physicsSpace.setAxisType(axisType);
             if (Dyn4jAppState.this.settings != null) {
                 Dyn4jAppState.this.physicsSpace.setSettings(Dyn4jAppState.this.settings);
             }
@@ -508,5 +525,35 @@ public class Dyn4jAppState<E extends PhysicsBody2D> extends AbstractAppState {
             this.stateManager.detach(this.dyn4jDebugAppState);
             this.dyn4jDebugAppState = null;
         }
+    }
+
+    /**
+     * Set the axis that will be used in the physical space.
+     *
+     * @param axisType axis type
+     */
+    public void setAxisType(AxisType axisType) {
+        if (axisType == null) {
+            throw new NullPointerException("The axis type cannot be null, choose a type");
+        }
+        
+        if (physicsSpace != null) {
+            physicsSpace.setAxisType(axisType);
+        }
+        this.axisType = axisType;
+    }
+    
+    /**
+     * Returns the axis used in physical space.
+     *
+     * @return axis type
+     */
+    public AxisType getAxisType() {
+        AxisType localAxis = physicsSpace.getAxisType();
+        if (localAxis != axisType) {
+            LOGGER.log(Level.WARNING, "Forced change for axis type: before [{0}], after [{1}]", new Object[]{localAxis, axisType});
+            physicsSpace.setAxisType(axisType);
+        }
+        return axisType;
     }
 }

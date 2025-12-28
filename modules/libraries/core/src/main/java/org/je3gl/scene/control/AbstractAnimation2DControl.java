@@ -68,7 +68,7 @@ import java.util.logging.Logger;
  * </li>
  * </ul>
  * @author wil
- * @version 2.0.0
+ * @version 2.0.1
  * @since 1.0.0
  * @param <O> the type of model
  * @param <A> the type of animation
@@ -351,11 +351,12 @@ public abstract class AbstractAnimation2DControl<O extends Spatial, A extends An
      * @param animIdx current animation index
      * @param idx current frame index
      * @param frame current frame
+     * @param finished Check the animation status; {@code true} if the animated segment has finished.
      */
     @SuppressWarnings("unchecked")
-    protected final void fireAnimation2DChangeListener(boolean post, int animIdx, int idx, int frame) {
+    protected final void fireAnimation2DChangeListener(boolean post, int animIdx, int idx, int frame, boolean finished) {
         this.changeListeners.stream().filter(Objects::nonNull).forEachOrdered(listener -> {
-            AnimationEvent<O, A, E> event = new AnimationEvent<>((O) spatial, currentAnimation2D[animIdx], (E) AbstractAnimation2DControl.this, currentNameAnimation2D, idx, frame);
+            AnimationEvent<O, A, E> event = new AnimationEvent<>((O) spatial, currentAnimation2D[animIdx], (E) AbstractAnimation2DControl.this, currentNameAnimation2D, idx, frame, finished);
             if (post) {
                 listener.afterAnimation2DChange(event);
             } else {

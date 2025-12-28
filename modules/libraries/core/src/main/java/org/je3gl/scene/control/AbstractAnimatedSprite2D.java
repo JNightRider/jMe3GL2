@@ -44,7 +44,7 @@ import com.jme3.scene.Spatial;
  * 
  * @author wil
  * @since 1.0.0
- * @version 3.0.0
+ * @version 3.0.1
  * @param <O> the type of model
  * @param <A> the type of animation
  * @param <E> the type of animated control
@@ -94,7 +94,8 @@ public abstract class AbstractAnimatedSprite2D<O extends Spatial, A extends Anim
     @Override
     @SuppressWarnings("unchecked")
     protected void controlUpdate(float tpf) {
-        if (currentAnimation2D != null) {            
+        if (currentAnimation2D != null) {
+            boolean finished = false;
             int old_index = animation2DIndex;
             elapsedeTime += (tpf * animation2DSpeed);
             
@@ -107,18 +108,19 @@ public abstract class AbstractAnimatedSprite2D<O extends Spatial, A extends Anim
                     } else {
                         animation2DIndex = getQuantity() - 1;
                     }
+                    finished = true;
                 }
                 
                 boolean b = old_index != animation2DIndex;
                 if (b) {
-                    fireAnimation2DChangeListener(false, animation2DIndex, 0, old_index);
+                    fireAnimation2DChangeListener(false, animation2DIndex, 0, old_index, finished);
                 }
                 
                 elapsedeTime = 0.0F;
                 handlerFunction.applyAnimation2DControl((O) spatial, getCurrentAnimation(animation2DIndex), (E)this);
                 
                 if (b) {
-                    fireAnimation2DChangeListener(true, animation2DIndex, 0, animation2DIndex);
+                    fireAnimation2DChangeListener(true, animation2DIndex, 0, animation2DIndex, finished);
                 }
             }
             fireAnimatedTimeChangeListener();

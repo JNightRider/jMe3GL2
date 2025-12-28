@@ -35,13 +35,11 @@ import com.jme3.math.Vector3f;
 
 import java.util.UUID;
 
-import org.je3gl.physics.collision.CollisionShape;
 import org.je3gl.scene.tile.Properties;
 import org.je3gl.scene.tile.Tile;
 import org.je3gl.scene.tile.TileMap;
-
-import org.dyn4j.geometry.Convex;
-import org.dyn4j.geometry.MassType;
+import org.je3gl.scene.tile.TilePhysicsSystem;
+import org.je3gl.scene.tile.Tilesheet;
 
 /**
  * Utility class for loading, managing and modifying <code>TileMap</code> or
@@ -69,11 +67,12 @@ public final class TileMapUtilities {
      * @param path the path of the texture containing the sprites inside the classpath
      * @param cs number of images per column
      * @param rs number of images per row
+     * @param tilesheet the {@code Tilesheet}
      * @param assetManager asset manager
      * @return TileMap
      */
-    public static final TileMap gl2GetTileMap(String path, int cs, int rs, AssetManager assetManager) {
-        return gl2GetTileMap(gl2GetStrigRandomUUID(), path, cs, rs, assetManager);
+    public static final TileMap gl2GetTileMap(String path, int cs, int rs, Tilesheet tilesheet, AssetManager assetManager) {
+        return gl2GetTileMap(gl2GetStrigRandomUUID(), path, cs, rs, tilesheet, assetManager);
     }
     
     /**
@@ -83,11 +82,12 @@ public final class TileMapUtilities {
      * @param path the path of the texture containing the sprites inside the classpath
      * @param cs number of images per column
      * @param rs number of images per row
+     * @param tilesheet the {@code Tilesheet}
      * @param assetManager asset manager
      * @return TileMap
      */
-    public static final TileMap gl2GetTileMap(String id, String path, int cs, int rs, AssetManager assetManager) {
-        TileMap myMap = new TileMap(assetManager, id);
+    public static final TileMap gl2GetTileMap(String id, String path, int cs, int rs, Tilesheet tilesheet, AssetManager assetManager) {
+        TileMap myMap = new TileMap(assetManager, id, tilesheet);
         Properties properties = new Properties();
         properties.put("Texture", path);
         properties.put("Columns", cs);
@@ -128,7 +128,7 @@ public final class TileMapUtilities {
      * @return Tile
      */
     public static Tile gl2GetTile(int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
-        return gl2GetTile(cp, rp, w, h, x, y, z, coll ? GeometryUtilities.dyn4jCreateRectangle(w, h) : null);
+        return gl2GetTile(cp, rp, w, h, x, y, z, coll ? TilePhysicsSystem.physicsCreateRectangle(w, h) : null);
     }
     
     /**
@@ -146,7 +146,7 @@ public final class TileMapUtilities {
      * @param acs physical shape
      * @return Tile
      */
-    public static <T extends Convex> Tile gl2GetTile(int cp, int rp, float w, float h, float x, float y, float z, Convex acs) {
+    public static <T> Tile gl2GetTile(int cp, int rp, float w, float h, float x, float y, float z, T acs) {
         return gl2GetTile(gl2GetStrigRandomUUID(), cp, rp, w, h, x, y, z, acs);
     }
     
@@ -184,7 +184,7 @@ public final class TileMapUtilities {
      * @return Tile
      */
     public static Tile gl2GetTile(String id, int cp, int rp, float w, float h, float x, float y, float z, boolean coll) {
-        return gl2GetTile(id, cp, rp, w, h, x, y, z, coll ? GeometryUtilities.dyn4jCreateRectangle(w, h) : null);
+        return gl2GetTile(id, cp, rp, w, h, x, y, z, coll ? TilePhysicsSystem.physicsCreateRectangle(w, h) : null);
     }
     
     /**
@@ -203,7 +203,7 @@ public final class TileMapUtilities {
      * @param acs physical shape
      * @return Tile
      */
-    public static <T extends Convex> Tile gl2GetTile(String id, int cp, int rp, float w, float h, float x, float y, float z, Convex acs) {
+    public static <T> Tile gl2GetTile(String id, int cp, int rp, float w, float h, float x, float y, float z, T acs) {
         Tile tile = new Tile();        
         Properties properties = new Properties();
         properties.put("Id", id);
@@ -214,8 +214,8 @@ public final class TileMapUtilities {
         properties.put("Translation", new Vector3f(x, y, z));        
         if (acs != null) {
             properties.put("PhysicsBody", true);
-            properties.put("CollisionShape", new CollisionShape<>(acs));
-            properties.put("MassType", MassType.INFINITE);
+            properties.put("CollisionShape", TilePhysicsSystem.wrapCollision(acs));
+            properties.put("MassType", "INFINITE");
         }        
         tile.setProperties(properties);
         return tile;

@@ -26,6 +26,7 @@ dependencies {
 
     implementation project(':modules:libraries:jMe3GL2-core')
     implementation project(':modules:libraries:jMe3GL2-jawt')
+    implementation project(':modules:libraries:jMe3GL2-dyn4j')
     implementation project(':modules:libraries:jMe3GL2-plugins')
 }
 

@@ -28,7 +28,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.util;
+package org.je3gl.physics.util;
 
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -36,12 +36,14 @@ import com.jme3.math.Vector3f;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.geometry.Vector3;
 
+import org.je3gl.physics.AxisType;
+
 /**
  * Class <code>Converter</code> that is responsible for providing conversion methods 
  * between vectors and/or numbers (float &harr; double).
  * 
  * @author wil
- * @version 2.0.0
+ * @version 2.0.1
  * @since 1.0.0
  */
 public final class Converter {
@@ -52,9 +54,19 @@ public final class Converter {
      * @return All {@link com.jme3.math.Vector3f} objects
      */
     public static Vector3f[] allToVector3fValueOfJME3(Vector2[] val) {
+        return allToVector3fValueOfJME3(val, AxisType.getDefault());
+    }
+    
+    /**
+     * Convert all {@code org.dyn4j.geometry.Vector2} to {@link com.jme3.math.Vector3f}.
+     * @param val value
+     * @param type axis
+     * @return All {@link com.jme3.math.Vector3f} objects
+     */
+    public static Vector3f[] allToVector3fValueOfJME3(Vector2[] val, AxisType type) {
         Vector3f[] array = new Vector3f[val.length];
         for (int i = 0; i < val.length; i++) {
-            array[i] = toVector3fValueOfJME3(val[i]);
+            array[i] = toVector3fValueOfJME3(val[i], type);
         }
         return array;
     }
@@ -126,7 +138,23 @@ public final class Converter {
      * @return A {@link com.jme3.math.Vector3f} object
      */
     public static Vector3f toVector3fValueOfJME3(Vector2 val) {
-        return new Vector3f(toFloatValue(val.x), toFloatValue(val.y), 0.0F);
+        return toVector3fValueOfJME3(val, AxisType.getDefault());
+    }
+    
+    /**
+     * Convert a {@code org.dyn4j.geometry.Vector2} to a {@link com.jme3.math.Vector3f}.
+     * @param val value
+     * @param type axis
+     * @return A {@link com.jme3.math.Vector3f} object
+     */
+    public static Vector3f toVector3fValueOfJME3(Vector2 val, AxisType type) {
+        switch (type) {
+            case AXIS_XOY:
+                return new Vector3f(toFloatValue(val.x), 0.0F, toFloatValue(val.y));
+            case AXIS_XYO:
+            default:
+                return new Vector3f(toFloatValue(val.x), toFloatValue(val.y), 0.0F);
+        }
     }
     
     /**

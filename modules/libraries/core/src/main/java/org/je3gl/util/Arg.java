@@ -28,53 +28,65 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.listener;
-
-import org.je3gl.physics.control.CharacterBody2D;
-import org.je3gl.physics.control.PhysicsBody2D;
-import org.je3gl.util.Serializable;
-import org.dyn4j.dynamics.contact.ContactConstraint;
+package org.je3gl.util;
 
 /**
- * Interface in charge of managing a listener for the contacts that a 
- * character ({@link org.je3gl.physics.control.CharacterBody2D}) makes in physical space.
- * 
- * @param <A> type {@link org.je3gl.physics.control.CharacterBody2D}
- * @param <B> type {@link org.je3gl.physics.control.PhysicsBody2D}
+ * Class responsible for managing the value of an argument (method).
  * 
  * @author wil
  * @version 1.0.0
- * @since 3.0.0
+ * @since 3.1.0
+ * 
+ * @param <T> type
  */
-public interface CharacterContactListener<A extends CharacterBody2D, B extends PhysicsBody2D> extends Serializable {
+public class Arg<T> {
     
     /**
-     * Determines if the character is making contact with the ground|floor.
+     * Build a list of {@code Arg} based on objects as values.
      * 
-     * @param character the character
-     * @param platform the contact platform
-     * @param contactConstraint contact-constraint
-     * @return boolean
+     * @param args values
+     * @return {@code Arg[]}
      */
-    boolean trackIsOnGround(A character, B platform, ContactConstraint<B> contactConstraint);
+    @SuppressWarnings("unchecked")
+    public static Arg[] buildArgs(Object ...args) {
+        Arg[] list = new Arg[args.length];
+        for (int i = 0; i < args.length; i++) {
+            list[i] = new Arg(args[i]);
+        }
+        return list;
+    }
+    
+    /** The value. */
+    private final T source;
+    /**
+     * Constructor (privaye)
+     * @param source  value
+     */
+    private Arg(T source) {
+        this.source = source;
+    }
     
     /**
-     * Determines if the character is making contact with the ceiling.
-     * 
-     * @param character the character
-     * @param platform the contact platform
-     * @param contactConstraint contact-constraint
-     * @return boolean
+     * Returns the value as: float 
+     * @return float
      */
-    boolean trackIsOnCeiling(A character, B platform, ContactConstraint<B> contactConstraint);
-    
+    public float getFloat() {
+        return (float) source;
+    }
+
     /**
-     * Determines if the character is making contact with a wall
-     * 
-     * @param character the character
-     * @param platform the contact platform
-     * @param contactConstraint contact-constraint
-     * @return boolean
+     * Returns the value as: double 
+     * @return double
      */
-    boolean trackIsOnWall(A character, B platform, ContactConstraint<B> contactConstraint);
+    public double getDouble() {
+        return (double) source;
+    }
+
+    /**
+     * Returns the value as: native (Object)
+     * @return native|Object
+     */
+    public T getSource() {
+        return source;
+    }
 }

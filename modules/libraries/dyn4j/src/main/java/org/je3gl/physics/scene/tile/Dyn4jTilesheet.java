@@ -28,7 +28,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.tile;
+package org.je3gl.physics.scene.tile;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
@@ -40,18 +40,24 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 
+import org.dyn4j.geometry.MassType;
+
 import org.je3gl.physics.PhysicsSpace;
 import org.je3gl.physics.collision.CollisionShape;
 import org.je3gl.physics.control.PhysicsBody2D;
 import org.je3gl.physics.control.RigidBody2D;
 import org.je3gl.scene.shape.Sprite;
-import org.je3gl.util.Converter;
+import org.je3gl.scene.tile.Properties;
+import org.je3gl.scene.tile.Spritesheet;
+import org.je3gl.scene.tile.SpritesheetPhysics;
+import org.je3gl.scene.tile.Tile;
+import org.je3gl.scene.tile.TileMap;
+import org.je3gl.scene.tile.Tilesheet;
+import org.je3gl.physics.util.Converter;
 import org.je3gl.utilities.ColorUtilities;
 import org.je3gl.utilities.MaterialUtilities;
 import org.je3gl.utilities.TextureUtilities;
 import org.je3gl.utilities.TileMapUtilities;
-
-import org.dyn4j.geometry.MassType;
 
 /**
  * Class that implements the default administrators used by the class {@link org.je3gl.scene.tile.TileMap} 
@@ -126,15 +132,15 @@ import org.dyn4j.geometry.MassType;
  * </tr>
  * </table>
  * @author wil
- * @version 1.5.1
+ * @version 1.6.0
  * @since 2.0.0
  */
-class Jme3GLDefTilesheet implements Tilesheet {
+public class Dyn4jTilesheet implements Tilesheet {
     
     /**
      * Internal class responsible for implementing the interface {@link Spritesheet}.
      */
-    class Jme3GLDefTileModel implements Spritesheet {
+    private static class Jme3GLDefTileModel implements Spritesheet {
 
         /* (non-Javadoc)*/
         @Override
@@ -280,7 +286,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
     /**
      * Internal class responsible for implementing the interface {@link SpritesheetPhysics}.
      */
-    class Jme3GLDefTileSpace implements SpritesheetPhysics {
+    private static class Jme3GLDefTileSpace implements SpritesheetPhysics {
 
         /** The physical space. */
         protected PhysicsSpace<PhysicsBody2D> physicsSpace;
@@ -315,8 +321,11 @@ class Jme3GLDefTilesheet implements Tilesheet {
         @Override public void onMeshChange(Geometry geom) { }        
         /* (non-Javadoc) */
         @Override
-        public void setPhysicsSpace(PhysicsSpace<PhysicsBody2D> physicsSpace) {
-            this.physicsSpace = physicsSpace;
+        @SuppressWarnings("unchecked")
+        public void setPhysicsSpace(Object physicsSpace) {
+            if (physicsSpace instanceof PhysicsSpace) {
+                this.physicsSpace = (PhysicsSpace<PhysicsBody2D>) physicsSpace;
+            }
         }
         
         /**
@@ -333,7 +342,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
     private static final Tilesheet TILESHEET;
     
     static {
-        TILESHEET = new Jme3GLDefTilesheet();
+        TILESHEET = new Dyn4jTilesheet();
     }
     
     /**
@@ -341,7 +350,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
      * @return the instance
      */
     public static Tilesheet getInstance() {
-        return Jme3GLDefTilesheet.TILESHEET;
+        return Dyn4jTilesheet.TILESHEET;
     }
     
     /** The sprite sheet class. */
@@ -352,7 +361,7 @@ class Jme3GLDefTilesheet implements Tilesheet {
     /**
      * Standard internal constructor.
      */
-    private Jme3GLDefTilesheet() {
+    private Dyn4jTilesheet() {
         spritesheet = new Jme3GLDefTileModel();
         spritesheetPhysics = new Jme3GLDefTileSpace();
     }
@@ -368,3 +377,4 @@ class Jme3GLDefTilesheet implements Tilesheet {
         return spritesheetPhysics;
     }
 }
+
