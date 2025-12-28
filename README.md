@@ -17,7 +17,7 @@ to create wonderful 2D worlds.
 5. Support for exporting and importing 2D (binary) models.
 6. Has a built-in debugger.
 
-**Starting jMe3GL2**
+## Starting jMe3GL2
 
 If this is your first time using jMe3GL2, you can consult some of these resources 
 to guide you in using this great library.
