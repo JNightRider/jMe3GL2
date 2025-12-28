@@ -89,7 +89,12 @@ public class Camera2DRenderer extends BaseAppState {
         GL_2D,
         /* Use {@link GLRendererType#GLX_30D}. */
         @Deprecated
-        GL_3D;
+        GL_3D,
+        
+        /**
+         * It refers to a personalized administrator.
+         */
+        GLX_NXD;
     }
 
     /** Type of manager/camera. */
@@ -116,6 +121,8 @@ public class Camera2DRenderer extends BaseAppState {
             case GLX_30D: case GL_3D:
                 xCamera = new GLXCamera30D();
                 break;
+            case GLX_NXD:
+                throw new IllegalArgumentException("Use the appropriate class constructor, as a custom manager is required.");
             default:
                 throw new AssertionError();
         }
@@ -132,6 +139,19 @@ public class Camera2DRenderer extends BaseAppState {
         for (final GLXEffect ce : effects) {
             xCamera.addEffect(ce);
         }
+    }
+    
+    /**
+     * Constructor of class <code>Camera2DRenderer</code>.
+     * @param gLXCamera camera
+     * @param effects camera effects
+     */
+    public Camera2DRenderer(GLXCamera gLXCamera, GLXEffect ...effects) {
+        this.xCamera = gLXCamera;
+        for (final GLXEffect ce : effects) {
+            xCamera.addEffect(ce);
+        }
+        this.rendererType = GLRendererType.GLX_NXD;
     }
     
      /**
