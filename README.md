@@ -49,6 +49,12 @@ jar files or using 'JitPack' as follows:
     implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-plugins:3.1.0'
 ```
 
+**Step 3. Add dyn4j (only if using module jMe3GL2-dyn4j)**
+
+```gradle
+    implementation 'org.dyn4j:dyn4j:5.0.2'
+```
+
 **Starting jMe3GL2**
 
 If this is your first time using jMe3GL2, you can consult some of these resources 
