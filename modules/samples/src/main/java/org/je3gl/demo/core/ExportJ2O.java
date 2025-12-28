@@ -38,10 +38,13 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.texture.Texture;
+
 import java.io.File;
 import java.io.IOException;
+
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
+
 import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;
 import org.je3gl.physics.control.PhysicsBody2D;

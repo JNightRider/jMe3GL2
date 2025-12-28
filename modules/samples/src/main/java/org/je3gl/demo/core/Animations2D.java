@@ -156,7 +156,7 @@ public class Animations2D extends SimpleApplication {
             new RibbonBoxAnimation2D(getTextureFromClassPath(assetManager, "Textures/Rabbit/tile_0041.png"), new int[] {0}, 1, 1),
             new RibbonBoxAnimation2D(getTextureFromClassPath(assetManager, "Textures/Rabbit/tile_0040.png"), new int[] {0}, 1, 1),
             new RibbonBoxAnimation2D(getTextureFromClassPath(assetManager, "Textures/Rabbit/tile_0041.png"), new int[] {0}, 1, 1)
-        });        
+        });
         
         complex.addControl(animatedRibbonBoxSprite2D);
         animatedRibbonBoxSprite2D.playAnimation("start", 15);
