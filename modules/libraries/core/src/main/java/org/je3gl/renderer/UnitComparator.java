@@ -113,6 +113,10 @@ public final class UnitComparator implements GeometryComparator {
         return Float.compare(na, nb);
     }
 
+    /**
+     * Returns all layers
+     * @return layers
+     */
     public RenderQueue.Bucket[] getLayers() {
         return layers;
     }

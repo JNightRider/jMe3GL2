@@ -127,7 +127,7 @@ public class TileMap extends GeometryGroupNode {
      * 
      * @param assetManager JME3 manager
      * @param name name for this scene map
-     * @param tilesheet
+     * @param tilesheet tilesheet
      */
     @SuppressWarnings("deprecation")
     public TileMap(AssetManager assetManager, String name, Tilesheet tilesheet) {

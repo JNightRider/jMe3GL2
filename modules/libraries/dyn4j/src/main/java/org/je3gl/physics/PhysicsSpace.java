@@ -197,7 +197,9 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
         return b;
     }
     
-    /* (non-Javadoc)
+    /**(non-Javadoc)
+     * @param joint joint
+     * 
      * @see org.je3gl.physics.PhysicsSpace#addJoint(org.dyn4j.dynamics.joint.Joint) 
      */
     @SuppressWarnings("unchecked")
@@ -216,8 +218,11 @@ public class PhysicsSpace<E extends PhysicsBody2D> extends World<E> {
         }
     }
     
-    /* (non-Javadoc)
-     * @see org.je3gl.physics.PhysicsSpace#removeJoint(org.dyn4j.dynamics.joint.Joint) 
+    /**(non-Javadoc)
+     * @param joint joint
+     *
+     * @see org.je3gl.physics.PhysicsSpace#removeJoint(org.dyn4j.dynamics.joint.Joint)
+     * @return boolean
      */
     @SuppressWarnings("unchecked")
     public boolean removePhysicsJoint(Object joint) {

@@ -62,14 +62,17 @@ import org.je3gl.utilities.TileMapUtilities;
 /**
  * Class that implements the default administrators used by the class {@link org.je3gl.scene.tile.TileMap} 
  * as default values.
- * <p>
- * Properties table:
+ * 
  * <table>
+ * <caption>Properties table:</caption>
+ * <thead>
  * <tr>
  * <th>Name</th>
  * <th>Value</th>
  * <th>Description</th>
  * </tr>
+ * </thead>
+ * <tbody>
  * <tr>
  * <td>Translation</td>
  * <td>{@link com.jme3.math.Vector3f}</td>
@@ -130,6 +133,7 @@ import org.je3gl.utilities.TileMapUtilities;
  * <td><b>boolean</b></td>
  * <td>Defines whether the texture is loaded from a TileMap (set of textures in a single image) or independently</td>
  * </tr>
+ * </tbody>
  * </table>
  * @author wil
  * @version 1.6.0

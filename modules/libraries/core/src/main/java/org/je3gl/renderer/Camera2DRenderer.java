@@ -84,10 +84,10 @@ public class Camera2DRenderer extends BaseAppState {
          */
         GLX_30D,
         
-        /* Use {@link GLRendererType#GLX_25D}. */
+        /** Use {@link GLRendererType#GLX_25D}. */
         @Deprecated
         GL_2D,
-        /* Use {@link GLRendererType#GLX_30D}. */
+        /** Use {@link GLRendererType#GLX_30D}. */
         @Deprecated
         GL_3D,
         
