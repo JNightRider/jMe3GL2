@@ -14,10 +14,6 @@ subprojects {
     apply plugin: 'maven-publish'
 
     java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
-
         withJavadocJar()
         withSourcesJar()
     }
