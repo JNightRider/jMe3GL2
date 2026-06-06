@@ -40,6 +40,7 @@ import org.je3gl.renderer.effect.GLXDistanceFrustum;
  * @version 1.0.0
  * @since 3.0.0
  */
+@Deprecated
 final class GLXCamera30D extends AbstractGLXCamera {
 
     /**

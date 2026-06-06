@@ -42,6 +42,7 @@ import com.jme3.scene.Spatial;
  * @version 1.0.0
  * @since 3.0.0
  */
+@Deprecated
 public class GLXFollowing extends AbstractGLXEffect {
     
     /** Object/Target. */

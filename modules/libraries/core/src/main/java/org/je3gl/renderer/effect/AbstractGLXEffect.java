@@ -40,6 +40,7 @@ import org.je3gl.renderer.GLXCamera;
  * @version 1.0.0
  * @since 3.0.0
  */
+@Deprecated
 public abstract class AbstractGLXEffect implements GLXEffect {
     /** Status (enabled | disabled).*/
     protected boolean enabled = true;

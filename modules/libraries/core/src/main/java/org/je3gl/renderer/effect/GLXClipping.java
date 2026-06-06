@@ -40,6 +40,7 @@ import com.jme3.math.Vector3f;
  * @version 1.0.0
  * @since 3.0.0
  */
+@Deprecated
 public class GLXClipping extends AbstractGLXEffect {
     
     /** Minimum clipping. */

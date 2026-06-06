@@ -56,7 +56,7 @@ import org.je3gl.plugins.asset.J2OKey;
 import org.je3gl.plugins.input.BooleanStateKeyboardInputHandler;
 import org.je3gl.plugins.input.InputHandlerAppState;
 import org.je3gl.plugins.input.Key;
-import org.je3gl.renderer.Camera2DRenderer;
+import org.je3gl.renderer.Camera2DAppSate;
 import org.je3gl.renderer.UnitComparator;
 import org.je3gl.scene.shape.Sprite;
 import static org.je3gl.utilities.GeometryUtilities.*;
@@ -120,10 +120,10 @@ public class Tanks2D extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         J2OLoader.initialize(this);        
-        Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
-        camera2DRenderer.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Transparent);
-        stateManager.attach(camera2DRenderer);
-        
+        Camera2DAppSate camera2D = new Camera2DAppSate(1.0f);
+        camera2D.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Transparent);
+        stateManager.attach(camera2D);
+
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.PARALLEL);
         dyn4jAppState.setDebugEnabled(true);        
         stateManager.attach(dyn4jAppState);

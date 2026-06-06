@@ -41,6 +41,7 @@ import org.je3gl.renderer.Camera2DRenderer.GLRendererType;
  * @version 1.0.0
  * @since 3.0.0
  */
+@Deprecated
 public class GLXDistanceFrustum extends AbstractGLXEffect {
     
     /** distance. */

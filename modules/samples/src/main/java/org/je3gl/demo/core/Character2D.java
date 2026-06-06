@@ -33,7 +33,9 @@ package org.je3gl.demo.core;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
@@ -41,6 +43,7 @@ import com.jme3.scene.Spatial;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
+import org.je3gl.math.Rect;
 
 import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;
@@ -50,7 +53,7 @@ import org.je3gl.physics.control.RigidBody2D;
 import org.je3gl.plugins.input.BooleanStateKeyboardInputHandler;
 import org.je3gl.plugins.input.InputHandlerAppState;
 import org.je3gl.plugins.input.Key;
-import org.je3gl.renderer.Camera2DRenderer;
+import org.je3gl.renderer.Camera2DAppSate;
 import org.je3gl.renderer.UnitComparator;
 import org.je3gl.scene.control.AnimatedSprite2D;
 import org.je3gl.scene.shape.Sprite;
@@ -95,7 +98,7 @@ public class Character2D extends SimpleApplication {
 
         /** Constructor- */
         public Player() { }
-        
+
         /* (non-Javadoc)
          * @see org.je3gl.physics.control.PhysicsBody2D#ready() 
          */
@@ -146,7 +149,7 @@ public class Character2D extends SimpleApplication {
             // jump
             if (VK_JUMP.isActiveButNotHandled() && isOnFloor()) {
                 VK_JUMP.setHasBeenHandled(true);
-                
+
                 applyImpulse(new Vector2(0, 4));
             }
         }
@@ -166,16 +169,16 @@ public class Character2D extends SimpleApplication {
             }
         }
     }
-    
+
     /* (non-Javadoc)
      * @see com.jme3.app.SimpleApplication#simpleInitApp() 
      */
     @Override
-    public void simpleInitApp() {        
-        Camera2DRenderer camera2DRenderer = new Camera2DRenderer(Camera2DRenderer.GLRendererType.GLX_25D, 5, 45);
-        camera2DRenderer.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Transparent);
-        stateManager.attach(camera2DRenderer);
-        
+    public void simpleInitApp() {
+        Camera2DAppSate camera2D = new Camera2DAppSate(1.0f);
+        camera2D.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Transparent);
+        stateManager.attach(camera2D);
+
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = new Dyn4jAppState<>(ThreadingType.PARALLEL);
         dyn4jAppState.setDebugEnabled(true);        
         stateManager.attach(dyn4jAppState);
@@ -197,13 +200,15 @@ public class Character2D extends SimpleApplication {
     @SuppressWarnings("unchecked")
     private void prepareCharacter() {
         Dyn4jAppState<PhysicsBody2D> dyn4jAppState = stateManager.getState(Dyn4jAppState.class);
+        Camera2DAppSate camera2DAppSate = stateManager.getState(Camera2DAppSate.class);
         
         // We load a JME3 object (j3o), this is possible thanks to the 
         // serialization of jMe3GL2 objects (supported)
         Spatial player = assetManager.loadModel("Models/Rabbit.j3o");
         player.getControl(AnimatedSprite2D.class).playAnimation("walk", 10);
+        camera2DAppSate.setTarget(player);
         rootNode.attachChild(player);
-        
+
         Player body2D = new Player();
         body2D.setGravityScale(2);
         

@@ -40,6 +40,7 @@ import org.je3gl.renderer.effect.GLXEffect;
  * @version 1.0.0
  * @since 3.0.0
  */
+@Deprecated
 public interface GLXCamera {
     
     /**

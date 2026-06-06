@@ -58,6 +58,7 @@ import org.je3gl.renderer.effect.GLXEffect;
  * @version 2.5.1
  * @since 2.0.0
  */
+@Deprecated
 public class Camera2DRenderer extends BaseAppState {
     /** Logger class. */
     private static final Logger LOGGER = Logger.getLogger(Camera2DRenderer.class.getName());
@@ -68,6 +69,7 @@ public class Camera2DRenderer extends BaseAppState {
      * 
      * @version 1.5.0
      */
+    @Deprecated
     public static enum GLRendererType {
         
         /**
