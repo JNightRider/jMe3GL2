@@ -53,7 +53,9 @@ import org.je3gl.renderer.effect.GLXEffect;
  * <p>
  * With this we can use the 3D camera that provides us with {@code JME} in a 2D
  * world.
- * 
+ *
+ * @deprecated Use {@link Camera2DAppSate}
+ *
  * @author wil
  * @version 2.5.1
  * @since 2.0.0

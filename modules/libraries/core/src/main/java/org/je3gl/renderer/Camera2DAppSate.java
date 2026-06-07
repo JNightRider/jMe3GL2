@@ -49,49 +49,131 @@ import java.util.logging.Logger;
 import org.je3gl.math.Rect;
 
 /**
+ * An object of the class <code>Camera2DAppSate</code> is responsible for preparing
+ * and operating the 2D camera.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class Camera2DAppSate extends AbstractAppState {
     /** Logger class. */
     private static final Logger LOGGER = Logger.getLogger(Camera2DAppSate.class.getName());
 
+    /**
+     * Camera display modes.
+     */
     public static enum KeepMode {
+        /**
+         * The screen width remains constant, and only the height is adjusted.
+         */
         Width,
+        /**
+         * The screen height remains constant and only the width is adjusted.
+         */
         Height;
     }
 
+    /**
+     * The camera manages this state so that it can be used in a 2D (projected)
+     * world.
+     */
     private Camera camera;
+
+    /**
+     * A target that the camera must follow; if no target is set ({@code null}),
+     * the camera does not move autonomously.
+     */
     private Spatial target;
+
+    /** Mode - camera */
     private KeepMode mode;
+    /** Size of the square that is consistently displayed on the screen */
     private float viewSize;
+    /** The zoom. */
     private float zoom;
 
+    /**
+     * To allow the camera to move without affecting the objects, it is
+     * necessary to apply smoothing to both coordinates independently.
+     */
     private Vector2f smooth;
+
+    /**
+     * Camera displacement relative to its calculated position.
+     */
     private Vector2f offset;
+
+    /**
+     * Vector where the new camera position is stored.
+     *
+     * @see #offset
+     * @see #clipping
+     * @see #target
+     */
     private Vector3f location;
+
+    /**
+     * A rectangle that stores the camera's boundaries; this is used to limit
+     * the camera's movement (position).
+     */
     private Rect clipping;
-    
+
     /** comparator */
     private UnitComparator unitComparator;
+    /** JME application.*/
     private Application application;
 
+    /**
+     * Generate a new controller for a 2D camera using a 3D camera provided by
+     * JME or a custom camera.
+     */
     public Camera2DAppSate() {
         this(1.0f);
     }
 
+    /**
+     * Generate a new controller for a 2D camera using a 3D camera provided by
+     * JME or a custom camera.
+     *
+     * @param zoom float
+     */
     public Camera2DAppSate(float zoom) {
         this(null, zoom);
     }
 
+    /**
+     * Generate a new controller for a 2D camera using a 3D camera provided by
+     * JME or a custom camera.
+     *
+     * @param camera Camera
+     * @param zoom float
+     */
     public Camera2DAppSate(Camera camera, float zoom) {
         this(camera, 10.0f, zoom);
     }
-    
+
+    /**
+     * Generate a new controller for a 2D camera using a 3D camera provided by
+     * JME or a custom camera.
+     *
+     * @param camera Camera
+     * @param viewSize float
+     * @param zoom float
+     */
     public Camera2DAppSate(Camera camera, float viewSize, float zoom) {
         this(camera, KeepMode.Height, viewSize, zoom);
     }
 
+    /**
+     * Generate a new controller for a 2D camera using a 3D camera provided by
+     * JME or a custom camera.
+     *
+     * @param camera Camera
+     * @param mode KeepMode
+     * @param viewSize float
+     * @param zoom float
+     */
     public Camera2DAppSate(Camera camera, KeepMode mode, float viewSize, float zoom) {
         this.smooth   = new Vector2f(12, 4);
         this.location = new Vector3f();
@@ -101,6 +183,9 @@ public class Camera2DAppSate extends AbstractAppState {
         this.zoom     = zoom;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         if (app instanceof SimpleApplication myapp) {
@@ -158,6 +243,9 @@ public class Camera2DAppSate extends AbstractAppState {
         }
     }
 
+    /**
+     * Apply the projection
+     */
     private void applyProjection() {
         if (!camera.isParallelProjection()) {
             camera.setParallelProjection(true);
@@ -177,10 +265,16 @@ public class Camera2DAppSate extends AbstractAppState {
         camera.setFrustum(-1000f, 1000f, -width * 0.5f, width * 0.5f, height * 0.5f, -height * 0.5f);
     }
 
+    /**
+     * Apply the projection
+     */
     public void updateProjection() {
         applyProjection();
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update(float tpf) {
         TempVars vars = TempVars.get();
@@ -206,44 +300,115 @@ public class Camera2DAppSate extends AbstractAppState {
         vars.release();
     }
 
+    /**
+     * Sets the value of the {@code smooth} attribute
+     *
+     * @param smooth Vector2f
+     */
     public void setSmooth(Vector2f smooth) {
         this.smooth = smooth;
     }
 
+    /**
+     * Sets the value of the {@code zoom} attribute
+     *
+     * @param zoom float
+     */
     public void setZoom(float zoom) {
         this.zoom = zoom;
         applyProjection();
     }
 
+    /**
+     * Sets the value of the {@code target} attribute
+     *
+     * @param target Spatial
+     */
     public void setTarget(Spatial target) {
         if (target != null) {
             Vector3f npos = target.getWorldTranslation();
             location.set(npos);
 
             if (isInitialized()) {
-                camera.setLocation(npos.clone());
+                Vector3f camPos = camera.getLocation().clone();
+                camPos.setX(npos.x)
+                      .setY(npos.y);
+                camera.setLocation(camPos);
             }
         }
         this.target = target;
     }
 
+    /**
+     * Sets the value of the {@code offset} attribute
+     *
+     * @param offset Vector2f
+     */
     public void setOffset(Vector2f offset) {
         this.offset = offset;
     }
 
+    /**
+     * Sets the value of the {@code clipping} attribute
+     *
+     * @param min Vector2f
+     * @param max Vector2f
+     */
     public void setLimitRect(Vector2f min, Vector2f max) {
         setLimitRect(new Rect(min.x, min.y, max.x, max.y));
     }
 
+    /**
+     * Sets the value of the {@code clipping} attribute
+     *
+     * @param rect rect
+     */
     public void setLimitRect(Rect rect) {
         this.clipping = rect;
     }
 
+    /**
+     * Sets the value of the {@code mode} attribute
+     *
+     * @param mode KeepMode
+     */
     public void setMode(KeepMode mode) {
         this.mode = mode;
         this.applyProjection();
     }
 
+    /**
+     * Returns the value of the attribute {@code mode}
+     *
+     * @return KeepMode
+     */
+    public KeepMode getMode() {
+        return mode;
+    }
+
+    /**
+     * Returns the value of the attribute {@code clipping}
+     *
+     * @return Rect
+     */
+    public Rect getLimitRect() {
+        return clipping;
+    }
+
+    /**
+     * Returns the value of the attribute {@code offset}
+     *
+     * @return Vector2f
+     */
+    public Vector2f getOffset() {
+        return offset;
+    }
+
+    /**
+     * Returns the value of the attribute {@code camera}
+     *
+     * @return Camera
+     */
     public Camera getCamera() {
         return camera;
     }
