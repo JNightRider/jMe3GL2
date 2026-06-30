@@ -29,20 +29,3 @@ dependencies {
     implementation project(':modules:libraries:jMe3GL2-dyn4j')
     implementation project(':modules:libraries:jMe3GL2-plugins')
 }
-
-task dist (dependsOn: ['build']) {
-    doLast {
-        // Copy all dependencies to ../../dist/lib, remove versions from jar files
-        configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-            copy {
-                from artifact.file
-                into "${rootProject.projectDir}/dist/lib"
-                if(artifact.classifier != null){
-                    rename { "${artifact.name}-${artifact.classifier}.${artifact.extension}" }
-                } else{
-                    rename { "${artifact.name}.${artifact.extension}" }
-                }
-            }
-        }
-    }
-}

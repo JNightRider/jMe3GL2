@@ -1,3 +1,8 @@
+plugins {
+    id 'java'
+    alias(libs.plugins.jreleaser)
+}
+
 allprojects {
 
     group = 'org.j3gl'
@@ -11,29 +16,101 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'maven-publish'
 
-    java {
-        withJavadocJar()
-        withSourcesJar()
-    }
+    if (project.name.startsWith("jMe3GL2")) {
+        apply plugin: 'maven-publish'
 
-    tasks.withType(JavaCompile).configureEach {
-        options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
-    }
+        ext {
+            groupID = 'io.github.jnightrider'
+            websiteUrl = 'https://github.com/JNightRider/jMe3GL2'
+        }
 
-    tasks.named('test') {
-        useJUnitPlatform() // Use JUnit Platform for unit tests.
-    }
+        java {
+            withJavadocJar()
+            withSourcesJar()
+        }
 
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                groupId = 'com.github.JNightRider'
-                artifactId = project.name
-                version = project.version
-                from components.java
+        tasks.withType(JavaCompile).configureEach {
+            options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
+        }
+
+        tasks.named('test') {
+            useJUnitPlatform() // Use JUnit Platform for unit tests.
+        }
+
+        publishing {
+            publications {
+                maven(MavenPublication) {
+                    artifactId = project.name
+                    version = project.version
+
+                    from components.java
+                    groupId = groupID
+
+                    pom {
+                        description = 'jMe3GL2 is a collection of classes that can be used to develop a 2D game in jMonkeyEngine3.'
+                        developers {
+                            developer {
+                                email = 'nightrid34@gmail.com'
+                                id = 'jnightrider'
+                                name = 'wil'
+                            }
+                        }
+                        inceptionYear = '2023'
+                        licenses {
+                            license {
+                                distribution = 'repo'
+                                name = 'BSD-3 License'
+                                url = 'https://opensource.org/license/bsd-3-clause'
+                            }
+                        }
+                        name = groupID + ':' + project.name
+                        scm {
+                            connection = 'scm:git:git://github.com/JNightRider/jMe3GL2.git'
+                            developerConnection = 'scm:git:ssh://github.com/JNightRider/jMe3GL2.git'
+                            url = websiteUrl
+                        }
+                        url = websiteUrl
+                    }
+                }
             }
+
+            repositories {
+                maven {
+                    url = rootProject.layout.buildDirectory.dir('staging-deploy')
+                }
+            }
+        }
+    }
+
+}
+
+jreleaser {
+    gitRootSearch = true
+
+    signing {
+        pgp {
+            active = 'ALWAYS'
+            armored = true
+        }
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'RELEASE'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+        }
+    }
+    release {
+        github {
+            skipRelease = true
+            skipTag = true
+            overwrite = false
+            token = "none"
         }
     }
 }

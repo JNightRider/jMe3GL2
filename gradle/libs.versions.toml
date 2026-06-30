@@ -3,7 +3,8 @@
 [versions]
 
 jmonkeyengineVersion = "3.8.1-stable"
-dyn4jVersion = "5.0.2"
+jreleaserVersion     = "1.24.0"
+dyn4jVersion         = "5.0.2"
 
 [libraries]
 
@@ -22,3 +23,5 @@ je3gl-base    = [ "jme3-core", "jme3-desktop", "jme3-effects", "dyn4j"  ]
 je3gl-runtime = [ "jme3-jogg", "jme3-plugins", "jme3-lwjgl3"            ]
 
 [plugins]
+
+jreleaser     = { id = "org.jreleaser", version.ref="jreleaserVersion" }
