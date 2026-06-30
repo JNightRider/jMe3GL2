@@ -26,9 +26,6 @@ jobs:
           ./gradlew publish --console=plain
       - name: Run JReleaser
         uses: jreleaser/release-action@v2
-        with:
-          version: latest
-          arguments: 'full-release'
         env:
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
