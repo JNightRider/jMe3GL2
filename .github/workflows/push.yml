@@ -20,15 +20,14 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - uses: gradle/actions/setup-gradle@v6      
-      - name: gradlew build
-        run: |
-          ./gradlew publish --console=plain
-      - name: Run JReleaser
-        uses: jreleaser/release-action@v2
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Publish to Maven Central
         env:
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           JRELEASER_MAVENCENTRAL_SONATYPE_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           JRELEASER_MAVENCENTRAL_SONATYPE_TOKEN: ${{ secrets.CENTRAL_PASSWORD }}
+        run: |
+          ./gradlew publish --console=plain
+          ./gradlew jreleaserFullRelease --console=plain
