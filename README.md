@@ -1,9 +1,12 @@
 # jMe3GL2 - (jMonkeyEngine3 Graphics Library 2D)
 
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.jnightrider/jMe3GL2-core)](https://central.sonatype.com/search?q=jMe3GL2&namespace=io.github.jnightrider)
+[![License: BSD](https://img.shields.io/badge/License-BSD--3-yel)](https://opensource.org/license/BSD-3-clause)
+
 jMe3GL2 is a set of classes that can be used to develop a 2D game in jMonkeyEngine3. 
 It is a mapping library for JME3 to Dyn4J.
 
-![jMe3GL2-Sample](https://github.com/JNightRider/jMe3GL2/blob/master/modules/samples/src/main/resources/Textures/jme3gl2-sample.jpeg)
+![jMe3GL2-Sample](./modules/samples/src/main/resources/Textures/jme3gl2-sample.jpeg)
 
 To use jMe3GL2, prior knowledge of how the [JME3](https://jmonkeyengine.org/) graphics 
 engine works, as well as the [dyn4j](https://dyn4j.org/) physics engine, is required 
@@ -31,28 +34,16 @@ with this topic, we advise you to check out the following resources:
 
 ## Building with jMe3GL2
 
-jMe3GL2 can be added as a normal dependency using the [stable](https://github.com/JNightRider/jMe3GL2/releases/tag/v3.1.0) 
-jar files or using 'JitPack' as follows:
+jMe3GL2 can be added as a normal dependency using the [stable](https://github.com/JNightRider/jMe3GL2/releases/tag/v3.1.1) 
+jar files or using Maven as follows:
 
-**Step 1. Add the JitPack maven repository**
-
-```gradle
-    maven { url "https://jitpack.io"  }
-```
-
-**Step 2. Add the necessary dependencies**
+**Add the necessary dependencies**
 
 ```gradle
-    implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-core:3.1.0'
-    implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-jawt:3.1.0'
-    implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-dyn4j:3.1.0'
-    implementation 'com.github.JNightRider.jMe3GL2:jMe3GL2-plugins:3.1.0'
-```
-
-**Step 3. Add dyn4j (only if using module jMe3GL2-dyn4j)**
-
-```gradle
-    implementation 'org.dyn4j:dyn4j:5.0.2'
+    implementation(platform("io.github.jnightrider:jMe3GL2-core:3.1.1"))
+    implementation(platform("io.github.jnightrider:jMe3GL2-dyn4j:3.1.1"))
+    implementation(platform("io.github.jnightrider:jMe3GL2-jawt:3.1.1"))
+    implementation(platform("io.github.jnightrider:jMe3GL2-plugins:3.1.1"))
 ```
 
 **Starting jMe3GL2**
