@@ -36,15 +36,16 @@ import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import java.util.Collection;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.box2d.jni.b2DebugDraw;
 import org.box2d.jni.b2Vec2;
 import org.box2d.jni.b2WorldId;
@@ -58,17 +59,15 @@ import org.box2d.jni.draw.DrawSolidCircleFcnI;
 import org.box2d.jni.draw.DrawSolidPolygonFcnI;
 import org.box2d.jni.draw.DrawStringFcnI;
 import org.box2d.jni.draw.DrawTransformFcnI;
+
+import org.j3gl.box2d.PhysicsSpace;
+import org.j3gl.box2d.util.Converter;
+import org.je3gl.scene.debug.custom.DebugGraphics;
+
 import static org.box2d.jni.include.Box2d.*;
 import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.Types.*;
-import org.box2d.jni.system.ArenaAlloc;
-import static org.box2d.jni.system.ArenaAlloc.*;
-import org.box2d.jni.system.MemoryUtil;
 import static org.box2d.jni.system.MemoryUtil.*;
-import org.j3gl.box2d.PhysicsSpace;
-import org.j3gl.box2d.util.Converter;
-import org.je3gl.scene.debug.Polygon2D;
-import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
  * Class <code>Box2dDebugAppState</code> responsible for managing a state for
@@ -111,6 +110,8 @@ public class Box2dDebugAppState extends BaseAppState {
     /** <code>JME3</code> renderer. */
     protected RenderManager rm;
 
+    private List<Vector3f[]> cache = new ArrayList<>();
+    private Vector3fPool vector3fPool;
     private b2DebugDraw debugDraw;
     
     /**
@@ -121,6 +122,7 @@ public class Box2dDebugAppState extends BaseAppState {
      */
     public Box2dDebugAppState(PhysicsSpace physicsSpace) {
         this.physicsSpace = physicsSpace;
+        this.vector3fPool = new Vector3fPool();
     }
      
     /**
@@ -164,21 +166,35 @@ public class Box2dDebugAppState extends BaseAppState {
     }
     
     private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
-        System.out.println("DrawPolygonFcnI");        
+        b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
+        final Vector3f[] vertx = vector3fPool.size(vertexCount)
+                                             .takePush();
+
+        for (int i = 0; i < vertexCount; i++) {
+            b2Vec2 vec2 = buffer.get(i);
+            Converter.toVector3fValueOfJME3(vec2, physicsSpace.getAxisType(), vertx[i]);
+        }
+               
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderPolygon(transform, vertx, color, false)
+        ));
+        cache.add(vertx);
     };
     
     private final DrawSolidPolygonFcnI DrawSolidPolygonFcn = (transform, vertices, vertexCount, radius, color, context) -> {
         b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
-        final Vector3f[] vertx = new Vector3f[vertexCount];
+        final Vector3f[] vertx = vector3fPool.size(vertexCount)
+                                             .takePush();
 
         for (int i = 0; i < vertexCount; i++) {
             b2Vec2 vec2 = buffer.get(i);
-            vertx[i] = Converter.toVector3fValueOfJME3(vec2, physicsSpace.getAxisType());
+            Converter.toVector3fValueOfJME3(vec2, physicsSpace.getAxisType(), vertx[i]);
         }
                
         application.enqueue(() -> debugNode.attachChild(
-            renderer.renderPolygon(transform, vertx, color)
+            renderer.renderPolygon(transform, vertx, color, true)
         ));
+        cache.add(vertx);
     };
     
     private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
@@ -205,8 +221,7 @@ public class Box2dDebugAppState extends BaseAppState {
         System.out.println("DrawPointFcnI");
     };
     
-    private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
-        
+    private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {        
         application.enqueue(() -> debugNode.attachChild(
             renderer.renderString(p, memUTF(s), color)
         ));
@@ -253,6 +268,7 @@ public class Box2dDebugAppState extends BaseAppState {
     protected void cleanup(Application app) {
         debugNode.detachAllChildren();
         rm.removeMainView(viewPort);
+        debugDraw.close();
     }
     
     /**
@@ -263,6 +279,9 @@ public class Box2dDebugAppState extends BaseAppState {
     @Override
     public void update(float tpf) {
         renderer.renderFree();
+        for (Vector3f[] v : cache) {
+            vector3fPool.takePop(v);
+        }
         
         // Update debug root node
         debugNode.updateLogicalState(tpf);

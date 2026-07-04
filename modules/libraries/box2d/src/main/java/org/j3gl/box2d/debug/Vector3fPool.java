@@ -28,61 +28,45 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.j3gl.box2d.util;
+package org.j3gl.box2d.debug;
 
 import com.jme3.math.Vector3f;
 
-import org.box2d.jni.b2Pos;
-
-import org.j3gl.box2d.AxisType;
-
 /**
- * Class <code>Converter</code> that is responsible for providing conversion
- * methods between vectors and/or numbers (float &harr; double).
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public final class Converter {
+public class Vector3fPool extends ObjectPool<Vector3f[]> {
+    
+    private int size = 10;
 
-    /**
-     * Convert a {@code org.box2d.jni.b2Pos} to a
-     * {@link com.jme3.math.Vector3f}.
-     *
-     * @param val value
-     * @param type axis
-     * @return A {@link com.jme3.math.Vector3f} object
-     */
-    public static Vector3f toVector3fValueOfJME3(b2Pos val, AxisType type) {
-        switch (type) {
-            case AXIS_XOY:
-                return new Vector3f(val.x().floatValue(), 0.0F, val.y().floatValue());
-            case AXIS_XYO:
-            default:
-                return new Vector3f(val.x().floatValue(), val.y().floatValue(), 0.0F);
-        }
+    public Vector3fPool() {
     }
-    
-    public static Vector3f toVector3fValueOfJME3(b2Pos val, AxisType type, Vector3f __result) {
-        switch (type) {
-            case AXIS_XOY:
-                __result.set(val.x().floatValue(), 0.0F, val.y().floatValue());
-                return __result;
-            case AXIS_XYO:
-            default:
-                __result.set(val.x().floatValue(), val.y().floatValue(), 0.0F);
-                return __result;
-        }
+
+    public Vector3fPool size(int size) {
+        this.size = size;
+        return this;
     }
-    
-    public static Vector3f toUNIT3f(AxisType type) {
-        switch (type) {
-            case AXIS_XOY:
-                return Vector3f.UNIT_Y;
-            case AXIS_XYO:
-            default:
-                return Vector3f.UNIT_Z;
+
+    @Override
+    protected Vector3f[] create() {
+        Vector3f[] array = new Vector3f[size];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = new Vector3f();
         }
+        return array;
+    }
+
+    @Override
+    protected boolean validate(Vector3f[] o) {
+        if (o == null) {
+            return false;
+        }
+        return o.length >= size;
+    }
+
+    @Override
+    protected void dead(Vector3f[] o) {
+        
     }
 }

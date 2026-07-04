@@ -105,10 +105,11 @@ public class Graphics2DRenderer {
      *
      * @param c color of the material
      * @param alpha the alpha component 
+     * @param fill the material colors the entire surface
      * @return generated material
      */
-    public Material createMat(int c, float alpha) {
-        return createMat(ColorUtilities.fromIntRGBA(c, alpha));
+    public Material createMat(int c, float alpha, boolean fill) {
+        return createMat(ColorUtilities.fromIntRGBA(c, alpha), fill);
     }
 
     /**
@@ -116,11 +117,18 @@ public class Graphics2DRenderer {
      * {@code Spatial} for the debugging of the physical bodies.
      * 
      * @param color color of the material
+     * @param fill the material colors the entire surface
      * @return generated material
      */
-    public Material createMat(ColorRGBA color) {
+    public Material createMat(ColorRGBA color, boolean fill) {
         final Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.getAdditionalRenderState().setWireframe(true);
+        if (fill) {
+            mat.getAdditionalRenderState().setWireframe(false);
+        } else {
+            mat.getAdditionalRenderState().setWireframe(true);
+            mat.getAdditionalRenderState().setLineWidth(2);
+        }
+        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         mat.setColor("Color", color);
         return mat;
     }
@@ -144,9 +152,10 @@ public class Graphics2DRenderer {
      * @param transforms the transformation of the body
      * @param vertices physical shape
      * @param color color for physical shape
+     * @param solid solid polygons
      * @return generated graphical object
      */
-    public Node renderPolygon(b2WorldTransform transforms, Vector3f[] vertices, int color) {
+    public Node renderPolygon(b2WorldTransform transforms, Vector3f[] vertices, int color, boolean solid) {
         Node node = nodePool.takePush();
         cache.add(node);
         
@@ -159,14 +168,14 @@ public class Graphics2DRenderer {
         node.setLocalRotation(vars.quat1.fromAngleAxis(angle, Converter.toUNIT3f(axisType)));
         
         Geometry geom0 = renderPolygonGeometry(vertices, color, true);
-        Geometry geom1 = renderPolygonGeometry(vertices, color, false);
-        
-        
-        cache.add(geom0);
-        cache.add(geom1);
+        cache.add(geom0);        
         node.attachChild(geom0);
-        node.attachChild(geom1);
         
+        if (solid) {
+            Geometry geom1 = renderPolygonGeometry(vertices, color, false);
+            cache.add(geom1);
+            node.attachChild(geom1);
+        }
         vars.release();
         return node;
     }
@@ -181,26 +190,23 @@ public class Graphics2DRenderer {
             ((Polygon2D)mesh).updateGeometry(fill, vertices);
         }
 
-        Material mat = geom.getMaterial();
-        float a = fill ? 0.1f : 1.0f;
-        if (mat == null) {
-            mat = createMat(color, a);
-        } else {
-            mat.setColor("Color", ColorUtilities.fromIntRGBA(color, a));
-        }
-        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        mat.getAdditionalRenderState().setWireframe(!fill);
-        
-        if (! fill) {
-            mat.getAdditionalRenderState().setLineWidth(2);
-            geom.setQueueBucket(RenderQueue.Bucket.Translucent);
-        } else {
-            geom.setQueueBucket(RenderQueue.Bucket.Transparent);
-        }
+        Material mat = checkMaterial(geom, color, fill);
+        geom.setQueueBucket(RenderQueue.Bucket.Translucent);
         
         geom.setMesh(mesh);
         geom.setMaterial(mat);
         return geom;
+    }
+    
+    private Material checkMaterial(Geometry geom, int color, boolean fill) {
+        Material mat = geom.getMaterial();
+        float a = fill ? 0.1f : 1.0f;
+        if (mat == null) {
+            mat = createMat(color, a, fill);
+        } else {
+            mat.setColor("Color", ColorUtilities.fromIntRGBA(color, a));
+        }
+        return mat;
     }
     
     public void renderFree() {
