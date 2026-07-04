@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -27,48 +27,58 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package org.je3gl.scene.debug;
+ */
+package org.j3gl.box2d.control;
 
-import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.control.Control;
+
+import org.j3gl.box2d.PhysicsSpace;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ * An Interface in charge of managing the control of the physical bodies used by
+ * the dyn4j engine, this interface is in charge of applying physics to the
+ * <code>Spatial</code> of JME3.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class Polygon2D extends AbstractShape2D {
+public interface PhysicsControl extends Control {
 
     /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
+     * Returns the <code>Spatia</code> associated with the physical body.
+     *
+     * @param <T> type <b>Spatial</b>
+     * @return object
      */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
+    public <T extends Spatial> T getJmeObject();
 
     /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
+     * Establishes the physical space to which this physical control belongs.
+     *
+     * @param physicsSpace a physical space
      */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
+    public void setPhysicsSpace(PhysicsSpace physicsSpace);
 
-    /* (non-Javadoc)
+    /**
+     * Returns the physical space to which this physical control belongs.
+     *
+     * @return a physical space
      */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
-    }
-    
-    /* (non-Javadoc)
+    public PhysicsSpace getPhysicsSpace();
+
+    /**
+     * Method in charge of enabling or disabling the control.
+     *
+     * @param enabled control status
      */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
-    }
+    public void setEnabled(boolean enabled);
+
+    /**
+     * Returns the current status of this control.
+     *
+     * @return control status
+     */
+    public boolean isEnabled();
 }

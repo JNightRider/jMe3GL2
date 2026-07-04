@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,47 +28,54 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.j3gl.box2d;
 
-import com.jme3.math.Vector3f;
+import org.box2d.jni.b2BodyId;
+import org.box2d.jni.b2WorldDef;
+import org.box2d.jni.b2WorldId;
+
+import static org.box2d.jni.include.Box2d.*;
+import org.j3gl.box2d.control.PhysicsBody2D;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class Polygon2D extends AbstractShape2D {
+public class PhysicsSpace implements AutoCloseable {
+    
+    protected b2WorldId worldId;
 
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
+    public PhysicsSpace(b2WorldDef worldDef) {
+        worldId = b2CreateWorld(worldDef, b2WorldId.malloc());
     }
     
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+    public void addBody(PhysicsBody2D body2D) {
+        b2CreateBody(worldId, body2D.getBodyDef(), body2D.getBodyId());
+    }
+    
+    public void removeBody(b2BodyId bodyId) {
+        b2DestroyBody(bodyId);
+    }
+
+    public void update(float tpf) {
+        float timeStep = 1.0f / 60.0f;
+        int subStepCount = 4;
+        b2World_Step(worldId, timeStep, subStepCount);
+    }
+    
+    public AxisType getAxisType() {
+        return AxisType.AXIS_XYO;
+    }
+
+    public b2WorldId getWorldId() {
+        return worldId;
+    }
+    
+    @Override
+    public void close() {
+        b2DestroyWorld(worldId);
+        worldId.close();
     }
 }

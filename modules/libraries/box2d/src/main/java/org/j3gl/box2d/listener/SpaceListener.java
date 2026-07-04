@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,47 +28,27 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.j3gl.box2d.listener;
 
-import com.jme3.math.Vector3f;
+import org.j3gl.box2d.PhysicsSpace;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ * Interface in charge of managing the listeners of physical bodies.
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class Polygon2D extends AbstractShape2D {
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
-    }
+public interface SpaceListener {
     
-    /* (non-Javadoc)
+    /**
+     * It is activated when a body is added to physical space.
+     * @param physicsSpace space
      */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
-    }
+    public void spaceAttached(PhysicsSpace physicsSpace);
+    
+    /**
+     * It is activated when a body is removed from physical space.
+     * @param physicsSpace space
+     */
+    public void spaceDetached(PhysicsSpace physicsSpace);
 }

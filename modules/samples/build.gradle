@@ -22,10 +22,28 @@ dependencies {
     //   https://docs.gradle.org/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
 
     implementation(libs.bundles.je3gl.base)
+    implementation(libs.box2djni)
+
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_x64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_x64Sp') })
+
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_x64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_x64Sp') })
+
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_x64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_x64Sp') })
+
     runtimeOnly(libs.bundles.je3gl.runtime)
 
     implementation project(':modules:libraries:jMe3GL2-core')
     implementation project(':modules:libraries:jMe3GL2-jawt')
     implementation project(':modules:libraries:jMe3GL2-dyn4j')
+    implementation project(':modules:libraries:jMe3GL2-box2d')
     implementation project(':modules:libraries:jMe3GL2-plugins')
 }

@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,47 +28,49 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.j3gl.box2d.util;
 
 import com.jme3.math.Vector3f;
 
+import org.box2d.jni.b2Pos;
+
+import org.j3gl.box2d.AxisType;
+
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ * Class <code>Converter</code> that is responsible for providing conversion
+ * methods between vectors and/or numbers (float &harr; double).
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class Polygon2D extends AbstractShape2D {
+public final class Converter {
 
     /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
+     * Convert a {@code org.box2d.jni.b2Pos} to a
+     * {@link com.jme3.math.Vector3f}.
+     *
+     * @param val value
+     * @param type axis
+     * @return A {@link com.jme3.math.Vector3f} object
      */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
+    public static Vector3f toVector3fValueOfJME3(b2Pos val, AxisType type) {
+        switch (type) {
+            case AXIS_XOY:
+                return new Vector3f(val.x().floatValue(), 0.0F, val.y().floatValue());
+            case AXIS_XYO:
+            default:
+                return new Vector3f(val.x().floatValue(), val.y().floatValue(), 0.0F);
+        }
     }
     
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+    public static Vector3f toUNIT3f(AxisType type) {
+        switch (type) {
+            case AXIS_XOY:
+                return Vector3f.UNIT_Y;
+            case AXIS_XYO:
+            default:
+                return Vector3f.UNIT_Z;
+        }
     }
 }

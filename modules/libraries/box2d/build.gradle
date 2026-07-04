@@ -1,0 +1,27 @@
+description = 'jMe3GL2 - box2d'
+
+jar {
+    archiveClassifier = 'box2d'
+}
+
+dependencies {
+    implementation project(':modules:libraries:jMe3GL2-core')
+
+    implementation(libs.box2djni)
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_x64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_x64Sp') })
+
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_x64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_x64Sp') })
+
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_x64Dp') })
+    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_x64Sp') })
+
+    implementation(libs.jme3.core)
+}
