@@ -57,8 +57,8 @@ import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
 
-import org.j3gl.box2d.Box2dAppState;
-import org.j3gl.box2d.debug.Box2dDebugAppState;
+import org.je3gl.box2d.Box2dAppState;
+import org.je3gl.box2d.debug.Box2dDebugAppState;
 import org.je3gl.renderer.Camera2DAppSate;
 import org.je3gl.renderer.UnitComparator;
 

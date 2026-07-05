@@ -1,0 +1,352 @@
+/*
+BSD 3-Clause License
+
+Copyright (c) 2023-2026, Night Rider (Wilson)
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+package org.je3gl.box2d.debug;
+
+import com.jme3.app.Application;
+import com.jme3.app.state.BaseAppState;
+import com.jme3.asset.AssetManager;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.box2d.jni.b2DebugDraw;
+import org.box2d.jni.b2Vec2;
+import org.box2d.jni.b2WorldId;
+import org.box2d.jni.draw.DrawBoundsFcnI;
+import org.box2d.jni.draw.DrawCircleFcnI;
+import org.box2d.jni.draw.DrawLineFcnI;
+import org.box2d.jni.draw.DrawPointFcnI;
+import org.box2d.jni.draw.DrawPolygonFcnI;
+import org.box2d.jni.draw.DrawSolidCapsuleFcnI;
+import org.box2d.jni.draw.DrawSolidCircleFcnI;
+import org.box2d.jni.draw.DrawSolidPolygonFcnI;
+import org.box2d.jni.draw.DrawStringFcnI;
+import org.box2d.jni.draw.DrawTransformFcnI;
+
+import org.je3gl.box2d.PhysicsSpace;
+import org.je3gl.box2d.util.Converter;
+import org.je3gl.scene.debug.custom.DebugGraphics;
+
+import static org.box2d.jni.include.Box2d.*;
+import static org.box2d.jni.include.Id.*;
+import static org.box2d.jni.include.Types.*;
+import static org.box2d.jni.system.MemoryUtil.*;
+
+/**
+ * Class <code>Box2dDebugAppState</code> responsible for managing a state for
+ * the debugging of the physical forms of the bodies that are added to the world
+ * of <b>Box2d</b>.
+ * 
+ * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
+ */
+public class Box2dDebugAppState extends BaseAppState {
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(Box2dDebugAppState.class.getName());
+    
+    /** Main application <code>JME</code>. */
+    protected Application application;    
+    /** Resource manager <code>JME</code>. */
+    protected AssetManager assetManager;
+    
+    // Graphic part.
+    /** Physical space of the bodies. */
+    private PhysicsSpace physicsSpace;
+    
+    /**
+     * All objects/bodies for the physical shapes to be added in this node out
+     * of scene so that it does not interfere with the main root node.
+     */
+    private Node debugNode;    
+    /** Rendering manager. */
+    private Graphics2DRenderer renderer; // Debugger
+    
+    // Physical bodies and joints.    
+    /** Map of physical bodies. */
+    protected Map<Long, Spatial> bodies = new HashMap<>();
+    /** Joint physical map. */
+    protected Map<Long, Spatial> joints = new HashMap<>();
+    
+    /** Debugger view. */
+    protected ViewPort viewPort;
+    /** <code>JME3</code> renderer. */
+    protected RenderManager rm;
+
+    private List<Vector3f[]> cache = new ArrayList<>();
+    private Vector3fPool vector3fPool;
+    private b2DebugDraw debugDraw;
+    
+    /**
+     * Class constructor <code>Box2dDebugAppState</code> where it asks for the
+     * physical space to manage the shapes of the bodies.
+     * 
+     * @param physicsSpace physical space
+     */
+    public Box2dDebugAppState(PhysicsSpace physicsSpace) {
+        this.physicsSpace = physicsSpace;
+        this.vector3fPool = new Vector3fPool();
+    }
+     
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#initialize(com.jme3.app.state.AppStateManager, com.jme3.app.Application) 
+     * @param app application
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public void initialize(Application app) {
+        rm           = app.getRenderManager();
+        assetManager = app.getAssetManager();
+        application  = app;
+        
+        // Initialize the debug scene
+        renderer  = new Graphics2DRenderer(this);
+        debugNode = new Node("Debug Node");
+        
+        viewPort  = rm.createMainView("Physics Debug Overlay", app.getCamera());
+        viewPort.setClearFlags(false, true, false);
+        
+        setDebugGraphics(new StringDebugGraphics(app.getAssetManager()));
+        
+        debugNode.setCullHint(Spatial.CullHint.Never);
+        
+        debugDraw = b2DefaultDebugDraw(b2DebugDraw.malloc());
+        debugDraw.DrawBoundsFcn(DrawBoundsFcn)
+                 .DrawCircleFcn(DrawCircleFcn)
+                 .DrawLineFcn(DrawLineFcn)
+                 .DrawPointFcn(DrawPointFcn)
+                 .DrawPolygonFcn(DrawPolygonFcn)
+                 .DrawSolidCapsuleFcn(DrawSolidCapsuleFcn)
+                 .DrawSolidCircleFcn(DrawSolidCircleFcn)
+                 .DrawSolidPolygonFcn(DrawSolidPolygonFcn)
+                 .DrawTransformFcn(DrawTransformFcn)
+                 .DrawStringFcn(DrawStringFcn)
+                .drawShapes(true)
+                .drawBodyNames(true)
+                .drawJoints(true)
+                .drawAnchorA(true)
+                .drawChainNormals(true)
+                .drawContactFeatures(true)
+                .drawFrictionForces(true)
+                .drawContactNormals(true)
+                .drawContacts(true)
+                .drawGraphColors(true)
+                .drawIslands(true)
+                .drawJointExtras(true)
+                .drawMass(true)
+                .drawBounds(true);
+    }
+    
+    private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
+        b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
+        final Vector3f[] vertx = vector3fPool.size(vertexCount)
+                                             .takePush();
+
+        for (int i = 0; i < vertexCount; i++) {
+            b2Vec2 vec2 = buffer.get(i);
+            Converter.toVector3fValueOfJME3(vec2, physicsSpace.getAxisType(), vertx[i]);
+        }
+               
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderPolygon(transform, vertx, color, false)
+        ));
+        cache.add(vertx);
+    };
+    
+    private final DrawSolidPolygonFcnI DrawSolidPolygonFcn = (transform, vertices, vertexCount, radius, color, context) -> {
+        b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
+        final Vector3f[] vertx = vector3fPool.size(vertexCount)
+                                             .takePush();
+
+        for (int i = 0; i < vertexCount; i++) {
+            b2Vec2 vec2 = buffer.get(i);
+            Converter.toVector3fValueOfJME3(vec2, physicsSpace.getAxisType(), vertx[i]);
+        }
+               
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderPolygon(transform, vertx, color, true)
+        ));
+        cache.add(vertx);
+    };
+    
+    private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderCircle(center, radius, color, false)
+        ));
+    };
+    
+    private final DrawSolidCircleFcnI DrawSolidCircleFcn = (transform, center, radius, color, context) -> {
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderCircle(center, radius, color, true)
+        ));
+    };
+    
+    private final DrawSolidCapsuleFcnI DrawSolidCapsuleFcn = (p1, p2, radius, color, context) -> {
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderCapsule(p1, p2, radius, color, true)
+        ));
+    };
+    
+    private final DrawLineFcnI DrawLineFcn = (p1, p2, color, context) -> {
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderLine(p1, p2, color)
+        ));
+    };
+    
+    private final DrawTransformFcnI DrawTransformFcn = (transform, context) -> {
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderTransform(transform, 1.0f)
+        ));
+    };
+    
+    private final DrawPointFcnI DrawPointFcn = (p, size, color, context) -> {
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderPoint(p, size, color)
+        ));
+    };
+    
+    private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
+        String value = memUTF(s);
+        if (value == null || value.trim().isEmpty()) {
+            return;
+        }
+        
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderString(p, value, color)
+        ));
+    };
+    
+    private final DrawBoundsFcnI DrawBoundsFcn = (aabb, color, context) -> {
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderBounds(aabb, color)
+        ));
+    };
+    
+    /**
+     * Sets debug graphics (color manager).
+     * @param graphics object
+     */
+    public void setDebugGraphics(DebugGraphics graphics) {
+        if (!isInitialized()) {
+            LOGGER.log(Level.WARNING, "Initialize debugging first to set a color palette");
+            return;
+        }
+        renderer.setDebugGraphics(graphics);
+        //renderer.printInformation();
+    }
+
+    /** (non-Javadoc) */
+    @Override
+    protected void onEnable() {
+        if (viewPort != null) {
+            viewPort.attachScene(debugNode);
+        }
+    }
+    /**(non-Javadoc) */
+    @Override
+    protected void onDisable() {
+        if (viewPort != null) {
+            viewPort.detachScene(debugNode);
+        }
+    }
+    
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#cleanup() 
+     * @param app application
+     */
+    @Override
+    protected void cleanup(Application app) {
+        debugNode.detachAllChildren();
+        rm.removeMainView(viewPort);
+        debugDraw.close();
+    }
+    
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#update(float) 
+     * @param tpf float
+     */
+    @Override
+    public void update(float tpf) {
+        // Update debug root node
+        debugNode.updateLogicalState(tpf);
+        debugNode.updateGeometricState();
+        
+        b2WorldId worldId = physicsSpace.getWorldId();
+        if (B2_IS_NON_NULL(worldId)) {
+            b2World_Draw(worldId, debugDraw);
+        }
+        
+        for (Vector3f[] v : cache) {
+            vector3fPool.takePop(v);
+        }
+        renderer.renderFree();
+    }
+
+    /**
+     * (non-Javadoc)
+     * @see com.jme3.app.state.AbstractAppState#render(com.jme3.renderer.RenderManager) 
+     * @param rm render
+     */
+    @Override
+    public void render(RenderManager rm) {
+        if (this.viewPort != null) {
+            rm.renderScene(this.debugNode, this.viewPort);
+        }
+    }
+    
+    /**
+     * Return physical space.
+     * @return object
+     */
+    public PhysicsSpace getPhysicsSpace() {
+        return physicsSpace;
+    }
+    
+    /**
+     * Returns the 2D graphics renderer.
+     * @return object
+     */
+    public Graphics2DRenderer getGraphics2DRenderer() {
+        return renderer;
+    }
+}
