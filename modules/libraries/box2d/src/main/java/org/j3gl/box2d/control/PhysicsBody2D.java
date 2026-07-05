@@ -45,17 +45,15 @@ import java.util.logging.Logger;
 
 import org.box2d.jni.b2BodyDef;
 import org.box2d.jni.b2BodyId;
-import org.box2d.jni.b2BodyType;
 import org.box2d.jni.b2Pos;
 import org.box2d.jni.b2Rot;
-import org.box2d.jni.b2WorldTransform;
 
 import org.box2d.jni.system.ArenaAlloc;
 
 import static org.box2d.jni.include.Box2d.*;
 import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.MathFunctions.*;
-import static org.box2d.jni.libc.LibCString.*;
+import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
 
 import org.j3gl.box2d.AxisType;
@@ -77,9 +75,13 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
     private final List<SpaceListener> spaceListeners = new ArrayList<>();
     
     /**
-     * temporary storage during calculations TODO thread safety
+     * temporary storage during calculations 'Quaternion'
      */
     private final Quaternion tmpInverseWorldRotation = new Quaternion();
+    /**
+     * temporary storage during calculations 'Vector3f'
+     */
+    private final Vector3f tmpWorldPosition = new Vector3f();
     
     /** Physical space. */
     protected PhysicsSpace physicsSpace;
@@ -96,70 +98,78 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * physics-space coordinates match world transform
      */
     private boolean localPhysics = false;
-    
-    private final b2BodyId bodyId;
-    private final b2BodyDef bodyDef;
-    
+    /** the body id */
+    protected b2BodyId bodyId;
+
+    /**
+     * This refers to the definition of the body prior to its creation in
+     * physical space; these properties are used only when the body has not yet
+     * been initialized or created.
+     */
+    protected b2BodyDef bodyDef;
+
     /**
      * Generates a new object of class <code>PhysicsBody2D</code> to generate a 
      * physical body from a 2D model.
+     *
      */
     public PhysicsBody2D() {
-        this.bodyDef = b2BodyDef.malloc();
+        this.bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
         this.bodyId  = b2BodyId.malloc();
-        nmemset(this.bodyId.address(), 0, b2BodyId.SIZEOF);
+        this.bodyId.clear();
     }
 
     /**
-     * Establece la el tipo del cuerpo
+     * Check if the body is valid.
      *
-     * @param bodyType b2BodyType
+     * @return boolean
      */
-    public void setType(b2BodyType bodyType) {
-        if (B2_IS_NULL(bodyId)) {
-            bodyDef.type(bodyType);
-        } else {
-            b2Body_SetType(bodyId, bodyType);
+    public boolean isValid() {
+        if (bodyId == null) {
+            return false;
         }
+        return B2_IS_NON_NULL(bodyId);
     }
-    
-    public void setPosition(b2Pos position) {
-        if (B2_IS_NULL(bodyId)) {
-            bodyDef.position(position);
-        } else {
-            try (ArenaAlloc alloc = allocPush()) {
-                b2Rot rotation = b2Body_GetRotation(bodyId, b2Rot.calloc(alloc));
-                b2Body_SetTransform(bodyId, position, rotation);
-            }
-        }
-    }
-    
+
     /**
-     * Devuelve el tipo del cuerpo 
-     * @return b2BodyType
+     * Returns body rotation.
+     *
+     * @return float
      */
-    public b2BodyType getType() {
-        if (B2_IS_NULL(bodyId)) {
-            return bodyDef.type();
-        } else {
-            return b2Body_GetType(bodyId);
+    public float getRotation() {
+        try (ArenaAlloc alloc = allocPush()) {
+            if (isValid()) {
+                b2Rot rot = b2Body_GetRotation(bodyId, b2Rot.calloc(alloc));
+                return b2Rot_GetAngle(rot);
+            }
+            return b2Rot_GetAngle(bodyDef.rotation());
+        }
+    }
+
+    /**
+     * Devuelve la posisción del cuerpo
+     *
+     * @return Vector3f
+     */
+    public Vector3f getPosition() {
+        AxisType axisType = physicsSpace == null
+                ? AxisType.AXIS_XYO : physicsSpace.getAxisType();
+
+        try (ArenaAlloc alloc = allocPush()) {
+            if (isValid()) {
+                b2Pos position = b2Body_GetPosition(bodyId, b2Pos.ncalloc(alloc));
+                return Converter.toVector3fValueOfJME3(position, axisType, tmpWorldPosition);
+            }
+            return Converter.toVector3fValueOfJME3(bodyDef.position(), axisType, tmpWorldPosition);
         }
     }
     
-    public b2BodyId getBodyId() {
-        return bodyId;
-    }
-
-    public b2BodyDef getBodyDef() {
-        return bodyDef;
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#toString() 
      */
     @Override
     public String toString() {
-        return "(" + String.valueOf(spatial) + ") ";
+        return "(" + String.valueOf(spatial) + ") " + bodyId;
     }
 
     /**
@@ -307,23 +317,16 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
         }
 
         Quaternion rotation = temp.quat1;
+        rotation.fromAngleAxis(
+                getRotation() * axisType.getMultiplier(),
+                axisType.getUnit()
+        );
 
-        try (ArenaAlloc alloc = allocPush()) {
-            b2Rot rot = b2Body_GetRotation(bodyId, b2Rot.calloc(alloc));
-            b2Pos position = b2Body_GetPosition(bodyId, b2Pos.ncalloc(alloc));
+        Vector3f locDeep = spatial.getLocalTranslation().mult(axisType.getUnit());
+        Vector3f location = getPosition();
+        location.add(locDeep);
 
-            rotation.fromAngleAxis(
-                    b2Rot_GetAngle(rot) * axisType.getMultiplier(),
-                    axisType.getUnit()
-            );
-
-            Vector3f locDeep = spatial.getLocalTranslation().mult(axisType.getUnit());
-            Vector3f location = Converter.toVector3fValueOfJME3(position, axisType);
-            location.add(locDeep);
-
-            applyPhysicsTransform(location, rotation);
-        }
-
+        applyPhysicsTransform(location, rotation);
         temp.release();
     }
 
@@ -333,7 +336,7 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      */
     public void queueFree() {
         if (spatial.removeFromParent()) {
-            physicsSpace.removeBody(bodyId);
+            physicsSpace.removeBody(this);
         }
     }
     
@@ -346,6 +349,7 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
         }
         if (physicsSpace == null && this.physicsSpace != null) {
             fireSpaceListener(this.physicsSpace, false);
+            bodyId.clear();
         } else {
             fireSpaceListener(physicsSpace, true);
         }
@@ -424,17 +428,36 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * @param delta time per frame (in seconds)
      */
     protected void physicsProcess(float delta) {}
- 
+
+    /**
+     * Returns the body id.
+     *
+     * @return b2BodyId
+     */
+    public b2BodyId getBodyId() {
+        return bodyId;
+    }
+
+    /**
+     * Returns the body definition.
+     *
+     * @return b2BodyDef
+     */
+    public b2BodyDef getBodyDef() {
+        return bodyDef;
+    }
+
+    /* (non-Javadoc)
+     */
     @Override
     public void close() {
-        if (bodyDef != null) {
-            bodyDef.close();
-        }
         if (bodyId != null) {
             bodyId.close();
+            bodyId = null;
         }
-        free();
+        if (bodyDef != null) {
+            bodyDef.close();
+            bodyId = null;
+        }
     }
-    
-    protected abstract void free();
 }

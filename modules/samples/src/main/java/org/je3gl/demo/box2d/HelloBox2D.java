@@ -87,15 +87,11 @@ public class HelloBox2D extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
-//        Sys.DISABLE_DEBUG.set(true);
-        viewPort.setBackgroundColor(ColorRGBA.White);
-//        flyCam.setEnabled(false);
-        flyCam.setMoveSpeed(50);
-//        cam.setLocation(new Vector3f(0, 5, 100));
+        viewPort.setBackgroundColor(new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f));
         
-//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(1);
-//        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
-//        stateManager.attach(camera2DAppSate);
+        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
+        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
+        stateManager.attach(camera2DAppSate);
 
         Box2dAppState box2d = new Box2dAppState();
         stateManager.attach(box2d);
@@ -115,7 +111,7 @@ public class HelloBox2D extends SimpleApplication {
 
         b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
         bodyDef.type(b2_dynamicBody);
-        bodyDef.position(b2Pos.nmalloc().set(0.0f, 55.0f));
+        bodyDef.position(b2Pos.nmalloc().set(0.0f, 10.0f));
         b2BodyId bodyId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
 
         b2Polygon dynamicBox = b2MakeBox(1.0f, 1.0f, b2Polygon.malloc());
@@ -131,7 +127,7 @@ public class HelloBox2D extends SimpleApplication {
         {
             b2BodyDef def = b2DefaultBodyDef(b2BodyDef.malloc());
             def.type(b2_dynamicBody);
-            def.position(b2Pos.nmalloc().set(-1, 10));
+            def.position(b2Pos.nmalloc().set(-1, 20));
             
             b2BodyId body = b2CreateBody(worldId, def, b2BodyId.malloc());
             b2CreateBody(worldId, def, b2BodyId.malloc());

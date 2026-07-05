@@ -28,57 +28,58 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.j3gl.box2d;
+package org.j3gl.box2d.debug;
 
-import org.box2d.jni.b2BodyDef;
-import org.box2d.jni.b2BodyId;
-import org.box2d.jni.b2WorldDef;
-import org.box2d.jni.b2WorldId;
-
-import static org.box2d.jni.include.Box2d.*;
-import org.j3gl.box2d.control.PhysicsBody2D;
+import com.jme3.asset.AssetManager;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
+import com.jme3.math.ColorRGBA;
+import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
- *
+ * Class responsible for implementing the {@link org.je3gl.scene.debug.custom.DebugGraphics} interface
  * @author wil
  * @version 1.0.0
  * @since 3.2.0
  */
-public class PhysicsSpace implements AutoCloseable {
-    
-    protected b2WorldId worldId;
+public class StringDebugGraphics implements DebugGraphics {
+    /** Resource manager <code>JME</code>. */
+    private final AssetManager assetManager;
 
-    public PhysicsSpace(b2WorldDef worldDef) {
-        worldId = b2CreateWorld(worldDef, b2WorldId.malloc());
+    /**
+     * Constructor.
+     * @param assetManager object
+     */
+    public StringDebugGraphics(AssetManager assetManager) {
+        this.assetManager = assetManager;
     }
-    
-    public void addBody(PhysicsBody2D body2D, b2BodyDef bodyDef) {
-        b2CreateBody(worldId, bodyDef, body2D.getBodyId());
-        body2D.setPhysicsSpace(this);
-    }
-    
-    public void removeBody(PhysicsBody2D body2D) {
-        b2DestroyBody(body2D.getBodyId());
-        body2D.setPhysicsSpace(null);
-    }
-
-    public void update(float tpf) {
-        float timeStep = 1.0f / 60.0f;
-        int subStepCount = 4;
-        b2World_Step(worldId, timeStep, subStepCount);
-    }
-    
-    public AxisType getAxisType() {
-        return AxisType.AXIS_XYO;
-    }
-
-    public b2WorldId getWorldId() {
-        return worldId;
-    }
-    
+ 
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.debug.custom.DebugGraphics#getBitmapFont(java.lang.String) 
+     */
     @Override
-    public void close() {
-        b2DestroyWorld(worldId);
-        worldId.close();
+    public BitmapFont getBitmapFont(String name) {
+        if (name != null && name.startsWith("path://")) {
+            return assetManager.loadFont(name.substring(7, name.length()));
+        }
+        return assetManager.loadFont("Interface/Fonts/Console.fnt");
+    }
+
+    /* (non-Javadoc)
+     * @see org.je3gl.scene.debug.custom.DebugGraphics#createBitmapText(com.jme3.font.BitmapFont, java.lang.String) 
+     */
+    @Override
+    public BitmapText createBitmapText(BitmapFont font, String value) {
+        BitmapText text = font.createLabel(value);
+        text.setSize(0.35f);
+        return text;
+    }
+
+    /*(non-Javadoc)
+     * @see org.je3gl.scene.debug.custom.DebugGraphics#getColor(java.lang.String) 
+     */
+    @Override
+    public ColorRGBA getColor(String string) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

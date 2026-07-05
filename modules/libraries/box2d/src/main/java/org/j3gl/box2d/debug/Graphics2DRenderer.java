@@ -128,11 +128,10 @@ public class Graphics2DRenderer {
         BitmapText text = bitmapTextPool.takePush();
         text.setText(txt);
         text.setColor(ColorUtilities.fromIntRGBA(color, 1.0f));
-        System.out.println(">> " + txt);
         text.setLocalTranslation(Converter.toVector3fValueOfJME3(pos, box2dDebugAppState.getPhysicsSpace().getAxisType()));
         text.setQueueBucket(RenderQueue.Bucket.Translucent);
         
-        text.move(-(text.getLineWidth() / 2.0f) * 0.12f, 0, 0);
+        text.move(-(text.getLineWidth() / 2.0f), 0, 0);
         cache.add(text);
         return text;
     }

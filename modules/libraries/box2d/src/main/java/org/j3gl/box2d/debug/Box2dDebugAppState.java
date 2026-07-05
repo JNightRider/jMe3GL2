@@ -144,7 +144,7 @@ public class Box2dDebugAppState extends BaseAppState {
         viewPort  = rm.createMainView("Physics Debug Overlay", app.getCamera());
         viewPort.setClearFlags(false, true, false);
         
-        setDebugGraphics(new Box2dDebugGraphics(app.getAssetManager()));
+        setDebugGraphics(new StringDebugGraphics(app.getAssetManager()));
         
         debugNode.setCullHint(Spatial.CullHint.Never);
         
@@ -243,9 +243,14 @@ public class Box2dDebugAppState extends BaseAppState {
         ));
     };
     
-    private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {        
+    private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
+        String value = memUTF(s);
+        if (value == null || value.trim().isEmpty()) {
+            return;
+        }
+        
         application.enqueue(() -> debugNode.attachChild(
-            renderer.renderString(p, memUTF(s), color)
+            renderer.renderString(p, value, color)
         ));
     };
     

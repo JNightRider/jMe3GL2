@@ -58,7 +58,7 @@ public class BitmapTextPool extends ObjectPool<BitmapText> {
 
     @Override
     protected BitmapText create() {
-        BitmapFont font = graphics.getBitmapFont(null);
+        BitmapFont font = graphics.getBitmapFont("path://jMe3GL2/Fonts/ProggyClean.fnt");
         return graphics.createBitmapText(font, null);
     }
 

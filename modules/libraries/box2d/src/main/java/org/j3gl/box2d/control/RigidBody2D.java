@@ -39,9 +39,8 @@ public class RigidBody2D extends PhysicsBody2D {
     public RigidBody2D() {
     }
 
-    
-    @Override
-    protected void free() {
+    public void setMass(float mass) {
         
     }
+    
 }
