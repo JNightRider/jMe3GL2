@@ -63,6 +63,11 @@ import org.j3gl.box2d.util.Converter;
 import org.je3gl.utilities.TransformUtilities;
 
 /**
+ * An abstract implementation of the {@link PhysicsControl} interface.
+ * <p>
+ * An object of the <code>PhysicsBody2D</code> class is the body that the
+ * physics engine uses to give realism to the games. With this control we can
+ * manage a 2D model with or without physics.
  *
  * @author wil
  * @version 1.0.0
