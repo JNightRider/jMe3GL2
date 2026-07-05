@@ -1,46 +1,66 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+BSD 3-Clause License
+
+Copyright (c) 2023-2026, Night Rider (Wilson)
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package org.j3gl.box2d.debug;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
-import com.jme3.font.Rectangle;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState;
-import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.math.Vector4f;
 import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.debug.Arrow;
-import com.jme3.scene.shape.Line;
 import com.jme3.util.TempVars;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.box2d.jni.b2HexColor;
+
+import org.box2d.jni.b2AABB;
 import org.box2d.jni.b2Pos;
+import org.box2d.jni.b2Transform;
+import org.box2d.jni.b2Vec2;
 import org.box2d.jni.b2WorldTransform;
-import org.box2d.jni.include.MathFunctions;
+import org.box2d.jni.system.ArenaAlloc;
+
+import static org.box2d.jni.b2HexColor.*;
+import static org.box2d.jni.system.ArenaAlloc.*;
 import static org.box2d.jni.include.MathFunctions.*;
+
 import org.j3gl.box2d.AxisType;
+import org.j3gl.box2d.debug.renderer.MeshRender;
+import org.j3gl.box2d.debug.renderer.ShapeRenderManager;
 import org.j3gl.box2d.util.Converter;
 
-import org.je3gl.scene.debug.Cross;
-import org.je3gl.scene.debug.Capsule2D;
-import org.je3gl.scene.debug.Circle2D;
-import org.je3gl.scene.debug.Ellipse2D;
-import org.je3gl.scene.debug.HalfEllipse2D;
-import org.je3gl.scene.debug.Polygon2D;
-import org.je3gl.scene.debug.Slice2D;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 import org.je3gl.utilities.ColorUtilities;
 
@@ -59,16 +79,21 @@ public class Graphics2DRenderer {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Graphics2DRenderer.class.getName());
     
+    private static final Node NODE_NULL = new Node("NULL");
+    
     /** Resource manager <code>JME</code>. */
     private final AssetManager assetManager;    
     /** Debugger. */
     private final Box2dDebugAppState box2dDebugAppState;
     
-    private GeometryPool geometryPool;
-    private NodePool nodePool;
-    private BitmapTextPool bitmapTextPool;
+    private final ShapeRenderManager shapeRenderManager;
+    private final Vector3fPool vector3fPool;
+    private final BitmapTextPool bitmapTextPool;
     
-    private List<Spatial> cache;
+    private final List<Object> cache;
+    
+    private final Vector2f origin = new Vector2f();
+    
 
     /**
      * Class constructor <code>Graphics2DRenderer</code>.
@@ -78,8 +103,8 @@ public class Graphics2DRenderer {
         this.assetManager = box2dDebugAppState.getApplication().getAssetManager();
         this.box2dDebugAppState = box2dDebugAppState;
         this.bitmapTextPool = new BitmapTextPool();
-        this.geometryPool = new GeometryPool();
-        this.nodePool = new NodePool();
+        this.vector3fPool = new Vector3fPool();
+        this.shapeRenderManager = new ShapeRenderManager(assetManager);
         this.cache = new ArrayList<>();
     }
 
@@ -98,46 +123,12 @@ public class Graphics2DRenderer {
     void setDebugGraphics(DebugGraphics debugGraphics) {
         this.bitmapTextPool.setGraphics(debugGraphics);
     }
-
-    /**
-     * Method in charge of creating the materials to be used by the
-     * {@code Spatial} for the debugging of the physical bodies.
-     *
-     * @param c color of the material
-     * @param alpha the alpha component 
-     * @param fill the material colors the entire surface
-     * @return generated material
-     */
-    public Material createMat(int c, float alpha, boolean fill) {
-        return createMat(ColorUtilities.fromIntRGBA(c, alpha), fill);
-    }
-
-    /**
-     * Method in charge of creating the materials to be used by the
-     * {@code Spatial} for the debugging of the physical bodies.
-     * 
-     * @param color color of the material
-     * @param fill the material colors the entire surface
-     * @return generated material
-     */
-    public Material createMat(ColorRGBA color, boolean fill) {
-        final Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        if (fill) {
-            mat.getAdditionalRenderState().setWireframe(false);
-        } else {
-            mat.getAdditionalRenderState().setWireframe(true);
-            mat.getAdditionalRenderState().setLineWidth(2);
-        }
-        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        mat.setColor("Color", color);
-        return mat;
-    }
     
     public Node renderString(b2Pos pos, String txt, int color) {
         BitmapText text = bitmapTextPool.takePush();
         text.setText(txt);
         text.setColor(ColorUtilities.fromIntRGBA(color, 1.0f));
-
+        System.out.println(">> " + txt);
         text.setLocalTranslation(Converter.toVector3fValueOfJME3(pos, box2dDebugAppState.getPhysicsSpace().getAxisType()));
         text.setQueueBucket(RenderQueue.Bucket.Translucent);
         
@@ -156,69 +147,166 @@ public class Graphics2DRenderer {
      * @return generated graphical object
      */
     public Node renderPolygon(b2WorldTransform transforms, Vector3f[] vertices, int color, boolean solid) {
-        Node node = nodePool.takePush();
-        cache.add(node);
-        
-        AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType();        
         TempVars vars = TempVars.get();
+        Node node = shapeRenderManager.render(MeshRender.POLYGON, vertices, color, solid);
+        
+        AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
         float angle = b2Rot_GetAngle(transforms.q());
 
-        
         node.setLocalTranslation(Converter.toVector3fValueOfJME3(transforms.p(), axisType));
         node.setLocalRotation(vars.quat1.fromAngleAxis(angle, Converter.toUNIT3f(axisType)));
         
-        Geometry geom0 = renderPolygonGeometry(vertices, color, true);
-        cache.add(geom0);        
-        node.attachChild(geom0);
-        
-        if (solid) {
-            Geometry geom1 = renderPolygonGeometry(vertices, color, false);
-            cache.add(geom1);
-            node.attachChild(geom1);
-        }
         vars.release();
         return node;
     }
     
-    private Geometry renderPolygonGeometry(Vector3f[] vertices, int color, boolean fill) {
-        Geometry geom = geometryPool.takePush();
-        Mesh mesh     = geom.getMesh();
-        
-        if (!(mesh instanceof Polygon2D)) {
-            mesh = new Polygon2D(fill, vertices);
-        } else {
-            ((Polygon2D)mesh).updateGeometry(fill, vertices);
-        }
-
-        Material mat = checkMaterial(geom, color, fill);
-        geom.setQueueBucket(RenderQueue.Bucket.Translucent);
-        
-        geom.setMesh(mesh);
-        geom.setMaterial(mat);
-        return geom;
+    public Node renderCircle(b2Pos center, float radius, int color, boolean solid) {
+        Node node = shapeRenderManager.render(MeshRender.CIRCLE, radius, color, solid);        
+        AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType();
+        node.setLocalTranslation(Converter.toVector3fValueOfJME3(center, axisType));
+        return node;
     }
     
-    private Material checkMaterial(Geometry geom, int color, boolean fill) {
-        Material mat = geom.getMaterial();
-        float a = fill ? 0.1f : 1.0f;
-        if (mat == null) {
-            mat = createMat(color, a, fill);
-        } else {
-            mat.setColor("Color", ColorUtilities.fromIntRGBA(color, a));
+    public Node renderCapsule(b2Pos p1, b2Pos p2, float radius, int color, boolean solid) {
+        TempVars vars = TempVars.get();
+        Vector3f d   = vars.vect1;
+        Vector3f pos = vars.vect2;
+        
+        Vector2f rect = vars.vect2d;
+        Vector2f axis = vars.vect2d2;
+        
+        d.set(p2.x().floatValue() - p1.x().floatValue(), p2.y().floatValue() - p1.y().floatValue(), 0f);
+        
+        float length = d.length();
+        if (length < 0.001f) {
+            LOGGER.log(Level.WARNING, "debug app: capsule too short!");
+            return NODE_NULL;
         }
-        return mat;
+
+        rect.setX(radius * 2);
+        rect.setY(length + (radius * 2));
+
+        axis.set(d.x / length, d.y / length);
+        pos.set((p1.x().floatValue() + p2.x().floatValue()) * 0.5f, 
+                (p1.y().floatValue() + p2.y().floatValue()) * 0.5f, 0f);
+        
+        AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
+        float angle = FastMath.atan2(axis.y, axis.x) + FastMath.HALF_PI;
+        
+        Node node = shapeRenderManager.render(MeshRender.CAPSULE, rect, color, solid);
+        node.setLocalTranslation(pos);
+        node.setLocalRotation(vars.quat1.fromAngleAxis(angle, Converter.toUNIT3f(axisType)));
+        
+        vars.release();
+        return node;
+    }
+    
+    public Node renderLine(b2Pos start, b2Pos end, int color) {
+        TempVars vars = TempVars.get();
+        Vector3f[] points = vars.tri;
+        points[0].set(start.x().floatValue(), start.y().floatValue(), 0f);
+        points[1].set(end.x().floatValue(), end.y().floatValue(), 0f);
+        
+        Node node = shapeRenderManager.render(MeshRender.LINE, points, color, false);        
+        vars.release();
+        return node;
+    }
+    
+    public Node renderTransform(b2WorldTransform transform, float scale) {
+        try (ArenaAlloc alloc = allocPush()) {
+            Node rootNode    = shapeRenderManager.create();
+            Vector3f[] buff1 = vector3fPool.size(2).takePush();
+            Vector3f[] buff2 = vector3fPool.size(2).takePush();
+            cache.add(buff1);
+            cache.add(buff2);
+            
+            b2Transform xf = b2ToRelativeTransform( transform, b2Pos.ncalloc(alloc).set(origin.x, origin.y), b2Transform.calloc(alloc) );
+            b2Vec2 p1 = xf.p();
+            
+            b2Vec2 p2 = b2MulAdd( p1, scale, b2Rot_GetXAxis( xf.q(), b2Vec2.calloc(alloc) ), b2Vec2.calloc(alloc) );
+            
+            AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
+            Converter.toVector3fValueOfJME3(p1, axisType, buff1[0]);
+            Converter.toVector3fValueOfJME3(p2, axisType, buff1[1]);
+            rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff1, b2_colorRed, false));
+            
+            p2 = b2MulAdd( p1, scale, b2Rot_GetYAxis( xf.q(), b2Vec2.calloc(alloc) ), b2Vec2.calloc(alloc) );
+            
+            Converter.toVector3fValueOfJME3(p1, axisType, buff2[0]);
+            Converter.toVector3fValueOfJME3(p2, axisType, buff2[1]);
+            rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff2, b2_colorGreen, false));
+            return rootNode;
+        }
+    }
+    
+    public Node renderPoint(b2Pos p, float size, int color) {
+        TempVars vars = TempVars.get();
+        Vector4f vec4 = vars.vect4f1;
+        Vector3f vec3 = vars.vect1;
+        
+        AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
+        Converter.toVector3fValueOfJME3(p, axisType, vec3);
+        
+        vec4.set(vec3.x, vec3.y, vec3.z, size * 1.5f);
+        
+        Node node = shapeRenderManager.render(MeshRender.POINT, vec4, color, false);
+        vars.release();
+        return node;
+    }
+    
+    public Node renderBounds(b2AABB aabb, int color) {
+        try (ArenaAlloc alloc = allocPush()) {
+            b2Pos norigin = b2Pos.ncalloc(alloc).set(origin.x, origin.y);
+            
+            b2Vec2 lower = b2SubPos( b2ToPos( aabb.lowerBound(), b2Pos.ncalloc(alloc) ), norigin, b2Vec2.calloc(alloc) );
+            b2Vec2 upper = b2SubPos( b2ToPos( aabb.upperBound(), b2Pos.ncalloc(alloc) ), norigin, b2Vec2.calloc(alloc) );
+
+            b2Vec2 p1 = lower;
+            b2Vec2 p2 = b2Vec2.calloc(alloc).set( upper.x(), lower.y() );
+            b2Vec2 p3 = upper;
+            b2Vec2 p4 = b2Vec2.calloc(alloc).set( lower.x(), upper.y() );
+            
+            Vector3f[] buff1 = vector3fPool.size(2).takePush();
+            Vector3f[] buff2 = vector3fPool.size(2).takePush();
+            Vector3f[] buff3 = vector3fPool.size(2).takePush();
+            Vector3f[] buff4 = vector3fPool.size(2).takePush();
+            cache.add(buff1);
+            cache.add(buff2);
+            cache.add(buff3);
+            cache.add(buff4);
+            
+            AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
+            Converter.toVector3fValueOfJME3(p1, axisType, buff1[0]);
+            Converter.toVector3fValueOfJME3(p2, axisType, buff1[1]);
+            
+            Converter.toVector3fValueOfJME3(p2, axisType, buff2[0]);
+            Converter.toVector3fValueOfJME3(p3, axisType, buff2[1]);
+            
+            Converter.toVector3fValueOfJME3(p3, axisType, buff3[0]);
+            Converter.toVector3fValueOfJME3(p4, axisType, buff3[1]);
+            
+            Converter.toVector3fValueOfJME3(p4, axisType, buff4[0]);
+            Converter.toVector3fValueOfJME3(p1, axisType, buff4[1]);
+            
+            Node rootNode = shapeRenderManager.create();
+            rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff1, color, false));
+            rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff2, color, false));
+            rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff3, color, false));
+            rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff4, color, false));
+            return rootNode;
+        }
     }
     
     public void renderFree() {
-        for (Spatial child : cache) {
-            if (child instanceof Geometry geom) {
-                geometryPool.takePop(geom);
-            } else if (child instanceof BitmapText txt) {
-                bitmapTextPool.takePop(txt);
-            } else if (child instanceof Node node) {
-                nodePool.takePop(node);
-            }
+        try (shapeRenderManager) {
+            for (Object child : cache) {
+                if (child instanceof BitmapText txt) {
+                    bitmapTextPool.takePop(txt);
+                } else if (child instanceof Vector3f[] vec3) {
+                    vector3fPool.takePop(vec3);
+                }
+            }            
+            cache.clear();
         }
-        cache.clear();
     }
 }

@@ -33,6 +33,7 @@ package org.je3gl.demo.box2d;
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.system.AppSettings;
 import org.box2d.jni.b2BodyDef;
 import org.box2d.jni.b2BodyId;
@@ -41,10 +42,12 @@ import org.box2d.jni.system.*;
 import org.box2d.jni.system.*;
 
 import static org.box2d.jni.b2BodyType.*;
+import org.box2d.jni.b2Capsule;
 import org.box2d.jni.b2Polygon;
 import org.box2d.jni.b2Pos;
 import org.box2d.jni.b2ShapeDef;
 import org.box2d.jni.b2ShapeId;
+import org.box2d.jni.b2Vec2;
 import org.box2d.jni.b2WorldId;
 
 import static org.box2d.jni.include.Box2d.*;
@@ -57,6 +60,7 @@ import static org.box2d.jni.system.ArenaAlloc.*;
 import org.j3gl.box2d.Box2dAppState;
 import org.j3gl.box2d.debug.Box2dDebugAppState;
 import org.je3gl.renderer.Camera2DAppSate;
+import org.je3gl.renderer.UnitComparator;
 
 /**
  * This is a good example of how to get up and running with Box2D - <b>HelloBox2D</b>.
@@ -72,6 +76,8 @@ public class HelloBox2D extends SimpleApplication {
      * @param args command line arguments
      */
     public static void main(String[] args) {
+        Sys.DISABLE_DEBUG.set(true);
+        
         HelloBox2D app = new HelloBox2D();
         AppSettings settings = new AppSettings(true);
         settings.setGammaCorrection(false);
@@ -84,11 +90,12 @@ public class HelloBox2D extends SimpleApplication {
 //        Sys.DISABLE_DEBUG.set(true);
         viewPort.setBackgroundColor(ColorRGBA.White);
 //        flyCam.setEnabled(false);
-//        flyCam.setMoveSpeed(50);
+        flyCam.setMoveSpeed(50);
 //        cam.setLocation(new Vector3f(0, 5, 100));
         
-        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(1);
-        stateManager.attach(camera2DAppSate);
+//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(1);
+//        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
+//        stateManager.attach(camera2DAppSate);
 
         Box2dAppState box2d = new Box2dAppState();
         stateManager.attach(box2d);
@@ -120,5 +127,24 @@ public class HelloBox2D extends SimpleApplication {
         b2CreatePolygonShape(bodyId, shapeDef, dynamicBox, b2ShapeId.malloc());
         
         b2Body_SetName(bodyId, "Player");
+        
+        {
+            b2BodyDef def = b2DefaultBodyDef(b2BodyDef.malloc());
+            def.type(b2_dynamicBody);
+            def.position(b2Pos.nmalloc().set(-1, 10));
+            
+            b2BodyId body = b2CreateBody(worldId, def, b2BodyId.malloc());
+            b2CreateBody(worldId, def, b2BodyId.malloc());
+            
+            b2ShapeDef shapeDf = b2DefaultShapeDef(b2ShapeDef.malloc());
+            shapeDf.material().friction(0.42f);
+            
+            b2Capsule capsule = b2Capsule.malloc();
+            capsule.center1(b2Vec2.malloc().set(0, 0));
+            capsule.center2(b2Vec2.malloc().set(10, 0));
+            capsule.radius(1f);
+            
+            b2CreateCapsuleShape(body, shapeDf, capsule, b2ShapeId.malloc());
+        }
     }
 }

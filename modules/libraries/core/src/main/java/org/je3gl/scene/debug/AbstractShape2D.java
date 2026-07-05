@@ -106,50 +106,51 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      * @param vertices new arrangement of the vertices
      * @param fill full mesh
      */
-protected void updateGeometry(final Vector3f[] vertices, boolean fill) {
-    if (vertices == null) {
-        throw new NullPointerException("vertices is null.");
-    }
-    this.vertices = vertices;
-
-    // ----- Position buffer -----
-    FloatBuffer pb = BufferUtils.createFloatBuffer(vertices.length * 3);
-    for (Vector3f v : vertices) {
-        pb.put(v.x).put(v.y).put(v.z);
-    }
-    pb.flip();
-
-    clearBuffer(VertexBuffer.Type.Position);
-    setBuffer(VertexBuffer.Type.Position, 3, pb);
-
-    // ----- Index buffer -----
-    clearBuffer(VertexBuffer.Type.Index);
-
-    if (fill) {
-        setMode(Mode.Triangles);
-        short[] indices = new short[(vertices.length - 2) * 3];
-        int k = 0;
-
-        for (short i = 1; i < vertices.length - 1; i++) {
-            indices[k++] = 0;
-            indices[k++] = i;
-            indices[k++] = (short) (i + 1);
+    protected void updateGeometry(final Vector3f[] vertices, boolean fill) {
+        if (vertices == null) {
+            throw new NullPointerException("vertices is null.");
         }
-        setBuffer(VertexBuffer.Type.Index, 3,
-                BufferUtils.createShortBuffer(indices));
+        this.vertices = vertices;
 
-    } else {
-        short[] indices = new short[vertices.length];
-        for (short i = 0; i < vertices.length; i++) {
-            indices[i] = i;
+        // ----- Position buffer -----
+        FloatBuffer pb = BufferUtils.createFloatBuffer(vertices.length * 3);
+        for (Vector3f v : vertices) {
+            pb.put(v.x).put(v.y).put(v.z);
         }
-        setBuffer(VertexBuffer.Type.Index, 1,
-                BufferUtils.createShortBuffer(indices));
-    }
+        pb.flip();
 
-    updateCounts();
-    updateBound();
-}
+        clearBuffer(VertexBuffer.Type.Position);
+        setBuffer(VertexBuffer.Type.Position, 3, pb);
+
+        fill(fill);
+        updateCounts();
+        updateBound();
+    }
+    
+    public void fill(boolean isFill) {
+        // ----- Index buffer -----
+        clearBuffer(VertexBuffer.Type.Index);
+        if (isFill) {
+            setMode(Mode.Triangles);
+            short[] indices = new short[(vertices.length - 2) * 3];
+            int k = 0;
+
+            for (short i = 1; i < vertices.length - 1; i++) {
+                indices[k++] = 0;
+                indices[k++] = i;
+                indices[k++] = (short) (i + 1);
+            }
+            setBuffer(VertexBuffer.Type.Index, 3,
+                    BufferUtils.createShortBuffer(indices));
+        } else {
+            short[] indices = new short[vertices.length];
+            for (short i = 0; i < vertices.length; i++) {
+                indices[i] = i;
+            }
+            setBuffer(VertexBuffer.Type.Index, 1,
+                    BufferUtils.createShortBuffer(indices));
+        }
+    }
 
     /**
      * (non-Javadoc)

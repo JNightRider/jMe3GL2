@@ -162,7 +162,17 @@ public class Box2dDebugAppState extends BaseAppState {
                 .drawShapes(true)
                 .drawBodyNames(true)
                 .drawJoints(true)
-                ;
+                .drawAnchorA(true)
+                .drawChainNormals(true)
+                .drawContactFeatures(true)
+                .drawFrictionForces(true)
+                .drawContactNormals(true)
+                .drawContacts(true)
+                .drawGraphColors(true)
+                .drawIslands(true)
+                .drawJointExtras(true)
+                .drawMass(true)
+                .drawBounds(true);
     }
     
     private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
@@ -198,27 +208,39 @@ public class Box2dDebugAppState extends BaseAppState {
     };
     
     private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
-        System.out.println("DrawCircleFcnI");
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderCircle(center, radius, color, false)
+        ));
     };
     
     private final DrawSolidCircleFcnI DrawSolidCircleFcn = (transform, center, radius, color, context) -> {
-        System.out.println("DrawSolidCircleFcnI");
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderCircle(center, radius, color, true)
+        ));
     };
     
     private final DrawSolidCapsuleFcnI DrawSolidCapsuleFcn = (p1, p2, radius, color, context) -> {
-        System.out.println("DrawSolidCapsuleFcnI");
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderCapsule(p1, p2, radius, color, true)
+        ));
     };
     
     private final DrawLineFcnI DrawLineFcn = (p1, p2, color, context) -> {
-        System.out.println("DrawLineFcnI");
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderLine(p1, p2, color)
+        ));
     };
     
     private final DrawTransformFcnI DrawTransformFcn = (transform, context) -> {
-        System.out.println("DrawTransformFcnI");
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderTransform(transform, 1.0f)
+        ));
     };
     
     private final DrawPointFcnI DrawPointFcn = (p, size, color, context) -> {
-        System.out.println("DrawPointFcnI");
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderPoint(p, size, color)
+        ));
     };
     
     private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {        
@@ -228,7 +250,9 @@ public class Box2dDebugAppState extends BaseAppState {
     };
     
     private final DrawBoundsFcnI DrawBoundsFcn = (aabb, color, context) -> {
-        System.out.println("DrawBoundsFcnI");
+        application.enqueue(() -> debugNode.attachChild(
+            renderer.renderBounds(aabb, color)
+        ));
     };
     
     /**
@@ -278,11 +302,6 @@ public class Box2dDebugAppState extends BaseAppState {
      */
     @Override
     public void update(float tpf) {
-        renderer.renderFree();
-        for (Vector3f[] v : cache) {
-            vector3fPool.takePop(v);
-        }
-        
         // Update debug root node
         debugNode.updateLogicalState(tpf);
         debugNode.updateGeometricState();
@@ -291,6 +310,11 @@ public class Box2dDebugAppState extends BaseAppState {
         if (B2_IS_NON_NULL(worldId)) {
             b2World_Draw(worldId, debugDraw);
         }
+        
+        for (Vector3f[] v : cache) {
+            vector3fPool.takePop(v);
+        }
+        renderer.renderFree();
     }
 
     /**
