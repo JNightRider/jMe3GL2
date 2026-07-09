@@ -102,10 +102,10 @@ public class Box2dTilesheet implements Tilesheet {
                 }
 
                 CollisionShape<?> collisionShape = pTle.optSavable("CollisionShape", null);
-                if (collisionShape != null) {
-                    collisionShape.createNewShapeId(pbd.getBodyId());
-                    
-                }
+                geom.setUserData("TileMap#CollisionShape", collisionShape);
+                //if (collisionShape != null) {
+                //    collisionShape.createNewShapeId(pbd.getBodyId());                    
+                //}
                 
                 pbd.getBodyDef()
                    .rotation(b2MakeRot(pTle.optFloat("Rotate", 0.0F), b2Rot.malloc()))
@@ -242,7 +242,12 @@ public class Box2dTilesheet implements Tilesheet {
             if (isPhysicsSpace()) {
                 PhysicsBody2D body2D = geom.getControl(PhysicsBody2D.class);
                 if ( body2D != null ) {
-                    physicsSpace.addBody(body2D);
+                    physicsSpace.addBody(body2D);                    
+                    CollisionShape<?> collisionShape = geom.getUserData("TileMap#CollisionShape");
+                    if (collisionShape != null) {
+                        collisionShape.createNewShapeId(body2D.getBodyId());
+                        geom.setUserData("TileMap#CollisionShape", null);
+                    }
                 }
             }
         }

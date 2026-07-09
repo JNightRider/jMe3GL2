@@ -36,7 +36,7 @@ import org.je3gl.box2d.collision.CollisionShape;
 import org.je3gl.scene.tile.TilePhysicsProvider;
 import org.je3gl.util.Arg;
 
-import static org.box2d.jni.include.Collision.b2MakeBox;
+import static org.box2d.jni.include.Collision.*;
 import static org.je3gl.scene.tile.TilePhysicsSystem.*;
 
 /**
@@ -73,9 +73,9 @@ public class Box2dTilePhysicsSystem implements TilePhysicsProvider<Object> {
     public Object invoke(String name, Arg<?>... args) {
         if (name == null) {
             return null;
-        }        
+        }
         return switch (name) {
-            case VF_CREATE_RECTANGLE -> b2MakeBox(args[0].getFloat(), args[1].getFloat(), b2Polygon.malloc());
+            case VF_CREATE_RECTANGLE ->  b2MakeBox(args[0].getFloat() * 0.5f,  args[1].getFloat() * 0.5f, b2Polygon.malloc());
             case VF_WRAP_COLLISION -> new CollisionShape(args[0].getSource());
             default -> null;
         };

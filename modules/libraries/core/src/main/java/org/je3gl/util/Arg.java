@@ -34,7 +34,7 @@ package org.je3gl.util;
  * Class responsible for managing the value of an argument (method).
  * 
  * @author wil
- * @version 1.0.0
+ * @version 1.0.1
  * @since 3.1.0
  * 
  * @param <T> type
@@ -71,7 +71,10 @@ public class Arg<T> {
      * @return float
      */
     public float getFloat() {
-        return (float) source;
+        if (source instanceof Number) {
+            return ((Number) source).floatValue();
+        }
+        throw new UnsupportedOperationException("<float>");
     }
 
     /**
@@ -79,7 +82,10 @@ public class Arg<T> {
      * @return double
      */
     public double getDouble() {
-        return (double) source;
+        if (source instanceof Number) {
+            return ((Number) source).doubleValue();
+        }
+        throw new UnsupportedOperationException("<float>");
     }
 
     /**

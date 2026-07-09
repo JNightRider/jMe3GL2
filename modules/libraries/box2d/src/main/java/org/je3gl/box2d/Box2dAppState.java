@@ -30,8 +30,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d;
 
+import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
+import com.jme3.app.state.AppStateManager;
 import com.jme3.math.Vector2f;
+import com.jme3.renderer.RenderManager;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +49,8 @@ import static org.box2d.jni.include.Base.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
+import org.je3gl.box2d.debug.Box2dDebugAppState;
+import org.je3gl.box2d.scene.tile.Box2dTilePhysicsSystem;
 
 /**
  *
@@ -50,24 +59,121 @@ import static org.box2d.jni.system.ArenaAlloc.*;
  * @since 3.2.0
  */
 public class Box2dAppState extends AbstractAppState {
+    /** Wait time in microseconds. */
+    private static final long TIME_STEP_IN_MICROSECONDS = (long) ((1.0f / 60.0f) * 1000L); 
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Box2dAppState.class.getName());
-    /** Physical space configurations. */
-    private Settings settings;
+    
+    /** JME3 Application (Game). */
+    protected Application app = null;    
+    /** States Manager. */
+    protected AppStateManager stateManager = null;
+    
+    protected b2WorldDef worldDef;
     
     /**The physical space of bodies. */
-    protected PhysicsSpace physicsSpace = null;   
+    protected PhysicsSpace physicsSpace = null;
+    /** <code>TPF</code> since last update call; in seconds. */
+    protected float tpf = 0;    
+    /**accumulated <code>TPF</code>. */
+    protected float tpfSum = 0;
 
     //--------------------------------------------------------------------------
     //                       Multithreaded fields
     //--------------------------------------------------------------------------
     /** Type of thread on which the physics engine runs. */
     protected ThreadingType threadingType = null;
+    
+    /**
+     * When the engine is running in parallel, an executor is used to safely update 
+     * the physical engine to avoid problems with JME3 threads.
+     */
+    protected ScheduledThreadPoolExecutor executor;
+    
+    /**
+     * When running the update thread; An executable is used to update the parallel
+     * physics engine.
+     */
+    private final Runnable parallelPhysicsUpdate = () -> {
+        if (!isEnabled()) {
+            return;
+        }
+        
+        // physics engine update
+        Box2dAppState.this.physicsSpace.update(
+            Box2dAppState.this.tpfSum
+        );
+        Box2dAppState.this.tpfSum = 0.0F;
+    };
+    
+    //--------------------------------------------------------------------------
+    //                              Debugger
+    //-------------------------------------------------------------------------- 
+    /**
+     * State in charge of managing a debugger for all physical bodies that manage
+     * the physical space (world).
+     */
+    protected Box2dDebugAppState box2dDebugAppState;
+     
+    /**
+     * <code>true</code> to enable the purification state of physical bodies and
+     * joints in physical space; otherwise it is <code>false</code> to disable.
+     */
+    protected boolean debug;
+    
+    //--------------------------------------------------------------------------
+    //                              Axis
+    //--------------------------------------------------------------------------
+    /**
+     * The axis type is the way in which the positions of physical objects are
+     * applied with respect to the three coordinates of JME3's 3D space; changing
+     * this axis implies a change in the way objects are controlled at the three
+     * points (x, y, z).
+     */
+    protected AxisType axisType = AxisType.getDefault();
+    
 
     public Box2dAppState() {
-        this.settings = new Settings();
+        this(b2DefaultWorldDef(b2WorldDef.malloc()), ThreadingType.SEQUENTIAL);
+    }
+    
+    public Box2dAppState(ThreadingType threadingType) {
+        this(b2DefaultWorldDef(b2WorldDef.malloc()), threadingType);
+    }
+
+    public Box2dAppState(b2WorldDef worldDef, ThreadingType threadingType) {
+        this.threadingType = threadingType;
+        this.worldDef = worldDef;
         startPhysics();
     }
+
+    /*(non-Javadoc)
+     */
+    @Override
+    public void initialize(final AppStateManager stateManager, final Application app) {
+        this.app = app;
+        this.stateManager = stateManager;
+
+        // Start physics-related objects.
+        startPhysics();
+
+        super.initialize(stateManager, app);
+    }
+    
+    protected final b2AllocFcnI allocFcn = (size, alignment) -> naligned_alloc(alignment, size);
+    
+    protected final b2FreeFcnI freeFcn = (mem, size) -> naligned_free(mem);
+    
+    protected final b2AssertFcnI assertFcn = (condition, fileName, lineNumber) -> {
+        LOGGER.log(Level.SEVERE, "{0}, {1}, line {2}", new Object[]{
+            condition, fileName, lineNumber
+        });
+        return 1;
+    };
+    
+    protected final b2LogFcnI logFcn = (message) -> {
+        LOGGER.log(Level.WARNING, message);
+    };
     
     /**
      * Initialize physics for physical bodies.
@@ -77,46 +183,177 @@ public class Box2dAppState extends AbstractAppState {
             return;
         }
 
-        b2SetAllocator(
-            (size, alignment) -> naligned_alloc(alignment, size),
-            (mem, size) -> naligned_free(mem)
-        );
-
-        b2SetAssertFcn((condition, fileName, lineNumber) -> {
-            LOGGER.log(Level.SEVERE, "{0}, {1}, line {2}", new Object[] {
-                condition, fileName, lineNumber
-            });
-            return 1;
-        });
+        b2SetAllocator(allocFcn, freeFcn);
+        b2SetAssertFcn(assertFcn);
+        b2SetLogFcn(logFcn);
         
-        b2SetLogFcn((message) -> {
-            Debug.apiPrint(message);
-        });
-        
-        try (ArenaAlloc arena = allocPush()) {
-            b2WorldDef worldDef = b2DefaultWorldDef(b2WorldDef.calloc(arena));
-            
-            Vector2f gravity = settings.getGravity();
-            worldDef.gravity(b2Vec2.calloc(arena).set(gravity.x, gravity.y));
-            
-            physicsSpace = new PhysicsSpace(worldDef);
+        if (this.threadingType == ThreadingType.PARALLEL) {
+            startPhysicsOnExecutor();
+        } else {
+            this.physicsSpace = new PhysicsSpace(worldDef);
+            this.box2dDebugAppState = new Box2dDebugAppState(physicsSpace);
+            this.box2dDebugAppState.setEnabled(false);
         }
-        
+
+        Box2dTilePhysicsSystem.initialize();
         this.initialized = true;
     }
 
+    /**
+     * Initializes the physics engine to run in parallel with JME3 safely.
+     */
+    private void startPhysicsOnExecutor() {
+        if (this.executor != null) {
+            this.executor.shutdown();
+        }
+        this.executor = new ScheduledThreadPoolExecutor(1);
+
+        @SuppressWarnings("unchecked")
+        final Callable<Boolean> call = () -> {
+            Box2dAppState.this.physicsSpace = new PhysicsSpace(Box2dAppState.this.worldDef);
+            Box2dAppState.this.box2dDebugAppState = new Box2dDebugAppState(physicsSpace);
+            return true;
+        };
+
+        try {
+            this.executor.submit(call).get();
+        } catch (final InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Box2dAppState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        schedulePhysicsCalculationTask();
+    }
+    
+    /**
+     * Method responsible for configuring the physical engine update task, this 
+     * is only valid if the engine runs in parallel.
+     */
+    private void schedulePhysicsCalculationTask() {
+        if (this.executor != null) {
+            this.executor.scheduleAtFixedRate(this.parallelPhysicsUpdate, 0L, TIME_STEP_IN_MICROSECONDS,
+                    TimeUnit.MICROSECONDS);
+        }
+    }
+    
+    /*(non-Javadoc)
+     */
     @Override
-    public void update(float tpf) {
-        physicsSpace.update(tpf);
+    public void update(final float tpf) {
+        if (!isEnabled()) {
+            return;
+        }
+        if (box2dDebugAppState != null && !stateManager.hasState(box2dDebugAppState)) {
+            stateManager.attach(box2dDebugAppState);
+        }
+        this.tpf = tpf;
+        this.tpfSum += tpf;
+    }
+        
+    /* (non-Javadoc)
+     */
+    @Override
+    public void render(final RenderManager rm) {
+        if (null == threadingType) {
+            /* (non-Code). */
+        } else switch (threadingType) {
+            case PARALLEL:
+                executor.submit(parallelPhysicsUpdate);
+                break;
+            case SEQUENTIAL:
+                final float timeStep = isEnabled() ? this.tpf * this.physicsSpace.getMaximumLinearSpeed(): 0;
+                this.physicsSpace.update(timeStep);
+                break;
+            default:
+                break;
+        }
     }
 
+    /* (non-Javadoc)
+     */
+    @Override
+    public void setEnabled(final boolean enabled) {
+        if (enabled) {
+            schedulePhysicsCalculationTask();
+
+        } else if (this.executor != null) {
+            this.executor.remove(this.parallelPhysicsUpdate);
+        }
+        super.setEnabled(enabled);
+    }
+    /**
+     * Method responsible for cleaning the state of physics.
+     * <p>
+     * <b>WARNING</b>: Once this method is executed (remove it from the state
+     * manager) the physical space will be invalidated so it will be unusable.
+     */
     @Override
     public void cleanup() {
+        if (executor != null) {
+            executor.shutdown();
+            executor = null;
+        }
         physicsSpace.close();
+        physicsSpace = null;
         super.cleanup();
     }
 
+    /**
+     * Returns the physics space.
+     *
+     * @return PhysicsSpace
+     */
     public PhysicsSpace getPhysicsSpace() {
-        return physicsSpace;
+        return this.physicsSpace;
+    }
+
+    /**
+     * Method responsible for returning the state of the debugger.
+     *
+     * @return <code>true</code> if enabled; otherwise it will return
+     * <code>false</code> if disabled
+     */
+    public boolean isDebugEnabled() {
+        return debug;
+    }
+
+    /**
+     * Method responsible for activating or deactivating the physical body
+     * debugger.
+     *
+     * @param debug <code>true</code> to enable state; otherwise
+     * <code>false</code> to disable it
+     */
+    public void setDebugEnabled(boolean debug) {
+        this.debug = debug;
+    }
+
+    /**
+     * Set the axis that will be used in the physical space.
+     *
+     * @param axisType axis type
+     */
+    public void setAxisType(AxisType axisType) {
+        if (axisType == null) {
+            throw new NullPointerException("The axis type cannot be null, choose a type");
+        }
+
+        if (physicsSpace != null) {
+            physicsSpace.setAxisType(axisType);
+        }
+        this.axisType = axisType;
+    }
+
+    /**
+     * Returns the axis used in physical space.
+     *
+     * @return axis type
+     */
+    public AxisType getAxisType() {
+        AxisType localAxis = physicsSpace.getAxisType();
+        if (localAxis != axisType) {
+            LOGGER.log(Level.WARNING, "Forced change for axis type: before [{0}], after [{1}]", new Object[]{localAxis, axisType});
+            physicsSpace.setAxisType(axisType);
+        }
+        return axisType;
     }
 }

@@ -41,12 +41,17 @@ import com.jme3.util.TempVars;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.box2d.jni.b2BodyDef;
 import org.box2d.jni.b2BodyId;
+import org.box2d.jni.b2BodyType;
+import org.box2d.jni.b2Polygon;
 import org.box2d.jni.b2Pos;
 import org.box2d.jni.b2Rot;
+import org.box2d.jni.b2ShapeDef;
+import org.box2d.jni.b2ShapeId;
 
 import org.box2d.jni.system.ArenaAlloc;
 
@@ -124,6 +129,22 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
         this.bodyId.clear();
     }
 
+    public b2ShapeId addPolygonShape(b2ShapeDef shapeDef, b2Polygon shape) {
+        if (isValid()) {
+            return b2CreatePolygonShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+        }
+        LOGGER.log(Level.WARNING, "First, add the body to the physical space to create the physical shape.");
+        return null;
+    }
+    
+    public void setType(b2BodyType bodyType) {
+        if (isValid()) {
+            b2Body_SetType(bodyId, bodyType);
+        } else {
+            bodyDef.type(bodyType);
+        }
+    }
+    
     /**
      * Check if the body is valid.
      *

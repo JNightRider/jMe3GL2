@@ -68,6 +68,7 @@ import static org.box2d.jni.include.Box2d.*;
 import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.MemoryUtil.*;
+import org.je3gl.box2d.PhysicsDraw;
 
 /**
  * Class <code>Box2dDebugAppState</code> responsible for managing a state for
@@ -78,7 +79,7 @@ import static org.box2d.jni.system.MemoryUtil.*;
  * @version 1.0.0
  * @since 3.2.0
  */
-public class Box2dDebugAppState extends BaseAppState {
+public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Box2dDebugAppState.class.getName());
     
@@ -123,8 +124,37 @@ public class Box2dDebugAppState extends BaseAppState {
     public Box2dDebugAppState(PhysicsSpace physicsSpace) {
         this.physicsSpace = physicsSpace;
         this.vector3fPool = new Vector3fPool();
+        this.startDebugPhysics();
     }
-     
+
+    private void startDebugPhysics() {
+        debugDraw = b2DefaultDebugDraw(b2DebugDraw.malloc());
+        debugDraw.DrawBoundsFcn(DrawBoundsFcn)
+                .DrawCircleFcn(DrawCircleFcn)
+                .DrawLineFcn(DrawLineFcn)
+                .DrawPointFcn(DrawPointFcn)
+                .DrawPolygonFcn(DrawPolygonFcn)
+                .DrawSolidCapsuleFcn(DrawSolidCapsuleFcn)
+                .DrawSolidCircleFcn(DrawSolidCircleFcn)
+                .DrawSolidPolygonFcn(DrawSolidPolygonFcn)
+                .DrawTransformFcn(DrawTransformFcn)
+                .DrawStringFcn(DrawStringFcn)
+                .drawShapes(true)
+                .drawBodyNames(true)
+                .drawJoints(true)
+                .drawAnchorA(true)
+                .drawChainNormals(true)
+                .drawContactFeatures(true)
+                .drawFrictionForces(true)
+                .drawContactNormals(true)
+                .drawContacts(true)
+                .drawGraphColors(true)
+                .drawIslands(true)
+                .drawJointExtras(true)
+                .drawMass(true)
+                .drawBounds(true);
+    }
+
     /**
      * (non-Javadoc)
      * @see com.jme3.app.state.AbstractAppState#initialize(com.jme3.app.state.AppStateManager, com.jme3.app.Application) 
@@ -144,35 +174,8 @@ public class Box2dDebugAppState extends BaseAppState {
         viewPort  = rm.createMainView("Physics Debug Overlay", app.getCamera());
         viewPort.setClearFlags(false, true, false);
         
-        setDebugGraphics(new StringDebugGraphics(app.getAssetManager()));
-        
+        setDebugGraphics(new StringDebugGraphics(app.getAssetManager()));        
         debugNode.setCullHint(Spatial.CullHint.Never);
-        
-        debugDraw = b2DefaultDebugDraw(b2DebugDraw.malloc());
-        debugDraw.DrawBoundsFcn(DrawBoundsFcn)
-                 .DrawCircleFcn(DrawCircleFcn)
-                 .DrawLineFcn(DrawLineFcn)
-                 .DrawPointFcn(DrawPointFcn)
-                 .DrawPolygonFcn(DrawPolygonFcn)
-                 .DrawSolidCapsuleFcn(DrawSolidCapsuleFcn)
-                 .DrawSolidCircleFcn(DrawSolidCircleFcn)
-                 .DrawSolidPolygonFcn(DrawSolidPolygonFcn)
-                 .DrawTransformFcn(DrawTransformFcn)
-                 .DrawStringFcn(DrawStringFcn)
-                .drawShapes(true)
-                .drawBodyNames(true)
-                .drawJoints(true)
-                .drawAnchorA(true)
-                .drawChainNormals(true)
-                .drawContactFeatures(true)
-                .drawFrictionForces(true)
-                .drawContactNormals(true)
-                .drawContacts(true)
-                .drawGraphColors(true)
-                .drawIslands(true)
-                .drawJointExtras(true)
-                .drawMass(true)
-                .drawBounds(true);
     }
     
     private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
@@ -311,11 +314,6 @@ public class Box2dDebugAppState extends BaseAppState {
         debugNode.updateLogicalState(tpf);
         debugNode.updateGeometricState();
         
-        b2WorldId worldId = physicsSpace.getWorldId();
-        if (B2_IS_NON_NULL(worldId)) {
-            b2World_Draw(worldId, debugDraw);
-        }
-        
         for (Vector3f[] v : cache) {
             vector3fPool.takePop(v);
         }
@@ -332,6 +330,10 @@ public class Box2dDebugAppState extends BaseAppState {
         if (this.viewPort != null) {
             rm.renderScene(this.debugNode, this.viewPort);
         }
+    }
+
+    public b2DebugDraw getDebugDraw() {
+        return debugDraw;
     }
     
     /**

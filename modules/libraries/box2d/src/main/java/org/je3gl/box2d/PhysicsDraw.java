@@ -31,66 +31,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d;
 
 import org.box2d.jni.b2DebugDraw;
-import org.box2d.jni.b2WorldDef;
-import org.box2d.jni.b2WorldId;
-
-import static org.box2d.jni.include.Box2d.*;
-import org.je3gl.box2d.control.PhysicsBody2D;
 
 /**
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class PhysicsSpace implements AutoCloseable {
+public interface PhysicsDraw {
     
-    protected b2WorldId worldId;
-
-    public PhysicsSpace(b2WorldDef worldDef) {
-        worldId = b2CreateWorld(worldDef, b2WorldId.malloc());
-    }
+    boolean isInitialized();
     
-    public float getMaximumLinearSpeed() {
-        return b2World_GetMaximumLinearSpeed(worldId);
-    }
-    
-    public void addBody(PhysicsBody2D body2D) {
-        b2CreateBody(worldId, body2D.getBodyDef(), body2D.getBodyId());
-        body2D.setPhysicsSpace(this);
-    }
-    
-    public void removeBody(PhysicsBody2D body2D) {
-        b2DestroyBody(body2D.getBodyId());
-        body2D.setPhysicsSpace(null);
-    }
-
-    public void update(float tpf) {
-        float timeStep = 1.0f / 60.0f;
-        int subStepCount = 4;
-        
-        
-        b2World_Step(worldId, timeStep, subStepCount);
-//        if (draw != null) {
-//            b2World_Draw(worldId, draw.getDebugDraw());
-//        }
-    }
-    
-    public void setAxisType(AxisType axisType) {
-        
-    }
-    
-    public AxisType getAxisType() {
-        return AxisType.AXIS_XYO;
-    }
-
-    public b2WorldId getWorldId() {
-        return worldId;
-    }
-    
-    @Override
-    public void close() {
-        b2DestroyWorld(worldId);
-        worldId.close();
-    }
+    b2DebugDraw getDebugDraw();
 }
