@@ -33,18 +33,22 @@ package org.je3gl.box2d.debug;
 import com.jme3.scene.Node;
 
 /**
+ * An object pool for {@code Node} type data
  *
  * @author wil
  * @version 1.0.0
  * @since 3.2.0
  */
 public class NodePool extends ObjectPool<Node> {
-
+    /*(non-javadoc)
+     */
     @Override
     protected Node create() {
         return new Node();
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected boolean validate(Node o) {
         if (o == null) {
@@ -53,6 +57,8 @@ public class NodePool extends ObjectPool<Node> {
         return o.getParent() == null;
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected void dead(Node o) {
         o.removeFromParent();

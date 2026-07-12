@@ -32,8 +32,6 @@ package org.je3gl.demo.box2d;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 
 import org.box2d.jni.b2Circle;
@@ -49,7 +47,6 @@ import org.je3gl.scene.tile.TileMap;
 
 import static org.box2d.jni.include.Collision.*;
 import static org.box2d.jni.include.Types.*;
-import org.je3gl.box2d.AxisType;
 
 import static org.je3gl.utilities.MaterialUtilities.*;
 import static org.je3gl.utilities.TileMapUtilities.*;
@@ -79,9 +76,8 @@ public class TileMap2D extends SimpleApplication {
     public void simpleInitApp() {
         Box2dAppState box2dAppState = new Box2dAppState(ThreadingType.PARALLEL);
         box2dAppState.setDebugEnabled(true);
-        box2dAppState.setAxisType(AxisType.AXIS_XYO);
         stateManager.attach(box2dAppState);
-        
+
         Geometry cube = new Geometry("Cube", new Sprite(1, 1, 22, 12, 17, 9));
         cube.setMaterial(getUnshadedMaterialFromClassPath(assetManager, "Textures/tilesheet_complete_2X.png"));
 

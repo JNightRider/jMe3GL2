@@ -33,21 +33,35 @@ package org.je3gl.box2d.debug;
 import com.jme3.math.Vector3f;
 
 /**
+ * An object pool for {@code Vector3f[]} type data
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class Vector3fPool extends ObjectPool<Vector3f[]> {
-    
+    /** size */
     private int size = 10;
 
+    /**
+     * Constructor
+     */
     public Vector3fPool() {
     }
 
+    /**
+     * Set size.
+     *
+     * @param size int
+     * @return Vector3fPool
+     */
     public Vector3fPool size(int size) {
         this.size = size;
         return this;
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected Vector3f[] create() {
         Vector3f[] array = new Vector3f[size];
@@ -57,6 +71,8 @@ public class Vector3fPool extends ObjectPool<Vector3f[]> {
         return array;
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected boolean validate(Vector3f[] o) {
         if (o == null) {
@@ -65,8 +81,8 @@ public class Vector3fPool extends ObjectPool<Vector3f[]> {
         return o.length >= size;
     }
 
+    /*(non-javadoc)
+     */
     @Override
-    protected void dead(Vector3f[] o) {
-        
-    }
+    protected void dead(Vector3f[] o) { }
 }

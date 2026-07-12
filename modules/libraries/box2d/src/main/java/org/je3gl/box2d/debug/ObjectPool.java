@@ -30,7 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.debug;
 
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ import java.util.Map;
  */
 public abstract class ObjectPool<T> {
     /** Default time for group objects. */
-    public static final long DEAD_TIME = 50000;
+    public static final long DEAD_TIME = 50000L;
     
     /**
      *A maximum time for an object to be reused, unless that object is still 
@@ -76,8 +77,8 @@ public abstract class ObjectPool<T> {
      */
     public ObjectPool(long deadTime) {
         this.deadTime = deadTime;
-        this.lock     = new Hashtable<>();
-        this.unlock   = new Hashtable<>();
+        this.lock     = Collections.synchronizedMap(new HashMap<>());
+        this.unlock   = Collections.synchronizedMap(new HashMap<>());
     }
     
     /**

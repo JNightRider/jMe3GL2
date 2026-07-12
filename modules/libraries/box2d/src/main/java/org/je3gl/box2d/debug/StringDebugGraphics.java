@@ -37,7 +37,9 @@ import com.jme3.math.ColorRGBA;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
- * Class responsible for implementing the {@link org.je3gl.scene.debug.custom.DebugGraphics} interface
+ * Class responsible for implementing the
+ * {@link org.je3gl.scene.debug.custom.DebugGraphics} interface
+ *
  * @author wil
  * @version 1.0.0
  * @since 3.2.0

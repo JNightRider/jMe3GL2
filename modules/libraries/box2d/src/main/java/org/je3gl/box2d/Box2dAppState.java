@@ -51,6 +51,13 @@ import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
 
 /**
+ * An object (an instance) of the class <code>Box2dAppState</code> is a state
+ * that is responsible for managing the physics engine provided by box2d, it
+ * integrates this engine with JME3 to give realism to 2D games with it.
+ * <p>
+ * Note that the dyn4j engine is independent of jme3; therefore, you must have
+ * knowledge of how to handle both.
+ * </p>
  *
  * @author wil
  * @version 1.0.0
@@ -64,7 +71,7 @@ public class Box2dAppState extends AbstractAppState {
     protected Application app = null;    
     /** States Manager. */
     protected AppStateManager stateManager = null;
-    
+    /** The initial values ​​of the 2D world. */
     protected b2WorldDef worldDef;
 
     /**
@@ -107,7 +114,9 @@ public class Box2dAppState extends AbstractAppState {
     //--------------------------------------------------------------------------
     //                              Debugger
     //-------------------------------------------------------------------------- 
-    
+    /**
+     * Debugger settings.
+     */
     private DrawSettings drawSettings;
     
     /**
@@ -132,16 +141,36 @@ public class Box2dAppState extends AbstractAppState {
      * the three points (x, y, z).
      */
     protected AxisType axisType = AxisType.getDefault();
-    
 
+    /**
+     * Generate a new instance of the <code>Box2dAppState</code> class to create
+     * a physics engine that can handle all physical bodies in a 2D world or
+     * scene realistically via <b>box2d</b>.
+     */
     public Box2dAppState() {
         this(b2DefaultWorldDef(b2WorldDef.malloc()), new DrawSettings(), ThreadingType.SEQUENTIAL);
     }
-    
+
+    /**
+     * Generate a new instance of the <code>Box2dAppState</code> class to create
+     * a physics engine that can handle all physical bodies in a 2D world or
+     * scene realistically via <b>box2d</b>.
+     *
+     * @param threadingType physics engine integration type (thread)
+     */
     public Box2dAppState(ThreadingType threadingType) {
         this(b2DefaultWorldDef(b2WorldDef.malloc()), new DrawSettings(), threadingType);
     }
 
+    /**
+     * Generate a new instance of the <code>Box2dAppState</code> class to create
+     * a physics engine that can handle all physical bodies in a 2D world or
+     * scene realistically via <b>box2d</b>.
+     *
+     * @param worldDef the initial values ​​of the 2D world.
+     * @param drawSettings debugger/draw settings.
+     * @param threadingType physics engine integration type (thread)
+     */
     public Box2dAppState(b2WorldDef worldDef, DrawSettings drawSettings, ThreadingType threadingType) {
         this.threadingType = threadingType;
         this.worldDef = worldDef;
@@ -160,22 +189,34 @@ public class Box2dAppState extends AbstractAppState {
 
         super.initialize(stateManager, app);
     }
-    
+
+    /**
+     * A callback function for: b2AllocFcn
+     */
     protected final b2AllocFcnI allocFcn = (size, alignment) -> naligned_alloc(alignment, size);
-    
+
+    /**
+     * A callback function for: b2FreeFcn
+     */
     protected final b2FreeFcnI freeFcn = (mem, size) -> naligned_free(mem);
-    
+
+    /**
+     * A callback function for: b2AssertFcn
+     */
     protected final b2AssertFcnI assertFcn = (condition, fileName, lineNumber) -> {
         LOGGER.log(Level.SEVERE, "{0}, {1}, line {2}", new Object[]{
             condition, fileName, lineNumber
         });
         return 1;
     };
-    
+
+    /**
+     * A callback function for: b2LogFcn
+     */
     protected final b2LogFcnI logFcn = (message) -> {
         LOGGER.log(Level.WARNING, message);
     };
-    
+
     /**
      * Initialize physics for physical bodies.
      */
@@ -314,6 +355,11 @@ public class Box2dAppState extends AbstractAppState {
         return speed;
     }
 
+    /**
+     * Returns the debugger settings (drawings).
+     *
+     * @return DrawSettings
+     */
     public DrawSettings getDrawSettings() {
         return drawSettings;
     }

@@ -64,11 +64,7 @@ public class PhysicsSpace implements AutoCloseable {
     public void setDebugDraw(b2DebugDraw debugDraw) {
         this.debugDraw = debugDraw;
     }
-    
-    public float getMaximumLinearSpeed() {
-        return b2World_GetMaximumLinearSpeed(worldId);
-    }
-    
+
     public void addBody(PhysicsBody2D body2D) {
         b2CreateBody(worldId, body2D.getBodyDef(), body2D.getBodyId());
         body2D.setPhysicsSpace(this);

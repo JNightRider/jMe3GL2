@@ -41,6 +41,7 @@ import com.jme3.scene.Node;
 import com.jme3.util.TempVars;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,7 +106,7 @@ public class Graphics2DRenderer {
         this.bitmapTextPool = new BitmapTextPool();
         this.vector3fPool = new Vector3fPool();
         this.shapeRenderManager = new ShapeRenderManager(assetManager);
-        this.cache = new ArrayList<>();
+        this.cache = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -128,7 +129,7 @@ public class Graphics2DRenderer {
         BitmapText text = bitmapTextPool.takePush();
         text.setText(txt);
         text.setColor(ColorUtilities.fromIntRGBA(color, 1.0f));
-        text.setLocalTranslation(Converter.toVector3fValueOfJME3(pos, box2dDebugAppState.getPhysicsSpace().getAxisType()));
+        text.setLocalTranslation(Converter.toVector3f(pos, box2dDebugAppState.getPhysicsSpace().getAxisType()));
         text.setQueueBucket(RenderQueue.Bucket.Translucent);
         
         text.move(-(text.getLineWidth() / 2.0f), 0, 0);
@@ -152,7 +153,7 @@ public class Graphics2DRenderer {
         AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
         float angle = b2Rot_GetAngle(transforms.q());
 
-        node.setLocalTranslation(Converter.toVector3fValueOfJME3(transforms.p(), axisType));
+        node.setLocalTranslation(Converter.toVector3f(transforms.p(), axisType));
         node.setLocalRotation(vars.quat1.fromAngleAxis(angle, Converter.toUNIT3f(axisType)));
         
         vars.release();
@@ -162,13 +163,13 @@ public class Graphics2DRenderer {
     public Node renderCircle(b2WorldTransform transform,b2Pos center, float radius, int color, boolean solid) {
         Node node = shapeRenderManager.render(MeshRender.CIRCLE, radius, color, solid);        
         AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType();
-        node.setLocalTranslation(Converter.toVector3fValueOfJME3(center, axisType));
+        node.setLocalTranslation(Converter.toVector3f(center, axisType));
         
         if (transform != null) {
             TempVars vars = TempVars.get();
             float angle = b2Rot_GetAngle(transform.q());
 
-            node.setLocalTranslation(Converter.toVector3fValueOfJME3(transform.p(), axisType));
+            node.setLocalTranslation(Converter.toVector3f(transform.p(), axisType));
             node.setLocalRotation(vars.quat1.fromAngleAxis(angle, Converter.toUNIT3f(axisType)));
             vars.release();
         }
@@ -234,14 +235,14 @@ public class Graphics2DRenderer {
             b2Vec2 p2 = b2MulAdd( p1, scale, b2Rot_GetXAxis( xf.q(), b2Vec2.calloc(alloc) ), b2Vec2.calloc(alloc) );
             
             AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
-            Converter.toVector3fValueOfJME3(p1, axisType, buff1[0]);
-            Converter.toVector3fValueOfJME3(p2, axisType, buff1[1]);
+            Converter.toVector3f(p1, axisType, buff1[0]);
+            Converter.toVector3f(p2, axisType, buff1[1]);
             rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff1, b2_colorRed, false));
             
             p2 = b2MulAdd( p1, scale, b2Rot_GetYAxis( xf.q(), b2Vec2.calloc(alloc) ), b2Vec2.calloc(alloc) );
             
-            Converter.toVector3fValueOfJME3(p1, axisType, buff2[0]);
-            Converter.toVector3fValueOfJME3(p2, axisType, buff2[1]);
+            Converter.toVector3f(p1, axisType, buff2[0]);
+            Converter.toVector3f(p2, axisType, buff2[1]);
             rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff2, b2_colorGreen, false));
             return rootNode;
         }
@@ -253,7 +254,7 @@ public class Graphics2DRenderer {
         Vector3f vec3 = vars.vect1;
         
         AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
-        Converter.toVector3fValueOfJME3(p, axisType, vec3);
+        Converter.toVector3f(p, axisType, vec3);
         
         vec4.set(vec3.x, vec3.y, vec3.z, size * 1.5f);
         
@@ -284,17 +285,17 @@ public class Graphics2DRenderer {
             cache.add(buff4);
             
             AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType(); 
-            Converter.toVector3fValueOfJME3(p1, axisType, buff1[0]);
-            Converter.toVector3fValueOfJME3(p2, axisType, buff1[1]);
+            Converter.toVector3f(p1, axisType, buff1[0]);
+            Converter.toVector3f(p2, axisType, buff1[1]);
             
-            Converter.toVector3fValueOfJME3(p2, axisType, buff2[0]);
-            Converter.toVector3fValueOfJME3(p3, axisType, buff2[1]);
+            Converter.toVector3f(p2, axisType, buff2[0]);
+            Converter.toVector3f(p3, axisType, buff2[1]);
             
-            Converter.toVector3fValueOfJME3(p3, axisType, buff3[0]);
-            Converter.toVector3fValueOfJME3(p4, axisType, buff3[1]);
+            Converter.toVector3f(p3, axisType, buff3[0]);
+            Converter.toVector3f(p4, axisType, buff3[1]);
             
-            Converter.toVector3fValueOfJME3(p4, axisType, buff4[0]);
-            Converter.toVector3fValueOfJME3(p1, axisType, buff4[1]);
+            Converter.toVector3f(p4, axisType, buff4[0]);
+            Converter.toVector3f(p1, axisType, buff4[1]);
             
             Node rootNode = shapeRenderManager.create();
             rootNode.attachChild(shapeRenderManager.render(MeshRender.LINE, buff1, color, false));

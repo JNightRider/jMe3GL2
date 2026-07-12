@@ -34,6 +34,7 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 
 /**
+ * An object pool for {@code Geometry} type data
  *
  * @author wil
  * @version 1.0.0
@@ -41,6 +42,8 @@ import com.jme3.scene.Geometry;
  */
 public class GeometryPool extends ObjectPool<Geometry> {
 
+    /*(non-javadoc)
+     */
     @Override
     protected Geometry create() {
         Geometry geometry = new Geometry();
@@ -48,6 +51,8 @@ public class GeometryPool extends ObjectPool<Geometry> {
         return geometry;
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected boolean validate(Geometry o) {
         if (o == null) {
@@ -56,6 +61,8 @@ public class GeometryPool extends ObjectPool<Geometry> {
         return o.getParent() == null;
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected void dead(Geometry o) {
         o.removeFromParent();

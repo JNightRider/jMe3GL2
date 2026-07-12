@@ -41,29 +41,57 @@ import org.je3gl.scene.debug.AbstractShape2D;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
+ * An individual shape manager for the physics engine.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class GeometryRender extends ShapeRender<Geometry, GeometryPool> {
 
+    /**
+     * Constructor
+     * @param assetManager AssetManager
+     */
     public GeometryRender(AssetManager assetManager) {
         super(assetManager, new GeometryPool());
     }
 
+    /**
+     * Renders a new object based on the information provided by the physics engine.
+     *
+     * @param <T> type mesh
+     *
+     * @param meshRender mesh
+     * @param value value for the mesh
+     * @param color color rgb
+     * @param fill boolean
+     *
+     * @return Node
+     */
     public <T> Geometry render(MeshRender<T> meshRender, T value, int color, boolean fill) {
         Geometry geom = pool();
         Material mat  = checkMaterial(geom, color, fill);
-        geom.setQueueBucket(RenderQueue.Bucket.Translucent);        
+        geom.setQueueBucket(RenderQueue.Bucket.Translucent);
         geom.setMaterial(mat);
-        
+
         meshRender.render(geom, color, value);
         Mesh mesh = geom.getMesh();
         if (fill && (mesh instanceof AbstractShape2D)) {
-           ((AbstractShape2D) mesh).fill(fill);
+            ((AbstractShape2D) mesh).fill(fill);
         }
         return geom;
     }
-    
+
+    /**
+     * Check the material values ​​to change its state to solid (or not) and its color.
+     *
+     * @param geom Geometry
+     * @param color int rgb
+     * @param fill boolean
+     *
+     * @return Material
+     */
     private Material checkMaterial(Geometry geom, int color, boolean fill) {
         Material mat = geom.getMaterial();
         float a = fill ? 0.1f : 1.0f;
@@ -75,7 +103,10 @@ public class GeometryRender extends ShapeRender<Geometry, GeometryPool> {
         mat.setFloat("PointSize", 1f);
         return mat;
     }
-    
+
+    /*(non-Javadoc)
+     */
     @Override
-    protected void free() { }
+    protected void free() {
+    }
 }

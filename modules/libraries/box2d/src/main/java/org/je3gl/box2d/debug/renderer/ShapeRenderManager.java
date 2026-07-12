@@ -35,34 +35,62 @@ import com.jme3.scene.Node;
 import org.je3gl.box2d.debug.NodePool;
 
 /**
+ * A manager for all shapes of the physics engine.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class ShapeRenderManager extends ShapeRender<Node, NodePool> {
-    
+
+    /**
+     * A rendering manager for geometries.
+     */
     private final GeometryRender geometryRender;
-    
+
+    /**
+     * Constructor
+     * @param assetManager AssetManager
+     */
     public ShapeRenderManager(AssetManager assetManager) {
         super(assetManager, new NodePool());
         this.geometryRender = new GeometryRender(assetManager);
     }
 
+    /**
+     * Create a new empty node.
+     *
+     * @return Node
+     */
     public Node create() {
         return pool();
     }
-    
+
+    /**
+     * Renders a new object based on the information provided by the physics engine.
+     *
+     * @param <T> type mesh
+     *
+     * @param mesh mesh
+     * @param value value for the mesh
+     * @param color color rgb
+     * @param solid boolean
+     *
+     * @return Node
+     */
     public <T> Node render(MeshRender<T> mesh, T value, int color, boolean solid) {
-        Node node = pool();        
+        Node node = pool();
         node.attachChild(geometryRender.render(mesh, value, color, true));
         if (solid) {
             node.attachChild(geometryRender.render(mesh, value, color, false));
         }
         return node;
     }
-    
+
+    /*(non-Javadoc)
+     */
     @Override
     protected void free() {
         geometryRender.close();
     }
 }
-

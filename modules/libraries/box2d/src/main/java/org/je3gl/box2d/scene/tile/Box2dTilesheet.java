@@ -34,7 +34,6 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -60,8 +59,8 @@ import org.je3gl.utilities.TileMapUtilities;
 
 import org.box2d.jni.b2BodyType;
 import org.box2d.jni.b2Rot;
-import static org.box2d.jni.include.MathFunctions.*;
 import org.je3gl.box2d.AxisType;
+import static org.box2d.jni.include.MathFunctions.*;
 
 /**
  * Class that implements the default administrators used by the class {@link org.je3gl.scene.tile.TileMap} 
@@ -86,7 +85,9 @@ public class Box2dTilesheet implements Tilesheet {
          */
         protected AxisType axisType = AxisType.getDefault();
 
-        public void setAxisType(AxisType axisType) {
+        /*(non-Javadoc)
+         */
+        private void setAxisType(AxisType axisType) {
             this.axisType = axisType;
         }
 
@@ -238,17 +239,17 @@ public class Box2dTilesheet implements Tilesheet {
      * Internal class responsible for implementing the interface {@link SpritesheetPhysics}.
      */
     private static class Jme3GLDefTileSpace implements SpritesheetPhysics {
-        
+        /** tile model */
         private Jme3GLDefTileModel tileModel;
-
         /** The physical space. */
         protected PhysicsSpace physicsSpace;
 
-        public void setTileModel(Jme3GLDefTileModel tileModel) {
+        /*(non-Javadoc)
+         */
+        private void setTileModel(Jme3GLDefTileModel tileModel) {
             this.tileModel = tileModel;
         }
-        
-        
+
         /* (non-Javadoc) */
         @Override
         public void onDetachTile(Geometry geom) {

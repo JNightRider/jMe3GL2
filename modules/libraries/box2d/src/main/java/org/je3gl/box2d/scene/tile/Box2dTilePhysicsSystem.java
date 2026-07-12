@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.scene.tile;
 
 import org.box2d.jni.b2Polygon;
+import org.box2d.jni.system.Struct;
 
 import org.je3gl.box2d.collision.CollisionShape;
 import org.je3gl.scene.tile.TilePhysicsProvider;
@@ -76,7 +77,7 @@ public class Box2dTilePhysicsSystem implements TilePhysicsProvider<Object> {
         }
         return switch (name) {
             case VF_CREATE_RECTANGLE ->  b2MakeBox(args[0].getFloat() * 0.5f,  args[1].getFloat() * 0.5f, b2Polygon.malloc());
-            case VF_WRAP_COLLISION -> new CollisionShape(args[0].getSource());
+            case VF_WRAP_COLLISION -> new CollisionShape((Struct) args[0].getSource());
             default -> null;
         };
     }

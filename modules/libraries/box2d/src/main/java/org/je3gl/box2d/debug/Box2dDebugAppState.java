@@ -40,16 +40,14 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.box2d.jni.b2DebugDraw;
 import org.box2d.jni.b2Vec2;
-import org.box2d.jni.b2WorldId;
 import org.box2d.jni.draw.DrawBoundsFcnI;
 import org.box2d.jni.draw.DrawCircleFcnI;
 import org.box2d.jni.draw.DrawLineFcnI;
@@ -63,12 +61,13 @@ import org.box2d.jni.draw.DrawTransformFcnI;
 
 import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.util.Converter;
+import org.je3gl.box2d.DrawSettings;
+import org.je3gl.box2d.PhysicsDraw;
+
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.MemoryUtil.*;
-import org.je3gl.box2d.DrawSettings;
-import org.je3gl.box2d.PhysicsDraw;
 
 /**
  * Class <code>Box2dDebugAppState</code> responsible for managing a state for
@@ -100,18 +99,12 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
     /** Rendering manager. */
     private Graphics2DRenderer renderer; // Debugger
     
-    // Physical bodies and joints.    
-    /** Map of physical bodies. */
-    protected Map<Long, Spatial> bodies = new HashMap<>();
-    /** Joint physical map. */
-    protected Map<Long, Spatial> joints = new HashMap<>();
-    
     /** Debugger view. */
     protected ViewPort viewPort;
     /** <code>JME3</code> renderer. */
     protected RenderManager rm;
 
-    private List<Vector3f[]> cache = new ArrayList<>();
+    private List<Vector3f[]> cache = Collections.synchronizedList(new ArrayList<>());
     private Vector3fPool vector3fPool;
     private b2DebugDraw debugDraw;
     private DrawSettings settings;
@@ -201,7 +194,7 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
 
         for (int i = 0; i < vertexCount; i++) {
             b2Vec2 vec2 = buffer.get(i);
-            Converter.toVector3fValueOfJME3(vec2, physicsSpace.getAxisType(), vertx[i]);
+            Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
         }
                
         application.enqueue(() -> debugNode.attachChild(
@@ -221,7 +214,7 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
 
         for (int i = 0; i < vertexCount; i++) {
             b2Vec2 vec2 = buffer.get(i);
-            Converter.toVector3fValueOfJME3(vec2, physicsSpace.getAxisType(), vertx[i]);
+            Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
         }
                
         application.enqueue(() -> debugNode.attachChild(

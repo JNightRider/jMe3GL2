@@ -34,29 +34,41 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.je3gl.box2d.debug.ObjectPool;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
- * @param <T>
- * @param <POOL>
+ * A manager for rendering immediate-mode shapes in Box2D.
+ *
+ * @param <T> type
+ * @param <POOL> object pool
  *
  * @author wil
  * @version 1.0.0
  * @since 3.2.0
  */
 public abstract class ShapeRender<T, POOL extends ObjectPool<T>> implements AutoCloseable {
-
+    /** assets - jme3 */
     protected final AssetManager assetManager;
+    /** All objects to be drawn temporarily. */
     private final List<T> cache;
+    /** ObjectPool */
     private final POOL pool;
-    
+ 
+    /**
+     * Constructor
+     *
+     * @param assetManager AssetManager
+     * @param pool ObjectPool
+     */
     public ShapeRender(AssetManager assetManager, POOL pool) {
         this.assetManager = assetManager;
-        this.cache = new ArrayList<>();
+        this.cache = Collections.synchronizedList(new ArrayList<>());
         this.pool = pool;
     }
 
@@ -93,15 +105,25 @@ public abstract class ShapeRender<T, POOL extends ObjectPool<T>> implements Auto
         mat.setColor("Color", color);
         return mat;
     }
-    
+
+    /**
+     * Release any additional objects that may appear.
+     */
     protected abstract void free();
-    
+
+    /**
+     * Get a new instance of the object group.
+     *
+     * @return Object
+     */
     protected T pool() {
         T value = pool.takePush();
         cache.add(value);
         return value;
     }
-    
+
+    /*(non-Javadoc)
+     */
     @Override
     public void close() {
         for (int i = 0; i < cache.size(); i++) {

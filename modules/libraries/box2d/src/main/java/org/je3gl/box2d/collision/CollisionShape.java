@@ -35,10 +35,13 @@ import com.jme3.export.JmeImporter;
 import com.jme3.export.Savable;
 
 import java.io.IOException;
+
 import org.box2d.jni.b2BodyId;
 import org.box2d.jni.b2Polygon;
 import org.box2d.jni.b2ShapeDef;
 import org.box2d.jni.b2ShapeId;
+
+import org.box2d.jni.system.Struct;
 import static org.box2d.jni.include.Types.*;
 
 /**
@@ -52,7 +55,7 @@ import static org.box2d.jni.include.Types.*;
  * @since 3.2.0
  */
 @SuppressWarnings("unchecked")
-public class CollisionShape<E> implements Savable, Cloneable {
+public class CollisionShape<E extends Struct<E>> implements Savable, Cloneable, AutoCloseable {
 
     /** shape. */
     private E shape;
@@ -73,11 +76,20 @@ public class CollisionShape<E> implements Savable, Cloneable {
      * @param shape shape
      */
     public CollisionShape(E shape) {
+        this(shape, b2DefaultShapeDef(b2ShapeDef.malloc()));
+    }
+
+    /**
+     * Generates a new <code>CollisionShape</code> to manage a physical form.
+     *
+     * @param shape shape
+     * @param shapeDef shape def
+     */
+    public CollisionShape(E shape, b2ShapeDef shapeDef) {
         this.shape = shape;
-        this.shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
+        this.shapeDef = shapeDef;
         if (shape instanceof b2Polygon) {
             creator = (ShapeCreator<E>) ShapeCreator.POLYGON;
-            
         }
     }
 
@@ -100,6 +112,16 @@ public class CollisionShape<E> implements Savable, Cloneable {
 
     public ShapeCreator<E> getCreator() {
         return creator;
+    }
+
+    @Override
+    public void close() {
+        if (shape != null) {
+            shape.close();
+        }
+        if (shapeDef != null) {
+            shapeDef.close();
+        }
     }
 
     @Override

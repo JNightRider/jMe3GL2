@@ -205,9 +205,9 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
         try (ArenaAlloc alloc = allocPush()) {
             if (isValid()) {
                 b2Pos position = b2Body_GetPosition(bodyId, b2Pos.ncalloc(alloc));
-                return Converter.toVector3fValueOfJME3(position, axisType, tmpWorldPosition);
+                return Converter.toVector3f(position, axisType, tmpWorldPosition);
             }
-            return Converter.toVector3fValueOfJME3(bodyDef.position(), axisType, tmpWorldPosition);
+            return Converter.toVector3f(bodyDef.position(), axisType, tmpWorldPosition);
         }
     }
     

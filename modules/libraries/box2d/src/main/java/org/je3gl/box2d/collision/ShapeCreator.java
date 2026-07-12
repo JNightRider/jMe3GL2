@@ -38,7 +38,7 @@ import org.box2d.jni.b2ShapeId;
 import static org.box2d.jni.include.Box2d.b2CreatePolygonShape;
 
 /**
- * @param <SHAPE>
+ * @param <SHAPE> shape
  *
  * @author wil
  * @version 1.0.0

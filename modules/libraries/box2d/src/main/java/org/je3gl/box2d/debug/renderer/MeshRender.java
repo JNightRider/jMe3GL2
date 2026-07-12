@@ -38,19 +38,26 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.shape.Line;
 import com.jme3.util.TempVars;
+
 import org.je3gl.scene.debug.Capsule2D;
 import org.je3gl.scene.debug.Circle2D;
 import org.je3gl.scene.debug.Point2D;
 import org.je3gl.scene.debug.Polygon2D;
 
 /**
+ * An interface responsible for managing how the geometric mesh is rendered,
+ * based on properties provided by the physics engine.
+ *
+ * @param <ATTR> rendering value (value)
  *
  * @author wil
- * @param <ATTR>
+ * @version 1.0.0
+ * @since 3.2.0
  */
 @FunctionalInterface
 public interface MeshRender<ATTR> {
 
+    /** Polygon2D */
     MeshRender<Vector3f[]> POLYGON = (geom, color, value) -> {
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Polygon2D)) {
@@ -60,7 +67,8 @@ public interface MeshRender<ATTR> {
         }
         geom.setMesh(mesh);
     };
-    
+
+    /** Circle2D */
     MeshRender<Float> CIRCLE = (geom, color, value) -> {
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Circle2D)) {
@@ -70,7 +78,8 @@ public interface MeshRender<ATTR> {
         }
         geom.setMesh(mesh);
     };
-    
+
+    /** Capsule2D */
     MeshRender<Vector2f> CAPSULE = (geom, color, value) -> {
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Capsule2D)) {
@@ -80,7 +89,8 @@ public interface MeshRender<ATTR> {
         }
         geom.setMesh(mesh);
     };
-    
+
+    /** Line */
     MeshRender<Vector3f[]> LINE = (geom, color, value) -> {
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Line)) {
@@ -90,12 +100,13 @@ public interface MeshRender<ATTR> {
         }
         geom.setMesh(mesh);
     };
-    
+
+    /** Point2D */
     MeshRender<Vector4f> POINT = (geom, color, value) -> {
         TempVars vars = TempVars.get();
         Vector3f vec3 = vars.vect1;
         vec3.set(value.x, value.y, value.z);
-        
+
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Point2D)) {
             mesh = new Point2D(vec3);
@@ -103,11 +114,18 @@ public interface MeshRender<ATTR> {
             ((Point2D) mesh).updateGeometry(vec3);
         }
         geom.setMesh(mesh);
-        
+
         Material mat = geom.getMaterial();
         mat.setFloat("PointSize", value.w);
         vars.release();
     };
 
+    /**
+     * Method responsible for rendering the geometry's shape.
+     *
+     * @param geom Geometry
+     * @param color int
+     * @param value Object
+     */
     void render(Geometry geom, int color, ATTR value);
 }

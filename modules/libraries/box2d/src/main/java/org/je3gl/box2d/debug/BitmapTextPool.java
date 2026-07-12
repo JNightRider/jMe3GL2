@@ -36,6 +36,7 @@ import com.jme3.font.BitmapText;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
+ * An object pool for {@code BitmapText} type data
  *
  * @author wil
  * @version 1.0.0
@@ -46,23 +47,38 @@ public class BitmapTextPool extends ObjectPool<BitmapText> {
     /** Graphics debugger. */
     private DebugGraphics graphics;
 
+    /**
+     * Constructor
+     */
     public BitmapTextPool() {
     }
 
+    /**
+     * Returns DebugGraphics
+     * @return DebugGraphics
+     */
     public DebugGraphics getGraphics() {
         return graphics;
     }
 
+    /**
+     * Set DebugGraphics
+     * @param graphics DebugGraphics
+     */
     public void setGraphics(DebugGraphics graphics) {
         this.graphics = graphics;
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected BitmapText create() {
         BitmapFont font = graphics.getBitmapFont("path://jMe3GL2/Fonts/ProggyClean.fnt");
         return graphics.createBitmapText(font, null);
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected boolean validate(BitmapText o) {
         if (o == null) {
@@ -71,6 +87,8 @@ public class BitmapTextPool extends ObjectPool<BitmapText> {
         return o.getParent() == null;
     }
 
+    /*(non-javadoc)
+     */
     @Override
     protected void dead(BitmapText o) {
         o.removeFromParent();

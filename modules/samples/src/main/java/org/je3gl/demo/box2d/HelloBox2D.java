@@ -35,32 +35,19 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.system.AppSettings;
-import org.box2d.jni.b2BodyDef;
-import org.box2d.jni.b2BodyId;
 
-import org.box2d.jni.system.*;
-import org.box2d.jni.system.*;
+import org.je3gl.box2d.Box2dAppState;
+import org.je3gl.box2d.ThreadingType;
+import org.je3gl.renderer.Camera2DAppSate;
+import org.je3gl.renderer.UnitComparator;
 
+import org.box2d.jni.*;
+import org.box2d.jni.system.*;
 import static org.box2d.jni.b2BodyType.*;
-import org.box2d.jni.b2Capsule;
-import org.box2d.jni.b2Polygon;
-import org.box2d.jni.b2Pos;
-import org.box2d.jni.b2ShapeDef;
-import org.box2d.jni.b2ShapeId;
-import org.box2d.jni.b2Vec2;
-import org.box2d.jni.b2WorldId;
 
 import static org.box2d.jni.include.Box2d.*;
 import static org.box2d.jni.include.Collision.*;
-import static org.box2d.jni.include.MathFunctions.*;
-import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.Types.*;
-import static org.box2d.jni.system.ArenaAlloc.*;
-
-import org.je3gl.box2d.Box2dAppState;
-import org.je3gl.box2d.debug.Box2dDebugAppState;
-import org.je3gl.renderer.Camera2DAppSate;
-import org.je3gl.renderer.UnitComparator;
 
 /**
  * This is a good example of how to get up and running with Box2D - <b>HelloBox2D</b>.
@@ -84,7 +71,10 @@ public class HelloBox2D extends SimpleApplication {
         app.setSettings(settings);
         app.start();
     }
-    
+
+    /**
+     * (non-Javadoc)
+     */
     @Override
     public void simpleInitApp() {
         viewPort.setBackgroundColor(new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f));
@@ -93,11 +83,9 @@ public class HelloBox2D extends SimpleApplication {
         camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
         stateManager.attach(camera2DAppSate);
 
-        Box2dAppState box2d = new Box2dAppState();
+        Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);
+        box2d.setDebugEnabled(true);
         stateManager.attach(box2d);
-        
-//        Box2dDebugAppState debug = new Box2dDebugAppState(box2d.getPhysicsSpace(), n);
-//        stateManager.attach(debug);
         
         b2WorldId worldId = box2d.getPhysicsSpace().getWorldId();
         b2BodyDef groundBodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
@@ -120,8 +108,7 @@ public class HelloBox2D extends SimpleApplication {
         shapeDef.density(1.0f);
         shapeDef.material().friction(0.3f);
 
-        b2CreatePolygonShape(bodyId, shapeDef, dynamicBox, b2ShapeId.malloc());
-        
+        b2CreatePolygonShape(bodyId, shapeDef, dynamicBox, b2ShapeId.malloc());        
         b2Body_SetName(bodyId, "Player");
         
         {

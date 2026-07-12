@@ -27,27 +27,30 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.box2d.listener;
 
 import org.je3gl.box2d.PhysicsSpace;
 
 /**
  * Interface in charge of managing the listeners of physical bodies.
+ *
  * @author wil
  * @version 1.0.0
  * @since 3.2.0
  */
 public interface SpaceListener {
-    
+
     /**
      * It is activated when a body is added to physical space.
+     *
      * @param physicsSpace space
      */
     public void spaceAttached(PhysicsSpace physicsSpace);
-    
+
     /**
      * It is activated when a body is removed from physical space.
+     *
      * @param physicsSpace space
      */
     public void spaceDetached(PhysicsSpace physicsSpace);
