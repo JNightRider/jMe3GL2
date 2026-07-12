@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.util;
 
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 
 import org.box2d.jni.b2Pos;
@@ -45,7 +46,37 @@ import org.je3gl.box2d.AxisType;
  * @since 3.2.0
  */
 public final class Converter {
+    
+    public static void checkVec3XY0(Vector3f in, AxisType actual, AxisType out) {
+        if (actual == out)
+            return;
+        
+        float y = actual == AxisType.AXIS_XYO ? in.y : in.z;
+        float z = actual == AxisType.AXIS_XYO ? in.z : in.y;
+        if (out == AxisType.AXIS_XYO) {
+            in.setY(y)
+              .setZ(z);
+        } else {
+            in.setY(z)
+              .setZ(y);
+        }
+    }
+    
+    public static Vector3f toVec3f(Vector2f vec2, AxisType axisType) {
+        Vector3f vec3 = new Vector3f(vec2.x, vec2.y, 0);
+        checkVec3XY0(vec3, AxisType.AXIS_XYO, axisType);
+        return vec3;
+    }
 
+    public static b2Pos toB2Pos(Vector2f vec2) {
+        return toB2Pos(vec2, b2Pos.nmalloc());
+    }
+    
+    public static b2Pos toB2Pos(Vector2f vec2, b2Pos __result) {
+        __result.set(vec2.x, vec2.y);
+        return __result;
+    }
+    
     public static b2Pos toB2Pos(Vector3f vec3) {
         return b2Pos.nmalloc().set(vec3.x, vec3.y);
     }

@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.control;
 
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -47,6 +48,7 @@ import java.util.logging.Logger;
 import org.box2d.jni.b2BodyDef;
 import org.box2d.jni.b2BodyId;
 import org.box2d.jni.b2BodyType;
+import org.box2d.jni.b2Circle;
 import org.box2d.jni.b2Polygon;
 import org.box2d.jni.b2Pos;
 import org.box2d.jni.b2Rot;
@@ -136,12 +138,31 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
         LOGGER.log(Level.WARNING, "First, add the body to the physical space to create the physical shape.");
         return null;
     }
+
+    public b2ShapeId addCircleShape(b2ShapeDef shapeDef, b2Circle shape) {
+        if (isValid()) {
+            return b2CreateCircleShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+        }
+        LOGGER.log(Level.WARNING, "First, add the body to the physical space to create the physical shape.");
+        return null;
+    }
     
     public void setType(b2BodyType bodyType) {
         if (isValid()) {
             b2Body_SetType(bodyId, bodyType);
         } else {
             bodyDef.type(bodyType);
+        }
+    }
+    
+    public void setPosition(Vector2f position) {
+        try(ArenaAlloc alloc = allocPush()) {
+            b2Pos pos = Converter.toB2Pos(position, b2Pos.ncalloc(alloc));
+            if (isValid()) {
+                b2Body_SetTransform(bodyId, pos, b2Body_GetRotation(bodyId, b2Rot.calloc(alloc)));
+            } else {
+                bodyDef.position(pos);
+            }
         }
     }
     

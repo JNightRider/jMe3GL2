@@ -33,24 +33,22 @@ package org.je3gl.box2d;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.math.Vector2f;
 import com.jme3.renderer.RenderManager;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.je3gl.box2d.debug.Box2dDebugAppState;
+import org.je3gl.box2d.scene.tile.Box2dTilePhysicsSystem;
+
 import org.box2d.jni.*;
-import org.box2d.jni.system.*;
 
 import static org.box2d.jni.include.Base.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
-import static org.box2d.jni.system.ArenaAlloc.*;
-import org.je3gl.box2d.debug.Box2dDebugAppState;
-import org.je3gl.box2d.scene.tile.Box2dTilePhysicsSystem;
 
 /**
  *
@@ -59,8 +57,6 @@ import org.je3gl.box2d.scene.tile.Box2dTilePhysicsSystem;
  * @since 3.2.0
  */
 public class Box2dAppState extends AbstractAppState {
-    /** Wait time in microseconds. */
-    private static final long TIME_STEP_IN_MICROSECONDS = (long) ((1.0f / 60.0f) * 1000L); 
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Box2dAppState.class.getName());
     
@@ -70,13 +66,19 @@ public class Box2dAppState extends AbstractAppState {
     protected AppStateManager stateManager = null;
     
     protected b2WorldDef worldDef;
-    
-    /**The physical space of bodies. */
+
+    /**
+     * The physical space of bodies.
+     */
     protected PhysicsSpace physicsSpace = null;
-    /** <code>TPF</code> since last update call; in seconds. */
-    protected float tpf = 0;    
-    /**accumulated <code>TPF</code>. */
-    protected float tpfSum = 0;
+    /**
+     * time interval between frames (in seconds) from the most recent update
+     */
+    protected float tpf = 0;
+    /**
+     * simulation speed multiplier (0&rarr;paused)
+     */
+    private float speed = 1f;
 
     //--------------------------------------------------------------------------
     //                       Multithreaded fields
@@ -94,54 +96,53 @@ public class Box2dAppState extends AbstractAppState {
      * When running the update thread; An executable is used to update the parallel
      * physics engine.
      */
-    private final Runnable parallelPhysicsUpdate = () -> {
-        if (!isEnabled()) {
-            return;
+    final private Callable<Boolean> parallelPhysicsUpdate = new Callable<Boolean>() {
+        @Override
+        public Boolean call() throws Exception {
+            physicsSpace.update(isEnabled() ? tpf * speed : 0f);
+            return true;
         }
-        
-        // physics engine update
-        Box2dAppState.this.physicsSpace.update(
-            Box2dAppState.this.tpfSum
-        );
-        Box2dAppState.this.tpfSum = 0.0F;
     };
     
     //--------------------------------------------------------------------------
     //                              Debugger
     //-------------------------------------------------------------------------- 
+    
+    private DrawSettings drawSettings;
+    
     /**
-     * State in charge of managing a debugger for all physical bodies that manage
-     * the physical space (world).
+     * AppState to manage the debug visualization, or null if none
      */
-    protected Box2dDebugAppState box2dDebugAppState;
-     
+    private Box2dDebugAppState debugAppState;
+
     /**
      * <code>true</code> to enable the purification state of physical bodies and
      * joints in physical space; otherwise it is <code>false</code> to disable.
      */
-    protected boolean debug;
-    
+    protected boolean debug = false;
+
     //--------------------------------------------------------------------------
     //                              Axis
     //--------------------------------------------------------------------------
+
     /**
      * The axis type is the way in which the positions of physical objects are
-     * applied with respect to the three coordinates of JME3's 3D space; changing
-     * this axis implies a change in the way objects are controlled at the three
-     * points (x, y, z).
+     * applied with respect to the three coordinates of JME3's 3D space;
+     * changing this axis implies a change in the way objects are controlled at
+     * the three points (x, y, z).
      */
     protected AxisType axisType = AxisType.getDefault();
     
 
     public Box2dAppState() {
-        this(b2DefaultWorldDef(b2WorldDef.malloc()), ThreadingType.SEQUENTIAL);
+        this(b2DefaultWorldDef(b2WorldDef.malloc()), new DrawSettings(), ThreadingType.SEQUENTIAL);
     }
     
     public Box2dAppState(ThreadingType threadingType) {
-        this(b2DefaultWorldDef(b2WorldDef.malloc()), threadingType);
+        this(b2DefaultWorldDef(b2WorldDef.malloc()), new DrawSettings(), threadingType);
     }
 
-    public Box2dAppState(b2WorldDef worldDef, ThreadingType threadingType) {
+    public Box2dAppState(b2WorldDef worldDef, DrawSettings drawSettings, ThreadingType threadingType) {
         this.threadingType = threadingType;
         this.worldDef = worldDef;
         startPhysics();
@@ -191,8 +192,6 @@ public class Box2dAppState extends AbstractAppState {
             startPhysicsOnExecutor();
         } else {
             this.physicsSpace = new PhysicsSpace(worldDef);
-            this.box2dDebugAppState = new Box2dDebugAppState(physicsSpace);
-            this.box2dDebugAppState.setEnabled(false);
         }
 
         Box2dTilePhysicsSystem.initialize();
@@ -208,10 +207,8 @@ public class Box2dAppState extends AbstractAppState {
         }
         this.executor = new ScheduledThreadPoolExecutor(1);
 
-        @SuppressWarnings("unchecked")
-        final Callable<Boolean> call = () -> {
-            Box2dAppState.this.physicsSpace = new PhysicsSpace(Box2dAppState.this.worldDef);
-            Box2dAppState.this.box2dDebugAppState = new Box2dDebugAppState(physicsSpace);
+        Callable<Boolean> call = () -> {
+            physicsSpace = new PhysicsSpace(worldDef);
             return true;
         };
 
@@ -220,66 +217,56 @@ public class Box2dAppState extends AbstractAppState {
         } catch (final InterruptedException | ExecutionException ex) {
             Logger.getLogger(Box2dAppState.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        schedulePhysicsCalculationTask();
     }
     
-    /**
-     * Method responsible for configuring the physical engine update task, this 
-     * is only valid if the engine runs in parallel.
-     */
-    private void schedulePhysicsCalculationTask() {
-        if (this.executor != null) {
-            this.executor.scheduleAtFixedRate(this.parallelPhysicsUpdate, 0L, TIME_STEP_IN_MICROSECONDS,
-                    TimeUnit.MICROSECONDS);
-        }
-    }
     
     /*(non-Javadoc)
      */
     @Override
-    public void update(final float tpf) {
+    public void update(float tpf) {
         if (!isEnabled()) {
             return;
         }
-        if (box2dDebugAppState != null && !stateManager.hasState(box2dDebugAppState)) {
-            stateManager.attach(box2dDebugAppState);
-        }
         this.tpf = tpf;
-        this.tpfSum += tpf;
+        
+        if (debug && debugAppState == null) {
+            // Start debug visualization.
+            this.debugAppState = new Box2dDebugAppState(physicsSpace, drawSettings);
+            this.stateManager.attach(debugAppState);
+
+        } else if (!debug && debugAppState != null) {
+            // Stop debug visualization.
+            this.stateManager.detach(debugAppState);
+            this.debugAppState = null;
+        }
     }
         
     /* (non-Javadoc)
      */
     @Override
     public void render(final RenderManager rm) {
-        if (null == threadingType) {
-            /* (non-Code). */
-        } else switch (threadingType) {
-            case PARALLEL:
-                executor.submit(parallelPhysicsUpdate);
-                break;
-            case SEQUENTIAL:
-                final float timeStep = isEnabled() ? this.tpf * this.physicsSpace.getMaximumLinearSpeed(): 0;
+        switch (threadingType) {
+            case PARALLEL -> executor.submit(parallelPhysicsUpdate);
+            case SEQUENTIAL -> {
+                final float timeStep = isEnabled() ? this.tpf * speed: 0;
                 this.physicsSpace.update(timeStep);
-                break;
-            default:
-                break;
+            }
+            default -> { }
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Alter the physics simulation speed.
+     *
+     * @param speed the desired speedup factor (&ge;0, default=1, 0&rarr;paused)
      */
-    @Override
-    public void setEnabled(final boolean enabled) {
-        if (enabled) {
-            schedulePhysicsCalculationTask();
-
-        } else if (this.executor != null) {
-            this.executor.remove(this.parallelPhysicsUpdate);
+    public void setSpeed(float speed) {
+        if (speed < 0) {
+            throw new IllegalStateException("Speed ​​cannot be negative.");
         }
-        super.setEnabled(enabled);
+        this.speed = speed;
     }
+
     /**
      * Method responsible for cleaning the state of physics.
      * <p>
@@ -295,15 +282,6 @@ public class Box2dAppState extends AbstractAppState {
         physicsSpace.close();
         physicsSpace = null;
         super.cleanup();
-    }
-
-    /**
-     * Returns the physics space.
-     *
-     * @return PhysicsSpace
-     */
-    public PhysicsSpace getPhysicsSpace() {
-        return this.physicsSpace;
     }
 
     /**
@@ -325,6 +303,28 @@ public class Box2dAppState extends AbstractAppState {
      */
     public void setDebugEnabled(boolean debug) {
         this.debug = debug;
+    }
+
+    /**
+     * Return the physics-simulation speed.
+     *
+     * @return the speedup factor (&ge;0, default=1, 0&rarr;paused)
+     */
+    public float getSpeed() {
+        return speed;
+    }
+
+    public DrawSettings getDrawSettings() {
+        return drawSettings;
+    }
+
+    /**
+     * Returns the physics space.
+     *
+     * @return PhysicsSpace
+     */
+    public PhysicsSpace getPhysicsSpace() {
+        return this.physicsSpace;
     }
 
     /**

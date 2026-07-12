@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,10 +65,9 @@ import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.util.Converter;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
-import static org.box2d.jni.include.Box2d.*;
-import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.MemoryUtil.*;
+import org.je3gl.box2d.DrawSettings;
 import org.je3gl.box2d.PhysicsDraw;
 
 /**
@@ -114,16 +114,22 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
     private List<Vector3f[]> cache = new ArrayList<>();
     private Vector3fPool vector3fPool;
     private b2DebugDraw debugDraw;
+    private DrawSettings settings;
+    
+    private AtomicBoolean initialized = new AtomicBoolean(false);
     
     /**
      * Class constructor <code>Box2dDebugAppState</code> where it asks for the
      * physical space to manage the shapes of the bodies.
      * 
      * @param physicsSpace physical space
+     * @param settings
      */
-    public Box2dDebugAppState(PhysicsSpace physicsSpace) {
+    public Box2dDebugAppState(PhysicsSpace physicsSpace, DrawSettings settings) {
         this.physicsSpace = physicsSpace;
+        this.settings     = settings;
         this.vector3fPool = new Vector3fPool();
+        this.settings     = new DrawSettings();
         this.startDebugPhysics();
     }
 
@@ -138,21 +144,26 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
                 .DrawSolidCircleFcn(DrawSolidCircleFcn)
                 .DrawSolidPolygonFcn(DrawSolidPolygonFcn)
                 .DrawTransformFcn(DrawTransformFcn)
-                .DrawStringFcn(DrawStringFcn)
-                .drawShapes(true)
-                .drawBodyNames(true)
-                .drawJoints(true)
-                .drawAnchorA(true)
-                .drawChainNormals(true)
-                .drawContactFeatures(true)
-                .drawFrictionForces(true)
-                .drawContactNormals(true)
-                .drawContacts(true)
-                .drawGraphColors(true)
-                .drawIslands(true)
-                .drawJointExtras(true)
-                .drawMass(true)
-                .drawBounds(true);
+                .DrawStringFcn(DrawStringFcn);
+        this.updateDrawFlags();
+        this.physicsSpace.setDebugDraw(debugDraw);
+    }
+    
+    private void updateDrawFlags() {
+        debugDraw.drawShapes(settings.drawShapes())
+                .drawBodyNames(settings.drawBodyNames())
+                .drawJoints(settings.drawJoints())
+                .drawAnchorA(settings.drawAnchorA())
+                .drawChainNormals(settings.drawChainNormals())
+                .drawContactFeatures(settings.drawContactFeatures())
+                .drawFrictionForces(settings.drawFrictionForces())
+                .drawContactNormals(settings.drawContactNormals())
+                .drawContacts(settings.drawContacts())
+                .drawGraphColors(settings.drawGraphColors())
+                .drawIslands(settings.drawIslands())
+                .drawJointExtras(settings.drawJointExtras())
+                .drawMass(settings.drawMass())
+                .drawBounds(settings.drawBounds());
     }
 
     /**
@@ -172,13 +183,18 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
         debugNode = new Node("Debug Node");
         
         viewPort  = rm.createMainView("Physics Debug Overlay", app.getCamera());
-        viewPort.setClearFlags(false, true, false);
+        viewPort.setClearFlags(false, true, true);
         
         setDebugGraphics(new StringDebugGraphics(app.getAssetManager()));        
         debugNode.setCullHint(Spatial.CullHint.Never);
+        initialized.set(true);
     }
     
     private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
+        
         b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
         final Vector3f[] vertx = vector3fPool.size(vertexCount)
                                              .takePush();
@@ -195,6 +211,10 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
     };
     
     private final DrawSolidPolygonFcnI DrawSolidPolygonFcn = (transform, vertices, vertexCount, radius, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
+        
         b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
         final Vector3f[] vertx = vector3fPool.size(vertexCount)
                                              .takePush();
@@ -211,42 +231,64 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
     };
     
     private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
+        
         application.enqueue(() -> debugNode.attachChild(
-            renderer.renderCircle(center, radius, color, false)
+            renderer.renderCircle(null, center, radius, color, false)
         ));
     };
     
     private final DrawSolidCircleFcnI DrawSolidCircleFcn = (transform, center, radius, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
         application.enqueue(() -> debugNode.attachChild(
-            renderer.renderCircle(center, radius, color, true)
+            renderer.renderCircle(transform, center, radius, color, true)
         ));
     };
     
     private final DrawSolidCapsuleFcnI DrawSolidCapsuleFcn = (p1, p2, radius, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
         application.enqueue(() -> debugNode.attachChild(
             renderer.renderCapsule(p1, p2, radius, color, true)
         ));
     };
     
     private final DrawLineFcnI DrawLineFcn = (p1, p2, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
         application.enqueue(() -> debugNode.attachChild(
             renderer.renderLine(p1, p2, color)
         ));
     };
     
     private final DrawTransformFcnI DrawTransformFcn = (transform, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
         application.enqueue(() -> debugNode.attachChild(
             renderer.renderTransform(transform, 1.0f)
         ));
     };
     
     private final DrawPointFcnI DrawPointFcn = (p, size, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
         application.enqueue(() -> debugNode.attachChild(
             renderer.renderPoint(p, size, color)
         ));
     };
     
     private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
         String value = memUTF(s);
         if (value == null || value.trim().isEmpty()) {
             return;
@@ -258,6 +300,9 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
     };
     
     private final DrawBoundsFcnI DrawBoundsFcn = (aabb, color, context) -> {
+        if (!initialized.get()) {
+            return;
+        }
         application.enqueue(() -> debugNode.attachChild(
             renderer.renderBounds(aabb, color)
         ));
@@ -310,6 +355,11 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
      */
     @Override
     public void update(float tpf) {
+        if (settings.isNeedUpdate()) {
+            settings.update();
+            updateDrawFlags();
+        }
+        
         // Update debug root node
         debugNode.updateLogicalState(tpf);
         debugNode.updateGeometricState();
@@ -332,6 +382,7 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
         }
     }
 
+    @Override
     public b2DebugDraw getDebugDraw() {
         return debugDraw;
     }

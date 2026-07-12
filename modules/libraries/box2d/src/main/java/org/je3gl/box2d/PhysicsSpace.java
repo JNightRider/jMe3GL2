@@ -45,10 +45,24 @@ import org.je3gl.box2d.control.PhysicsBody2D;
  */
 public class PhysicsSpace implements AutoCloseable {
     
+    private int subStepCount = 4;
+    
     protected b2WorldId worldId;
+    
+    protected b2DebugDraw debugDraw;
+    
+    protected AxisType axisType = AxisType.AXIS_XYO;
 
     public PhysicsSpace(b2WorldDef worldDef) {
         worldId = b2CreateWorld(worldDef, b2WorldId.malloc());
+    }
+
+    public void setSubStepCount(int subStepCount) {
+        this.subStepCount = subStepCount;
+    }
+
+    public void setDebugDraw(b2DebugDraw debugDraw) {
+        this.debugDraw = debugDraw;
     }
     
     public float getMaximumLinearSpeed() {
@@ -66,26 +80,26 @@ public class PhysicsSpace implements AutoCloseable {
     }
 
     public void update(float tpf) {
-        float timeStep = 1.0f / 60.0f;
-        int subStepCount = 4;
-        
-        
-        b2World_Step(worldId, timeStep, subStepCount);
-//        if (draw != null) {
-//            b2World_Draw(worldId, draw.getDebugDraw());
-//        }
+        b2World_Step(worldId, tpf, subStepCount);
+        if (debugDraw != null) {
+            b2World_Draw(worldId, debugDraw);
+        }
     }
     
     public void setAxisType(AxisType axisType) {
-        
+        this.axisType = axisType;
     }
     
     public AxisType getAxisType() {
-        return AxisType.AXIS_XYO;
+        return axisType;
     }
 
     public b2WorldId getWorldId() {
         return worldId;
+    }
+
+    public int getSubStepCount() {
+        return subStepCount;
     }
     
     @Override

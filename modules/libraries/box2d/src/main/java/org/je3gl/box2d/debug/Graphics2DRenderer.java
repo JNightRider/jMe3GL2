@@ -159,10 +159,19 @@ public class Graphics2DRenderer {
         return node;
     }
     
-    public Node renderCircle(b2Pos center, float radius, int color, boolean solid) {
+    public Node renderCircle(b2WorldTransform transform,b2Pos center, float radius, int color, boolean solid) {
         Node node = shapeRenderManager.render(MeshRender.CIRCLE, radius, color, solid);        
         AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType();
         node.setLocalTranslation(Converter.toVector3fValueOfJME3(center, axisType));
+        
+        if (transform != null) {
+            TempVars vars = TempVars.get();
+            float angle = b2Rot_GetAngle(transform.q());
+
+            node.setLocalTranslation(Converter.toVector3fValueOfJME3(transform.p(), axisType));
+            node.setLocalRotation(vars.quat1.fromAngleAxis(angle, Converter.toUNIT3f(axisType)));
+            vars.release();
+        }
         return node;
     }
     

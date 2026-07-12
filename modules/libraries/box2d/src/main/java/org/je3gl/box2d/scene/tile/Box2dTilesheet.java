@@ -34,6 +34,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -60,6 +61,7 @@ import org.je3gl.utilities.TileMapUtilities;
 import org.box2d.jni.b2BodyType;
 import org.box2d.jni.b2Rot;
 import static org.box2d.jni.include.MathFunctions.*;
+import org.je3gl.box2d.AxisType;
 
 /**
  * Class that implements the default administrators used by the class {@link org.je3gl.scene.tile.TileMap} 
@@ -75,6 +77,18 @@ public class Box2dTilesheet implements Tilesheet {
      * Internal class responsible for implementing the interface {@link Spritesheet}.
      */
     private static class Jme3GLDefTileModel implements Spritesheet {
+
+        /**
+         * The axis type is the way in which the positions of physical objects
+         * are applied with respect to the three coordinates of JME3's 3D space;
+         * changing this axis implies a change in the way objects are controlled
+         * at the three points (x, y, z).
+         */
+        protected AxisType axisType = AxisType.getDefault();
+
+        public void setAxisType(AxisType axisType) {
+            this.axisType = axisType;
+        }
 
         /* (non-Javadoc)*/
         @Override
@@ -114,7 +128,9 @@ public class Box2dTilesheet implements Tilesheet {
                 
                 geom.addControl(pbd);
             } else {
-                geom.setLocalRotation(new Quaternion().fromAngleAxis(pTle.optFloat("Rotate", 0.0F), new Vector3f(0.0F, 0.0F, 1.0F)));
+                Converter.checkVec3XY0(translation, AxisType.AXIS_XYO, axisType);
+                
+                geom.setLocalRotation(new Quaternion().fromAngleAxis(pTle.optFloat("Rotate", 0.0f), axisType.getUnit()));
                 geom.setLocalTranslation(translation);
                 geom.move(new Vector3f(offset.x, offset.y, 0.0F));
             }
@@ -222,9 +238,16 @@ public class Box2dTilesheet implements Tilesheet {
      * Internal class responsible for implementing the interface {@link SpritesheetPhysics}.
      */
     private static class Jme3GLDefTileSpace implements SpritesheetPhysics {
+        
+        private Jme3GLDefTileModel tileModel;
 
         /** The physical space. */
         protected PhysicsSpace physicsSpace;
+
+        public void setTileModel(Jme3GLDefTileModel tileModel) {
+            this.tileModel = tileModel;
+        }
+        
         
         /* (non-Javadoc) */
         @Override
@@ -265,6 +288,7 @@ public class Box2dTilesheet implements Tilesheet {
         public void setPhysicsSpace(Object physicsSpace) {
             if (physicsSpace instanceof PhysicsSpace) {
                 this.physicsSpace = (PhysicsSpace) physicsSpace;
+                this.tileModel.setAxisType(this.physicsSpace.getAxisType());
             }
         }
         
@@ -294,9 +318,9 @@ public class Box2dTilesheet implements Tilesheet {
     }
     
     /** The sprite sheet class. */
-    private final Spritesheet spritesheet;
+    private final Jme3GLDefTileModel spritesheet;
     /** The physics sprite sheet class. */
-    private final SpritesheetPhysics spritesheetPhysics;
+    private final Jme3GLDefTileSpace spritesheetPhysics;
     
     /**
      * Standard internal constructor.
@@ -314,6 +338,7 @@ public class Box2dTilesheet implements Tilesheet {
     /* (non-Javadoc) */
     @Override
     public SpritesheetPhysics getSpritesheetPhysics() {
+        spritesheetPhysics.setTileModel(spritesheet);
         return spritesheetPhysics;
     }
 }

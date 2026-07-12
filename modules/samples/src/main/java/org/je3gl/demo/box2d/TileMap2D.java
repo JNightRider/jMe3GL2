@@ -31,24 +31,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.demo.box2d;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
-import org.box2d.jni.b2BodyType;
+
+import org.box2d.jni.b2Circle;
 import org.box2d.jni.b2Polygon;
 import org.box2d.jni.b2ShapeDef;
-import org.box2d.jni.b2ShapeId;
-import org.box2d.jni.include.Box2d;
-import org.box2d.jni.include.Collision;
-import static org.box2d.jni.include.Collision.*;
-import org.box2d.jni.include.Types;
-import static org.box2d.jni.include.Types.*;
+
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.ThreadingType;
 import org.je3gl.box2d.control.RigidBody2D;
-import org.je3gl.box2d.debug.Box2dDebugAppState;
 import org.je3gl.box2d.scene.tile.Box2dTilesheet;
 import org.je3gl.scene.shape.Sprite;
 import org.je3gl.scene.tile.TileMap;
-import static org.je3gl.utilities.MaterialUtilities.getUnshadedMaterialFromClassPath;
+
+import static org.box2d.jni.include.Collision.*;
+import static org.box2d.jni.include.Types.*;
+import org.je3gl.box2d.AxisType;
+
+import static org.je3gl.utilities.MaterialUtilities.*;
 import static org.je3gl.utilities.TileMapUtilities.*;
 
 /**
@@ -76,60 +79,67 @@ public class TileMap2D extends SimpleApplication {
     public void simpleInitApp() {
         Box2dAppState box2dAppState = new Box2dAppState(ThreadingType.PARALLEL);
         box2dAppState.setDebugEnabled(true);
+        box2dAppState.setAxisType(AxisType.AXIS_XYO);
         stateManager.attach(box2dAppState);
-    
+        
         Geometry cube = new Geometry("Cube", new Sprite(1, 1, 22, 12, 17, 9));
         cube.setMaterial(getUnshadedMaterialFromClassPath(assetManager, "Textures/tilesheet_complete_2X.png"));
-        
+
         {
             RigidBody2D body2D = new RigidBody2D();
-            body2D.setType(b2BodyType.b2_dynamicBody);
+            body2D.setPosition(new Vector2f(0, 10));
             box2dAppState.getPhysicsSpace().addBody(body2D);
             cube.addControl(body2D);
-            
+
             b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
             b2Polygon box = b2MakeBox(0.5f, 0.5f, b2Polygon.malloc());
+
+            b2Circle circle = b2Circle.malloc();
+            circle.clear();
+            circle.radius(1f);
+
             body2D.addPolygonShape(shapeDef, box);
+            body2D.addCircleShape(shapeDef, circle);
         }
-        
+
         rootNode.attachChild(cube);
         prepareGround();
     }
-    
+
     /**
      * Prepare a simple terrain.
      */
     @SuppressWarnings("unchecked")
-    private void prepareGround() {        
-        TileMap map = gl2GetTileMap("Map01", "Textures/tilesheet_complete_2X.png", 22, 12, Box2dTilesheet.getInstance() ,assetManager);
+    private void prepareGround() {
+        TileMap map = gl2GetTileMap("Map01", "Textures/tilesheet_complete_2X.png", 22, 12, Box2dTilesheet.getInstance(), assetManager);
         map.setPhysicsSpace(stateManager.getState(Box2dAppState.class).getPhysicsSpace());
         rootNode.attachChild(map);
-        
+
         //----------------------------------------------------------------------
         //                              Block - 1
         //----------------------------------------------------------------------
         map.addTile(gl2GetTile(1, 0, 1, 1, -1, -3, 0, true));
         map.addTile(gl2GetTile(2, 0, 1, 1, 0, -3, 0, true));
         map.addTile(gl2GetTile(5, 1, 1, 1, 1, -3, 0, false));
-        
+
         map.addTile(gl2GetTile(0, 0, 1, 1, -1, -4, 0, false));
         map.addTile(gl2GetTile(0, 0, 1, 1, 0, -4, 0, false));
         map.addTile(gl2GetTile(0, 2, 1, 1, 1, -4, 0, false));
-        
+
         map.addTile(gl2GetTile(10, 1, 1, 1, -1, -2, 0, false));
-        
+
         //----------------------------------------------------------------------
         //                              Block - 2
         //----------------------------------------------------------------------
         map.addTile(gl2GetTile(1, 0, 1, 1, 1, -2, 0, true));
         map.addTile(gl2GetTile(2, 0, 1, 1, 2, -2, 0, true));
         map.addTile(gl2GetTile(3, 0, 1, 1, 3, -2, 0, true));
-        
+
         map.addTile(gl2GetTile(0, 0, 1, 1, 2, -3, 0, false));
         map.addTile(gl2GetTile(0, 1, 1, 1, 3, -3, 0, false));
         map.addTile(gl2GetTile(0, 0, 1, 1, 2, -4, 0, false));
         map.addTile(gl2GetTile(0, 0, 1, 1, 3, -4, 0, false));
-        
+
         map.addTile(gl2GetTile(9, 0, 1, 1, 3, -1, 0, false));
     }
 }

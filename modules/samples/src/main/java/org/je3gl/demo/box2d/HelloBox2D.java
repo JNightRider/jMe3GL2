@@ -96,8 +96,8 @@ public class HelloBox2D extends SimpleApplication {
         Box2dAppState box2d = new Box2dAppState();
         stateManager.attach(box2d);
         
-        Box2dDebugAppState debug = new Box2dDebugAppState(box2d.getPhysicsSpace());
-        stateManager.attach(debug);
+//        Box2dDebugAppState debug = new Box2dDebugAppState(box2d.getPhysicsSpace(), n);
+//        stateManager.attach(debug);
         
         b2WorldId worldId = box2d.getPhysicsSpace().getWorldId();
         b2BodyDef groundBodyDef = b2DefaultBodyDef(b2BodyDef.malloc());

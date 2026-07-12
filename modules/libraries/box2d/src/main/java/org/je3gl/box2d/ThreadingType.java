@@ -46,6 +46,7 @@ public enum ThreadingType {
      * sequentially (single-threaded).
      */
     SEQUENTIAL,
+
     /**
      * Parallel threading mode; physics update and rendering are executed in
      * parallel, update order is maintained.
@@ -54,4 +55,3 @@ public enum ThreadingType {
      */
     PARALLEL;
 }
-

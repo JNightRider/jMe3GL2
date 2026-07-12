@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d;
 
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 
 /**
@@ -73,7 +74,7 @@ public enum AxisType {
     private final Vector3f unit;
     /** A rotating steering multiplier. */
     private final int multiplier;
-
+    
     /**
      * Constructor of class <code>AxisType</code>.
      * 
@@ -86,7 +87,7 @@ public enum AxisType {
         this.unit = unit;
         this.multiplier = multiplier;
     }
-    
+
     /**
      * Returns the corresponding unit vector.
      *
