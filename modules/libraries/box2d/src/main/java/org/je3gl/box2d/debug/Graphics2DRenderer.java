@@ -72,6 +72,7 @@ import org.je3gl.utilities.ColorUtilities;
  * Class in charge of managing the colors, materials and shapes of a physical
  * body to debug it in real time.
  * </p>
+ *
  * @author wil
  * @version 1.0.0
  * @since 3.2.0
@@ -79,20 +80,24 @@ import org.je3gl.utilities.ColorUtilities;
 public class Graphics2DRenderer {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Graphics2DRenderer.class.getName());
-    
+    /** NULL - Node */
     private static final Node NODE_NULL = new Node("NULL");
     
     /** Resource manager <code>JME</code>. */
     private final AssetManager assetManager;    
     /** Debugger. */
     private final Box2dDebugAppState box2dDebugAppState;
-    
+
+    /** Renderer for physical world objects. */
     private final ShapeRenderManager shapeRenderManager;
+    /** Vector handler (Object-pool). */
     private final Vector3fPool vector3fPool;
+    /** String handler (Object-pool). */
     private final BitmapTextPool bitmapTextPool;
-    
+
+    /** Objects - cache*/
     private final List<Object> cache;
-    
+    /** Origin - camera */
     private final Vector2f origin = new Vector2f();
     
 
@@ -101,10 +106,10 @@ public class Graphics2DRenderer {
      * @param box2dDebugAppState debugger
      */
     public Graphics2DRenderer(Box2dDebugAppState box2dDebugAppState) {
-        this.assetManager = box2dDebugAppState.getApplication().getAssetManager();
+        this.assetManager       = box2dDebugAppState.getApplication().getAssetManager();
         this.box2dDebugAppState = box2dDebugAppState;
         this.bitmapTextPool = new BitmapTextPool();
-        this.vector3fPool = new Vector3fPool();
+        this.vector3fPool   = new Vector3fPool();
         this.shapeRenderManager = new ShapeRenderManager(assetManager);
         this.cache = Collections.synchronizedList(new ArrayList<>());
     }
@@ -124,7 +129,15 @@ public class Graphics2DRenderer {
     void setDebugGraphics(DebugGraphics debugGraphics) {
         this.bitmapTextPool.setGraphics(debugGraphics);
     }
-    
+
+    /**
+     * Method in charge of rendering the physical form to a graphic object (String).
+     *
+     * @param pos position
+     * @param txt value
+     * @param color color for physical shape
+     * @return generated graphical object
+     */
     public Node renderString(b2Pos pos, String txt, int color) {
         BitmapText text = bitmapTextPool.takePush();
         text.setText(txt);
@@ -138,7 +151,7 @@ public class Graphics2DRenderer {
     }
 
     /**
-     * Method in charge of rendering the physical form to a graphic object.
+     * Method in charge of rendering the physical form to a graphic object (Polygon).
      *
      * @param transforms the transformation of the body
      * @param vertices physical shape
@@ -159,7 +172,17 @@ public class Graphics2DRenderer {
         vars.release();
         return node;
     }
-    
+
+    /**
+     * Method in charge of rendering the physical form to a graphic object (Circle).
+     *
+     * @param transform the transformation of the body
+     * @param center position
+     * @param radius radius (floar)
+     * @param color color for physical shape
+     * @param solid solid polygons
+     * @return generated graphical object
+     */
     public Node renderCircle(b2WorldTransform transform,b2Pos center, float radius, int color, boolean solid) {
         Node node = shapeRenderManager.render(MeshRender.CIRCLE, radius, color, solid);        
         AxisType axisType = box2dDebugAppState.getPhysicsSpace().getAxisType();
@@ -175,7 +198,17 @@ public class Graphics2DRenderer {
         }
         return node;
     }
-    
+
+    /**
+     * Method in charge of rendering the physical form to a graphic object (Capsule).
+     *
+     * @param p1 point 1
+     * @param p2 point 2
+     * @param radius radius (float)
+     * @param color color for physical shape
+     * @param solid solid polygons
+     * @return generated graphical object
+     */
     public Node renderCapsule(b2Pos p1, b2Pos p2, float radius, int color, boolean solid) {
         TempVars vars = TempVars.get();
         Vector3f d   = vars.vect1;
@@ -209,7 +242,15 @@ public class Graphics2DRenderer {
         vars.release();
         return node;
     }
-    
+
+    /**
+     * Method in charge of rendering the physical form to a graphic object (Line).
+     *
+     * @param start point 1
+     * @param end point 2
+     * @param color color for physical shape
+     * @return generated graphical object
+     */
     public Node renderLine(b2Pos start, b2Pos end, int color) {
         TempVars vars = TempVars.get();
         Vector3f[] points = vars.tri;
@@ -220,7 +261,14 @@ public class Graphics2DRenderer {
         vars.release();
         return node;
     }
-    
+
+    /**
+     * Method in charge of rendering the physical form to a graphic object (Transform).
+     *
+     * @param transform world transform
+     * @param scale scale (float)
+     * @return generated graphical object
+     */
     public Node renderTransform(b2WorldTransform transform, float scale) {
         try (ArenaAlloc alloc = allocPush()) {
             Node rootNode    = shapeRenderManager.create();
@@ -247,7 +295,15 @@ public class Graphics2DRenderer {
             return rootNode;
         }
     }
-    
+
+    /**
+     * Method in charge of rendering the physical form to a graphic object (Point).
+     *
+     * @param p position
+     * @param size size - point
+     * @param color color for physical shape
+     * @return generated graphical object
+     */
     public Node renderPoint(b2Pos p, float size, int color) {
         TempVars vars = TempVars.get();
         Vector4f vec4 = vars.vect4f1;
@@ -262,7 +318,14 @@ public class Graphics2DRenderer {
         vars.release();
         return node;
     }
-    
+
+    /**
+     * Method in charge of rendering the physical form to a graphic object (Bounds).
+     *
+     * @param aabb aabbb
+     * @param color color for physical shape
+     * @return generated graphical object
+     */
     public Node renderBounds(b2AABB aabb, int color) {
         try (ArenaAlloc alloc = allocPush()) {
             b2Pos norigin = b2Pos.ncalloc(alloc).set(origin.x, origin.y);
@@ -305,7 +368,10 @@ public class Graphics2DRenderer {
             return rootNode;
         }
     }
-    
+
+    /**
+     * Libera el cache
+     */
     public void renderFree() {
         try (shapeRenderManager) {
             for (Object child : cache) {

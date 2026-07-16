@@ -42,7 +42,6 @@ import org.je3gl.renderer.Camera2DAppSate;
 import org.je3gl.renderer.UnitComparator;
 
 import org.box2d.jni.*;
-import org.box2d.jni.system.*;
 import static org.box2d.jni.b2BodyType.*;
 
 import static org.box2d.jni.include.Box2d.*;
@@ -62,9 +61,7 @@ public class HelloBox2D extends SimpleApplication {
      * The main method; uses zero arguments in args array
      * @param args command line arguments
      */
-    public static void main(String[] args) {
-        Sys.DISABLE_DEBUG.set(true);
-        
+    public static void main(String[] args) {        
         HelloBox2D app = new HelloBox2D();
         AppSettings settings = new AppSettings(true);
         settings.setGammaCorrection(false);

@@ -62,7 +62,6 @@ import org.box2d.jni.draw.DrawTransformFcnI;
 import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.util.Converter;
 import org.je3gl.box2d.DrawSettings;
-import org.je3gl.box2d.PhysicsDraw;
 
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
@@ -78,7 +77,7 @@ import static org.box2d.jni.system.MemoryUtil.*;
  * @version 1.0.0
  * @since 3.2.0
  */
-public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
+public class Box2dDebugAppState extends BaseAppState {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Box2dDebugAppState.class.getName());
     
@@ -104,19 +103,29 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
     /** <code>JME3</code> renderer. */
     protected RenderManager rm;
 
+    /**
+     * List that temporarily stores matrices of vectors.
+     */
     private List<Vector3f[]> cache = Collections.synchronizedList(new ArrayList<>());
+    /** Vector handler (Object-pool). */
     private Vector3fPool vector3fPool;
+    /** Object indicating which drawings are performed in the debugger. */
     private b2DebugDraw debugDraw;
+    /** Debugger settings. */
     private DrawSettings settings;
-    
+
+    /**
+     * An atomic flag indicating whether this state has been initialized
+     * (debugger).
+     */
     private AtomicBoolean initialized = new AtomicBoolean(false);
-    
+
     /**
      * Class constructor <code>Box2dDebugAppState</code> where it asks for the
      * physical space to manage the shapes of the bodies.
      * 
      * @param physicsSpace physical space
-     * @param settings
+     * @param settings Debugger settings.
      */
     public Box2dDebugAppState(PhysicsSpace physicsSpace, DrawSettings settings) {
         this.physicsSpace = physicsSpace;
@@ -126,6 +135,9 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
         this.startDebugPhysics();
     }
 
+    /**
+     * Initializes the Box2D drawing object.
+     */
     private void startDebugPhysics() {
         debugDraw = b2DefaultDebugDraw(b2DebugDraw.malloc());
         debugDraw.DrawBoundsFcn(DrawBoundsFcn)
@@ -141,8 +153,12 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
         this.updateDrawFlags();
         this.physicsSpace.setDebugDraw(debugDraw);
     }
-    
+
+    /**
+     * Configure the debug flags to control which objects are drawn.
+     */
     private void updateDrawFlags() {
+        StringBuilder sb = new StringBuilder();
         debugDraw.drawShapes(settings.drawShapes())
                 .drawBodyNames(settings.drawBodyNames())
                 .drawJoints(settings.drawJoints())
@@ -157,6 +173,23 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
                 .drawJointExtras(settings.drawJointExtras())
                 .drawMass(settings.drawMass())
                 .drawBounds(settings.drawBounds());
+
+        sb.append("[jMe3GL2] :Charts for debugging Box2d-JNI bodies")
+                .append('\n').append("drawShapes: ").append(settings.drawShapes())
+                .append('\n').append("drawBodyNames: ").append(settings.drawBodyNames())
+                .append('\n').append("drawJoints: ").append(settings.drawJoints())
+                .append('\n').append("drawAnchorA: ").append(settings.drawAnchorA())
+                .append('\n').append("drawChainNormals: ").append(settings.drawChainNormals())
+                .append('\n').append("drawContactFeatures: ").append(settings.drawContactFeatures())
+                .append('\n').append("drawFrictionForces: ").append(settings.drawFrictionForces())
+                .append('\n').append("drawContactNormals: ").append(settings.drawContactNormals())
+                .append('\n').append("drawContacts: ").append(settings.drawContacts())
+                .append('\n').append("drawGraphColors: ").append(settings.drawGraphColors())
+                .append('\n').append("drawIslands: ").append(settings.drawIslands())
+                .append('\n').append("drawJointExtras: ").append(settings.drawJointExtras())
+                .append('\n').append("drawMass: ").append(settings.drawMass())
+                .append('\n').append("drawBounds: ").append(settings.drawBounds());
+        LOGGER.info(String.valueOf(sb));
     }
 
     /**
@@ -182,6 +215,10 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
         debugNode.setCullHint(Spatial.CullHint.Never);
         initialized.set(true);
     }
+
+    //----------------------------------------------------------------------
+    //                              CALLBACKS
+    //----------------------------------------------------------------------
     
     private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
         if (!initialized.get()) {
@@ -311,7 +348,6 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
             return;
         }
         renderer.setDebugGraphics(graphics);
-        //renderer.printInformation();
     }
 
     /** (non-Javadoc) */
@@ -360,6 +396,7 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
         for (Vector3f[] v : cache) {
             vector3fPool.takePop(v);
         }
+        cache.clear();
         renderer.renderFree();
     }
 
@@ -373,11 +410,6 @@ public class Box2dDebugAppState extends BaseAppState implements PhysicsDraw {
         if (this.viewPort != null) {
             rm.renderScene(this.debugNode, this.viewPort);
         }
-    }
-
-    @Override
-    public b2DebugDraw getDebugDraw() {
-        return debugDraw;
     }
     
     /**
