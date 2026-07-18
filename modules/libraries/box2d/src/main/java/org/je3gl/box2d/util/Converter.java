@@ -78,7 +78,7 @@ public final class Converter {
      * @return A {@link b2Pos} object
      */
     public static b2Pos toB2Pos(Vector2f vec2) {
-        return toB2Pos(vec2, b2Pos.nmalloc());
+        return toB2Pos(vec2, b2Pos.malloc());
     }
 
     /**
@@ -100,7 +100,7 @@ public final class Converter {
      * @return A {@link b2Pos} object
      */
     public static b2Pos toB2Pos(Vector3f vec3) {
-        return b2Pos.nmalloc().set(vec3.x, vec3.y);
+        return b2Pos.malloc().set(vec3.x, vec3.y);
     }
     
     /**

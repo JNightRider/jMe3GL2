@@ -157,7 +157,7 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
     
     public void setPosition(Vector2f position) {
         try(ArenaAlloc alloc = allocPush()) {
-            b2Pos pos = Converter.toB2Pos(position, b2Pos.ncalloc(alloc));
+            b2Pos pos = Converter.toB2Pos(position, b2Pos.calloc(alloc));
             if (isValid()) {
                 b2Body_SetTransform(bodyId, pos, b2Body_GetRotation(bodyId, b2Rot.calloc(alloc)));
             } else {
@@ -204,7 +204,7 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
 
         try (ArenaAlloc alloc = allocPush()) {
             if (isValid()) {
-                b2Pos position = b2Body_GetPosition(bodyId, b2Pos.ncalloc(alloc));
+                b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(alloc));
                 return Converter.toVector3f(position, axisType, tmpWorldPosition);
             }
             return Converter.toVector3f(bodyDef.position(), axisType, tmpWorldPosition);

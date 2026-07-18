@@ -277,7 +277,7 @@ public class Graphics2DRenderer {
             cache.add(buff1);
             cache.add(buff2);
             
-            b2Transform xf = b2ToRelativeTransform( transform, b2Pos.ncalloc(alloc).set(origin.x, origin.y), b2Transform.calloc(alloc) );
+            b2Transform xf = b2ToRelativeTransform( transform, b2Pos.calloc(alloc).set(origin.x, origin.y), b2Transform.calloc(alloc) );
             b2Vec2 p1 = xf.p();
             
             b2Vec2 p2 = b2MulAdd( p1, scale, b2Rot_GetXAxis( xf.q(), b2Vec2.calloc(alloc) ), b2Vec2.calloc(alloc) );
@@ -328,10 +328,10 @@ public class Graphics2DRenderer {
      */
     public Node renderBounds(b2AABB aabb, int color) {
         try (ArenaAlloc alloc = allocPush()) {
-            b2Pos norigin = b2Pos.ncalloc(alloc).set(origin.x, origin.y);
+            b2Pos norigin = b2Pos.calloc(alloc).set(origin.x, origin.y);
             
-            b2Vec2 lower = b2SubPos( b2ToPos( aabb.lowerBound(), b2Pos.ncalloc(alloc) ), norigin, b2Vec2.calloc(alloc) );
-            b2Vec2 upper = b2SubPos( b2ToPos( aabb.upperBound(), b2Pos.ncalloc(alloc) ), norigin, b2Vec2.calloc(alloc) );
+            b2Vec2 lower = b2SubPos( b2ToPos( aabb.lowerBound(), b2Pos.calloc(alloc) ), norigin, b2Vec2.calloc(alloc) );
+            b2Vec2 upper = b2SubPos( b2ToPos( aabb.upperBound(), b2Pos.calloc(alloc) ), norigin, b2Vec2.calloc(alloc) );
 
             b2Vec2 p1 = lower;
             b2Vec2 p2 = b2Vec2.calloc(alloc).set( upper.x(), lower.y() );

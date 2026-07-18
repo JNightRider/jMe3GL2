@@ -86,7 +86,7 @@ public class HelloBox2D extends SimpleApplication {
         
         b2WorldId worldId = box2d.getPhysicsSpace().getWorldId();
         b2BodyDef groundBodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-        groundBodyDef.position(b2Pos.nmalloc().set(0.0f, -10.0f));
+        groundBodyDef.position(b2Pos.malloc().set(0.0f, -15.0f));
 
         b2BodyId groundId = b2CreateBody(worldId, groundBodyDef, b2BodyId.malloc());
         b2Polygon groundBox = b2MakeBox(50.0f, 10.0f, b2Polygon.malloc());
@@ -96,7 +96,7 @@ public class HelloBox2D extends SimpleApplication {
 
         b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
         bodyDef.type(b2_dynamicBody);
-        bodyDef.position(b2Pos.nmalloc().set(0.0f, 10.0f));
+        bodyDef.position(b2Pos.malloc().set(0.0f, 10.0f));
         b2BodyId bodyId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
 
         b2Polygon dynamicBox = b2MakeBox(1.0f, 1.0f, b2Polygon.malloc());
@@ -111,7 +111,7 @@ public class HelloBox2D extends SimpleApplication {
         {
             b2BodyDef def = b2DefaultBodyDef(b2BodyDef.malloc());
             def.type(b2_dynamicBody);
-            def.position(b2Pos.nmalloc().set(-1, 20));
+            def.position(b2Pos.malloc().set(-1, 20));
             
             b2BodyId body = b2CreateBody(worldId, def, b2BodyId.malloc());
             b2CreateBody(worldId, def, b2BodyId.malloc());

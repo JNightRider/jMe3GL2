@@ -97,7 +97,7 @@ public class Character2D extends SimpleApplication  {
         b2BodyId groundId1;
         {
             b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-            bodyDef.position(b2Pos.nmalloc().set( 0.0f, 0.0f ));
+            bodyDef.position(b2Pos.malloc().set( 0.0f, 0.0f ));
             groundId1 = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
 
             String path =
@@ -122,6 +122,80 @@ public class Character2D extends SimpleApplication  {
             chainDef.isLoop(true);
 
             b2CreateChain( groundId1, chainDef, b2ChainId.malloc() );
+        }
+
+        b2BodyId groundId2;
+        {
+            b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
+            bodyDef.position(b2Pos.malloc().set( 98.0f, 0.0f ));
+            groundId2 = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
+
+            String path = """
+                    M 2.6458333,201.08333 H 293.68751 l 0,-23.8125 h -23.8125 l 21.16667,21.16667 h -23.8125 l -39.68751,-13.22917 
+                    -26.45833,7.9375 -23.8125,2.64583 h -13.22917 l -0.0575,2.64584 h -5.29166 v -2.64583 l -7.86855,-1e-5 
+                    -0.0114,-2.64583 h -2.64583 l -2.64583,2.64584 h -7.9375 l -2.64584,2.64583 -2.58891,-2.64584 h -13.28609 v 
+                    -2.64583 h -2.64583 v -2.64584 l -5.29167,1e-5 v -2.64583 h -2.64583 v -2.64583 l -5.29167,-1e-5 v -2.64583 h 
+                    -2.64583 v -2.64584 h -5.291667 v -2.64583 H 92.60417 V 174.625 h -5.291667 v -2.64584 l -34.395835,1e-5 
+                    -7.9375,-2.64584 -7.9375,-2.64583 -5.291667,-5.29167 H 21.166667 L 13.229167,158.75 5.2916668,153.45833 H 
+                    2.6458334 l -10e-8,47.625
+                    """;
+
+            b2Vec2.Buffer points = b2Vec2.malloc(64);
+
+            b2Vec2 offset = b2Vec2.malloc().set( 0.0f, -200.0f );
+            float scale = 0.2f;
+
+            int count = ParsePath.parse(path, offset, points, 64, scale, false );
+
+            b2ChainDef chainDef = b2DefaultChainDef(b2ChainDef.malloc());
+            chainDef.points(points);
+            chainDef.count(count);
+            chainDef.isLoop(true);
+
+            b2CreateChain( groundId2, chainDef, b2ChainId.malloc() );
+        }
+
+        {
+            b2Polygon box = b2MakeBox( 0.5f, 0.125f, b2Polygon.malloc() );
+
+            b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
+
+            b2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef(b2RevoluteJointDef.malloc());
+            jointDef.maxMotorTorque(10.0f);
+            jointDef.enableMotor(true);
+            jointDef.hertz(3.0f);
+            jointDef.dampingRatio(0.8f);
+            jointDef.enableSpring(true);
+
+            float xBase = 48.7f;
+            float yBase = 9.2f;
+            int count = 50;
+            b2BodyId prevBodyId = groundId1;
+            for ( int i = 0; i < count; ++i )
+            {
+                b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
+                bodyDef.type(b2_dynamicBody);
+                bodyDef.position(b2Pos.malloc().set( xBase + 0.5f + 1.0f * i, yBase ));
+                bodyDef.angularDamping(0.2f);
+                b2BodyId bodyId = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
+                b2CreatePolygonShape( bodyId, shapeDef, box, b2ShapeId.malloc() );
+
+                b2Pos pivot = b2Pos.malloc().set( xBase + 1.0f * i, yBase );
+                jointDef.base().bodyIdA(prevBodyId);
+                jointDef.base().bodyIdB(bodyId);
+                jointDef.base().localFrameA().p( b2Body_GetLocalPoint( jointDef.base().bodyIdA(), pivot, b2Vec2.malloc() ) );
+                jointDef.base().localFrameB().p( b2Body_GetLocalPoint( jointDef.base().bodyIdB(), pivot, b2Vec2.malloc() ) );
+                b2CreateRevoluteJoint( worldId, jointDef, b2JointId.malloc() );
+
+                prevBodyId = bodyId;
+            }
+
+            b2Pos pivot = b2Pos.malloc().set( xBase + 1.0f * count, yBase );
+            jointDef.base().bodyIdA(prevBodyId);
+            jointDef.base().bodyIdB(groundId2);
+            jointDef.base().localFrameA().p(b2Body_GetLocalPoint( jointDef.base().bodyIdA(), pivot, b2Vec2.malloc() ));
+            jointDef.base().localFrameB().p(b2Body_GetLocalPoint( jointDef.base().bodyIdB(), pivot, b2Vec2.malloc() ));
+            b2CreateRevoluteJoint( worldId, jointDef, b2JointId.malloc() );
         }
     }
 }
