@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,40 +28,53 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d.debug.data;
 
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
-import com.jme3.util.BufferUtils;
-import java.nio.FloatBuffer;
+import java.util.Objects;
+import org.box2d.jni.b2Vec2;
 
 /**
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class Point2D extends Mesh {
-
-    public Point2D(Vector3f p) {
-        setMode(Mode.Points);
-        Point2D.this.updateGeometry(p);
-    }
+public class PolygonData {
     
-    public void updateGeometry(Vector3f p) {
-        // ----- Position buffer -----
-        FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
-        if (pb == null || pb.capacity() < 3) {
-            if (pb != null) {
-                BufferUtils.destroyDirectBuffer(pb);
-            }
-            pb = BufferUtils.createFloatBuffer(3);
+    private b2Vec2.Buffer vertices;
+    private int vertexCount;
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.vertices);
+        hash = 59 * hash + this.vertexCount;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-        pb.put(0, p.x)
-          .put(1, p.y)
-          .put(2, p.z);
-        setBuffer(VertexBuffer.Type.Position, 3, pb);
-        updateBound();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PolygonData other = (PolygonData) obj;
+        if (this.vertexCount != other.vertexCount) {
+            return false;
+        }
+        for (int i = 0; i < vertexCount; i++) {
+            b2Vec2 v1 = this.vertices.get(i);
+            b2Vec2 v2 = other.vertices.get(i);
+            if (Float.compare(v1.x(), v2.x()) != 0) {
+                return false;
+            }
+            if (Float.compare(v1.y(), v2.y()) != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

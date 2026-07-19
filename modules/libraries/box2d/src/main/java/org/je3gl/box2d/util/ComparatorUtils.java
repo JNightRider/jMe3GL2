@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,40 +28,40 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d.util;
 
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
-import com.jme3.util.BufferUtils;
-import java.nio.FloatBuffer;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import org.box2d.jni.b2Pos;
 
 /**
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class Point2D extends Mesh {
-
-    public Point2D(Vector3f p) {
-        setMode(Mode.Points);
-        Point2D.this.updateGeometry(p);
+public final class ComparatorUtils {
+    
+    public static <T> T findMapKey(Map<T, ?> map, T target) {
+        if (map == null) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        Set<T> keys = map.keySet();
+        for (T next : keys) {
+            if ( Objects.equals(next, target) ) {
+                return next;
+            }
+        }
+        return null;
     }
     
-    public void updateGeometry(Vector3f p) {
-        // ----- Position buffer -----
-        FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
-        if (pb == null || pb.capacity() < 3) {
-            if (pb != null) {
-                BufferUtils.destroyDirectBuffer(pb);
-            }
-            pb = BufferUtils.createFloatBuffer(3);
+    public static boolean compare(b2Pos a, b2Pos b) {
+        if (a == null || b == null) {
+            return false;
         }
-        pb.put(0, p.x)
-          .put(1, p.y)
-          .put(2, p.z);
-        setBuffer(VertexBuffer.Type.Position, 3, pb);
-        updateBound();
+        if (Double.compare(a.x().doubleValue(), b.x().doubleValue()) != 0) {
+            return false;
+        }
+        return Double.compare(a.y().doubleValue(), b.y().doubleValue()) == 0;
     }
 }

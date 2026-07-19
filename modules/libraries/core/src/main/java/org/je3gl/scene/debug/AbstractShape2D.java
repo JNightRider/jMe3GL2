@@ -34,11 +34,11 @@ import com.jme3.export.*;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
-import com.jme3.scene.mesh.IndexBuffer;
 import com.jme3.util.BufferUtils;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 /**
  * Abstract class <code>AbstractShape2D</code> in charge of implementing the basis
@@ -47,14 +47,14 @@ import java.nio.FloatBuffer;
  * <b>Lines</b> are used to generate the shapes.
  * 
  * @author wil
- * @version 1.0.5
+ * @version 1.1.0
  * @since 2.5.0
  */
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
     
     /**Arrangement of the mesh vertices. */
     protected Vector3f[] vertices;
-    
+        
     /**
      * Default internal constructor.
      */
@@ -113,7 +113,13 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
         this.vertices = vertices;
 
         // ----- Position buffer -----
-        FloatBuffer pb = BufferUtils.createFloatBuffer(vertices.length * 3);
+        FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
+        if (pb == null || pb.capacity() < (vertices.length * 3)) {
+            if (pb != null) {
+                BufferUtils.destroyDirectBuffer(pb);
+            }
+            pb = BufferUtils.createFloatBuffer(vertices.length * 3);
+        }
         for (Vector3f v : vertices) {
             pb.put(v.x).put(v.y).put(v.z);
         }
@@ -129,26 +135,33 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     
     public void fill(boolean isFill) {
         // ----- Index buffer -----
-        clearBuffer(VertexBuffer.Type.Index);
-        if (isFill) {
-            setMode(Mode.Triangles);
-            short[] indices = new short[(vertices.length - 2) * 3];
-            int k = 0;
-
-            for (short i = 1; i < vertices.length - 1; i++) {
-                indices[k++] = 0;
-                indices[k++] = i;
-                indices[k++] = (short) (i + 1);
+        ShortBuffer index = getShortBuffer(VertexBuffer.Type.Index);
+        int len = isFill ? (vertices.length - 2) * 3 : vertices.length;
+        if (index == null || (index.capacity() < len)) {
+            if (index != null) {
+                BufferUtils.destroyDirectBuffer(index);
             }
+            index = BufferUtils.createShortBuffer(len);
+        }
+        
+        clearBuffer(VertexBuffer.Type.Index);
+        if (isFill) {            
+            setMode(Mode.Triangles);
+            int k = 0;
+            for (short i = 1; i < vertices.length - 1; i++) {
+                index.put(k++, (short)0);
+                index.put(k++, i);
+                index.put(k++, (short) (i + 1));
+            }
+            
             setBuffer(VertexBuffer.Type.Index, 3,
-                    BufferUtils.createShortBuffer(indices));
+                    index);
         } else {
-            short[] indices = new short[vertices.length];
             for (short i = 0; i < vertices.length; i++) {
-                indices[i] = i;
+                index.put(i, (short)i);
             }
             setBuffer(VertexBuffer.Type.Index, 1,
-                    BufferUtils.createShortBuffer(indices));
+                    index);
         }
     }
 

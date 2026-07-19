@@ -70,7 +70,7 @@ public class GeometryRender extends ShapeRender<Geometry, GeometryPool> {
      * @return Node
      */
     public <T> Geometry render(MeshRender<T> meshRender, T value, int color, boolean fill) {
-        Geometry geom = pool();
+        Geometry geom = new Geometry();
         Material mat  = checkMaterial(geom, color, fill);
         geom.setQueueBucket(RenderQueue.Bucket.Translucent);
         geom.setMaterial(mat);

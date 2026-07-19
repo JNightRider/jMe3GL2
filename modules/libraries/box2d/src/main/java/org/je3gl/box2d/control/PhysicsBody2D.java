@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 import org.box2d.jni.b2BodyDef;
 import org.box2d.jni.b2BodyId;
 import org.box2d.jni.b2BodyType;
+import org.box2d.jni.b2Capsule;
 import org.box2d.jni.b2Circle;
 import org.box2d.jni.b2Polygon;
 import org.box2d.jni.b2Pos;
@@ -147,6 +148,14 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
         return null;
     }
     
+    public b2ShapeId addCapsuleShape(b2ShapeDef shapeDef, b2Capsule shape) {
+        if (isValid()) {
+            return b2CreateCapsuleShape(bodyId, shapeDef, shape, b2ShapeId.calloc());
+        }
+        LOGGER.log(Level.WARNING, "First, add the body to the physical space to create the physical shape.");
+        return null;
+    }
+    
     public void setType(b2BodyType bodyType) {
         if (isValid()) {
             b2Body_SetType(bodyId, bodyType);
@@ -163,6 +172,14 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
             } else {
                 bodyDef.position(pos);
             }
+        }
+    }
+    
+    public void setGravityScale(float scale) {
+        if (isValid()) {
+            b2Body_SetGravityScale(bodyId, scale);
+        } else {
+            bodyDef.gravityScale(scale);
         }
     }
     

@@ -34,6 +34,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Spatial;
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.ThreadingType;
 import org.je3gl.renderer.Camera2DAppSate;
@@ -50,7 +51,9 @@ import static org.box2d.jni.include.Collision.*;
 import static org.box2d.jni.include.MathFunctions.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
+import org.je3gl.box2d.control.CharacterBody2D;
 import org.je3gl.box2d.util.ParsePath;
+import org.je3gl.scene.control.AnimatedSprite2D;
 
 /**
  * Class where a small platform game is exemplified and how it can be controlled 
@@ -71,6 +74,13 @@ public class Character2D extends SimpleApplication  {
         app.start();
     }
 
+    /**
+     * Control of the character (player) in the scene.
+     */
+    private static class Player extends CharacterBody2D {
+    
+    }
+
     /*(non-Javadoc)
      */
     @Override
@@ -88,8 +98,38 @@ public class Character2D extends SimpleApplication  {
         stateManager.attach(box2d);
         
         prepareGround();
+        prepareCharacter();
     }
-    
+
+    /**
+     * Prepare the character (2D model) and animations.
+     */
+    @SuppressWarnings("unchecked")
+    private void prepareCharacter() {
+        Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
+        b2WorldId worldId = box2dAppState.getPhysicsSpace().getWorldId();
+        
+        Spatial player = assetManager.loadModel("Models/Rabbit.j3o");
+        player.getControl(AnimatedSprite2D.class).playAnimation("walk", 10);
+        rootNode.attachChild(player);
+        
+        Player body2D = new Player();
+        body2D.setType(b2_staticBody);
+        body2D.setGravityScale(2f);
+        box2dAppState.getPhysicsSpace().addBody(body2D);
+
+        b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.calloc());
+        b2Capsule capsule = b2Capsule.calloc();
+        capsule.radius(0.25f);
+        
+        try(ArenaAlloc alloc = allocPush()) {
+            capsule.center1(b2Vec2.calloc(alloc).set(0, -0.25));
+            capsule.center2(b2Vec2.calloc(alloc).set(0, 0.25f));
+        }
+        body2D.addCapsuleShape(shapeDef, capsule);
+        player.addControl(body2D);
+    }
+
     private void prepareGround() {
         Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
         b2WorldId worldId = box2dAppState.getPhysicsSpace().getWorldId();

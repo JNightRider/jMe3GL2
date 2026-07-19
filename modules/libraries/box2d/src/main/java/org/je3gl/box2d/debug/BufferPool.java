@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,40 +28,62 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d.debug;
 
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 /**
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class Point2D extends Mesh {
+public class BufferPool extends ObjectPool<Buffer> {
 
-    public Point2D(Vector3f p) {
-        setMode(Mode.Points);
-        Point2D.this.updateGeometry(p);
+    private int capacity = 10;
+    private Class type = FloatBuffer.class;
+
+    public BufferPool() {
     }
     
-    public void updateGeometry(Vector3f p) {
-        // ----- Position buffer -----
-        FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
-        if (pb == null || pb.capacity() < 3) {
-            if (pb != null) {
-                BufferUtils.destroyDirectBuffer(pb);
-            }
-            pb = BufferUtils.createFloatBuffer(3);
+    public BufferPool capacity(int capacity) {
+        this.capacity = capacity;
+        return this;
+    }
+    
+    public <T extends Buffer> BufferPool type(Class<T> type) {
+        this.type = type;
+        return this;
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Buffer create() {
+        if (type.isAssignableFrom(ShortBuffer.class)) {
+            return BufferUtils.createShortBuffer(capacity);
+        } else if (type.isAssignableFrom(FloatBuffer.class)) {
+            return BufferUtils.createFloatBuffer(capacity);
+        } else if (type.isAssignableFrom(IntBuffer.class)) {
+            return BufferUtils.createIntBuffer(capacity);
+        } else if (type.isAssignableFrom(ByteBuffer.class)) {
+            return  BufferUtils.createByteBuffer(capacity);
         }
-        pb.put(0, p.x)
-          .put(1, p.y)
-          .put(2, p.z);
-        setBuffer(VertexBuffer.Type.Position, 3, pb);
-        updateBound();
+        throw new UnsupportedOperationException("buffer: " + type);
+    }
+
+    @Override
+    protected boolean validate(Buffer o) {
+        if (o == null) {
+            return false;
+        }
+        return capacity <= o.capacity();
+    }
+
+    @Override
+    protected void dead(Buffer o) {
+        BufferUtils.destroyDirectBuffer(o);
     }
 }

@@ -79,7 +79,7 @@ public class ShapeRenderManager extends ShapeRender<Node, NodePool> {
      * @return Node
      */
     public <T> Node render(MeshRender<T> mesh, T value, int color, boolean solid) {
-        Node node = pool();
+        Node node = new Node();
         node.attachChild(geometryRender.render(mesh, value, color, true));
         if (solid) {
             node.attachChild(geometryRender.render(mesh, value, color, false));
