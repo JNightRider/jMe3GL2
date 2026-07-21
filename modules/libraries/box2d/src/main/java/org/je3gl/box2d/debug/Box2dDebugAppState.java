@@ -235,56 +235,69 @@ public class Box2dDebugAppState extends BaseAppState {
     //----------------------------------------------------------------------
     
     private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
-        if (!initialized.get()) {
-            return;
-        }
-                
-//        b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
-//        final Vector3f[] vertx = vector3fPool.size(vertexCount)
-//                                             .takePush();
+//        synchronized (lock) {
+//            try (StackUtils stack = StackUtils.get(); transform) {
+//                PolygonData data = stack.allocPolygon(vertexCount);
 //
-//        for (int i = 0; i < vertexCount; i++) {
-//            b2Vec2 vec2 = buffer.get(i);
-//            Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
+//                b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
+//                final Vector3f[] vertx = vector3fPool.size(vertexCount)
+//                        .takePush();
+//
+//                for (int i = 0; i < vertexCount; i++) {
+//                    b2Vec2 vec2 = buffer.get(i);
+//                    Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
+//                }
+//                
+//                data.update(transform, vertx, color, color, false);
+//                int index = drawDataList.indexOf(data);
+//                
+//                PolygonData buff;
+//                if (index == -1) {
+//                    buff = new PolygonData(vertexCount);
+//                    buff.update(transform, vertx, color, color, false);
+//                    buff.setDraw(renderer.renderPolygon(transform, buff.getVertices(), color, false));
+//                    drawDataList.add(buff);
+//                    
+//                } else {
+//                    buff = (PolygonData) drawDataList.get(index);
+//                    buff.update(transform, vertx, color, color, false);
+//                }
+//                vector3fPool.takePop(vertx);
+//            }
 //        }
-//               
-//        application.enqueue(() -> debugNode.attachChild(
-//            renderer.renderPolygon(transform, vertx, color, false)
-//        ));
-//        cache.add(vertx);
     };
     
     private final DrawSolidPolygonFcnI DrawSolidPolygonFcn = (transform, vertices, vertexCount, radius, color, context) -> {
-        synchronized (lock) {
-            try (StackUtils stack = StackUtils.get(); transform) {
-                PolygonData data = stack.allocPolygon(vertexCount);
-
-                b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
-                final Vector3f[] vertx = vector3fPool.size(vertexCount)
-                        .takePush();
-
-                for (int i = 0; i < vertexCount; i++) {
-                    b2Vec2 vec2 = buffer.get(i);
-                    Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
-                }
-                
-                data.update(transform, vertx, color, color, true);
-                int index = drawDataList.indexOf(data);
-                
-                PolygonData buff;
-                if (index == -1) {
-                    buff = new PolygonData(vertexCount);
-                    buff.update(transform, vertx, color, color, true);
-                    buff.setDraw(renderer.renderPolygon(transform, buff.getVertices(), color, true));
-                    drawDataList.add(buff);
-                    
-                } else {
-                    buff = (PolygonData) drawDataList.get(index);
-                    buff.update(transform, vertx, color, color, true);
-                }
-                vector3fPool.takePop(vertx);
-            }
-        }
+//        synchronized (lock) {
+//            try (StackUtils stack = StackUtils.get(); transform) {
+//                PolygonData data = stack.allocPolygon(vertexCount);
+//
+//                b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
+//                final Vector3f[] vertx = vector3fPool.size(vertexCount)
+//                        .takePush();
+//
+//                for (int i = 0; i < vertexCount; i++) {
+//                    b2Vec2 vec2 = buffer.get(i);
+//                    Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
+//                }
+//                
+//                data.update(transform, vertx, color, color, true);
+//                int index = drawDataList.indexOf(data);
+//                
+//                PolygonData buff;
+//                if (index == -1) {
+//                    buff = new PolygonData(vertexCount);
+//                    buff.update(transform, vertx, color, color, true);
+//                    buff.setDraw(renderer.renderPolygon(transform, buff.getVertices(), color, true));
+//                    drawDataList.add(buff);
+//                    
+//                } else {
+//                    buff = (PolygonData) drawDataList.get(index);
+//                    buff.update(transform, vertx, color, color, true);
+//                }
+//                vector3fPool.takePop(vertx);
+//            }
+//        }
     };
     
     private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
@@ -316,23 +329,23 @@ public class Box2dDebugAppState extends BaseAppState {
     };
     
     private final DrawLineFcnI DrawLineFcn = (p1, p2, color, context) -> {
-        synchronized (lock) {
-            try (StackUtils stack = StackUtils.get(); p1; p2) {
-                LineData data = stack.allocLine();
-                data.update(p1, p2, color);
-
-                int index = drawDataList.indexOf(data);
-                LineData buff;
-                if (index == -1) {
-                    buff = data.clone();
-                    buff.setDraw(renderer.renderLine(p1, p2, color));
-                    drawDataList.add(buff);
-                } else {
-                    buff = (LineData) drawDataList.get(index);
-                    buff.update(p1, p2, color);
-                }
-            }
-        }
+//        synchronized (lock) {
+//            try (StackUtils stack = StackUtils.get(); p1; p2) {
+//                LineData data = stack.allocLine();
+//                data.update(p1, p2, color);
+//
+//                int index = drawDataList.indexOf(data);
+//                LineData buff;
+//                if (index == -1) {
+//                    buff = data.clone();
+//                    buff.setDraw(renderer.renderLine(p1, p2, color));
+//                    drawDataList.add(buff);
+//                } else {
+//                    buff = (LineData) drawDataList.get(index);
+//                    buff.update(p1, p2, color);
+//                }
+//            }
+//        }
     };
 
     private final DrawTransformFcnI DrawTransformFcn = (transform, context) -> {
@@ -448,7 +461,6 @@ public class Box2dDebugAppState extends BaseAppState {
 //            vector3fPool.takePop(v);
 //        }
 //        cache.clear();
-//        renderer.renderFree();
     }
 
     private void drawLineNode() {
@@ -468,9 +480,11 @@ public class Box2dDebugAppState extends BaseAppState {
                 } else {
                     it.remove();
                     debugNode.detachChild(object);
+                    renderer.getShapeRenderManager().pop((Node) object);
                 }
                 next.kill();
             }
+//            renderer.renderFree();
         }
 
     }

@@ -86,6 +86,9 @@ public final class PointData extends DrawData<Vector4f> implements Cloneable {
             return false;
         }
         final PointData other = (PointData) obj;
+        if (this.color != other.color) {
+            return false;
+        }
         return Objects.equals(this.data, other.data);
     }
     

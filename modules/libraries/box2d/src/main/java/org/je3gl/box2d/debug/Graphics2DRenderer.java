@@ -369,6 +369,10 @@ public class Graphics2DRenderer {
         }
     }
 
+    public ShapeRenderManager getShapeRenderManager() {
+        return shapeRenderManager;
+    }
+
     /**
      * Libera el cache
      */

@@ -92,6 +92,7 @@ public final class StackUtils implements AutoCloseable {
     public PointData allocPoint() {
         PointData data = pointData.get();
         if (data == null) {
+            System.out.println("new<>");
             pointData.add(new PointData());
             return pointData.get();            
         }

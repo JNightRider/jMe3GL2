@@ -90,9 +90,9 @@ public class Character2D extends SimpleApplication  {
             ColorUtilities.darker(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f))
         );
         
-//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
-//        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
-//        stateManager.attach(camera2DAppSate);
+        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
+        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
+        stateManager.attach(camera2DAppSate);
 
         Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);
         box2d.setDebugEnabled(true);

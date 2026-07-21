@@ -56,9 +56,9 @@ public abstract class ShapeRender<T, POOL extends ObjectPool<T>> implements Auto
     /** assets - jme3 */
     protected final AssetManager assetManager;
     /** All objects to be drawn temporarily. */
-    private final List<T> cache;
+    protected final List<T> cache;
     /** ObjectPool */
-    private final POOL pool;
+    protected final POOL pool;
  
     /**
      * Constructor
@@ -126,12 +126,12 @@ public abstract class ShapeRender<T, POOL extends ObjectPool<T>> implements Auto
      */
     @Override
     public void close() {
-        for (int i = 0; i < cache.size(); i++) {
-            T value = cache.get(i);
-            pool.takePop(value);
-            cache.remove(i);
-            i--;
-        }
+        //for (int i = 0; i < cache.size(); i++) {
+        //    T value = cache.get(i);
+        //    pool.takePop(value);
+        //    cache.remove(i);
+        //    i--;
+        //}
         free();
     }
 }

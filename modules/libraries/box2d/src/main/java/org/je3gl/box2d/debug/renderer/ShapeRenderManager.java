@@ -79,18 +79,27 @@ public class ShapeRenderManager extends ShapeRender<Node, NodePool> {
      * @return Node
      */
     public <T> Node render(MeshRender<T> mesh, T value, int color, boolean solid) {
-        Node node = new Node();
+        Node node = pool();
         node.attachChild(geometryRender.render(mesh, value, color, true));
         if (solid) {
             node.attachChild(geometryRender.render(mesh, value, color, false));
         }
         return node;
     }
+    
+    public void pop(Node node) {
+        pool.takePop(node);
+    }
 
     /*(non-Javadoc)
      */
     @Override
     protected void free() {
-        geometryRender.close();
+//        for (Node node : cache) {
+//            if (node.getParent() == null) {
+//                pool.takePop(node);
+//            }
+//        }
+//        geometryRender.close();
     }
 }

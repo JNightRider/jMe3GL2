@@ -62,5 +62,6 @@ public class NodePool extends ObjectPool<Node> {
     @Override
     protected void dead(Node o) {
         o.removeFromParent();
+        o.detachAllChildren();
     }    
 }
