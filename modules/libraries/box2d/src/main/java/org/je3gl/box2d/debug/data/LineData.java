@@ -31,25 +31,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.debug.data;
 
 import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.util.TempVars;
+
 import java.util.Objects;
+
 import org.box2d.jni.b2Pos;
+import org.je3gl.box2d.debug.renderer.MeshRender;
+import org.je3gl.box2d.util.ComparatorUtils;
 
 /**
  *
  * @author wil
  */
-public final class LineData implements Cloneable {
+public final class LineData extends DrawData<Vector3f[]> implements Cloneable {
     
     private Vector2f p;
     private Vector2f size;
     
-    private boolean handled;
     private int color;
 
     public LineData() {
+        super(MeshRender.LINE);
         this.p = new Vector2f();
         this.size = new Vector2f();
-        this.handled = true;
     }
 
     @Override
@@ -58,8 +64,9 @@ public final class LineData implements Cloneable {
             LineData clon = (LineData) super.clone();
             clon.p       = this.p.clone();
             clon.size    = this.size.clone();
+            clon.render  = this.render;
+            clon.draw    = null;
             clon.color   = color;
-            clon.handled = handled;
             return clon;
         } catch (CloneNotSupportedException e) {
             throw new Error(e);
@@ -67,9 +74,12 @@ public final class LineData implements Cloneable {
     }
     
     public void update(b2Pos p, b2Pos size, int color) {
-        this.p.set(p.x().floatValue(), p.y().floatValue());
-        this.size.set(size.x().floatValue(), size.y().floatValue());
-        this.color = color;
+        if (!ComparatorUtils.equals(this.p, p) || !ComparatorUtils.equals(this.size, size)) {
+            this.p.set(p.x().floatValue(), p.y().floatValue());
+            this.size.set(size.x().floatValue(), size.y().floatValue());
+            this.color = color;
+            check();
+        }
     }
 
     public Vector2f getPoint() {
@@ -82,18 +92,6 @@ public final class LineData implements Cloneable {
 
     public int getColor() {
         return color;
-    }
-
-    public boolean isHandled() {
-        return handled;
-    }
-
-    public void handled() {
-        handled = true;
-    }
-    
-    public void kill() {
-        handled = false;
     }
     
     @Override
@@ -117,5 +115,16 @@ public final class LineData implements Cloneable {
             return false;
         }
         return Objects.equals(this.size, other.size);
+    }
+
+    @Override
+    protected void applyUpdate(Geometry child) {
+        TempVars vars = TempVars.get();
+        Vector3f[] vec = vars.tri;
+        
+        vec[0].set(p.x, p.y, 0.0f);
+        vec[1].set(size.x, size.y, 0.0f);
+        render.render(child, color, vec);
+        vars.release();
     }
 }

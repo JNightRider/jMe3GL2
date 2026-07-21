@@ -38,11 +38,13 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.shape.Line;
 import com.jme3.util.TempVars;
+import org.je3gl.scene.debug.AbstractShape2D;
 
 import org.je3gl.scene.debug.Capsule2D;
 import org.je3gl.scene.debug.Circle2D;
 import org.je3gl.scene.debug.Point2D;
 import org.je3gl.scene.debug.Polygon2D;
+import org.je3gl.utilities.ColorUtilities;
 
 /**
  * An interface responsible for managing how the geometric mesh is rendered,
@@ -56,6 +58,22 @@ import org.je3gl.scene.debug.Polygon2D;
  */
 @FunctionalInterface
 public interface MeshRender<ATTR> {
+    
+    static void checkColorMat(Geometry geom, int color) {
+        Object userData = geom.getUserData("box2d.jni#fill");
+        if (userData == null) {
+            return;
+        }
+        boolean fill = Boolean.parseBoolean(String.valueOf(userData));
+        Material mat = geom.getMaterial();
+        if (mat != null) {
+            mat.setColor("Color", ColorUtilities.fromIntRGBA(color, fill ? 0.1f : 1.0f));
+        }
+        Mesh mesh = geom.getMesh();
+        if (mesh != null && (mesh instanceof Polygon2D)) {
+            ((Polygon2D) mesh).fill(fill);
+        }
+    }
 
     /** Polygon2D */
     MeshRender<Vector3f[]> POLYGON = (geom, color, value) -> {
@@ -66,10 +84,12 @@ public interface MeshRender<ATTR> {
             ((Polygon2D) mesh).updateGeometry(value);
         }
         geom.setMesh(mesh);
+        checkColorMat(geom, color);
     };
 
     /** Circle2D */
     MeshRender<Float> CIRCLE = (geom, color, value) -> {
+        
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Circle2D)) {
             mesh = new Circle2D(Circle2D.COUNT, value, 0);
@@ -77,6 +97,7 @@ public interface MeshRender<ATTR> {
             ((Circle2D) mesh).updateGeometry(Circle2D.COUNT, value, 0);
         }
         geom.setMesh(mesh);
+        checkColorMat(geom, color);
     };
 
     /** Capsule2D */
@@ -88,6 +109,7 @@ public interface MeshRender<ATTR> {
             ((Capsule2D) mesh).updateGeometry(Capsule2D.COUNT, value.x, value.y);
         }
         geom.setMesh(mesh);
+        checkColorMat(geom, color);
     };
 
     /** Line */
@@ -99,6 +121,7 @@ public interface MeshRender<ATTR> {
             ((Line) mesh).updatePoints(value[0], value[1]);
         }
         geom.setMesh(mesh);
+        checkColorMat(geom, color);
     };
 
     /** Point2D */
@@ -117,6 +140,7 @@ public interface MeshRender<ATTR> {
 
         Material mat = geom.getMaterial();
         mat.setFloat("PointSize", value.w);
+        checkColorMat(geom, color);
         vars.release();
     };
 

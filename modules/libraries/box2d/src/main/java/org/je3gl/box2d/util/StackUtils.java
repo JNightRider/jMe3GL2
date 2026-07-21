@@ -32,6 +32,8 @@ package org.je3gl.box2d.util;
 
 import java.util.ArrayList;
 import org.je3gl.box2d.debug.data.LineData;
+import org.je3gl.box2d.debug.data.PointData;
+import org.je3gl.box2d.debug.data.PolygonData;
 
 /**
  *
@@ -72,6 +74,8 @@ public final class StackUtils implements AutoCloseable {
     }
 
     private final StackList<LineData> lineData = new StackList<>();
+    private final StackList<PointData> pointData = new StackList<>();
+    private final StackList<PolygonData> polygonData = new StackList<>();
 
     public StackUtils() {
     }
@@ -80,8 +84,25 @@ public final class StackUtils implements AutoCloseable {
         LineData data = lineData.get();
         if (data == null) {
             lineData.add(new LineData());
-            System.out.println("new<>");
             return lineData.get();            
+        }
+        return data;
+    }
+    
+    public PointData allocPoint() {
+        PointData data = pointData.get();
+        if (data == null) {
+            pointData.add(new PointData());
+            return pointData.get();            
+        }
+        return data;
+    }
+    
+    public PolygonData allocPolygon(int size) {
+        PolygonData data = polygonData.get();
+        if (data == null || data.getLength() < size) {
+            polygonData.add(new PolygonData(size));
+            return polygonData.get();            
         }
         return data;
     }

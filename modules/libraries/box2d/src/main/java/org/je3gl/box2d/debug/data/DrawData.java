@@ -30,10 +30,74 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.debug.data;
 
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import org.je3gl.box2d.AxisType;
+import org.je3gl.box2d.debug.renderer.MeshRender;
+
 /**
  *
  * @author wil
+ * @param <T>
  */
-public abstract class DrawData {
+public abstract class DrawData<T> {
+
+    private boolean livingDrawing = false;
+    private boolean needsUpdating = false;
+
+    protected Node draw;
+    protected MeshRender<T> render;
     
+    protected AxisType axisType;
+
+    public DrawData(MeshRender<T> render) {
+        this.render = render;
+        this.axisType = AxisType.AXIS_XYO;
+    }
+
+    public void setDraw(Node draw) {
+        this.draw = draw;
+        this.livingDrawing = true;
+    }
+
+    public void update() {
+        for (Spatial child : draw.getChildren()) {
+            rupdateChild(child);
+        }
+        needsUpdating = false;
+    }
+    
+    private void rupdateChild(Spatial spatial) {
+        if (spatial instanceof Geometry) {
+            applyUpdate((Geometry) spatial);
+        } else {
+            for (Spatial child : ((Node) spatial).getChildren()) {
+                rupdateChild(spatial);
+            }
+        }
+    }
+    
+    protected abstract void applyUpdate(Geometry child);
+
+    public void kill() {
+        livingDrawing = false;
+    }
+    
+    protected void check() {
+        livingDrawing = true;
+        needsUpdating = true;
+    }
+    
+    public Node getDraw() {
+        return draw;
+    }
+
+    public boolean isLivingDrawing() {
+        return livingDrawing;
+    }
+
+    public boolean isNeedsUpdating() {
+        return needsUpdating;
+    }
 }

@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.util;
 
+import com.jme3.math.Vector2f;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -55,7 +56,7 @@ public final class ComparatorUtils {
         return null;
     }
     
-    public static boolean compare(b2Pos a, b2Pos b) {
+    public static boolean equals(b2Pos a, b2Pos b) {
         if (a == null || b == null) {
             return false;
         }
@@ -63,5 +64,15 @@ public final class ComparatorUtils {
             return false;
         }
         return Double.compare(a.y().doubleValue(), b.y().doubleValue()) == 0;
+    }
+    
+    public static boolean equals(Vector2f a, b2Pos b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        if (Double.compare(a.x, b.x().doubleValue()) != 0) {
+            return false;
+        }
+        return Double.compare(a.y, b.y().doubleValue()) == 0;
     }
 }

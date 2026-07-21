@@ -85,6 +85,7 @@ public class Character2D extends SimpleApplication  {
      */
     @Override
     public void simpleInitApp() {
+        flyCam.setMoveSpeed(10);
         viewPort.setBackgroundColor(
             ColorUtilities.darker(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f))
         );

@@ -74,6 +74,7 @@ public class GeometryRender extends ShapeRender<Geometry, GeometryPool> {
         Material mat  = checkMaterial(geom, color, fill);
         geom.setQueueBucket(RenderQueue.Bucket.Translucent);
         geom.setMaterial(mat);
+        geom.setUserData("box2d.jni#fill", fill);
 
         meshRender.render(geom, color, value);
         Mesh mesh = geom.getMesh();

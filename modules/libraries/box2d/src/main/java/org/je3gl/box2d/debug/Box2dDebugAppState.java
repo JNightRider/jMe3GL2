@@ -71,7 +71,10 @@ import org.je3gl.scene.debug.custom.DebugGraphics;
 
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.MemoryUtil.*;
+import org.je3gl.box2d.debug.data.DrawData;
 import org.je3gl.box2d.debug.data.LineData;
+import org.je3gl.box2d.debug.data.PointData;
+import org.je3gl.box2d.debug.data.PolygonData;
 import org.je3gl.box2d.util.ComparatorUtils;
 import org.je3gl.box2d.util.StackUtils;
 
@@ -110,7 +113,7 @@ public class Box2dDebugAppState extends BaseAppState {
     /** <code>JME3</code> renderer. */
     protected RenderManager rm;
     
-    private Map<LineData, Node> lineMap = new HashMap<>();
+    private List<DrawData> drawDataList = new ArrayList<>();
 
     private final Object lock = new Object();
     
@@ -235,7 +238,7 @@ public class Box2dDebugAppState extends BaseAppState {
         if (!initialized.get()) {
             return;
         }
-        
+                
 //        b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
 //        final Vector3f[] vertx = vector3fPool.size(vertexCount)
 //                                             .takePush();
@@ -252,25 +255,36 @@ public class Box2dDebugAppState extends BaseAppState {
     };
     
     private final DrawSolidPolygonFcnI DrawSolidPolygonFcn = (transform, vertices, vertexCount, radius, color, context) -> {
-        if (!initialized.get()) {
-            return;
-        }
-        
-//        b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
-//        final Vector3f[] vertx = vector3fPool.size(vertexCount)
-//                                             .takePush();
-//
-//        for (int i = 0; i < vertexCount; i++) {
-//            b2Vec2 vec2 = buffer.get(i);
-//            Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
-//        }
-//               
-//        application.enqueue(() -> debugNode.attachChild(
-//            renderer.renderPolygon(transform, vertx, color, true)
-//        ));
-//        cache.add(vertx);
+        synchronized (lock) {
+            try (StackUtils stack = StackUtils.get(); transform) {
+                PolygonData data = stack.allocPolygon(vertexCount);
 
-        
+                b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
+                final Vector3f[] vertx = vector3fPool.size(vertexCount)
+                        .takePush();
+
+                for (int i = 0; i < vertexCount; i++) {
+                    b2Vec2 vec2 = buffer.get(i);
+                    Converter.toVector3f(vec2, physicsSpace.getAxisType(), vertx[i]);
+                }
+                
+                data.update(transform, vertx, color, color, true);
+                int index = drawDataList.indexOf(data);
+                
+                PolygonData buff;
+                if (index == -1) {
+                    buff = new PolygonData(vertexCount);
+                    buff.update(transform, vertx, color, color, true);
+                    buff.setDraw(renderer.renderPolygon(transform, buff.getVertices(), color, true));
+                    drawDataList.add(buff);
+                    
+                } else {
+                    buff = (PolygonData) drawDataList.get(index);
+                    buff.update(transform, vertx, color, color, true);
+                }
+                vector3fPool.takePop(vertx);
+            }
+        }
     };
     
     private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
@@ -307,14 +321,16 @@ public class Box2dDebugAppState extends BaseAppState {
                 LineData data = stack.allocLine();
                 data.update(p1, p2, color);
 
-                LineData buff = ComparatorUtils.findMapKey(lineMap, data);
-                if (buff == null) {
+                int index = drawDataList.indexOf(data);
+                LineData buff;
+                if (index == -1) {
                     buff = data.clone();
-                    lineMap.put(buff, renderer.renderLine(p1, p2, color));
+                    buff.setDraw(renderer.renderLine(p1, p2, color));
+                    drawDataList.add(buff);
                 } else {
+                    buff = (LineData) drawDataList.get(index);
                     buff.update(p1, p2, color);
                 }
-                buff.handled();
             }
         }
     };
@@ -329,13 +345,23 @@ public class Box2dDebugAppState extends BaseAppState {
     };
     
     private final DrawPointFcnI DrawPointFcn = (p, size, color, context) -> {
-        if (!initialized.get()) {
-            return;
+        synchronized (lock) {
+            try (StackUtils stack = StackUtils.get(); p) {
+                PointData data = stack.allocPoint();
+                data.update(p, size, color);
+
+                int index = drawDataList.indexOf(data);
+                PointData buff;
+                if (index == -1) {
+                    buff = data.clone();
+                    buff.setDraw(renderer.renderPoint(p, size, color));
+                    drawDataList.add(buff);
+                } else {
+                    buff = (PointData) drawDataList.get(index);
+                    buff.update(p, size, color);
+                }
+            }
         }
-//        application.enqueue(() -> debugNode.attachChild(
-//            renderer.renderPoint(p, size, color)
-//        ));
-//        p.close();
     };
     
     private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
@@ -427,14 +453,16 @@ public class Box2dDebugAppState extends BaseAppState {
 
     private void drawLineNode() {
         synchronized (lock) {
-            Iterator<LineData> it = lineMap.keySet().iterator();
+            Iterator<DrawData> it = drawDataList.iterator();
             while (it.hasNext()) {
-                LineData next = it.next();
-                Spatial object = lineMap.get(next);
+                DrawData next = it.next();
+                Spatial object = next.getDraw();
 
-                if (next.isHandled()) {
+                if (next.isNeedsUpdating()) {
+                    next.update();
+                }
+                if (next.isLivingDrawing()) {
                     if (!debugNode.hasChild(object)) {
-                        System.out.println("org.je3gl.box2d.debug.Box2dDebugAppState.drawLineNode()");
                         debugNode.attachChild(object);
                     }
                 } else {

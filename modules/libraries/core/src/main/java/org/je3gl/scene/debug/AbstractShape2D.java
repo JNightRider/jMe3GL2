@@ -120,6 +120,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
             }
             pb = BufferUtils.createFloatBuffer(vertices.length * 3);
         }
+        pb.rewind();
         for (Vector3f v : vertices) {
             pb.put(v.x).put(v.y).put(v.z);
         }

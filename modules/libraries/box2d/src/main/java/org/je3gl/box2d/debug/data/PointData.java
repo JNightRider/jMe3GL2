@@ -30,87 +30,48 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.debug.data;
 
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
+import com.jme3.math.Vector4f;
 import com.jme3.scene.Geometry;
-import java.util.Arrays;
 import java.util.Objects;
-import org.box2d.jni.b2Vec2;
-import org.box2d.jni.b2WorldTransform;
-import static org.box2d.jni.include.MathFunctions.*;
+import org.box2d.jni.b2Pos;
 import org.je3gl.box2d.debug.renderer.MeshRender;
-import org.je3gl.box2d.util.Converter;
 
 /**
  *
  * @author wil
  */
-public final class PolygonData extends DrawData<Vector3f[]> {
+public final class PointData extends DrawData<Vector4f> implements Cloneable {
     
-    private Vector3f[] vertices;
-    
-    private Vector3f position = new Vector3f();
-    private Quaternion rotation = new Quaternion();
+    private Vector4f data = new Vector4f();
     private int color;
-    private boolean solid;
-    
-    public PolygonData(int size) {
-        super(MeshRender.POLYGON);
-        this.vertices = new Vector3f[size];
-    }
 
-    public Vector3f[] getVertices() {
-        return vertices;
-    }
-
-    public int getLength() {
-        return vertices.length;
+    public PointData() {
+        super(MeshRender.POINT);
     }
     
     @Override
-    public PolygonData clone() {
+    public PointData clone() {
         try {
-            PolygonData clon = (PolygonData) super.clone();
-            clon.position = this.position.clone();
-            clon.rotation = this.rotation.clone();
-            clon.vertices = this.vertices.clone();
-            for (int i = 0; i < vertices.length; i++) {
-                clon.vertices[i] = vertices[i].clone();
-            }
+            PointData clon = (PointData) super.clone();
+            clon.data    = this.data.clone();
             clon.render  = this.render;
             clon.draw    = null;
             clon.color   = color;
-            clon.solid   = solid;
             return clon;
         } catch (CloneNotSupportedException e) {
             throw new Error(e);
         }
     }
     
-    public void update(b2WorldTransform transforms, Vector3f[] vertices, int count, int color, boolean solid) {
-        for (int i = 0; i < vertices.length; i++) {
-            this.vertices[i] = vertices[i].clone();
-        }
-        
-        float angle = b2Rot_GetAngle(transforms.q());
-        rotation.fromAngleAxis(angle, Converter.toUNIT3f(axisType));
-        Converter.toVector3f(transforms.p(), axisType, position);
-        
+    public void update(b2Pos point, float size, int color) {
+        this.data.set(point.x().floatValue(), point.y().floatValue(), 0.0f, size * 0.5f);
         this.color = color;
-        this.solid = solid;
-        this.check();
+        check();
     }
-
-    @Override
-    public void update() {
-        super.update();
-        draw.setLocalTranslation(position);
-        draw.setLocalRotation(rotation);
-    }
-
+    
     @Override
     public int hashCode() {
-        return Objects.hash(vertices, position, rotation, color, solid);
+        return Objects.hash(data, color);
     }
 
     @Override
@@ -124,18 +85,12 @@ public final class PolygonData extends DrawData<Vector3f[]> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PolygonData other = (PolygonData) obj;
-        if (!Arrays.deepEquals(this.vertices, other.vertices)) {
-            return false;
-        }
-        if (!Objects.equals(this.position, other.position)) {
-            return false;
-        }
-        return Objects.equals(this.rotation, other.rotation);
+        final PointData other = (PointData) obj;
+        return Objects.equals(this.data, other.data);
     }
     
     @Override
     protected void applyUpdate(Geometry child) {
-        render.render(child, color, vertices);
+        render.render(child, color, data);
     }
 }
