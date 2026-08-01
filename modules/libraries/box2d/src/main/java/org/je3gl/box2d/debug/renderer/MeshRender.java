@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.material.Material;
+import com.jme3.material.RenderState;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.math.Vector4f;
@@ -38,13 +40,11 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.shape.Line;
 import com.jme3.util.TempVars;
-import org.je3gl.scene.debug.AbstractShape2D;
 
 import org.je3gl.scene.debug.Capsule2D;
 import org.je3gl.scene.debug.Circle2D;
 import org.je3gl.scene.debug.Point2D;
 import org.je3gl.scene.debug.Polygon2D;
-import org.je3gl.utilities.ColorUtilities;
 
 /**
  * An interface responsible for managing how the geometric mesh is rendered,
@@ -58,25 +58,28 @@ import org.je3gl.utilities.ColorUtilities;
  */
 @FunctionalInterface
 public interface MeshRender<ATTR> {
-    
-    static void checkColorMat(Geometry geom, int color) {
-        Object userData = geom.getUserData("box2d.jni#fill");
-        if (userData == null) {
-            return;
+
+    static void checkColorMat(Geometry geom, ColorRGBA color, boolean solid) {
+        Material mat = geom.getMaterial();        
+        if (solid) {
+            mat.getAdditionalRenderState().setWireframe(false);
+            color.setAlpha(0.1f);
+        } else {
+            mat.getAdditionalRenderState().setWireframe(true);
+            mat.getAdditionalRenderState().setLineWidth(2);
+            color.setAlpha(1f);
         }
-        boolean fill = Boolean.parseBoolean(String.valueOf(userData));
-        Material mat = geom.getMaterial();
-        if (mat != null) {
-            mat.setColor("Color", ColorUtilities.fromIntRGBA(color, fill ? 0.1f : 1.0f));
-        }
+        mat.setColor("Color", color);
+        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+
         Mesh mesh = geom.getMesh();
         if (mesh != null && (mesh instanceof Polygon2D)) {
-            ((Polygon2D) mesh).fill(fill);
+            ((Polygon2D) mesh).fill(solid);
         }
     }
 
     /** Polygon2D */
-    MeshRender<Vector3f[]> POLYGON = (geom, color, value) -> {
+    MeshRender<Vector3f[]> POLYGON = (geom, color, value, solid) -> {
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Polygon2D)) {
             mesh = new Polygon2D(value);
@@ -84,11 +87,11 @@ public interface MeshRender<ATTR> {
             ((Polygon2D) mesh).updateGeometry(value);
         }
         geom.setMesh(mesh);
-        checkColorMat(geom, color);
+        checkColorMat(geom, color, solid);
     };
 
     /** Circle2D */
-    MeshRender<Float> CIRCLE = (geom, color, value) -> {
+    MeshRender<Float> CIRCLE = (geom, color, value, solid) -> {
         
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Circle2D)) {
@@ -97,11 +100,11 @@ public interface MeshRender<ATTR> {
             ((Circle2D) mesh).updateGeometry(Circle2D.COUNT, value, 0);
         }
         geom.setMesh(mesh);
-        checkColorMat(geom, color);
+        checkColorMat(geom, color, solid);
     };
 
     /** Capsule2D */
-    MeshRender<Vector2f> CAPSULE = (geom, color, value) -> {
+    MeshRender<Vector2f> CAPSULE = (geom, color, value, solid) -> {
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Capsule2D)) {
             mesh = new Capsule2D(Capsule2D.COUNT, value.x, value.y);
@@ -109,11 +112,11 @@ public interface MeshRender<ATTR> {
             ((Capsule2D) mesh).updateGeometry(Capsule2D.COUNT, value.x, value.y);
         }
         geom.setMesh(mesh);
-        checkColorMat(geom, color);
+        checkColorMat(geom, color, solid);
     };
 
     /** Line */
-    MeshRender<Vector3f[]> LINE = (geom, color, value) -> {
+    MeshRender<Vector3f[]> LINE = (geom, color, value, solid) -> {
         Mesh mesh = geom.getMesh();
         if (!(mesh instanceof Line)) {
             mesh = new Line(value[0], value[1]);
@@ -121,11 +124,11 @@ public interface MeshRender<ATTR> {
             ((Line) mesh).updatePoints(value[0], value[1]);
         }
         geom.setMesh(mesh);
-        checkColorMat(geom, color);
+        checkColorMat(geom, color, solid);
     };
 
     /** Point2D */
-    MeshRender<Vector4f> POINT = (geom, color, value) -> {
+    MeshRender<Vector4f> POINT = (geom, color, value, solid) -> {
         TempVars vars = TempVars.get();
         Vector3f vec3 = vars.vect1;
         vec3.set(value.x, value.y, value.z);
@@ -140,7 +143,7 @@ public interface MeshRender<ATTR> {
 
         Material mat = geom.getMaterial();
         mat.setFloat("PointSize", value.w);
-        checkColorMat(geom, color);
+        checkColorMat(geom, color, solid);
         vars.release();
     };
 
@@ -150,6 +153,7 @@ public interface MeshRender<ATTR> {
      * @param geom Geometry
      * @param color int
      * @param value Object
+     * @param solid boolean
      */
-    void render(Geometry geom, int color, ATTR value);
+    void render(Geometry geom, ColorRGBA color, ATTR value, boolean solid);
 }

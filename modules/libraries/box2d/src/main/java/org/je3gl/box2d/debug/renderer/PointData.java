@@ -28,41 +28,69 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.box2d.debug;
+package org.je3gl.box2d.debug.renderer;
 
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import org.je3gl.box2d.util.ObjectPool;
-import com.jme3.scene.Node;
 
 /**
- * An object pool for {@code Node} type data
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class NodePool extends ObjectPool<Node> {
-    /*(non-javadoc)
-     */
-    @Override
-    protected Node create() {
-        return new Node();
-    }
+public class PointData {
+    
+    public static class Pool extends ObjectPool<PointData> {
 
-    /*(non-javadoc)
-     */
-    @Override
-    protected boolean validate(Node o) {
-        if (o == null) {
-            return false;
+        @Override
+        protected PointData create() {
+            return new PointData();
         }
-        return o.getParent() == null;
+
+        @Override
+        protected boolean validate(PointData o) {
+            return o != null;
+        }
+
+        @Override
+        protected void dead(PointData o) { }        
+    }
+    
+    private Vector2f position;
+    private float size;
+    private ColorRGBA rgba;
+
+    public PointData() {
+        this(new Vector2f(), 0, null);
     }
 
-    /*(non-javadoc)
-     */
-    @Override
-    protected void dead(Node o) {
-        o.removeFromParent();
-        o.detachAllChildren();
-    }    
+    public PointData(Vector2f position, float size, ColorRGBA rgba) {
+        this.position = position;
+        this.size = size;
+        this.rgba = rgba;
+    }
+
+    public void setPosition(float x, float y) {
+        this.position.set(x, y);
+    }
+
+    public void setSize(float size) {
+        this.size = size;
+    }
+
+    public void setRGBA(ColorRGBA rgba) {
+        this.rgba = rgba;
+    }
+
+    public Vector2f getPosition() {
+        return position;
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public ColorRGBA getRGBA() {
+        return rgba;
+    }
 }

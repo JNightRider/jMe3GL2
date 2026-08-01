@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.je3gl.box2d.debug.ObjectPool;
+import org.je3gl.box2d.util.ObjectPool;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
@@ -126,12 +126,12 @@ public abstract class ShapeRender<T, POOL extends ObjectPool<T>> implements Auto
      */
     @Override
     public void close() {
-        //for (int i = 0; i < cache.size(); i++) {
-        //    T value = cache.get(i);
-        //    pool.takePop(value);
-        //    cache.remove(i);
-        //    i--;
-        //}
+        for (int i = 0; i < cache.size(); i++) {
+            T value = cache.get(i);
+            pool.takePop(value);
+            cache.remove(i);
+            i--;
+        }
         free();
     }
 }

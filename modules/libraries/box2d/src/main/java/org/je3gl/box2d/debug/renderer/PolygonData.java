@@ -27,42 +27,62 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package org.je3gl.box2d.debug;
+ */
+package org.je3gl.box2d.debug.renderer;
 
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import org.je3gl.box2d.util.ObjectPool;
-import com.jme3.scene.Node;
 
 /**
- * An object pool for {@code Node} type data
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class NodePool extends ObjectPool<Node> {
-    /*(non-javadoc)
-     */
-    @Override
-    protected Node create() {
-        return new Node();
-    }
+public class PolygonData {
+    
+    public static final class Pool extends ObjectPool<PolygonData> {
 
-    /*(non-javadoc)
-     */
-    @Override
-    protected boolean validate(Node o) {
-        if (o == null) {
-            return false;
+        public Pool() {
         }
-        return o.getParent() == null;
+
+        @Override
+        protected PolygonData create() {
+            return new PolygonData();
+        }
+
+        @Override
+        protected boolean validate(PolygonData o) {
+            return o != null;
+        }
+
+        @Override
+        protected void dead(PolygonData o) {  }
     }
 
-    /*(non-javadoc)
-     */
-    @Override
-    protected void dead(Node o) {
-        o.removeFromParent();
-        o.detachAllChildren();
-    }    
+    private Vector3f[] vertices;
+    private ColorRGBA rgba;
+    
+    public PolygonData() {
+    }
+
+    public PolygonData(Vector3f[] vertices, ColorRGBA rgba) {
+        this.vertices = vertices;
+        this.rgba = rgba;
+    }
+
+    public void setVertices(Vector3f[] vertices) {
+        this.vertices = vertices;
+    }
+
+    public void setRGBA(ColorRGBA rgba) {
+        this.rgba = rgba;
+    }
+
+    public Vector3f[] getVertices() {
+        return vertices;
+    }
+
+    public ColorRGBA getRGBA() {
+        return rgba;
+    }
 }

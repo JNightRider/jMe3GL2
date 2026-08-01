@@ -31,66 +31,63 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.scene.Node;
-import org.je3gl.box2d.debug.NodePool;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector4f;
+import com.jme3.renderer.RenderManager;
+import com.jme3.scene.Geometry;
+import com.jme3.util.TempVars;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.je3gl.box2d.util.ObjectPool;
 
 /**
- * A manager for all shapes of the physics engine.
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class ShapeRenderManager extends ShapeRender<Node, NodePool> {
+public class PointRender extends Render {
 
-    /**
-     * A rendering manager for geometries.
-     */
-    private final GeometryRender geometryRender;
+    private final List<PointData> points = new ArrayList<>();
+    private final ObjectPool<PointData> dataPool = new PointData.Pool();
 
-    /**
-     * Constructor
-     * @param assetManager AssetManager
-     */
-    public ShapeRenderManager(AssetManager assetManager) {
-        super(assetManager, new NodePool());
-        this.geometryRender = new GeometryRender(assetManager);
+    private final MeshRender<Vector4f> meshRender = MeshRender.POINT;
+
+    public PointRender(AssetManager assetManager) {
+        super(assetManager);
     }
 
-    /**
-     * Create a new empty node.
-     *
-     * @return Node
-     */
-    public Node create() {
-        return pool();
-    }
-
-    /**
-     * Renders a new object based on the information provided by the physics engine.
-     *
-     * @param <T> type mesh
-     *
-     * @param mesh mesh
-     * @param value value for the mesh
-     * @param color color rgb
-     * @param solid boolean
-     *
-     * @return Node
-     */
-    public <T> Node render(MeshRender<T> mesh, T value, int color, boolean solid) {
-        Node node = pool();
-        node.attachChild(geometryRender.render(mesh, value, color, true));
-        if (solid) {
-            node.attachChild(geometryRender.render(mesh, value, color, false));
+    public void addDrawPoint(float x, float y, float size, ColorRGBA rgba) {
+        synchronized (lock) {
+            PointData data = dataPool.takePush();
+            data.setPosition(x, y);
+            data.setRGBA(rgba);
+            data.setSize(size);
+            points.add(data);
         }
-        return node;
     }
 
-    /*(non-Javadoc)
-     */
     @Override
-    protected void free() {
-        geometryRender.close();
+    public void flushDraw(RenderManager renderManager, boolean solid) {
+        synchronized (lock) {
+            for (int i = 0; i < points.size(); i++) {
+                PointData data = points.get(i);
+                Geometry geom  = gp.takePush();
+                checkGeometry(geom);
+
+                TempVars vars = TempVars.get();
+                Vector4f attr = vars.vect4f1;
+                attr.set(data.getPosition().x, data.getPosition().y, 0.0f, data.getSize() * 1.5f);
+
+                meshRender.render(geom, data.getRGBA(), attr, solid);
+                renderManager.renderGeometry(geom);
+
+                vars.release();
+                gp.takePop(geom);
+                dataPool.takePop(data);
+                points.remove(i);
+                i--;
+            }
+        }
     }
 }

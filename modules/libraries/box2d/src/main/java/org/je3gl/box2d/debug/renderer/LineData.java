@@ -27,77 +27,70 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package org.je3gl.box2d.debug.data;
+ */
+package org.je3gl.box2d.debug.renderer;
 
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
-import org.je3gl.box2d.AxisType;
-import org.je3gl.box2d.debug.renderer.MeshRender;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import org.je3gl.box2d.util.ObjectPool;
 
 /**
  *
  * @author wil
- * @param <T>
  */
-public abstract class DrawData<T> {
-
-    private boolean livingDrawing = false;
-    private boolean needsUpdating = false;
-
-    protected Node draw;
-    protected MeshRender<T> render;
+public class LineData {
     
-    protected AxisType axisType;
+    public static final class Pool extends ObjectPool<LineData> {
 
-    public DrawData(MeshRender<T> render) {
-        this.render = render;
-        this.axisType = AxisType.AXIS_XYO;
-    }
-
-    public void setDraw(Node draw) {
-        this.draw = draw;
-        this.livingDrawing = true;
-    }
-
-    public void update() {
-        for (Spatial child : draw.getChildren()) {
-            rupdateChild(child);
+        @Override
+        protected LineData create() {
+             return new LineData();
         }
-        needsUpdating = false;
-    }
-    
-    private void rupdateChild(Spatial spatial) {
-        if (spatial instanceof Geometry) {
-            applyUpdate((Geometry) spatial);
-        } else {
-            for (Spatial child : ((Node) spatial).getChildren()) {
-                rupdateChild(spatial);
-            }
+
+        @Override
+        protected boolean validate(LineData o) {
+            return o != null;
         }
-    }
-    
-    protected abstract void applyUpdate(Geometry child);
 
-    public void kill() {
-        livingDrawing = false;
-    }
-    
-    protected void check() {
-        livingDrawing = true;
-        needsUpdating = true;
-    }
-    
-    public Node getDraw() {
-        return draw;
+        @Override
+        protected void dead(LineData o) { }
     }
 
-    public boolean isLivingDrawing() {
-        return livingDrawing;
+    private Vector3f p1;
+    private Vector3f p2;
+    private ColorRGBA rgba;
+
+    public LineData() {
+        this(new Vector3f(), new Vector3f(), null);
     }
 
-    public boolean isNeedsUpdating() {
-        return needsUpdating;
+    public LineData(Vector3f p1, Vector3f p2, ColorRGBA rgba) {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.rgba = rgba;
+    }
+
+    public void setP1(float x, float y) {
+        p1.set(x, y, 0);
+    }
+    
+    public void setP2(float x, float y) {
+        p2.set(x, y, 0);
+    }
+
+    public void setRGBA(ColorRGBA rgba) {
+        this.rgba = rgba;
+    }
+
+    public Vector3f getP1() {
+        return p1;
+    }
+
+    public Vector3f getP2() {
+        return p2;
+    }
+
+    public ColorRGBA getRGBA() {
+        return rgba;
     }
 }

@@ -27,42 +27,34 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package org.je3gl.box2d.debug;
-
-import org.je3gl.box2d.util.ObjectPool;
-import com.jme3.scene.Node;
+ */
+package org.je3gl.box2d.util;
 
 /**
- * An object pool for {@code Node} type data
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class NodePool extends ObjectPool<Node> {
-    /*(non-javadoc)
-     */
-    @Override
-    protected Node create() {
-        return new Node();
+public class FloatsPool extends ObjectPool<float[]> {
+    private int capacity = 10;
+
+    public FloatsPool() {
+    }
+    
+    public FloatsPool capacity(int capacity) {
+        this.capacity = capacity;
+        return this;
     }
 
-    /*(non-javadoc)
-     */
     @Override
-    protected boolean validate(Node o) {
-        if (o == null) {
-            return false;
-        }
-        return o.getParent() == null;
+    protected float[] create() {
+        return new float[capacity];
     }
 
-    /*(non-javadoc)
-     */
     @Override
-    protected void dead(Node o) {
-        o.removeFromParent();
-        o.detachAllChildren();
-    }    
+    protected boolean validate(float[] o) {
+        return o != null && o.length >= capacity;
+    }
+
+    @Override
+    protected void dead(float[] o) { }    
 }

@@ -34,6 +34,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -41,7 +42,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.je3gl.box2d.debug.Box2dDebugAppState;
 import org.je3gl.box2d.scene.tile.Box2dTilePhysicsSystem;
 
 import org.box2d.jni.*;
@@ -49,6 +49,7 @@ import org.box2d.jni.*;
 import static org.box2d.jni.include.Base.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
+import org.je3gl.box2d.debug.Box2dDebug;
 
 /**
  * An object (an instance) of the class <code>Box2dAppState</code> is a state
@@ -120,9 +121,9 @@ public class Box2dAppState extends AbstractAppState {
     private DrawSettings drawSettings;
     
     /**
-     * AppState to manage the debug visualization, or null if none
+     * SceneProcessor to manage the debug visualization, or null if none
      */
-    private Box2dDebugAppState debugAppState;
+    private Box2dDebug box2dDebug;
 
     /**
      * <code>true</code> to enable the purification state of physical bodies and
@@ -236,6 +237,7 @@ public class Box2dAppState extends AbstractAppState {
         }
 
         Box2dTilePhysicsSystem.initialize();
+        this.box2dDebug = new Box2dDebug(this);
         this.initialized = true;
     }
 
@@ -269,16 +271,18 @@ public class Box2dAppState extends AbstractAppState {
             return;
         }
         this.tpf = tpf;
-        
-        if (debug && debugAppState == null) {
-            // Start debug visualization.
-            this.debugAppState = new Box2dDebugAppState(physicsSpace, drawSettings);
-            this.stateManager.attach(debugAppState);
 
-        } else if (!debug && debugAppState != null) {
-            // Stop debug visualization.
-            this.stateManager.detach(debugAppState);
-            this.debugAppState = null;
+        if (initialized) {
+            ViewPort viewPort = this.app.getViewPort();
+            if (debug && !viewPort.getProcessors().contains(box2dDebug)) {
+                // Start debug visualization.
+                this.app.getViewPort().addProcessor(box2dDebug);
+                this.physicsSpace.setDebugDraw(box2dDebug.getDebugDraw());
+            } else if (!debug && viewPort.getProcessors().contains(box2dDebug)) {
+                // Stop debug visualization.
+                this.app.getViewPort().removeProcessor(box2dDebug);
+                this.physicsSpace.setDebugDraw(null);
+            }
         }
     }
         
@@ -371,6 +375,10 @@ public class Box2dAppState extends AbstractAppState {
      */
     public PhysicsSpace getPhysicsSpace() {
         return this.physicsSpace;
+    }
+
+    public Application getApplication() {
+        return app;
     }
 
     /**

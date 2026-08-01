@@ -30,12 +30,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.debug;
 
+import org.je3gl.box2d.util.ObjectPool;
 import com.jme3.util.BufferUtils;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import org.je3gl.box2d.util.ObjectPool;
 
 /**
  *

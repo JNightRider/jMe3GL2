@@ -35,6 +35,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Spatial;
+import com.jme3.system.AppSettings;
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.ThreadingType;
 import org.je3gl.renderer.Camera2DAppSate;
@@ -71,6 +72,10 @@ public class Character2D extends SimpleApplication  {
      */
     public static void main(String[] args) {
         Character2D app = new Character2D();
+        AppSettings settings = new AppSettings(true);
+        settings.setGammaCorrection(false);
+
+        app.setSettings(settings);
         app.start();
     }
 
@@ -87,19 +92,19 @@ public class Character2D extends SimpleApplication  {
     public void simpleInitApp() {
         flyCam.setMoveSpeed(10);
         viewPort.setBackgroundColor(
-            ColorUtilities.darker(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f))
+            new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f)
         );
         
-        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
-        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
-        stateManager.attach(camera2DAppSate);
+//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
+//        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
+//        stateManager.attach(camera2DAppSate);
 
-        Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);
+        Box2dAppState box2d = new Box2dAppState(ThreadingType.SEQUENTIAL);
         box2d.setDebugEnabled(true);
         stateManager.attach(box2d);
         
         prepareGround();
-        prepareCharacter();
+//        prepareCharacter();
     }
 
     /**

@@ -28,41 +28,40 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.box2d.debug;
+package org.je3gl.box2d.debug.renderer;
 
-import org.je3gl.box2d.util.ObjectPool;
-import com.jme3.scene.Node;
+import com.jme3.asset.AssetManager;
+import com.jme3.material.Material;
+import com.jme3.material.RenderState;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Geometry;
+import org.je3gl.box2d.util.GeometryPool;
 
 /**
- * An object pool for {@code Node} type data
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class NodePool extends ObjectPool<Node> {
-    /*(non-javadoc)
-     */
-    @Override
-    protected Node create() {
-        return new Node();
-    }
+public abstract class Render {
+    
+    protected final Object lock = new Object();
+    
+    protected final AssetManager assetManager;
+    protected final GeometryPool gp;
 
-    /*(non-javadoc)
-     */
-    @Override
-    protected boolean validate(Node o) {
-        if (o == null) {
-            return false;
+    public Render(AssetManager assetManager) {
+        this.assetManager = assetManager;
+        this.gp = new GeometryPool();
+    }
+    
+    public abstract void flushDraw(RenderManager renderManager, boolean solid);
+
+    protected void checkGeometry(Geometry geom) {
+        Material mat = geom.getMaterial();
+        if (mat == null) {
+            mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+            geom.setMaterial(mat);
         }
-        return o.getParent() == null;
     }
-
-    /*(non-javadoc)
-     */
-    @Override
-    protected void dead(Node o) {
-        o.removeFromParent();
-        o.detachAllChildren();
-    }    
 }

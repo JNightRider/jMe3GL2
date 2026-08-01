@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.debug;
 
+import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapText;
 import com.jme3.math.FastMath;
@@ -58,6 +59,7 @@ import static org.box2d.jni.system.ArenaAlloc.*;
 import static org.box2d.jni.include.MathFunctions.*;
 
 import org.je3gl.box2d.AxisType;
+import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.debug.renderer.MeshRender;
 import org.je3gl.box2d.debug.renderer.ShapeRenderManager;
 import org.je3gl.box2d.util.Converter;
@@ -86,7 +88,7 @@ public class Graphics2DRenderer {
     /** Resource manager <code>JME</code>. */
     private final AssetManager assetManager;    
     /** Debugger. */
-    private final Box2dDebugAppState box2dDebugAppState;
+    private final Box2dAppState box2dDebugAppState;
 
     /** Renderer for physical world objects. */
     private final ShapeRenderManager shapeRenderManager;
@@ -105,7 +107,7 @@ public class Graphics2DRenderer {
      * Class constructor <code>Graphics2DRenderer</code>.
      * @param box2dDebugAppState debugger
      */
-    public Graphics2DRenderer(Box2dDebugAppState box2dDebugAppState) {
+    public Graphics2DRenderer(Box2dAppState box2dDebugAppState) {
         this.assetManager       = box2dDebugAppState.getApplication().getAssetManager();
         this.box2dDebugAppState = box2dDebugAppState;
         this.bitmapTextPool = new BitmapTextPool();

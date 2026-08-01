@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.debug;
 
+import org.je3gl.box2d.util.ObjectPool;
 import com.jme3.math.Vector3f;
 
 /**

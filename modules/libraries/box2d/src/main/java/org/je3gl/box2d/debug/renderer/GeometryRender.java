@@ -70,13 +70,13 @@ public class GeometryRender extends ShapeRender<Geometry, GeometryPool> {
      * @return Node
      */
     public <T> Geometry render(MeshRender<T> meshRender, T value, int color, boolean fill) {
-        Geometry geom = new Geometry();
+        Geometry geom = pool();
         Material mat  = checkMaterial(geom, color, fill);
         geom.setQueueBucket(RenderQueue.Bucket.Translucent);
         geom.setMaterial(mat);
         geom.setUserData("box2d.jni#fill", fill);
 
-        meshRender.render(geom, color, value);
+//        meshRender.render(geom, color, value);
         Mesh mesh = geom.getMesh();
         if (fill && (mesh instanceof AbstractShape2D)) {
             ((AbstractShape2D) mesh).fill(fill);
