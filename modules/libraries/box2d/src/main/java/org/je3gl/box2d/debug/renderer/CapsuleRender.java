@@ -32,60 +32,64 @@ package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.math.Vector4f;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Geometry;
-import com.jme3.util.TempVars;
 import java.util.ArrayList;
 import java.util.List;
-import org.je3gl.box2d.util.ObjectPool;
 
 /**
  *
  * @author wil
  */
-public class LineRender extends ShapeRender {
+public class CapsuleRender extends ShapeRender {
     
-    private final List<LineData> list = new ArrayList<>();
-    private final ObjectPool<LineData> dataPool = new LineData.Pool();
-
-    private final MeshRender<Vector3f[]> meshRender = MeshRender.LINE;
-
-    public LineRender(AssetManager assetManager) {
-        super(assetManager, "Line");
+    private final List<CapsuleData> list = new ArrayList<>();
+    private final CapsuleData.Pool dataPool = new CapsuleData.Pool();
+    
+    private final MeshRender<Vector2f> meshRender = MeshRender.CAPSULE;
+    
+    public CapsuleRender(AssetManager assetManager) {
+        super(assetManager, "Capsule");
     }
-    
-    public void addAddLine(float x0, float y0, float x1, float y1, ColorRGBA color) {
+
+    public void addDrawCapsule(float w, float h, float angle, float x, float y, ColorRGBA color) {
         synchronized (lock) {
-            LineData data = dataPool.takePush();
-            data.setP1(x0, y0);
-            data.setP2(x1, y1);
+            CapsuleData data = dataPool.takePush();
             data.setRGBA(color);
+            data.setSize(w, h);
+            data.setTransform(x, y, angle);
             list.add(data);
         }
     }
-
+    
     @Override
     public void flushDraw(RenderManager renderManager, boolean solid) {
         synchronized (lock) {
             for (int i = 0; i < list.size(); i++) {
-                LineData data = list.get(i);
-                checkGeometry(drawable);
+                CapsuleData data = list.get(i);
 
-                TempVars vars = TempVars.get();
-                Vector3f[] attr = vars.tri;
-                attr[0] = data.getP1();
-                attr[1] = data.getP2();
-                
-                meshRender.render(drawable, data.getRGBA(), attr, solid);
+                checkGeometry(drawable);
+                meshRender.render(drawable, data.getRGBA(), data.getSize(), false);
+
+                drawable.setLocalTransform(data.getTransform());
+                drawable.updateGeometricState();
+                drawable.updateModelBound();
                 renderManager.renderGeometry(drawable);
 
-                vars.release();
+                if (solid) {
+                    checkGeometry(border);
+                    meshRender.render(border, data.getRGBA(), data.getSize(), true);
+                    border.setLocalTransform(data.getTransform());
+                    border.updateGeometricState();
+                    border.updateModelBound();
+                    renderManager.renderGeometry(border);
+                }
+
                 dataPool.takePop(data);
                 list.remove(i);
                 i--;
             }
         }
-    }
+    }    
 }

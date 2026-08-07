@@ -77,7 +77,7 @@ public class HelloBox2D extends SimpleApplication {
         viewPort.setBackgroundColor(new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f));
         
         Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
-        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
+        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Transparent);
         stateManager.attach(camera2DAppSate);
 
         Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);

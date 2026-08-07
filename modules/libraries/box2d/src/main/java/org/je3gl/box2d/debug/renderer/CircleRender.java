@@ -27,16 +27,13 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.math.Vector4f;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Geometry;
-import com.jme3.util.TempVars;
 import java.util.ArrayList;
 import java.util.List;
 import org.je3gl.box2d.util.ObjectPool;
@@ -45,23 +42,29 @@ import org.je3gl.box2d.util.ObjectPool;
  *
  * @author wil
  */
-public class LineRender extends ShapeRender {
+public class CircleRender extends ShapeRender {
+
+    private final List<CircleData> list = new ArrayList<>();
+    private final ObjectPool<CircleData> dataPool = new CircleData.Pool();
+
+    private final MeshRender<Float> meshRender = MeshRender.CIRCLE;
     
-    private final List<LineData> list = new ArrayList<>();
-    private final ObjectPool<LineData> dataPool = new LineData.Pool();
-
-    private final MeshRender<Vector3f[]> meshRender = MeshRender.LINE;
-
-    public LineRender(AssetManager assetManager) {
-        super(assetManager, "Line");
+    public CircleRender(AssetManager assetManager) {
+        super(assetManager, "Circle");
     }
     
-    public void addAddLine(float x0, float y0, float x1, float y1, ColorRGBA color) {
+    public void addDrawCircle(
+            float x, float y,
+            float angle,
+            float cx, float cy, 
+            float radius, 
+            ColorRGBA color
+    ) {
         synchronized (lock) {
-            LineData data = dataPool.takePush();
-            data.setP1(x0, y0);
-            data.setP2(x1, y1);
+            CircleData data = dataPool.takePush();
+            data.setCenter(x, y);
             data.setRGBA(color);
+            data.setRadius(radius);
             list.add(data);
         }
     }
@@ -70,22 +73,40 @@ public class LineRender extends ShapeRender {
     public void flushDraw(RenderManager renderManager, boolean solid) {
         synchronized (lock) {
             for (int i = 0; i < list.size(); i++) {
-                LineData data = list.get(i);
-                checkGeometry(drawable);
+                CircleData data = list.get(i);
 
-                TempVars vars = TempVars.get();
-                Vector3f[] attr = vars.tri;
-                attr[0] = data.getP1();
-                attr[1] = data.getP2();
-                
-                meshRender.render(drawable, data.getRGBA(), attr, solid);
+                checkGeometry(drawable);
+                meshRender.render(drawable, data.getRGBA(), data.getRadius(), true);
+
+                boolean flag = Vector3f.ZERO.equals(data.getCenter());
+                if (flag) {
+                    drawable.setLocalTransform(data.getTransform());
+                    flag = true;
+                } else {
+                    drawable.setLocalTranslation(data.getCenter());
+                }
+
+                drawable.updateGeometricState();
+                drawable.updateModelBound();
                 renderManager.renderGeometry(drawable);
 
-                vars.release();
+                if (solid) {
+                    checkGeometry(border);
+                    meshRender.render(border, data.getRGBA(), data.getRadius(), false);
+                    if ( flag ) {
+                        border.setLocalTransform(data.getTransform());
+                    } else {
+                        border.setLocalTranslation(data.getCenter());
+                    }
+                    border.updateGeometricState();
+                    border.updateModelBound();
+                    renderManager.renderGeometry(border);
+                }
+
                 dataPool.takePop(data);
                 list.remove(i);
                 i--;
             }
         }
-    }
+    }    
 }

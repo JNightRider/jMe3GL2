@@ -46,7 +46,7 @@ import org.je3gl.box2d.util.ObjectPool;
  *
  * @author wil
  */
-public class PointRender extends Render {
+public class PointRender extends ShapeRender {
 
     private final List<PointData> points = new ArrayList<>();
     private final ObjectPool<PointData> dataPool = new PointData.Pool();
@@ -54,7 +54,7 @@ public class PointRender extends Render {
     private final MeshRender<Vector4f> meshRender = MeshRender.POINT;
 
     public PointRender(AssetManager assetManager) {
-        super(assetManager);
+        super(assetManager, "Point");
     }
 
     public void addDrawPoint(float x, float y, float size, ColorRGBA rgba) {
@@ -72,18 +72,16 @@ public class PointRender extends Render {
         synchronized (lock) {
             for (int i = 0; i < points.size(); i++) {
                 PointData data = points.get(i);
-                Geometry geom  = gp.takePush();
-                checkGeometry(geom);
+                checkGeometry(drawable);
 
                 TempVars vars = TempVars.get();
                 Vector4f attr = vars.vect4f1;
                 attr.set(data.getPosition().x, data.getPosition().y, 0.0f, data.getSize() * 1.5f);
 
-                meshRender.render(geom, data.getRGBA(), attr, solid);
-                renderManager.renderGeometry(geom);
+                meshRender.render(drawable, data.getRGBA(), attr, solid);
+                renderManager.renderGeometry(drawable);
 
                 vars.release();
-                gp.takePop(geom);
                 dataPool.takePop(data);
                 points.remove(i);
                 i--;

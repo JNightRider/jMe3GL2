@@ -33,55 +33,62 @@ package org.je3gl.box2d.debug.renderer;
 import com.jme3.asset.AssetManager;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.math.Vector4f;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Geometry;
-import com.jme3.util.TempVars;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.je3gl.box2d.util.ObjectPool;
 
 /**
  *
  * @author wil
  */
-public class PolygonRender extends Render {
+public class PolygonRender extends ShapeRender {
     
     private final List<PolygonData> list = new ArrayList<>();
     private final PolygonData.Pool dataPool = new PolygonData.Pool();
-
+    
     private final MeshRender<Vector3f[]> meshRender = MeshRender.POLYGON;
     
     public PolygonRender(AssetManager assetManager) {
-        super(assetManager);
+        super(assetManager, "Polygon");
     }
 
-    public void addDrawPolygon(ColorRGBA color, Vector3f[] vertices) {
+    public void addDrawPolygon(ColorRGBA color, Vector3f[] vertices, float x, float y, float angle) {
         synchronized (lock) {
             PolygonData data = dataPool.takePush();
             data.setVertices(vertices);
+            data.setPosition(x, y, 0f);
+            data.setQuaternion(angle, Vector3f.UNIT_Z);
             data.setRGBA(color);
             list.add(data);
         }
     }
-    
+
     @Override
     public void flushDraw(RenderManager renderManager, boolean solid) {
         synchronized (lock) {
             for (int i = 0; i < list.size(); i++) {
                 PolygonData data = list.get(i);
-                Geometry geom    = gp.takePush();
-                checkGeometry(geom);
 
-                meshRender.render(geom, data.getRGBA(), data.getVertices(), false);
-                renderManager.renderGeometry(geom);
-                
-//                if (solid) {
-//                    meshRender.render(geom, data.getRGBA(), data.getVertices(), true);
-//                    renderManager.renderGeometry(geom);
-//                }
+                checkGeometry(drawable);
+                meshRender.render(drawable, data.getRGBA(), data.getVertices(), true);
 
-                gp.takePop(geom);
+                drawable.setLocalTranslation(data.getPosition());
+                drawable.setLocalRotation(data.getQuaternion());
+                drawable.updateGeometricState();
+                drawable.updateModelBound();
+                renderManager.renderGeometry(drawable);
+
+                if (solid) {
+                    checkGeometry(border);
+                    meshRender.render(border, data.getRGBA(), data.getVertices(), false);
+                    border.setLocalTranslation(data.getPosition());
+                    border.setLocalRotation(data.getQuaternion());
+                    border.updateGeometricState();
+                    border.updateModelBound();
+                    renderManager.renderGeometry(border);
+                }
+
                 dataPool.takePop(data);
                 list.remove(i);
                 i--;

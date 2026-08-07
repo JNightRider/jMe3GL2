@@ -32,6 +32,7 @@ package org.je3gl.demo.box2d;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Spatial;
@@ -104,7 +105,7 @@ public class Character2D extends SimpleApplication  {
         stateManager.attach(box2d);
         
         prepareGround();
-//        prepareCharacter();
+        prepareCharacter();
     }
 
     /**
@@ -120,8 +121,9 @@ public class Character2D extends SimpleApplication  {
         rootNode.attachChild(player);
         
         Player body2D = new Player();
-        body2D.setType(b2_staticBody);
+        body2D.setType(b2_dynamicBody);
         body2D.setGravityScale(2f);
+        body2D.setPosition(new Vector2f(0, 10));
         box2dAppState.getPhysicsSpace().addBody(body2D);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.calloc());

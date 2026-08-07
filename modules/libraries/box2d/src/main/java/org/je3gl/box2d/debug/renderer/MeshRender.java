@@ -40,6 +40,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.shape.Line;
 import com.jme3.util.TempVars;
+import org.je3gl.scene.debug.AbstractShape2D;
 
 import org.je3gl.scene.debug.Capsule2D;
 import org.je3gl.scene.debug.Circle2D;
@@ -60,10 +61,11 @@ import org.je3gl.scene.debug.Polygon2D;
 public interface MeshRender<ATTR> {
 
     static void checkColorMat(Geometry geom, ColorRGBA color, boolean solid) {
-        Material mat = geom.getMaterial();        
+        Material mat = geom.getMaterial();
+        mat.getAdditionalRenderState().setDepthTest(false);
         if (solid) {
             mat.getAdditionalRenderState().setWireframe(false);
-            color.setAlpha(0.1f);
+            color.setAlpha(0.2f);
         } else {
             mat.getAdditionalRenderState().setWireframe(true);
             mat.getAdditionalRenderState().setLineWidth(2);
@@ -73,8 +75,8 @@ public interface MeshRender<ATTR> {
         mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
 
         Mesh mesh = geom.getMesh();
-        if (mesh != null && (mesh instanceof Polygon2D)) {
-            ((Polygon2D) mesh).fill(solid);
+        if (mesh != null && (mesh instanceof AbstractShape2D)) {
+            ((AbstractShape2D) mesh).fill(solid);
         }
     }
 

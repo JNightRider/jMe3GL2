@@ -27,65 +27,84 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 package org.je3gl.box2d.debug.renderer;
 
-import com.jme3.asset.AssetManager;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
-import com.jme3.math.Vector4f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Geometry;
-import com.jme3.util.TempVars;
-import java.util.ArrayList;
-import java.util.List;
 import org.je3gl.box2d.util.ObjectPool;
 
 /**
  *
  * @author wil
  */
-public class LineRender extends ShapeRender {
+public class CircleData {
     
-    private final List<LineData> list = new ArrayList<>();
-    private final ObjectPool<LineData> dataPool = new LineData.Pool();
+    public static class Pool extends ObjectPool<CircleData> {
 
-    private final MeshRender<Vector3f[]> meshRender = MeshRender.LINE;
+        @Override
+        protected CircleData create() {
+            return new CircleData();
+        }
 
-    public LineRender(AssetManager assetManager) {
-        super(assetManager, "Line");
+        @Override
+        protected boolean validate(CircleData o) {
+            return o != null;
+        }
+
+        @Override
+        protected void dead(CircleData o) {
+            
+        }        
     }
     
-    public void addAddLine(float x0, float y0, float x1, float y1, ColorRGBA color) {
-        synchronized (lock) {
-            LineData data = dataPool.takePush();
-            data.setP1(x0, y0);
-            data.setP2(x1, y1);
-            data.setRGBA(color);
-            list.add(data);
-        }
+    private Transform transform;
+    private Vector3f center;
+    private float radius;
+    private ColorRGBA rgba;
+
+    public CircleData() {
+        this(new Transform(), new Vector3f(), 0, null);
     }
 
-    @Override
-    public void flushDraw(RenderManager renderManager, boolean solid) {
-        synchronized (lock) {
-            for (int i = 0; i < list.size(); i++) {
-                LineData data = list.get(i);
-                checkGeometry(drawable);
+    public CircleData(Transform transform, Vector3f center, float radius, ColorRGBA rgba) {
+        this.transform = transform;
+        this.center = center;
+        this.radius = radius;
+        this.rgba = rgba;
+    }
 
-                TempVars vars = TempVars.get();
-                Vector3f[] attr = vars.tri;
-                attr[0] = data.getP1();
-                attr[1] = data.getP2();
-                
-                meshRender.render(drawable, data.getRGBA(), attr, solid);
-                renderManager.renderGeometry(drawable);
+    public void setTransform(float x, float y, float angle) {
+        transform.setTranslation(x, y, 0);
+        transform.getRotation().fromAngleAxis(angle, Vector3f.UNIT_Z);
+    }
+    
+    public void setCenter(float x, float y) {
+        this.center.set(x, y, 0);
+    }
 
-                vars.release();
-                dataPool.takePop(data);
-                list.remove(i);
-                i--;
-            }
-        }
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
+    public void setRGBA(ColorRGBA rgba) {
+        this.rgba = rgba;
+    }
+
+    public Transform getTransform() {
+        return transform;
+    }
+
+    public Vector3f getCenter() {
+        return center;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public ColorRGBA getRGBA() {
+        return rgba;
     }
 }

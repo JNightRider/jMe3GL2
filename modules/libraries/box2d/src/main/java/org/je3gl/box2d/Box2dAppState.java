@@ -174,6 +174,7 @@ public class Box2dAppState extends AbstractAppState {
      */
     public Box2dAppState(b2WorldDef worldDef, DrawSettings drawSettings, ThreadingType threadingType) {
         this.threadingType = threadingType;
+        this.drawSettings = drawSettings;
         this.worldDef = worldDef;
         startPhysics();
     }

@@ -28,34 +28,75 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.je3gl.box2d.util;
+package org.je3gl.box2d.debug.renderer;
 
-import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.Geometry;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Transform;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
+import org.je3gl.box2d.util.ObjectPool;
 
 /**
  *
  * @author wil
  */
-public class GeometryPool extends ObjectPool<Geometry> {
+public class CapsuleData {
+    
+    public static class Pool extends ObjectPool<CapsuleData> {
 
-    @Override
-    protected Geometry create() {
-        Geometry geometry = new Geometry();
-        geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
-        return geometry;
-    }
-
-    @Override
-    protected boolean validate(Geometry o) {
-        if (o == null) {
-            return false;
+        @Override
+        protected CapsuleData create() {
+            return new CapsuleData();
         }
-        return o.getParent() == null;
+
+        @Override
+        protected boolean validate(CapsuleData o) {
+            return o != null;
+        }
+
+        @Override
+        protected void dead(CapsuleData o) {
+            
+        }        
+    }
+    
+    private ColorRGBA rgba;
+    private Transform transform;
+    private Vector2f size;
+
+    public CapsuleData() {
+        this(new Transform(), new Vector2f());
     }
 
-    @Override
-    protected void dead(Geometry o) {
-        o.removeFromParent();
-    }    
+    public CapsuleData(Transform transform, Vector2f size) {
+        this.transform = transform;
+        this.size = size;
+    }
+
+    public void setRGBA(ColorRGBA rgba) {
+        this.rgba = rgba;
+    }
+
+    public void setTransform(float x, float y, float angle) {
+        this.transform.setTranslation(x, y, 0);
+        this.transform.getRotation().fromAngleAxis(angle + + FastMath.HALF_PI, Vector3f.UNIT_Z);
+    }
+
+    public void setSize(float w, float h) {
+        this.size.set(w, h);
+    }
+
+    public ColorRGBA getRGBA() {
+        return rgba;
+    }
+
+    public Transform getTransform() {
+        return transform;
+    }
+
+    public Vector2f getSize() {
+        return size;
+    }
+
 }

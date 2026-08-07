@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.je3gl.box2d.util.ObjectPool;
 
@@ -60,15 +61,29 @@ public class PolygonData {
     }
 
     private Vector3f[] vertices;
+    private Vector3f position;
+    private Quaternion quaternion;
     private ColorRGBA rgba;
     
     public PolygonData() {
+        this(null, new Vector3f(), new Quaternion(), null);
     }
 
-    public PolygonData(Vector3f[] vertices, ColorRGBA rgba) {
+    public PolygonData(Vector3f[] vertices, Vector3f position, Quaternion quaternion, ColorRGBA rgba) {
         this.vertices = vertices;
+        this.position = position;
+        this.quaternion = quaternion;
         this.rgba = rgba;
     }
+
+    public void setPosition(float x, float y, float z) {
+        this.position.set(x, y, z);
+    }
+
+    public void setQuaternion(float angle, Vector3f unit) {
+        this.quaternion.fromAngleAxis(angle, unit);
+    }
+    
 
     public void setVertices(Vector3f[] vertices) {
         this.vertices = vertices;
@@ -76,6 +91,14 @@ public class PolygonData {
 
     public void setRGBA(ColorRGBA rgba) {
         this.rgba = rgba;
+    }
+
+    public Vector3f getPosition() {
+        return position;
+    }
+
+    public Quaternion getQuaternion() {
+        return quaternion;
     }
 
     public Vector3f[] getVertices() {
