@@ -48,14 +48,13 @@ import java.util.Objects;
  * <b>Lines</b> are used to generate the shapes.
  * 
  * @author wil
- * @version 1.1.0
+ * @version 1.2.0
  * @since 2.5.0
  */
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
     
     /**Arrangement of the mesh vertices. */
     protected Vector3f[] vertices;
-    protected boolean fill;
         
     /**
      * Default internal constructor.

@@ -31,40 +31,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
-import org.je3gl.box2d.util.ObjectPool;
+import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
  *
  * @author wil
  */
-public class CircleRender extends ShapeRender {
-
-    private final List<CircleData> list = new ArrayList<>();
-    private final ObjectPool<CircleData> dataPool = new CircleData.Pool();
-
-    private final MeshRender<Float> meshRender = MeshRender.CIRCLE;
+public class StringRender extends ShapeRender {
     
-    public CircleRender(AssetManager assetManager) {
-        super(assetManager, "Circle");
+    /** Text debugger. */
+    private BitmapText bitmapText;
+
+    private final List<StringData> list = new ArrayList<>();
+    private final StringData.Pool dataPool = new StringData.Pool();
+    
+    public StringRender(AssetManager assetManager, ViewPort viewPort, DebugGraphics graphics) {
+        super(assetManager, "String");        
+        BitmapFont font = graphics.getBitmapFont(null);
+        this.bitmapText = graphics.createBitmapText(font, "");
     }
-    
-    public void addDrawCircle(
-            float x, float y,
-            float angle,
-            float cx, float cy, 
-            float radius, 
-            ColorRGBA color
-    ) {
+
+    public void addDrawString(float x, float y, ColorRGBA color, String value) {
         synchronized (lock) {
-            CircleData data = dataPool.takePush();
-            data.setCenter(x, y);
+            StringData data = dataPool.takePush();
+            data.setPosition(x, y);
             data.setRGBA(color);
-            data.setRadius(radius);
+            data.setValue(value);
+
             if (list.contains(data)) {
                 dataPool.takePop(data);
             } else {
@@ -72,45 +77,33 @@ public class CircleRender extends ShapeRender {
             }
         }
     }
-
+    
     @Override
     public void flushDraw(RenderManager renderManager, boolean solid) {
         synchronized (lock) {
             for (int i = 0; i < list.size(); i++) {
-                CircleData data = list.get(i);
-
-                checkGeometry(drawable);
-                meshRender.render(drawable, data.getRGBA(), data.getRadius(), true);
-
-                boolean flag = Vector3f.ZERO.equals(data.getCenter());
-                if (flag) {
-                    drawable.setLocalTransform(data.getTransform());
-                    flag = true;
-                } else {
-                    drawable.setLocalTranslation(data.getCenter());
-                }
-
-                drawable.updateGeometricState();
-                drawable.updateModelBound();
-                renderManager.renderGeometry(drawable);
-
-                if (solid) {
-                    checkGeometry(border);
-                    meshRender.render(border, data.getRGBA(), data.getRadius(), false);
-                    if ( flag ) {
-                        border.setLocalTransform(data.getTransform());
-                    } else {
-                        border.setLocalTranslation(data.getCenter());
+                StringData data = list.get(i);
+                
+//                bitmapText.setText(data.getValue());
+                bitmapText.setColor(data.getRGBA());
+                bitmapText.setSize(0.25f);
+                
+                bitmapText.updateLogicalState(0);
+                bitmapText.render(renderManager, ColorRGBA.Blue);
+                for (Spatial child : bitmapText.getChildren()) {
+                    if (child instanceof Geometry page) {
+                        page.setLocalTranslation(data.getPosition());
+                        page.updateGeometricState();
+                        page.updateModelBound();
+                        
+                        renderManager.renderGeometry(page);
                     }
-                    border.updateGeometricState();
-                    border.updateModelBound();
-                    renderManager.renderGeometry(border);
                 }
-
+                
                 dataPool.takePop(data);
                 list.remove(i);
                 i--;
             }
         }
-    }    
+    }
 }

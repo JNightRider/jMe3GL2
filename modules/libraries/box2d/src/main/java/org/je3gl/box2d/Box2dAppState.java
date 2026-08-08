@@ -49,6 +49,7 @@ import org.box2d.jni.*;
 import static org.box2d.jni.include.Base.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
+import org.box2d.jni.system.Sys;
 import org.je3gl.box2d.debug.Box2dDebug;
 
 /**
@@ -67,6 +68,9 @@ import org.je3gl.box2d.debug.Box2dDebug;
 public class Box2dAppState extends AbstractAppState {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Box2dAppState.class.getName());
+    static {
+        Sys.PIPELINE_STREAM.set(Box2dPipelineStream.class.getName());
+    }
     
     /** JME3 Application (Game). */
     protected Application app = null;    
@@ -226,7 +230,7 @@ public class Box2dAppState extends AbstractAppState {
         if (this.initialized) {
             return;
         }
-
+        
         b2SetAllocator(allocFcn, freeFcn);
         b2SetAssertFcn(assertFcn);
         b2SetLogFcn(logFcn);

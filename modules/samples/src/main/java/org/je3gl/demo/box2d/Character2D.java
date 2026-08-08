@@ -96,9 +96,9 @@ public class Character2D extends SimpleApplication  {
             new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f)
         );
         
-//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
-//        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
-//        stateManager.attach(camera2DAppSate);
+        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
+        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
+        stateManager.attach(camera2DAppSate);
 
         Box2dAppState box2d = new Box2dAppState(ThreadingType.SEQUENTIAL);
         box2d.setDebugEnabled(true);
@@ -126,6 +126,7 @@ public class Character2D extends SimpleApplication  {
         body2D.setPosition(new Vector2f(0, 10));
         box2dAppState.getPhysicsSpace().addBody(body2D);
 
+        b2Body_SetName(body2D.getBodyId(), "JNightRider - Box2D JNI");
         b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.calloc());
         b2Capsule capsule = b2Capsule.calloc();
         capsule.radius(0.25f);

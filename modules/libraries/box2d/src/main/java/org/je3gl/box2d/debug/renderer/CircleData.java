@@ -33,6 +33,7 @@ package org.je3gl.box2d.debug.renderer;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
+import java.util.Objects;
 import org.je3gl.box2d.util.ObjectPool;
 
 /**
@@ -106,5 +107,39 @@ public class CircleData {
 
     public ColorRGBA getRGBA() {
         return rgba;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 53 * hash + Objects.hashCode(this.transform);
+        hash = 53 * hash + Objects.hashCode(this.center);
+        hash = 53 * hash + Float.floatToIntBits(this.radius);
+        hash = 53 * hash + Objects.hashCode(this.rgba);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CircleData other = (CircleData) obj;
+        if (Float.floatToIntBits(this.radius) != Float.floatToIntBits(other.radius)) {
+            return false;
+        }
+        if (!Objects.equals(this.transform, other.transform)) {
+            return false;
+        }
+        if (!Objects.equals(this.center, other.center)) {
+            return false;
+        }
+        return Objects.equals(this.rgba, other.rgba);
     }
 }

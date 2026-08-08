@@ -27,7 +27,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.math.ColorRGBA;
@@ -39,59 +39,91 @@ import org.je3gl.box2d.util.ObjectPool;
  *
  * @author wil
  */
-public class LineData {
+public class StringData {
     
-    public static final class Pool extends ObjectPool<LineData> {
+    public static class Pool extends ObjectPool<StringData> {
 
         @Override
-        protected LineData create() {
-             return new LineData();
+        protected StringData create() {
+            return new StringData();
         }
 
         @Override
-        protected boolean validate(LineData o) {
-            return o != null;
+        protected boolean validate(StringData o) {
+            return  o != null;
         }
 
         @Override
-        protected void dead(LineData o) { }
+        protected void dead(StringData o) {
+            
+        }        
     }
-
-    private Vector3f p1;
-    private Vector3f p2;
+    
     private ColorRGBA rgba;
+    private String value;
+    Vector3f position;
 
-    public LineData() {
-        this(new Vector3f(), new Vector3f(), null);
+    public StringData() {
+        this(null, null, new Vector3f());
     }
 
-    public LineData(Vector3f p1, Vector3f p2, ColorRGBA rgba) {
-        this.p1 = p1;
-        this.p2 = p2;
+    public StringData(ColorRGBA rgba, String value, Vector3f position) {
         this.rgba = rgba;
-    }
-
-    public void setP1(float x, float y) {
-        p1.set(x, y, 0);
-    }
-    
-    public void setP2(float x, float y) {
-        p2.set(x, y, 0);
+        this.value = value;
+        this.position = position;
     }
 
     public void setRGBA(ColorRGBA rgba) {
         this.rgba = rgba;
     }
 
-    public Vector3f getP1() {
-        return p1;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public Vector3f getP2() {
-        return p2;
+    public void setPosition(float x, float y) {
+        this.position.set(x, y, 0f);
     }
 
     public ColorRGBA getRGBA() {
         return rgba;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public Vector3f getPosition() {
+        return position;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.rgba);
+        hash = 97 * hash + Objects.hashCode(this.value);
+        hash = 97 * hash + Objects.hashCode(this.position);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final StringData other = (StringData) obj;
+        if (!Objects.equals(this.value, other.value)) {
+            return false;
+        }
+        if (!Objects.equals(this.rgba, other.rgba)) {
+            return false;
+        }
+        return Objects.equals(this.position, other.position);
     }
 }

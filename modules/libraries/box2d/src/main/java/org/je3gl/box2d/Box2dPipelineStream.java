@@ -27,71 +27,23 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-package org.je3gl.box2d.debug.renderer;
+*/
+package org.je3gl.box2d;
 
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
-import java.util.Objects;
-import org.je3gl.box2d.util.ObjectPool;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.box2d.jni.system.PipelineStream;
 
 /**
  *
  * @author wil
  */
-public class LineData {
-    
-    public static final class Pool extends ObjectPool<LineData> {
+public class Box2dPipelineStream implements PipelineStream {
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(Box2dPipelineStream.class.getName());
 
-        @Override
-        protected LineData create() {
-             return new LineData();
-        }
-
-        @Override
-        protected boolean validate(LineData o) {
-            return o != null;
-        }
-
-        @Override
-        protected void dead(LineData o) { }
-    }
-
-    private Vector3f p1;
-    private Vector3f p2;
-    private ColorRGBA rgba;
-
-    public LineData() {
-        this(new Vector3f(), new Vector3f(), null);
-    }
-
-    public LineData(Vector3f p1, Vector3f p2, ColorRGBA rgba) {
-        this.p1 = p1;
-        this.p2 = p2;
-        this.rgba = rgba;
-    }
-
-    public void setP1(float x, float y) {
-        p1.set(x, y, 0);
-    }
-    
-    public void setP2(float x, float y) {
-        p2.set(x, y, 0);
-    }
-
-    public void setRGBA(ColorRGBA rgba) {
-        this.rgba = rgba;
-    }
-
-    public Vector3f getP1() {
-        return p1;
-    }
-
-    public Vector3f getP2() {
-        return p2;
-    }
-
-    public ColorRGBA getRGBA() {
-        return rgba;
-    }
+    @Override
+    public void print(String string) {
+        LOGGER.log(Level.INFO, () -> " * " + string.replaceAll("\t", "").replaceAll("\n", ""));
+    }    
 }

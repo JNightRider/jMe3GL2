@@ -97,6 +97,7 @@ import org.je3gl.box2d.debug.renderer.CircleRender;
 import org.je3gl.box2d.debug.renderer.LineRender;
 import org.je3gl.box2d.debug.renderer.PointRender;
 import org.je3gl.box2d.debug.renderer.PolygonRender;
+import org.je3gl.box2d.debug.renderer.StringRender;
 import org.je3gl.box2d.util.FloatsPool;
 import org.je3gl.utilities.ColorUtilities;
 
@@ -133,6 +134,7 @@ public class Box2dDebug implements SceneProcessor {
     private CapsuleRender solidCapsuleRender;
     private LineRender lineRender;
     private PointRender pointRender;
+    private StringRender stringRender;
 
     //----------------------------------------------------------------------
     //                              CALLBACKS
@@ -245,9 +247,10 @@ public class Box2dDebug implements SceneProcessor {
     };
     
     private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
-        try (ArenaAlloc arena = allocPush(); p) {
+        try (p) {
             if ( initialized.get() ) {
-                
+                String str = memUTF(s);
+                stringRender.addDrawString(p.x().floatValue(), p.y().floatValue(), ColorUtilities.fromIntRGBA(color, 1f), str);
             }
         }
     };
@@ -287,6 +290,7 @@ public class Box2dDebug implements SceneProcessor {
         solidPolygonRender = new PolygonRender(assetManager);
         pointRender = new PointRender(assetManager);
         lineRender  = new LineRender(assetManager);
+        stringRender = new StringRender(assetManager, vp, new StringDebugGraphics(assetManager));
         
         renderManager = rm;
         viewPort = vp;
@@ -327,20 +331,20 @@ public class Box2dDebug implements SceneProcessor {
                 .drawBounds(settings.drawBounds());
 
         sb.append("[jMe3GL2] :Charts for debugging Box2d-JNI bodies")
-                .append('\n').append("drawShapes: ").append(settings.drawShapes())
-                .append('\n').append("drawBodyNames: ").append(settings.drawBodyNames())
-                .append('\n').append("drawJoints: ").append(settings.drawJoints())
-                .append('\n').append("drawAnchorA: ").append(settings.drawAnchorA())
-                .append('\n').append("drawChainNormals: ").append(settings.drawChainNormals())
-                .append('\n').append("drawContactFeatures: ").append(settings.drawContactFeatures())
-                .append('\n').append("drawFrictionForces: ").append(settings.drawFrictionForces())
-                .append('\n').append("drawContactNormals: ").append(settings.drawContactNormals())
-                .append('\n').append("drawContacts: ").append(settings.drawContacts())
-                .append('\n').append("drawGraphColors: ").append(settings.drawGraphColors())
-                .append('\n').append("drawIslands: ").append(settings.drawIslands())
-                .append('\n').append("drawJointExtras: ").append(settings.drawJointExtras())
-                .append('\n').append("drawMass: ").append(settings.drawMass())
-                .append('\n').append("drawBounds: ").append(settings.drawBounds());
+                .append('\n').append(" * drawShapes: ").append(settings.drawShapes())
+                .append('\n').append(" * drawBodyNames: ").append(settings.drawBodyNames())
+                .append('\n').append(" * drawJoints: ").append(settings.drawJoints())
+                .append('\n').append(" * drawAnchorA: ").append(settings.drawAnchorA())
+                .append('\n').append(" * drawChainNormals: ").append(settings.drawChainNormals())
+                .append('\n').append(" * drawContactFeatures: ").append(settings.drawContactFeatures())
+                .append('\n').append(" * drawFrictionForces: ").append(settings.drawFrictionForces())
+                .append('\n').append(" * drawContactNormals: ").append(settings.drawContactNormals())
+                .append('\n').append(" * drawContacts: ").append(settings.drawContacts())
+                .append('\n').append(" * drawGraphColors: ").append(settings.drawGraphColors())
+                .append('\n').append(" * drawIslands: ").append(settings.drawIslands())
+                .append('\n').append(" * drawJointExtras: ").append(settings.drawJointExtras())
+                .append('\n').append(" * drawMass: ").append(settings.drawMass())
+                .append('\n').append(" * drawBounds: ").append(settings.drawBounds());
         LOGGER.info(String.valueOf(sb));
     }
 
@@ -372,7 +376,8 @@ public class Box2dDebug implements SceneProcessor {
         polygonRender.flushDraw(renderManager, false);
         solidPolygonRender.flushDraw(renderManager, true);
         lineRender.flushDraw(renderManager, false);
-        pointRender.flushDraw(renderManager, false);
+        pointRender.flushDraw(renderManager, false);     
+        stringRender.flushDraw(renderManager, false);
     }
 
     @Override
