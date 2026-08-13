@@ -30,19 +30,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d.debug.renderer;
 
+import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
@@ -52,53 +55,53 @@ import org.je3gl.scene.debug.custom.DebugGraphics;
 public class StringRender extends ShapeRender {
     
     /** Text debugger. */
-    private BitmapText bitmapText;
+    private Map<String, BitmapText> map = new HashMap<>();
+    private List<Spatial> tmp = new ArrayList<>();
+    private Node guiNode;
 
     private final List<StringData> list = new ArrayList<>();
     private final StringData.Pool dataPool = new StringData.Pool();
     
-    public StringRender(AssetManager assetManager, ViewPort viewPort, DebugGraphics graphics) {
-        super(assetManager, "String");        
-        BitmapFont font = graphics.getBitmapFont(null);
-        this.bitmapText = graphics.createBitmapText(font, "");
+    public StringRender(Application app) {
+        super(app.getAssetManager(), "String");
+        if (app instanceof SimpleApplication) {
+            guiNode = ((SimpleApplication) app).getGuiNode();
+        }
     }
 
     public void addDrawString(float x, float y, ColorRGBA color, String value) {
         synchronized (lock) {
+            if (guiNode == null) {
+                return;
+            }
+
             StringData data = dataPool.takePush();
             data.setPosition(x, y);
             data.setRGBA(color);
             data.setValue(value);
 
-            if (list.contains(data)) {
-                dataPool.takePop(data);
-            } else {
-                list.add(data);
-            }
+//            if (list.contains(data)) {
+//                dataPool.takePop(data);
+//            } else {
+//                list.add(data);
+//            }
         }
     }
-    
+
     @Override
     public void flushDraw(RenderManager renderManager, boolean solid) {
         synchronized (lock) {
             for (int i = 0; i < list.size(); i++) {
                 StringData data = list.get(i);
-                
-//                bitmapText.setText(data.getValue());
-                bitmapText.setColor(data.getRGBA());
-                bitmapText.setSize(0.25f);
-                
-                bitmapText.updateLogicalState(0);
-                bitmapText.render(renderManager, ColorRGBA.Blue);
-                for (Spatial child : bitmapText.getChildren()) {
-                    if (child instanceof Geometry page) {
-                        page.setLocalTranslation(data.getPosition());
-                        page.updateGeometricState();
-                        page.updateModelBound();
-                        
-                        renderManager.renderGeometry(page);
-                    }
+                BitmapText txt = map.get(data.getValue());                
+                if (txt == null) {
+                    txt = new BitmapText(assetManager.loadFont("jMe3GL2/Fonts/ProggyClean.fnt"));
+                    txt.setText(data.getValue());
+                    guiNode.attachChild(txt);
                 }
+                txt.setColor(data.getRGBA());
+                txt.setLocalTranslation(data.getPosition());
+                
                 
                 dataPool.takePop(data);
                 list.remove(i);

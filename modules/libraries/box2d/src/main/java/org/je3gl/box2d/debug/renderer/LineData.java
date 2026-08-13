@@ -32,7 +32,6 @@ package org.je3gl.box2d.debug.renderer;
 
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import java.util.Objects;
 import org.je3gl.box2d.util.ObjectPool;
 
 /**

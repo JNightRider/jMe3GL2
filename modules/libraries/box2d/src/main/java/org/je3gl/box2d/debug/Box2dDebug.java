@@ -290,7 +290,7 @@ public class Box2dDebug implements SceneProcessor {
         solidPolygonRender = new PolygonRender(assetManager);
         pointRender = new PointRender(assetManager);
         lineRender  = new LineRender(assetManager);
-        stringRender = new StringRender(assetManager, vp, new StringDebugGraphics(assetManager));
+        stringRender = new StringRender(box2dAppState.getApplication());
         
         renderManager = rm;
         viewPort = vp;
@@ -360,7 +360,7 @@ public class Box2dDebug implements SceneProcessor {
 
     @Override
     public void preFrame(float tpf) {
-        
+//        stringRender.flushDraw(renderManager, false);
     }
 
     @Override
@@ -376,8 +376,7 @@ public class Box2dDebug implements SceneProcessor {
         polygonRender.flushDraw(renderManager, false);
         solidPolygonRender.flushDraw(renderManager, true);
         lineRender.flushDraw(renderManager, false);
-        pointRender.flushDraw(renderManager, false);     
-        stringRender.flushDraw(renderManager, false);
+        pointRender.flushDraw(renderManager, false);
     }
 
     @Override

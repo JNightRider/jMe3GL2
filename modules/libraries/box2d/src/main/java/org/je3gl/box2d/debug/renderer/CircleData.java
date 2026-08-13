@@ -33,7 +33,6 @@ package org.je3gl.box2d.debug.renderer;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
-import java.util.Objects;
 import org.je3gl.box2d.util.ObjectPool;
 
 /**
@@ -61,17 +60,15 @@ public class CircleData {
     }
     
     private Transform transform;
-    private Vector3f center;
     private float radius;
     private ColorRGBA rgba;
 
     public CircleData() {
-        this(new Transform(), new Vector3f(), 0, null);
+        this(new Transform(), 0, null);
     }
 
-    public CircleData(Transform transform, Vector3f center, float radius, ColorRGBA rgba) {
+    public CircleData(Transform transform, float radius, ColorRGBA rgba) {
         this.transform = transform;
-        this.center = center;
         this.radius = radius;
         this.rgba = rgba;
     }
@@ -82,7 +79,7 @@ public class CircleData {
     }
     
     public void setCenter(float x, float y) {
-        this.center.set(x, y, 0);
+        this.transform.setTranslation(x, y, 0);
     }
 
     public void setRadius(float radius) {
@@ -98,7 +95,7 @@ public class CircleData {
     }
 
     public Vector3f getCenter() {
-        return center;
+        return transform.getTranslation();
     }
 
     public float getRadius() {
@@ -107,39 +104,5 @@ public class CircleData {
 
     public ColorRGBA getRGBA() {
         return rgba;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 53 * hash + Objects.hashCode(this.transform);
-        hash = 53 * hash + Objects.hashCode(this.center);
-        hash = 53 * hash + Float.floatToIntBits(this.radius);
-        hash = 53 * hash + Objects.hashCode(this.rgba);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final CircleData other = (CircleData) obj;
-        if (Float.floatToIntBits(this.radius) != Float.floatToIntBits(other.radius)) {
-            return false;
-        }
-        if (!Objects.equals(this.transform, other.transform)) {
-            return false;
-        }
-        if (!Objects.equals(this.center, other.center)) {
-            return false;
-        }
-        return Objects.equals(this.rgba, other.rgba);
     }
 }

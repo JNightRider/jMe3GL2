@@ -44,6 +44,8 @@ import org.je3gl.box2d.control.PhysicsBody2D;
  * @since 3.2.0
  */
 public class PhysicsSpace implements AutoCloseable {
+
+    private final Object lock = new Object();
     
     private int subStepCount = 4;
     
@@ -62,7 +64,9 @@ public class PhysicsSpace implements AutoCloseable {
     }
 
     public void setDebugDraw(b2DebugDraw debugDraw) {
-        this.debugDraw = debugDraw;
+        synchronized (lock) {
+            this.debugDraw = debugDraw;
+        }
     }
 
     public void addBody(PhysicsBody2D body2D) {
@@ -76,9 +80,11 @@ public class PhysicsSpace implements AutoCloseable {
     }
 
     public void update(float tpf) {
-        b2World_Step(worldId, tpf, subStepCount);
-        if (debugDraw != null) {
-            b2World_Draw(worldId, debugDraw);
+        synchronized (lock) {
+            b2World_Step(worldId, tpf, subStepCount);
+            if (debugDraw != null) {
+                b2World_Draw(worldId, debugDraw);
+            }
         }
     }
     

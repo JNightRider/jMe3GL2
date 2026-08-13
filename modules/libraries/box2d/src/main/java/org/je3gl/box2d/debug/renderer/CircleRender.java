@@ -65,11 +65,7 @@ public class CircleRender extends ShapeRender {
             data.setCenter(x, y);
             data.setRGBA(color);
             data.setRadius(radius);
-            if (list.contains(data)) {
-                dataPool.takePop(data);
-            } else {
-                list.add(data);
-            }
+            list.add(data);
         }
     }
 
@@ -82,14 +78,7 @@ public class CircleRender extends ShapeRender {
                 checkGeometry(drawable);
                 meshRender.render(drawable, data.getRGBA(), data.getRadius(), true);
 
-                boolean flag = Vector3f.ZERO.equals(data.getCenter());
-                if (flag) {
-                    drawable.setLocalTransform(data.getTransform());
-                    flag = true;
-                } else {
-                    drawable.setLocalTranslation(data.getCenter());
-                }
-
+                drawable.setLocalTransform(data.getTransform());
                 drawable.updateGeometricState();
                 drawable.updateModelBound();
                 renderManager.renderGeometry(drawable);
@@ -97,11 +86,8 @@ public class CircleRender extends ShapeRender {
                 if (solid) {
                     checkGeometry(border);
                     meshRender.render(border, data.getRGBA(), data.getRadius(), false);
-                    if ( flag ) {
-                        border.setLocalTransform(data.getTransform());
-                    } else {
-                        border.setLocalTranslation(data.getCenter());
-                    }
+
+                    border.setLocalTransform(data.getTransform());
                     border.updateGeometricState();
                     border.updateModelBound();
                     renderManager.renderGeometry(border);

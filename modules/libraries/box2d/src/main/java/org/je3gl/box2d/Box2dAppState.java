@@ -39,6 +39,7 @@ import com.jme3.renderer.ViewPort;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,6 +80,8 @@ public class Box2dAppState extends AbstractAppState {
     /** The initial values ​​of the 2D world. */
     protected b2WorldDef worldDef;
 
+    private final AtomicBoolean init = new AtomicBoolean(false);
+
     /**
      * The physical space of bodies.
      */
@@ -111,6 +114,9 @@ public class Box2dAppState extends AbstractAppState {
     final private Callable<Boolean> parallelPhysicsUpdate = new Callable<Boolean>() {
         @Override
         public Boolean call() throws Exception {
+            if (! init.get() ) {
+                return false;
+            }
             physicsSpace.update(isEnabled() ? tpf * speed : 0f);
             return true;
         }
@@ -227,7 +233,7 @@ public class Box2dAppState extends AbstractAppState {
      * Initialize physics for physical bodies.
      */
     private void startPhysics() {
-        if (this.initialized) {
+        if (this.init.get()) {
             return;
         }
         
@@ -243,7 +249,7 @@ public class Box2dAppState extends AbstractAppState {
 
         Box2dTilePhysicsSystem.initialize();
         this.box2dDebug = new Box2dDebug(this);
-        this.initialized = true;
+        this.init.set(true);
     }
 
     /**
@@ -277,7 +283,7 @@ public class Box2dAppState extends AbstractAppState {
         }
         this.tpf = tpf;
 
-        if (initialized) {
+        if (init.get()) {
             ViewPort viewPort = this.app.getViewPort();
             if (debug && !viewPort.getProcessors().contains(box2dDebug)) {
                 // Start debug visualization.
@@ -325,6 +331,12 @@ public class Box2dAppState extends AbstractAppState {
      */
     @Override
     public void cleanup() {
+        init.set(false);
+        if (box2dDebug != null) {
+            this.app.getViewPort()
+                    .removeProcessor(box2dDebug);
+            physicsSpace.setDebugDraw(null);
+        }
         if (executor != null) {
             executor.shutdown();
             executor = null;
