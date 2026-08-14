@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,56 +28,73 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d.debug.batch;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
-import java.nio.FloatBuffer;
+import org.je3gl.utilities.ColorUtilities;
 
 /**
  *
  * @author wil
- * @version 1.0.0
- * @since 3.2.0
  */
-public class Point2D extends Mesh {
+public class CapsuleData {
+    
+    private Vector3f position;
+    private float angle;
+    private float radius;
+    private float length;
+    private boolean solid;
+    private ColorRGBA color;
 
-    public Point2D() {
-        this(new Vector3f(), 1f);
+    public CapsuleData() {
     }
-    
-    public Point2D(Vector3f p, float size) {
-        setMode(Mode.Points);
-        Point2D.this.updateGeometry(p, size);
+
+    public void setSolid(boolean solid) {
+        this.solid = solid;
     }
-    
-    protected void updateGeometry(Vector3f p, float size) {
-        setBuffer(VertexBuffer.Type.Position, 3, new float[]{
-            p.x, p.y, p.z
-        });
-        setBuffer(VertexBuffer.Type.Size, 1, new float[]{
-            size
-        });
-        updateBound();
+
+    public void setPosition(Vector3f position) {
+        this.position = position;
     }
-    
-    public void updatePoints(Vector3f p, float size) {
-        VertexBuffer posBuf = getBuffer(VertexBuffer.Type.Position);
-        VertexBuffer sizeBuf = getBuffer(VertexBuffer.Type.Size);
-        
-        FloatBuffer fb = (FloatBuffer) posBuf.getData();
-        FloatBuffer zb = (FloatBuffer) sizeBuf.getData();
-        
-        fb.rewind();
-        zb.rewind();
-        
-        fb.put(p.x).put(p.y).put(p.z);
-        zb.put(size);
-        
-        posBuf.updateData(fb);
-        sizeBuf.updateData(zb);
-        
-        updateBound();
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
+
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
+    public void setLength(float length) {
+        this.length = length;
+    }
+
+    public void setColor(int color) {
+        this.color = ColorUtilities.fromIntRGBA(color, 1f);
+    }
+
+    public Vector3f getPosition() {
+        return position;
+    }
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public float getLength() {
+        return length;
+    }
+
+    public ColorRGBA getColor() {
+        return color;
+    }
+
+    public boolean isSolid() {
+        return solid;
     }
 }

@@ -52,6 +52,7 @@ import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
 import org.box2d.jni.system.Sys;
 import org.je3gl.box2d.debug.Box2dDebug;
+import org.je3gl.box2d.debug.PhysicsDebugAppState;
 
 /**
  * An object (an instance) of the class <code>Box2dAppState</code> is a state
@@ -80,8 +81,6 @@ public class Box2dAppState extends AbstractAppState {
     /** The initial values ​​of the 2D world. */
     protected b2WorldDef worldDef;
 
-    private final AtomicBoolean init = new AtomicBoolean(false);
-
     /**
      * The physical space of bodies.
      */
@@ -106,17 +105,14 @@ public class Box2dAppState extends AbstractAppState {
      * the physical engine to avoid problems with JME3 threads.
      */
     protected ScheduledThreadPoolExecutor executor;
-    
+
     /**
-     * When running the update thread; An executable is used to update the parallel
-     * physics engine.
+     * When running the update thread; An executable is used to update the
+     * parallel physics engine.
      */
     final private Callable<Boolean> parallelPhysicsUpdate = new Callable<Boolean>() {
         @Override
         public Boolean call() throws Exception {
-            if (! init.get() ) {
-                return false;
-            }
             physicsSpace.update(isEnabled() ? tpf * speed : 0f);
             return true;
         }
@@ -129,11 +125,11 @@ public class Box2dAppState extends AbstractAppState {
      * Debugger settings.
      */
     private DrawSettings drawSettings;
-    
+ 
     /**
-     * SceneProcessor to manage the debug visualization, or null if none
+     * AppState to manage the debug visualization, or null if none
      */
-    private Box2dDebug box2dDebug;
+    private PhysicsDebugAppState debugAppState;
 
     /**
      * <code>true</code> to enable the purification state of physical bodies and
@@ -233,7 +229,7 @@ public class Box2dAppState extends AbstractAppState {
      * Initialize physics for physical bodies.
      */
     private void startPhysics() {
-        if (this.init.get()) {
+        if (this.initialized) {
             return;
         }
         
@@ -248,8 +244,7 @@ public class Box2dAppState extends AbstractAppState {
         }
 
         Box2dTilePhysicsSystem.initialize();
-        this.box2dDebug = new Box2dDebug(this);
-        this.init.set(true);
+        this.initialized = true;
     }
 
     /**
@@ -283,17 +278,15 @@ public class Box2dAppState extends AbstractAppState {
         }
         this.tpf = tpf;
 
-        if (init.get()) {
-            ViewPort viewPort = this.app.getViewPort();
-            if (debug && !viewPort.getProcessors().contains(box2dDebug)) {
-                // Start debug visualization.
-                this.app.getViewPort().addProcessor(box2dDebug);
-                this.physicsSpace.setDebugDraw(box2dDebug.getDebugDraw());
-            } else if (!debug && viewPort.getProcessors().contains(box2dDebug)) {
-                // Stop debug visualization.
-                this.app.getViewPort().removeProcessor(box2dDebug);
-                this.physicsSpace.setDebugDraw(null);
-            }
+        if (debug && debugAppState == null) {
+            // Start debug visualization.
+            this.debugAppState = new PhysicsDebugAppState();
+            this.stateManager.attach(debugAppState);
+
+        } else if (!debug && debugAppState != null) {
+            // Stop debug visualization.
+            this.stateManager.detach(debugAppState);
+            this.debugAppState = null;
         }
     }
         
@@ -304,7 +297,7 @@ public class Box2dAppState extends AbstractAppState {
         switch (threadingType) {
             case PARALLEL -> executor.submit(parallelPhysicsUpdate);
             case SEQUENTIAL -> {
-                final float timeStep = isEnabled() ? this.tpf * speed: 0;
+                final float timeStep = isEnabled() ? this.tpf * speed : 0;
                 this.physicsSpace.update(timeStep);
             }
             default -> { }
@@ -331,11 +324,9 @@ public class Box2dAppState extends AbstractAppState {
      */
     @Override
     public void cleanup() {
-        init.set(false);
-        if (box2dDebug != null) {
-            this.app.getViewPort()
-                    .removeProcessor(box2dDebug);
-            physicsSpace.setDebugDraw(null);
+        if (debugAppState != null) {
+            stateManager.detach(debugAppState);
+            this.debugAppState = null;
         }
         if (executor != null) {
             executor.shutdown();

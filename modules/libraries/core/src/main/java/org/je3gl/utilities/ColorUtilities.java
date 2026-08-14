@@ -57,6 +57,15 @@ public final class ColorUtilities {
         return new ColorRGBA(r, g, b, a);
     }
     
+    public static final ColorRGBA fromIntRGBA(int color, float alpha, ColorRGBA store) {
+        float r = ((byte)(color >> 16) & 0xFF) / 255f,
+              g = ((byte)(color >> 8) & 0xFF) / 255f,
+              b = ((byte) color & 0xFF) / 255f,
+              a = (0xFF * alpha) / 255f;
+        store.set(r, g, b, a);
+        return store;
+    }
+    
     /**
      * Returns a darker color than the current color.
      * 

@@ -92,7 +92,7 @@ public class Circle2D extends AbstractShape2D {
             x = c * x - s * y;
             y = s * t + c * y;
         }
-        setMode(Mode.Lines);
+        setMode(Mode.LineLoop);
         updateGeometry(myVertices);
     }
 }

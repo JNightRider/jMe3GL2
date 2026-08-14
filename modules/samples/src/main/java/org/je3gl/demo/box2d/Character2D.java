@@ -31,11 +31,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.demo.box2d;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.material.Material;
+import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Line;
 import com.jme3.system.AppSettings;
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.ThreadingType;
@@ -96,11 +100,11 @@ public class Character2D extends SimpleApplication  {
             new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f)
         );
         
-        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
-        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
-        stateManager.attach(camera2DAppSate);
+//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
+//        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
+//        stateManager.attach(camera2DAppSate);
 
-        Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);
+        Box2dAppState box2d = new Box2dAppState(ThreadingType.SEQUENTIAL);
         box2d.setDebugEnabled(true);
         stateManager.attach(box2d);
         

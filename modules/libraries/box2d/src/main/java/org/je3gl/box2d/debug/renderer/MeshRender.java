@@ -136,11 +136,11 @@ public interface MeshRender<ATTR> {
         vec3.set(value.x, value.y, value.z);
 
         Mesh mesh = geom.getMesh();
-        if (!(mesh instanceof Point2D)) {
-            mesh = new Point2D(vec3);
-        } else {
-            ((Point2D) mesh).updateGeometry(vec3);
-        }
+//        if (!(mesh instanceof Point2D)) {
+//            mesh = new Point2D(vec3);
+//        } else {
+//            ((Point2D) mesh).updateGeometry(vec3);
+//        }
         geom.setMesh(mesh);
 
         Material mat = geom.getMaterial();

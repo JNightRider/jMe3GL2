@@ -30,11 +30,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.box2d.jni.b2DebugDraw;
 import org.box2d.jni.b2WorldDef;
 import org.box2d.jni.b2WorldId;
 
 import static org.box2d.jni.include.Box2d.*;
+import static org.box2d.jni.include.Types.*;
+import static org.box2d.jni.system.Callbacks.*;
 import org.je3gl.box2d.control.PhysicsBody2D;
 
 /**
@@ -44,8 +47,8 @@ import org.je3gl.box2d.control.PhysicsBody2D;
  * @since 3.2.0
  */
 public class PhysicsSpace implements AutoCloseable {
-
-    private final Object lock = new Object();
+    
+    private final AtomicBoolean enableDebugger = new AtomicBoolean(false);
     
     private int subStepCount = 4;
     
@@ -56,17 +59,19 @@ public class PhysicsSpace implements AutoCloseable {
     protected AxisType axisType = AxisType.AXIS_XYO;
 
     public PhysicsSpace(b2WorldDef worldDef) {
+        if (worldDef == null) {
+            throw new NullPointerException("b2WorldDef is null");
+        }
         worldId = b2CreateWorld(worldDef, b2WorldId.malloc());
+        debugDraw = b2DefaultDebugDraw(b2DebugDraw.calloc());
     }
 
+    public void setEnableDebugger(boolean enabled) {
+        this.enableDebugger.set(enabled);
+    }
+    
     public void setSubStepCount(int subStepCount) {
         this.subStepCount = subStepCount;
-    }
-
-    public void setDebugDraw(b2DebugDraw debugDraw) {
-        synchronized (lock) {
-            this.debugDraw = debugDraw;
-        }
     }
 
     public void addBody(PhysicsBody2D body2D) {
@@ -80,14 +85,12 @@ public class PhysicsSpace implements AutoCloseable {
     }
 
     public void update(float tpf) {
-        synchronized (lock) {
-            b2World_Step(worldId, tpf, subStepCount);
-            if (debugDraw != null) {
-                b2World_Draw(worldId, debugDraw);
-            }
+        b2World_Step(worldId, tpf, subStepCount);
+        if ( enableDebugger.get() ) {
+            b2World_Draw(worldId, debugDraw);
         }
     }
-    
+
     public void setAxisType(AxisType axisType) {
         this.axisType = axisType;
     }
@@ -103,10 +106,16 @@ public class PhysicsSpace implements AutoCloseable {
     public int getSubStepCount() {
         return subStepCount;
     }
+
+    public b2DebugDraw getDebugDraw() {
+        return debugDraw;
+    }
     
     @Override
     public void close() {
         b2DestroyWorld(worldId);
+        b2FreeCallbacks();
+        debugDraw.close();
         worldId.close();
     }
 }
