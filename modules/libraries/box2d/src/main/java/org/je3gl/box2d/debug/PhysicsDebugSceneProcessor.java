@@ -37,7 +37,9 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.texture.FrameBuffer;
+
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.je3gl.box2d.debug.batch.BatchSnapshot;
 
 /**
@@ -47,6 +49,7 @@ import org.je3gl.box2d.debug.batch.BatchSnapshot;
 public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     private final Object lock = new Object();
+
     private final AtomicReference<BatchSnapshot> snapshot = new AtomicReference<>(null);
     private RenderManager renderManager;
 
@@ -58,13 +61,17 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     public void setSnapshot(BatchSnapshot value) {
         synchronized (lock) {
-            BatchSnapshot current = snapshot.getAndSet(value);
-            if (current != null) {
-                current.clear();
+            BatchSnapshot sb = snapshot.getAndSet(value);
+            if (sb != null) {
+                sb.clear();
             }
         }
     }
 
+    public void clearDraw() {
+        snapshot.get().clear();
+    }
+    
     @Override
     public void initialize(RenderManager rm, ViewPort vp) {
         renderManager = rm;
@@ -88,18 +95,17 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     @Override
     public void postQueue(RenderQueue rq) {
-
+        synchronized (lock) {
+            BatchSnapshot sb = snapshot.get();
+            if (sb != null) {
+                sb.flushDraw(renderManager);
+            }
+            
+        }
     }
 
     @Override
     public void postFrame(FrameBuffer out) {
-        synchronized (lock) {
-            BatchSnapshot current = snapshot.get();
-            if (current != null) {
-                current.flushDraw(renderManager);
-                current.clear();
-            }
-        }
     }
 
     @Override

@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.debug.batch;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 
 /**
@@ -40,15 +41,26 @@ import com.jme3.renderer.RenderManager;
 public class BatchSnapshot {
     
     private final BatchLine batchLine;
-    private final BatchPoint batchPoint;
+    private final BatchPoint batchPoint;    
+    private final BatchLine batchBounds;
     private final BatchCircle batchCircle;
-    private final BatchCircle batchSolidCircle;
+    private final BatchLine batchTransform;
+    private final BatchPolygon batchPolygon;
+    private final BatchCircle batchSolidCircle;    
+    private final BatchCapsule batchSolidCapsule;    
+    private final BatchPolygon batchSolidPolygon;
+    
 
     public BatchSnapshot(AssetManager assetManager) {
         batchLine = new BatchLine(assetManager);
         batchPoint = new BatchPoint(assetManager);
+        batchBounds = new BatchLine(assetManager);
         batchCircle = new BatchCircle(assetManager);
+        batchTransform = new BatchLine(assetManager);
+        batchPolygon = new BatchPolygon(assetManager);
         batchSolidCircle = new BatchCircle(assetManager);
+        batchSolidCapsule = new BatchCapsule(assetManager);
+        batchSolidPolygon = new BatchPolygon(assetManager);
     }
 
     public void drawLine(float x0, float y0, float x1, float y1, int color) {
@@ -67,17 +79,47 @@ public class BatchSnapshot {
         batchSolidCircle.addCircle(x, y, radius, angle, color, true);
     }
     
+    public void drawCapsule(float x, float y, float angle, float radius, float length, int rgba) {
+        batchSolidCapsule.addCapsule(x, y, angle, radius, length, rgba, true);
+    }
+    
+    public void drawPolygon(float x, float y, float angle, int color, Vector3f[] vertices) {
+        batchPolygon.addPolygon(x, y, angle, color, vertices, false);
+    }
+    
+    public void drawSolidPolygon(float x, float y, float angle, int color, Vector3f[] vertices) {
+        batchSolidPolygon.addPolygon(x, y, angle, color, vertices, true);
+    }
+    
+    public void drawLineTransform(float x0, float y0, float x1, float y1, int color) {
+        batchTransform.addLine(x0, y0, x1, y1, color);
+    }
+    
+    public void drawLineBounds(float x0, float y0, float x1, float y1, int color) {
+        batchBounds.addLine(x0, y0, x1, y1, color);
+    }
+    
     public void flushDraw(RenderManager renderManager) {        
         batchLine.flushLines(renderManager);
         batchPoint.flushPoints(renderManager);
-        batchCircle.flushPoints(renderManager);
-        batchSolidCircle.flushPoints(renderManager);
+        batchBounds.flushLines(renderManager);
+        batchCircle.flushCircle(renderManager);
+        batchPolygon.flushPolygon(renderManager);
+        batchTransform.flushLines(renderManager);
+        batchSolidCircle.flushCircle(renderManager);
+        batchSolidCapsule.flushCapsule(renderManager);
+        batchSolidPolygon.flushPolygon(renderManager);
     }
     
     public void clear() {
         batchLine.clear();
         batchPoint.clear();
+        batchBounds.clear();
         batchCircle.clear();
+        batchPolygon.clear();
+        batchTransform.clear();
         batchSolidCircle.clear();
+        batchSolidCapsule.clear();
+        batchSolidPolygon.clear();
     }
 }

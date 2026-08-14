@@ -27,70 +27,64 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-package org.je3gl.box2d.debug.renderer;
+*/
+package org.je3gl.box2d.debug.batch;
 
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import org.je3gl.box2d.util.ObjectPool;
+import org.je3gl.utilities.ColorUtilities;
 
 /**
  *
  * @author wil
  */
-public class LineData {
+public class PolygonData {
     
-    public static final class Pool extends ObjectPool<LineData> {
+    private Vector3f[] vertices;
+    private Vector3f position;
+    private float angle;
+    private boolean solid;
+    private ColorRGBA color;
 
-        @Override
-        protected LineData create() {
-             return new LineData();
-        }
+    public PolygonData() { }
 
-        @Override
-        protected boolean validate(LineData o) {
-            return o != null;
-        }
-
-        @Override
-        protected void dead(LineData o) { }
+    public void setVertices(Vector3f[] vertices) {
+        this.vertices = vertices;
     }
 
-    private Vector3f p1;
-    private Vector3f p2;
-    private ColorRGBA rgba;
-
-    public LineData() {
-        this(new Vector3f(), new Vector3f(), null);
+    public void setPosition(Vector3f position) {
+        this.position = position;
     }
 
-    public LineData(Vector3f p1, Vector3f p2, ColorRGBA rgba) {
-        this.p1 = p1;
-        this.p2 = p2;
-        this.rgba = rgba;
+    public void setAngle(float angle) {
+        this.angle = angle;
     }
 
-    public void setP1(float x, float y) {
-        p1.set(x, y, 0);
-    }
-    
-    public void setP2(float x, float y) {
-        p2.set(x, y, 0);
+    public void setSolid(boolean solid) {
+        this.solid = solid;
     }
 
-    public void setRGBA(ColorRGBA rgba) {
-        this.rgba = rgba;
+    public void setColor(int color) {
+        this.color = ColorUtilities.fromIntRGBA(color, 1f);
     }
 
-    public Vector3f getP1() {
-        return p1;
+    public Vector3f[] getVertices() {
+        return vertices;
     }
 
-    public Vector3f getP2() {
-        return p2;
+    public Vector3f getPosition() {
+        return position;
     }
 
-    public ColorRGBA getRGBA() {
-        return rgba;
+    public float getAngle() {
+        return angle;
+    }
+
+    public boolean isSolid() {
+        return solid;
+    }
+
+    public ColorRGBA getColor() {
+        return color;
     }
 }

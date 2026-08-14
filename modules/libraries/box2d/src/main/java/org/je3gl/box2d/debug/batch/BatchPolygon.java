@@ -32,7 +32,6 @@ package org.je3gl.box2d.debug.batch;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -42,62 +41,59 @@ import com.jme3.util.TempVars;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.je3gl.scene.debug.Capsule2D;
+import org.je3gl.scene.debug.Polygon2D;
 
 /**
  *
  * @author wil
  */
-public class BatchCapsule {
-    public static final int APSULE_BATCH_SIZE = 2048;
+public class BatchPolygon {
+    public static final int POLYGON_BATCH_SIZE = 2048;
     
-    private final List<CapsuleData> capsuleData = new ArrayList<>(APSULE_BATCH_SIZE);
+    private final List<PolygonData> polygonData = new ArrayList<>(POLYGON_BATCH_SIZE);
     
     private final Geometry drawable;
-    private final Capsule2D capsule;
+    private final Polygon2D polygon;
 
-    public BatchCapsule(AssetManager assetManager) {
-        this.capsule = new Capsule2D(Capsule2D.COUNT, 1, 2);
-        this.drawable = Batch.newDrawable(assetManager, capsule);
+    public BatchPolygon(AssetManager assetManager) {
+        this.polygon = new Polygon2D();
+        this.drawable = Batch.newDrawable(assetManager, polygon);
     }
 
-    public void addCapsule(float x, float y, float angle, float radius, float length, int rgba, boolean solid) {
-        if (capsuleData.size() >= Integer.MAX_VALUE) {
+    public void addPolygon(float x, float y, float angle, int color, Vector3f[] vertices, boolean solid) {
+        if (polygonData.size() >= Integer.MAX_VALUE) {
             return;
         }
-        CapsuleData data = new CapsuleData();
-        data.setPosition(new Vector3f(x, y, 0f));
-        data.setColor(rgba);
-        data.setLength(length);
-        data.setRadius(radius);
+        PolygonData data = new PolygonData();
         data.setAngle(angle);
+        data.setColor(color);
+        data.setPosition(new Vector3f(x, y, 0f));
         data.setSolid(solid);
-        capsuleData.add(data);
+        data.setVertices(vertices);
+        polygonData.add(data);
     }
 
-    public void flushCapsule(RenderManager renderManager) {
-        for (int i = 0; i < capsuleData.size(); i++) {
-            CapsuleData data = capsuleData.get(i);
-            float radius = data.getRadius();
-            float length = data.getLength();
-            capsule.updateGeometry(Capsule2D.COUNT, radius * 2, length + (radius * 2));
-
+    public void flushPolygon(RenderManager renderManager) {
+        for (int i = 0; i < polygonData.size(); i++) {
+            PolygonData data = polygonData.get(i);
+            polygon.updateGeometry(true, data.getVertices());  
+            
             Material mat = drawable.getMaterial();    
             
             TempVars vars = TempVars.get();
             Quaternion q = vars.quat1;
             drawable.setLocalTranslation(data.getPosition());
-            drawable.setLocalRotation(q.fromAngleAxis(data.getAngle() + FastMath.PI / 2, Vector3f.UNIT_Z));
+            drawable.setLocalRotation(q.fromAngleAxis(data.getAngle(), Vector3f.UNIT_Z));
             drawable.updateGeometricState();
             drawable.updateModelBound();
             
             if (data.isSolid()) {
-                capsule.fill(true);                
+                polygon.fill(true);
                 mat.setColor("Color", data.getColor().setAlpha(0.5f));
                 mat.getAdditionalRenderState().setWireframe(false);
                 renderManager.renderGeometry(drawable);
                 
-                capsule.fill(false);
+                polygon.fill(false);
             }
             
             mat.setColor("Color", data.getColor().setAlpha(1f));
@@ -108,6 +104,6 @@ public class BatchCapsule {
     }
 
     public void clear() {
-        capsuleData.clear();
+        polygonData.clear();
     }
 }

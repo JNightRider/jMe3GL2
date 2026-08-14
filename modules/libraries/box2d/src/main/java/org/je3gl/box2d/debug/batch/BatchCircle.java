@@ -37,10 +37,11 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.util.TempVars;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.je3gl.scene.debug.Circle2D;
-import org.je3gl.scene.debug.Point2D;
 
 /**
  *
@@ -72,7 +73,7 @@ public class BatchCircle {
         circleData.add(data);
     }
 
-    public void flushPoints(RenderManager renderManager) {
+    public void flushCircle(RenderManager renderManager) {
         for (int i = 0; i < circleData.size(); i++) {
             CircleData data = circleData.get(i);
             circle.updateGeometry(Circle2D.COUNT, data.getRadius(), 0);
@@ -89,14 +90,14 @@ public class BatchCircle {
             
             if (data.isSolid()) {
                 circle.fill(true);                
-                mat.setColor("Color", data.getColor().setAlpha(0.2f));
+                mat.setColor("Color", data.getColor().setAlpha(0.5f));
                 mat.getAdditionalRenderState().setWireframe(false);
                 renderManager.renderGeometry(drawable);
                 
                 circle.fill(false);
             }
             
-            mat.setColor("Color", data.getColor());
+            mat.setColor("Color", data.getColor().setAlpha(1f));
             mat.getAdditionalRenderState().setWireframe(true);                
             renderManager.renderGeometry(drawable);
             vars.release();

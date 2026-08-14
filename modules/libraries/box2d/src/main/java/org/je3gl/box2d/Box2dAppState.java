@@ -34,25 +34,23 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.je3gl.box2d.debug.PhysicsDebugAppState;
+import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
 import org.je3gl.box2d.scene.tile.Box2dTilePhysicsSystem;
 
 import org.box2d.jni.*;
+import org.box2d.jni.system.Sys;
 
 import static org.box2d.jni.include.Base.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
-import org.box2d.jni.system.Sys;
-import org.je3gl.box2d.debug.Box2dDebug;
-import org.je3gl.box2d.debug.PhysicsDebugAppState;
 
 /**
  * An object (an instance) of the class <code>Box2dAppState</code> is a state
@@ -113,7 +111,15 @@ public class Box2dAppState extends AbstractAppState {
     final private Callable<Boolean> parallelPhysicsUpdate = new Callable<Boolean>() {
         @Override
         public Boolean call() throws Exception {
-            physicsSpace.update(isEnabled() ? tpf * speed : 0f);
+            if (debugAppState != null && debugAppState.isInitialized()) {
+                PhysicsDebugSceneProcessor processor = debugAppState.getDebugProcessor();
+                synchronized (processor.getLock()) {
+                    processor.clearDraw();
+                    physicsSpace.update(isEnabled() ? tpf * speed : 0f);
+                }
+            } else {
+                physicsSpace.update(isEnabled() ? tpf * speed : 0f);   
+            }
             return true;
         }
     };
