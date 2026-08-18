@@ -176,6 +176,7 @@ public final class ParsePath {
                 }
             }
         }
+        currentPoint.close();
 	return pointCount;
     }
 }

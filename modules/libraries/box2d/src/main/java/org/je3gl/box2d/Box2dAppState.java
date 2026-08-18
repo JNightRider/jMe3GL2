@@ -331,8 +331,10 @@ public class Box2dAppState extends AbstractAppState {
     @Override
     public void cleanup() {
         if (debugAppState != null) {
-            stateManager.detach(debugAppState);
-            this.debugAppState = null;
+            synchronized (debugAppState.getDebugProcessor().getLock()) {
+                stateManager.detach(debugAppState);
+                this.debugAppState = null;
+            }
         }
         if (executor != null) {
             executor.shutdown();

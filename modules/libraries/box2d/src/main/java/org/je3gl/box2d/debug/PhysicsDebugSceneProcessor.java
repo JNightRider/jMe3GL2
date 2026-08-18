@@ -31,16 +31,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.debug;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.math.Vector3f;
 import com.jme3.post.SceneProcessor;
 import com.jme3.profile.AppProfiler;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.texture.FrameBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.je3gl.box2d.debug.batch.BatchSnapshot;
+import org.je3gl.box2d.debug.batch.TextData;
 
 /**
  *
@@ -51,6 +55,7 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
     private final Object lock = new Object();
 
     private final AtomicReference<BatchSnapshot> snapshot = new AtomicReference<>(null);
+    private final List<TextData> listText = new ArrayList<>();
     private RenderManager renderManager;
 
     private boolean initialized;
@@ -68,8 +73,17 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
         }
     }
 
+    public void addDrawString(float x, float y, int color, String value) {
+        TextData data = new TextData();
+        data.setColor(color);
+        data.setPosition(new Vector3f(x, y, 0f));
+        data.setText(value);
+        listText.add(data);
+    }
+    
     public void clearDraw() {
         snapshot.get().clear();
+        listText.clear();
     }
     
     @Override
@@ -100,7 +114,6 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
             if (sb != null) {
                 sb.flushDraw(renderManager);
             }
-            
         }
     }
 
@@ -111,6 +124,10 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
     @Override
     public void cleanup() {
 
+    }
+
+    public List<TextData> getListText() {
+        return listText;
     }
 
     public AtomicReference<BatchSnapshot> getSnapshot() {

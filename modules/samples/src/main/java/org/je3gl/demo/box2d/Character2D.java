@@ -41,6 +41,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Line;
 import com.jme3.system.AppSettings;
+import java.nio.FloatBuffer;
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.ThreadingType;
 import org.je3gl.renderer.Camera2DAppSate;
@@ -57,6 +58,7 @@ import static org.box2d.jni.include.Collision.*;
 import static org.box2d.jni.include.MathFunctions.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
+import static org.box2d.jni.system.MemoryUtil.*;
 import org.je3gl.box2d.control.CharacterBody2D;
 import org.je3gl.box2d.util.ParsePath;
 import org.je3gl.scene.control.AnimatedSprite2D;
@@ -88,7 +90,97 @@ public class Character2D extends SimpleApplication  {
      * Control of the character (player) in the scene.
      */
     private static class Player extends CharacterBody2D {
-    
+        
+        public static final int 
+                StaticBit   = 0x0001,
+                MoverBit    = 0x0002,
+                DynamicBit  = 0x0004,
+                DebrisBit   = 0x0008,
+                AllBits     = ~0;
+
+        private final int planeCapacity = 8;
+	private final Vector2f elevatorBase = new Vector2f( 112.0f, 10.0f );
+	private final float elevatorAmplitude = 4.0f;
+
+	float jumpSpeed = 10.0f;
+	float maxSpeed = 6.0f;
+	float minSpeed = 0.1f;
+	float stopSpeed = 3.0f;
+	float accelerate = 20.0f;
+	float airSteer = 0.2f;
+	float friction = 8.0f;
+	float gravity = 30.0f;
+	float pogoHertz = 5.0f;
+	float pogoDampingRatio = 0.8f;
+
+//	int m_pogoShape = PogoSegment;
+	Vector2f position;
+	Vector2f velocity;
+	b2Capsule capsule;
+	b2BodyId elevatorId;
+	b2ShapeId ballId;
+//	ShapeUserData m_friendlyShape;
+//	ShapeUserData m_elevatorShape;
+//	b2CollisionPlane m_planes[m_planeCapacity] = {};
+	int planeCount;
+	int totalIterations;
+	float pogoVelocity;
+	float time;
+	boolean onGround;
+	boolean jumpReleased;
+	boolean lockCamera;
+        
+        public Player() {
+        }
+
+        @Override
+        protected void ready() {
+            // Mover position is center of the capsule.
+            position = new Vector2f( 2.0f, 8.0f );
+            velocity = new Vector2f( 0.0f, 0.0f );
+//            capsule = { { 0.0f, -0.5f }, { 0.0f, 0.5f }, 0.3f }
+                
+            totalIterations = 0;
+            pogoVelocity = 0.0f;
+            onGround = false;
+            jumpReleased = true;
+            lockCamera = true;
+            planeCount = 0;
+            time = 0.0f;
+        }
+
+        @Override
+        protected void physicsProcess(float delta) {
+            SolveMove(time, 1);
+        }
+        
+        void SolveMove( float timeStep, float throttle ) {
+            // Friction
+            float speed = velocity.length();
+            if ( speed < minSpeed )
+            {
+                velocity.x = 0.0f;
+                velocity.y = 0.0f;
+            }
+            else if ( onGround )
+            {
+                // Linear damping above stopSpeed and fixed reduction below stopSpeed
+                float control = speed < stopSpeed ? stopSpeed : speed;
+
+                // friction has units of 1/time
+                float drop = control * friction * timeStep;
+                float newSpeed = b2MaxFloat( 0.0f, speed - drop );
+                velocity.multLocal(newSpeed / speed);
+            }
+            
+            
+            try (ArenaAlloc arena = allocPush()) {
+                b2Vec2 desiredVelocity = b2Vec2.calloc(arena).set(maxSpeed * throttle, 0.0f );
+                FloatBuffer desiredSpeed = memFloatBuffer(arena.nmalloc(1 * VarType.Float.sizeof()), 1);
+                
+                b2Vec2 desiredDirection = b2GetLengthAndNormalize( desiredSpeed, desiredVelocity, b2Vec2.calloc(arena) );
+            }
+        }
     }
 
     /*(non-Javadoc)
@@ -100,7 +192,7 @@ public class Character2D extends SimpleApplication  {
             new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f)
         );
         
-//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(2);
+//        Camera2DAppSate camera2DAppSate = new Camera2DAppSate(1f);
 //        camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
 //        stateManager.attach(camera2DAppSate);
 
@@ -118,6 +210,7 @@ public class Character2D extends SimpleApplication  {
     @SuppressWarnings("unchecked")
     private void prepareCharacter() {
         Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
+        Camera2DAppSate camera2DAppSate = stateManager.getState(Camera2DAppSate.class);
         b2WorldId worldId = box2dAppState.getPhysicsSpace().getWorldId();
         
         Spatial player = assetManager.loadModel("Models/Rabbit.j3o");
@@ -125,22 +218,40 @@ public class Character2D extends SimpleApplication  {
         rootNode.attachChild(player);
         
         Player body2D = new Player();
-        body2D.setType(b2_dynamicBody);
+        body2D.setType(b2_kinematicBody);
         body2D.setGravityScale(2f);
         body2D.setPosition(new Vector2f(0, 10));
         box2dAppState.getPhysicsSpace().addBody(body2D);
 
-        b2Body_SetName(body2D.getBodyId(), "JNightRider - Box2D JNI");
-        b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.calloc());
-        b2Capsule capsule = b2Capsule.calloc();
-        capsule.radius(0.25f);
-        
-        try(ArenaAlloc alloc = allocPush()) {
-            capsule.center1(b2Vec2.calloc(alloc).set(0, -0.25));
-            capsule.center2(b2Vec2.calloc(alloc).set(0, 0.25f));
+        {
+            b2Body_SetName(body2D.getBodyId(), "JNightRider - Box2D JNI");
+            b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.calloc());
+            b2Capsule capsule = b2Capsule.calloc();
+            capsule.radius(0.25f);
+
+            try(ArenaAlloc alloc = allocPush()) {
+                capsule.center1(b2Vec2.calloc(alloc).set(0, 0));
+                capsule.center2(b2Vec2.calloc(alloc).set(0, 0.25f));
+            }
+            body2D.addCapsuleShape(shapeDef, capsule);
+            player.addControl(body2D);
+//            camera2DAppSate.setTarget(player);
         }
-        body2D.addCapsuleShape(shapeDef, capsule);
-        player.addControl(body2D);
+        
+        {
+            b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
+            bodyDef.type(b2_dynamicBody);
+            bodyDef.position(b2Pos.malloc().set( 7.0f, 7.0f ));
+            b2BodyId bodyId = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
+
+            b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
+            shapeDef.filter(b2Filter.malloc().categoryBits(Player.DebrisBit).maskBits(Player.AllBits).groupIndex(0) );
+            shapeDef.material().restitution(0.7f);
+            shapeDef.material().rollingResistance(0.2f);
+
+            b2Circle circle = b2Circle.malloc().set( b2Vec2_zero, 0.3f );
+            b2ShapeId m_ballId = b2CreateCircleShape( bodyId, shapeDef, circle, b2ShapeId.malloc() );
+        }
     }
 
     private void prepareGround() {
