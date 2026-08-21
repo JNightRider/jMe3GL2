@@ -250,6 +250,7 @@ public class Box2dAppState extends AbstractAppState {
         }
 
         Box2dTilePhysicsSystem.initialize();
+        Box2dPipelineStream.autoFlush();
         this.initialized = true;
     }
 
@@ -304,6 +305,9 @@ public class Box2dAppState extends AbstractAppState {
             case PARALLEL -> executor.submit(parallelPhysicsUpdate);
             case SEQUENTIAL -> {
                 final float timeStep = isEnabled() ? this.tpf * speed : 0;
+                if (debugAppState != null && debugAppState.isInitialized()) {
+                    debugAppState.getDebugProcessor().clearDraw();
+                }
                 this.physicsSpace.update(timeStep);
             }
             default -> { }
@@ -342,6 +346,7 @@ public class Box2dAppState extends AbstractAppState {
         }
         physicsSpace.close();
         physicsSpace = null;
+        Box2dPipelineStream.reset();
         super.cleanup();
     }
 

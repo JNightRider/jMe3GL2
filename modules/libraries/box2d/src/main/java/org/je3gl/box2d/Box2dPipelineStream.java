@@ -30,8 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.box2d.jni.system.PipelineStream;
 
 /**
@@ -42,8 +44,38 @@ public class Box2dPipelineStream implements PipelineStream {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Box2dPipelineStream.class.getName());
 
+    private static final AtomicBoolean AUTO_FLUSH = new AtomicBoolean(false);
+    private static final StringBuilder STREAM_BUFFER = new StringBuilder();
+
+    static {
+        reset();
+    }
+
+    public static void autoFlush() {
+        boolean flush = AUTO_FLUSH.get();
+        if (! flush) {
+            String msg = String.valueOf(STREAM_BUFFER);
+            LOGGER.info(msg.substring(0, msg.length() - 1));
+            AUTO_FLUSH.set(true);
+        }
+    }
+
+    public static void reset() {
+        AUTO_FLUSH.set(false);
+        STREAM_BUFFER.delete(0, STREAM_BUFFER.length());
+        STREAM_BUFFER.append("[jMe3GL2] :Box2d-JNI initialize")
+                     .append('\n');
+    }
+
+    public Box2dPipelineStream() {
+    }
+
     @Override
     public void print(String string) {
-        LOGGER.log(Level.INFO, () -> " * " + string.replaceAll("\t", "").replaceAll("\n", ""));
-    }    
+        if (AUTO_FLUSH.get()) {
+            LOGGER.log(Level.INFO, string);
+        } else {
+            STREAM_BUFFER.append(" * ").append(string);
+        }
+    }
 }

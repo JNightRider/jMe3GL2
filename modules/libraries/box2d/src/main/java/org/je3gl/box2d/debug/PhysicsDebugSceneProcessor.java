@@ -38,9 +38,10 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.texture.FrameBuffer;
+
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.je3gl.box2d.debug.batch.BatchSnapshot;
@@ -55,6 +56,7 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
     private final Object lock = new Object();
 
     private final AtomicReference<BatchSnapshot> snapshot = new AtomicReference<>(null);
+    private final AtomicBoolean enabled = new AtomicBoolean(true);
     private final List<TextData> listText = new ArrayList<>();
     private RenderManager renderManager;
 
@@ -62,6 +64,14 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     public PhysicsDebugSceneProcessor(AssetManager assetManager) {
         snapshot.set(new BatchSnapshot(assetManager));
+    }
+
+    public boolean isEnabled() {
+        return enabled.get();
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled.set(enabled);
     }
 
     public void setSnapshot(BatchSnapshot value) {
@@ -111,7 +121,7 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
     public void postQueue(RenderQueue rq) {
         synchronized (lock) {
             BatchSnapshot sb = snapshot.get();
-            if (sb != null) {
+            if (sb != null && enabled.get()) {
                 sb.flushDraw(renderManager);
             }
         }
@@ -123,7 +133,11 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     @Override
     public void cleanup() {
-
+        synchronized (lock) {
+            initialized = false;
+            listText.clear();
+            snapshot.get().clear();
+        }
     }
 
     public List<TextData> getListText() {

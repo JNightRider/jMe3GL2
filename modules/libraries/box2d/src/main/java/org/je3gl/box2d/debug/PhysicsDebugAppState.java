@@ -35,7 +35,6 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
-import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -53,6 +52,7 @@ import org.je3gl.box2d.DrawSettings;
 import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.debug.batch.BatchSnapshot;
 import org.je3gl.box2d.debug.batch.TextData;
+import org.je3gl.scene.debug.custom.DebugGraphics;
 
 import org.box2d.jni.b2DebugDraw;
 import org.box2d.jni.b2Pos;
@@ -88,11 +88,10 @@ import static org.box2d.jni.system.MemoryUtil.*;
  */
 public class PhysicsDebugAppState extends AbstractAppState {
 
-    /**
-     * Class logger.
-     */
+    /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(PhysicsDebugAppState.class.getName());
 
+    private Box2dAppState box2dAppState;
     private PhysicsDebugSceneProcessor debugProcessor;
 
     /**
@@ -102,15 +101,14 @@ public class PhysicsDebugAppState extends AbstractAppState {
     /** <code>JME3</code> renderer.
      */
     protected RenderManager rm;
+    private Application application;
 
     private Camera camera;
 
     private Node ui;
-    private BitmapFont font;
-    private BitmapTextPool bitmapTextPool;
+    private BitmapTextPool bitmapTextPool = new BitmapTextPool();
     private List<BitmapText> textList = new ArrayList<>();
 
-    private StringDebugGraphics debugGraphics;
     private float width;
     private float height;
 
@@ -254,16 +252,18 @@ public class PhysicsDebugAppState extends AbstractAppState {
         AssetManager assetManager   = app.getAssetManager();
         RenderManager renderManager = app.getRenderManager();
 
-        Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
-        PhysicsSpace physicsSpace   = box2dAppState.getPhysicsSpace();
+        box2dAppState = stateManager.getState(Box2dAppState.class);
+        PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
         physicsSpace.setEnableDebugger(true);
 
-        camera = app.getCamera();
-        debugGraphics  = new StringDebugGraphics(assetManager);
-        bitmapTextPool = new BitmapTextPool();
-        bitmapTextPool.setGraphics(debugGraphics);
+        if (bitmapTextPool.getGraphics() == null) {
+            bitmapTextPool.setGraphics(new StringDebugGraphics(assetManager));
+        }
 
-        ui = new Node("Box2d-JNI UI");
+        application = app;
+        camera      = app.getCamera();
+        rm          = renderManager;
+        ui          = new Node("Box2d-JNI UI");
         ((SimpleApplication) app).getGuiNode().attachChild(ui);
 
         ViewPort uiViewPort = ((SimpleApplication) app).getGuiViewPort();
@@ -289,7 +289,11 @@ public class PhysicsDebugAppState extends AbstractAppState {
                 .DrawTransformFcn(DrawTransformFcn)
                 .DrawStringFcn(DrawStringFcn);
 
-        DrawSettings settings = box2dAppState.getDrawSettings();
+        applyDrawSettings(debugDraw, box2dAppState.getDrawSettings());
+        super.initialize(stateManager, app);
+    }
+    
+    private void applyDrawSettings(b2DebugDraw debugDraw, DrawSettings settings) {
         debugDraw.drawShapes(settings.drawShapes())
                 .drawBodyNames(settings.drawBodyNames())
                 .drawJoints(settings.drawJoints())
@@ -305,12 +309,37 @@ public class PhysicsDebugAppState extends AbstractAppState {
                 .drawMass(settings.drawMass())
                 .drawBounds(settings.drawBounds());
 
-        font = debugGraphics.getBitmapFont(null);
-        super.initialize(stateManager, app);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[jMe3GL2] :Charts for debugging Box2d-JNI bodies")
+            .append('\n').append(" * drawShapes: ").append(settings.drawShapes())
+            .append('\n').append(" * drawBodyNames: ").append(settings.drawBodyNames())
+            .append('\n').append(" * drawJoints: ").append(settings.drawJoints())
+            .append('\n').append(" * drawAnchorA: ").append(settings.drawAnchorA())
+            .append('\n').append(" * drawChainNormals: ").append(settings.drawChainNormals())
+            .append('\n').append(" * drawContactFeatures: ").append(settings.drawContactFeatures())
+            .append('\n').append(" * drawFrictionForces: ").append(settings.drawFrictionForces())
+            .append('\n').append(" * drawContactNormals: ").append(settings.drawContactNormals())
+            .append('\n').append(" * drawContacts: ").append(settings.drawContacts())
+            .append('\n').append(" * drawGraphColors: ").append(settings.drawGraphColors())
+            .append('\n').append(" * drawIslands: ").append(settings.drawIslands())
+            .append('\n').append(" * drawJointExtras: ").append(settings.drawJointExtras())
+            .append('\n').append(" * drawMass: ").append(settings.drawMass())
+            .append('\n').append(" * drawBounds: ").append(settings.drawBounds());
+        LOGGER.info(String.valueOf(sb));
     }
 
     @Override
     public void update(float tpf) {
+        PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
+        DrawSettings settings = box2dAppState.getDrawSettings();
+        if (settings.isNeedUpdate()) {
+            settings.update();
+            applyDrawSettings(physicsSpace.getDebugDraw(), box2dAppState.getDrawSettings());
+        }
+        updateGUIText();
+    }
+
+    private void updateGUIText() {
         synchronized (debugProcessor.getLock()) {
             List<BitmapText> cache = textList;
             textList = new ArrayList<>();
@@ -350,8 +379,32 @@ public class PhysicsDebugAppState extends AbstractAppState {
     }
 
     @Override
-    public void render(RenderManager rm) {
+    public void setEnabled(boolean enabled) {
+        if (isInitialized()) {
+            debugProcessor.setEnabled(enabled);
+        }
+        super.setEnabled(enabled);
+    }
 
+    @Override
+    public void cleanup() {
+        super.cleanup();
+        for (BitmapText text : textList) {
+            bitmapTextPool.takePop(text);
+        }
+        textList.clear();
+        ui.detachAllChildren();
+
+        viewPort.removeProcessor(debugProcessor);
+        rm.removeMainView(viewPort);
+    }
+
+    public void setGraphics(DebugGraphics graphics) {
+        bitmapTextPool.setGraphics(graphics);
+    }
+
+    public DebugGraphics getGraphics() {
+        return bitmapTextPool.getGraphics();
     }
 
     public PhysicsDebugSceneProcessor getDebugProcessor() {
