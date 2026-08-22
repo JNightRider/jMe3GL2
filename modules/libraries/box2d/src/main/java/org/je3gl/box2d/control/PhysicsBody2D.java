@@ -90,11 +90,11 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
     /**
      * temporary storage during calculations 'Quaternion'
      */
-    private final Quaternion tmpInverseWorldRotation = new Quaternion();
+    protected final Quaternion tmpInverseWorldRotation = new Quaternion();
     /**
      * temporary storage during calculations 'Vector3f'
      */
-    private final Vector3f tmpWorldPosition = new Vector3f();
+    protected final Vector3f tmpWorldPosition = new Vector3f();
     
     /** Physical space. */
     protected PhysicsSpace physicsSpace;
@@ -105,7 +105,14 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * to call method <code>postReady(void)</code>.
      */
     private boolean initialized;
-    
+
+    /**
+     * {@code true} if this body is projected and not part of the physical
+     * space; {@code false} if it is a real physical body within the physics
+     * engine.
+     */
+    private final boolean projected;
+
     /**
      * true &rarr; physics-space coordinates match local transform, false &rarr;
      * physics-space coordinates match world transform
@@ -125,11 +132,23 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * Generates a new object of class <code>PhysicsBody2D</code> to generate a 
      * physical body from a 2D model.
      *
+     * @param projected boolean
+     */
+    public PhysicsBody2D(boolean projected) {
+        if (! projected) {
+            this.bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
+            this.bodyId  = b2BodyId.malloc();
+            this.bodyId.clear();
+        }
+        this.projected = projected;
+    }
+
+    /**
+     * Generates a new object of class <code>PhysicsBody2D</code> to generate a 
+     * physical body from a 2D model.
      */
     public PhysicsBody2D() {
-        this.bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-        this.bodyId  = b2BodyId.malloc();
-        this.bodyId.clear();
+        this(false);
     }
 
     public b2ShapeId addPolygonShape(b2ShapeDef shapeDef, b2Polygon shape) {
@@ -157,6 +176,9 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
     }
     
     public void setType(b2BodyType bodyType) {
+        if (! check("setType"))
+            return;
+        
         if (isValid()) {
             b2Body_SetType(bodyId, bodyType);
         } else {
@@ -165,6 +187,9 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
     }
     
     public void setPosition(Vector2f position) {
+        if (! check("setPosition"))
+            return;
+        
         try(ArenaAlloc alloc = allocPush()) {
             b2Pos pos = Converter.toB2Pos(position, b2Pos.calloc(alloc));
             if (isValid()) {
@@ -176,6 +201,9 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
     }
     
     public void setGravityScale(float scale) {
+        if (! check("setGravityScale"))
+            return;
+        
         if (isValid()) {
             b2Body_SetGravityScale(bodyId, scale);
         } else {
@@ -189,7 +217,7 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * @return boolean
      */
     public boolean isValid() {
-        if (bodyId == null) {
+        if (bodyId == null || projected) {
             return false;
         }
         return B2_IS_NON_NULL(bodyId);
@@ -201,6 +229,9 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * @return float
      */
     public float getRotation() {
+        if (! check("getRotation"))
+            return 0.0f;
+
         try (ArenaAlloc alloc = allocPush()) {
             if (isValid()) {
                 b2Rot rot = b2Body_GetRotation(bodyId, b2Rot.calloc(alloc));
@@ -216,6 +247,9 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * @return Vector3f
      */
     public Vector3f getPosition() {
+        if (! check("getPosition"))
+            return tmpWorldPosition;
+
         AxisType axisType = physicsSpace == null
                 ? AxisType.AXIS_XYO : physicsSpace.getAxisType();
 
@@ -227,7 +261,20 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
             return Converter.toVector3f(bodyDef.position(), axisType, tmpWorldPosition);
         }
     }
+
+    public boolean isProjected() {
+        return projected;
+    }
     
+    protected final boolean check(String funcName) {
+        if (projected) {
+            String msg = "This feature cannot be activated: " + funcName + "() | projected=" + projected;
+            LOGGER.warning(msg);
+            return false;
+        }
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString() 
      */

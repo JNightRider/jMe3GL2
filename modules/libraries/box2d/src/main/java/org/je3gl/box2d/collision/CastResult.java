@@ -28,40 +28,86 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.je3gl.box2d.control;
+package org.je3gl.box2d.collision;
+
+import com.jme3.math.Vector2f;
+import org.box2d.jni.b2BodyId;
 
 /**
  *
  * @author wil
  */
-public class CharacterBody2D extends PhysicsBody2D {
-    
-    public static enum PogoShape {
-        PogoPoint,
-	PogoCircle,
-	PogoSegment,
-        PogoCustom
-    }
-    
-    public static enum CollisionBits {
-        StaticBit(0x0001),
-        MoverBit(0x0002),
-        DynamicBit(0x0004),
-        DebrisBit(0x0008),
-        AllBits(~0l);
+public class CastResult {
 
-        private final long bits;
+    private Vector2f point;
+    private Vector2f normal;
+    private b2BodyId bodyId;
+    private float fraction;
+    private boolean hit;
 
-        private CollisionBits(long bits) {
-            this.bits = bits;
-        }
-
-        public long getBits() {
-            return bits;
-        }
+    public CastResult() {
+        this(new Vector2f(), new Vector2f(), null, 0f, false);
     }
 
-    public CharacterBody2D() {
-        super(true);
+    public CastResult(Vector2f point, Vector2f normal, b2BodyId bodyId, float fraction, boolean hit) {
+        this.point = point;
+        this.normal = normal;
+        this.bodyId = bodyId;
+        this.fraction = fraction;
+        this.hit = hit;
+    }
+    
+    public void reset() {
+        if (point != null) {
+            point.zero();
+        }
+        if (normal != null) {
+            normal.zero();
+        }
+        if (bodyId != null) {
+            bodyId.close();
+        }
+        fraction = 0;
+        hit = false;
+    }
+
+    public void setPoint(Vector2f point) {
+        this.point = point;
+    }
+
+    public void setNormal(Vector2f normal) {
+        this.normal = normal;
+    }
+
+    public void setBodyId(b2BodyId bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    public void setFraction(float fraction) {
+        this.fraction = fraction;
+    }
+
+    public void setHit(boolean hit) {
+        this.hit = hit;
+    }
+
+    public Vector2f getPoint() {
+        return point;
+    }
+
+    public Vector2f getNormal() {
+        return normal;
+    }
+
+    public b2BodyId getBodyId() {
+        return bodyId;
+    }
+
+    public float getFraction() {
+        return fraction;
+    }
+
+    public boolean isHit() {
+        return hit;
     }
 }

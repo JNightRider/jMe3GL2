@@ -34,6 +34,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 
 import org.je3gl.box2d.PhysicsSpace;
+import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
+import org.je3gl.box2d.debug.batch.BatchSnapshot;
 
 /**
  * An Interface in charge of managing the control of the physical bodies used by
@@ -41,7 +43,7 @@ import org.je3gl.box2d.PhysicsSpace;
  * <code>Spatial</code> of JME3.
  *
  * @author wil
- * @version 1.0.0
+ * @version 1.1.0
  * @since 3.2.0
  */
 public interface PhysicsControl extends Control {
@@ -52,33 +54,39 @@ public interface PhysicsControl extends Control {
      * @param <T> type <b>Spatial</b>
      * @return object
      */
-    public <T extends Spatial> T getJmeObject();
+    <T extends Spatial> T getJmeObject();
+
+    /**
+     * 
+     * @param physicsProcessor
+     */
+    default void flushProjectedDraw(PhysicsDebugSceneProcessor physicsProcessor) { }
 
     /**
      * Establishes the physical space to which this physical control belongs.
      *
      * @param physicsSpace a physical space
      */
-    public void setPhysicsSpace(PhysicsSpace physicsSpace);
+    void setPhysicsSpace(PhysicsSpace physicsSpace);
 
     /**
      * Returns the physical space to which this physical control belongs.
      *
      * @return a physical space
      */
-    public PhysicsSpace getPhysicsSpace();
+    PhysicsSpace getPhysicsSpace();
 
     /**
      * Method in charge of enabling or disabling the control.
      *
      * @param enabled control status
      */
-    public void setEnabled(boolean enabled);
+    void setEnabled(boolean enabled);
 
     /**
      * Returns the current status of this control.
      *
      * @return control status
      */
-    public boolean isEnabled();
+    boolean isEnabled();
 }

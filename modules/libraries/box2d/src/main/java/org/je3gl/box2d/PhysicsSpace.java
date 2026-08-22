@@ -30,7 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.je3gl.box2d;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import org.box2d.jni.b2DebugDraw;
 import org.box2d.jni.b2WorldDef;
 import org.box2d.jni.b2WorldId;
@@ -39,6 +42,7 @@ import static org.box2d.jni.include.Box2d.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.Callbacks.*;
 import org.je3gl.box2d.control.PhysicsBody2D;
+import org.je3gl.box2d.debug.PhysicsDebugAppState;
 
 /**
  *
@@ -49,6 +53,7 @@ import org.je3gl.box2d.control.PhysicsBody2D;
 public class PhysicsSpace implements AutoCloseable {
     
     private final AtomicBoolean enableDebugger = new AtomicBoolean(false);
+    private final AtomicReference<List<PhysicsBody2D>> references = new AtomicReference<>(new ArrayList<>());
     
     private int subStepCount = 4;
     
@@ -56,6 +61,7 @@ public class PhysicsSpace implements AutoCloseable {
     
     protected b2DebugDraw debugDraw;
     
+    protected PhysicsDebugAppState debugAppState;
     protected AxisType axisType = AxisType.AXIS_XYO;
 
     public PhysicsSpace(b2WorldDef worldDef) {
@@ -66,6 +72,10 @@ public class PhysicsSpace implements AutoCloseable {
         debugDraw = b2DefaultDebugDraw(b2DebugDraw.calloc());
     }
 
+    public void setDebugAppState(PhysicsDebugAppState debugAppState) {
+        this.debugAppState = debugAppState;
+    }
+
     public void setEnableDebugger(boolean enabled) {
         this.enableDebugger.set(enabled);
     }
@@ -73,21 +83,41 @@ public class PhysicsSpace implements AutoCloseable {
     public void setSubStepCount(int subStepCount) {
         this.subStepCount = subStepCount;
     }
-
+    
     public void addBody(PhysicsBody2D body2D) {
-        b2CreateBody(worldId, body2D.getBodyDef(), body2D.getBodyId());
+        if (body2D.isProjected()) {
+            references.get().add(body2D);
+        } else {
+            b2CreateBody(worldId, body2D.getBodyDef(), body2D.getBodyId());
+        }
         body2D.setPhysicsSpace(this);
     }
     
     public void removeBody(PhysicsBody2D body2D) {
-        b2DestroyBody(body2D.getBodyId());
+        if (body2D.isProjected()) {
+            references.get().remove(body2D);
+        } else {
+            b2DestroyBody(body2D.getBodyId());
+        }
         body2D.setPhysicsSpace(null);
     }
 
     public void update(float tpf) {
         b2World_Step(worldId, tpf, subStepCount);
-        if ( enableDebugger.get() ) {
+        if (enableDebugger.get()) {
             b2World_Draw(worldId, debugDraw);
+
+            if (debugAppState != null && debugAppState.isInitialized()) {
+                synchronized (debugAppState.getDebugProcessor().getLock()) {
+                    for (PhysicsBody2D body2D : references.get()) {
+                        if (body2D == null) {
+                            continue;
+                        }
+
+                        body2D.flushProjectedDraw(debugAppState.getDebugProcessor());
+                    }
+                }
+            }
         }
     }
 
@@ -117,5 +147,7 @@ public class PhysicsSpace implements AutoCloseable {
         b2FreeCallbacks();
         debugDraw.close();
         worldId.close();
+        references.get().clear();
+        debugAppState = null;
     }
 }

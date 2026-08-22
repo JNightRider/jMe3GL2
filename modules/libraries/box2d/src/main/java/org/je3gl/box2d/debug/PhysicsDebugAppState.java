@@ -254,6 +254,7 @@ public class PhysicsDebugAppState extends AbstractAppState {
 
         box2dAppState = stateManager.getState(Box2dAppState.class);
         PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
+        physicsSpace.setDebugAppState(this);
         physicsSpace.setEnableDebugger(true);
 
         if (bitmapTextPool.getGraphics() == null) {
