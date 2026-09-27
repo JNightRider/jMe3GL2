@@ -4,7 +4,7 @@
 
 jmonkeyengineVersion = "3.9.0-stable"
 jreleaserVersion     = "1.24.0"
-box2djniVersion      = "1.2.0"
+box2djniVersion      = "2.0.0"
 dyn4jVersion         = "6.0.0"
 
 [libraries]
