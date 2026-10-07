@@ -34,6 +34,7 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 
 import org.box2d.jni.b2Pos;
+import org.box2d.jni.b2Vec2;
 
 import org.je3gl.box2d.AxisType;
 
@@ -100,7 +101,20 @@ public final class Converter {
      * @return A {@link b2Pos} object
      */
     public static b2Pos toB2Pos(Vector3f vec3) {
-        return b2Pos.malloc().set(vec3.x, vec3.y);
+        return toB2Pos(vec3, b2Pos.malloc());
+    }
+    
+    public static b2Pos toB2Pos(Vector3f vec3, b2Pos __result) {
+        __result.set(vec3.x, vec3.y);
+        return __result;
+    }
+
+    public static b2Vec2 toB2Vec2(Vector3f vec3, b2Vec2 __result) {
+        return __result.set(vec3.x, vec3.y);
+    }
+    
+    public static b2Vec2 toB2Vec2(Vector2f vec2, b2Vec2 __result) {
+        return __result.set(vec2.x, vec2.y);
     }
     
     /**
@@ -168,4 +182,15 @@ public final class Converter {
                 return Vector3f.UNIT_Z;
         }
     }
+
+    /**
+     * Convert a {@code b2Pos} to a {@link Vector2f}.
+     *
+     * @param val value
+     * @return A {@link Vector2f} object
+     */
+    public static Vector2f toVector2f(b2Pos val) {
+        return new Vector2f(val.x().floatValue(), val.y().floatValue());
+    }
+
 }
