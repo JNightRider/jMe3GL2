@@ -34,11 +34,12 @@ import com.jme3.export.*;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
-import com.jme3.scene.mesh.IndexBuffer;
 import com.jme3.util.BufferUtils;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
+import java.util.Objects;
 
 /**
  * Abstract class <code>AbstractShape2D</code> in charge of implementing the basis
@@ -47,14 +48,14 @@ import java.nio.FloatBuffer;
  * <b>Lines</b> are used to generate the shapes.
  * 
  * @author wil
- * @version 1.0.5
+ * @version 1.2.0
  * @since 2.5.0
  */
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
     
     /**Arrangement of the mesh vertices. */
     protected Vector3f[] vertices;
-    
+        
     /**
      * Default internal constructor.
      */
@@ -96,27 +97,77 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      * @param vertices new arrangement of the vertices
      */
     protected void updateGeometry(final Vector3f[] vertices) {
-        if (vertices == null ) {
+        updateGeometry(vertices, false);
+    }
+    
+    /**
+     * Method responsible for updating the geometry of this mesh to generate the 
+     * new coordinates of the <code>lines</code>.
+     * 
+     * @param vertices new arrangement of the vertices
+     * @param fill full mesh
+     */
+    protected void updateGeometry(final Vector3f[] vertices, boolean fill) {
+        if (vertices == null) {
             throw new NullPointerException("vertices is null.");
         }
-        
-        this.vertices = vertices;
-        this.setBuffer(VertexBuffer.Type.Position, 3,
-                BufferUtils.createVector3Buffer(getFloatBuffer(VertexBuffer.Type.Position), this.vertices.length));
-
-        this.setBuffer(VertexBuffer.Type.Index, 1, 
-                BufferUtils.createShortBuffer(getShortBuffer(VertexBuffer.Type.Index), this.vertices.length));
-
-        final FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
-        final IndexBuffer ib = getIndexBuffer();
-
-        for (int i = 0; i < this.vertices.length; i++) {
-            final Vector3f vertice = vertices[i];
-            
-            pb.put(vertice.getX()).put(vertice.getY()).put(vertice.getZ());
-            ib.put(i, i);
+        if (Objects.deepEquals(this.vertices,  vertices)) {
+            return;
         }
-        
+        this.vertices = vertices;
+
+        // ----- Position buffer -----
+        FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
+        clearBuffer(VertexBuffer.Type.Position);
+        if (pb == null || pb.capacity() < (vertices.length * 3)) {
+            if (pb != null) {
+                BufferUtils.destroyDirectBuffer(pb);
+            }
+            pb = BufferUtils.createFloatBuffer(vertices.length * 3);
+        }
+        pb.rewind();
+        for (Vector3f v : vertices) {
+            pb.put(v.x).put(v.y).put(v.z);
+        }
+        pb.flip();
+        setBuffer(VertexBuffer.Type.Position, 3, pb);
+
+        fill(fill);
+        updateCounts();
+        updateBound();
+    }
+    
+    public void fill(boolean isFill) {
+        // ----- Index buffer -----
+        ShortBuffer index = getShortBuffer(VertexBuffer.Type.Index);
+        int len = isFill ? (vertices.length - 2) * 3 : vertices.length;
+        if (index == null || (index.capacity() < len)) {
+            if (index != null) {
+                BufferUtils.destroyDirectBuffer(index);
+            }
+            index = BufferUtils.createShortBuffer(len);
+        }
+        index.clear();
+        clearBuffer(VertexBuffer.Type.Index);
+        if (isFill) {            
+            setMode(Mode.Triangles);
+            for (short i = 1; i < vertices.length - 1; i++) {
+                index.put((short)0);
+                index.put(i);
+                index.put((short) (i + 1));
+            }
+            index.flip();
+            setBuffer(VertexBuffer.Type.Index, 3,
+                    index);
+        } else {
+            setMode(Mode.LineLoop);
+            for (short i = 0; i < vertices.length; i++) {
+                index.put((short)i);
+            }
+            index.flip();
+            setBuffer(VertexBuffer.Type.Index, 1,
+                    index);
+        }
         updateBound();
     }
 

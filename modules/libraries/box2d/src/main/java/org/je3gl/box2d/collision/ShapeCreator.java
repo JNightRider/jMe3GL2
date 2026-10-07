@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -27,48 +27,29 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package org.je3gl.scene.debug;
+ */
+package org.je3gl.box2d.collision;
 
-import com.jme3.math.Vector3f;
+import org.box2d.jni.b2BodyId;
+import org.box2d.jni.b2Polygon;
+import org.box2d.jni.b2ShapeDef;
+import org.box2d.jni.b2ShapeId;
+
+import static org.box2d.jni.include.Box2d.b2CreatePolygonShape;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ * @param <SHAPE> shape
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class Polygon2D extends AbstractShape2D {
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
-    }
+@FunctionalInterface
+public interface ShapeCreator<SHAPE> {
     
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
-    }
+    ShapeCreator<b2Polygon> POLYGON = (bodyId, shapeDef, shape) -> {
+        return b2CreatePolygonShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+    };
+    
+    b2ShapeId create(b2BodyId bodyId, b2ShapeDef shapeDef, SHAPE shape);
 }

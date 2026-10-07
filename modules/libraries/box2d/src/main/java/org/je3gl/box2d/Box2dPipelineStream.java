@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,47 +28,54 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d;
 
-import com.jme3.math.Vector3f;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.box2d.jni.system.PipelineStream;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
  */
-public class Polygon2D extends AbstractShape2D {
+public class Box2dPipelineStream implements PipelineStream {
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(Box2dPipelineStream.class.getName());
 
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
+    private static final AtomicBoolean AUTO_FLUSH = new AtomicBoolean(false);
+    private static final StringBuilder STREAM_BUFFER = new StringBuilder();
+
+    static {
+        reset();
     }
 
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
+    public static void autoFlush() {
+        boolean flush = AUTO_FLUSH.get();
+        if (! flush) {
+            String msg = String.valueOf(STREAM_BUFFER);
+            LOGGER.info(msg.substring(0, msg.length() - 1));
+            AUTO_FLUSH.set(true);
+        }
     }
 
-    /* (non-Javadoc)
-     */
+    public static void reset() {
+        AUTO_FLUSH.set(false);
+        STREAM_BUFFER.delete(0, STREAM_BUFFER.length());
+        STREAM_BUFFER.append("[jMe3GL2] :Box2d-JNI initialize")
+                     .append('\n');
+    }
+
+    public Box2dPipelineStream() {
+    }
+
     @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
-    }
-    
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+    public void print(String string) {
+        if (AUTO_FLUSH.get()) {
+            LOGGER.log(Level.INFO, string);
+        } else {
+            STREAM_BUFFER.append(" * ").append(string);
+        }
     }
 }

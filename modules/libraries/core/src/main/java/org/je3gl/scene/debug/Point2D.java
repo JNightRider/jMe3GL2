@@ -31,44 +31,53 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.scene.debug;
 
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer;
+import java.nio.FloatBuffer;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class Polygon2D extends AbstractShape2D {
+public class Point2D extends Mesh {
 
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
+    public Point2D() {
+        this(new Vector3f(), 1f);
     }
     
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+    public Point2D(Vector3f p, float size) {
+        setMode(Mode.Points);
+        Point2D.this.updateGeometry(p, size);
+    }
+    
+    protected void updateGeometry(Vector3f p, float size) {
+        setBuffer(VertexBuffer.Type.Position, 3, new float[]{
+            p.x, p.y, p.z
+        });
+        setBuffer(VertexBuffer.Type.Size, 1, new float[]{
+            size
+        });
+        updateBound();
+    }
+    
+    public void updatePoints(Vector3f p, float size) {
+        VertexBuffer posBuf = getBuffer(VertexBuffer.Type.Position);
+        VertexBuffer sizeBuf = getBuffer(VertexBuffer.Type.Size);
+        
+        FloatBuffer fb = (FloatBuffer) posBuf.getData();
+        FloatBuffer zb = (FloatBuffer) sizeBuf.getData();
+        
+        fb.rewind();
+        zb.rewind();
+        
+        fb.put(p.x).put(p.y).put(p.z);
+        zb.put(size);
+        
+        posBuf.updateData(fb);
+        sizeBuf.updateData(zb);
+        
+        updateBound();
     }
 }

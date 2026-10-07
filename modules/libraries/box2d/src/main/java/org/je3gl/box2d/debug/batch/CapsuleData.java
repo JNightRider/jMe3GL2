@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,47 +28,73 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d.debug.batch;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import org.je3gl.utilities.ColorUtilities;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
  */
-public class Polygon2D extends AbstractShape2D {
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
-    }
+public class CapsuleData {
     
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+    private Vector3f position;
+    private float angle;
+    private float radius;
+    private float length;
+    private boolean solid;
+    private ColorRGBA color;
+
+    public CapsuleData() {
+    }
+
+    public void setSolid(boolean solid) {
+        this.solid = solid;
+    }
+
+    public void setPosition(Vector3f position) {
+        this.position = position;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
+
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
+    public void setLength(float length) {
+        this.length = length;
+    }
+
+    public void setColor(int color) {
+        this.color = ColorUtilities.fromIntRGBA(color, 1f);
+    }
+
+    public Vector3f getPosition() {
+        return position;
+    }
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public float getLength() {
+        return length;
+    }
+
+    public ColorRGBA getColor() {
+        return color;
+    }
+
+    public boolean isSolid() {
+        return solid;
     }
 }

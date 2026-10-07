@@ -2,13 +2,15 @@
 
 [versions]
 
-jmonkeyengineVersion = "3.8.1-stable"
+jmonkeyengineVersion = "3.9.0-stable"
 jreleaserVersion     = "1.24.0"
-dyn4jVersion         = "5.0.2"
+box2djniVersion      = "2.0.1"
+dyn4jVersion         = "6.0.0"
 
 [libraries]
 
-dyn4j = { module = "org.dyn4j:dyn4j", version.ref = "dyn4jVersion" }
+box2djni = { module = "io.github.jnightrider:box2d-jni", version.ref = "box2djniVersion" }
+dyn4j    = { module = "org.dyn4j:dyn4j",                 version.ref = "dyn4jVersion"  }
 
 jme3-core      = { module = "org.jmonkeyengine:jme3-core",    version.ref = "jmonkeyengineVersion" }
 jme3-desktop   = { module = "org.jmonkeyengine:jme3-desktop", version.ref = "jmonkeyengineVersion" }

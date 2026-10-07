@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,47 +28,54 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d.debug.batch;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 
+import org.je3gl.utilities.ColorUtilities;
+
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
  */
-public class Polygon2D extends AbstractShape2D {
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
-
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
-    }
+public class LineData {
     
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+    private Vector3f p1;
+    private Vector3f p2;
+    private ColorRGBA color;
+
+    public LineData() {
+        this(new Vector3f(), new Vector3f(), new ColorRGBA());
+    }
+
+    public LineData(Vector3f p1, Vector3f p2, ColorRGBA color) {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.color = color;
+    }
+
+    public void setP1(float x, float y, float z) {
+        this.p1.set(x, y, z);
+    }
+
+    public void setP2(float x, float y, float z) {
+        this.p2.set(x, y, z);
+    }
+
+    public void setColor(int rgba) {
+        ColorUtilities.fromIntRGBA(rgba, 1.0f, color);
+    }
+
+    public Vector3f getP1() {
+        return p1;
+    }
+
+    public Vector3f getP2() {
+        return p2;
+    }
+
+    public ColorRGBA getColor() {
+        return color;
     }
 }

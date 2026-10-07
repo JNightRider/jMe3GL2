@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2025, Night Rider (Wilson)
+Copyright (c) 2023-2026, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,47 +28,30 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.scene.debug;
+package org.je3gl.box2d.debug.batch;
 
-import com.jme3.math.Vector3f;
+import com.jme3.asset.AssetManager;
+import com.jme3.material.Material;
+import com.jme3.material.RenderState;
+import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 
 /**
- * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
- * @version 1.0.5
- * @since 2.5.0
  */
-public class Polygon2D extends AbstractShape2D {
+public class Batch {
 
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param vertices vertices
-     */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
-    }
+    public static Geometry newDrawable(AssetManager assetManager, Mesh mesh) {
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        mat.setFloat("AlphaDiscardThreshold", 0.2f);
+        mat.getAdditionalRenderState().setDepthTest(false);
 
-    /**
-     * Class constructor <code>Polygon2D</code> where a polygonal shape is
-     * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
-     */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
-    }
-
-    /* (non-Javadoc)
-     */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
-    }
-    
-    /* (non-Javadoc)
-     */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+        Geometry drawable = new Geometry("Batch:" + System.currentTimeMillis(), mesh);
+        drawable.setQueueBucket(RenderQueue.Bucket.Transparent);
+        drawable.setMaterial(mat);
+        return drawable;
     }
 }
