@@ -34,14 +34,25 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+import org.box2d.jni.b2BodyDef;
 
 import org.box2d.jni.b2BodyId;
+import org.box2d.jni.b2Capsule;
 import org.box2d.jni.b2CastResultFcnI;
 import org.box2d.jni.b2Filter;
+import static org.box2d.jni.b2HexColor.*;
 import org.box2d.jni.b2JointId;
+import org.box2d.jni.b2Manifold;
+import org.box2d.jni.b2MoverJointDef;
 import org.box2d.jni.b2PogoJointDef;
 import org.box2d.jni.b2Pos;
+import org.box2d.jni.b2PreContinuousFcnI;
+import org.box2d.jni.b2PreSolveFcnI;
 import org.box2d.jni.b2QueryFilter;
+import org.box2d.jni.b2ShapeDef;
 import org.box2d.jni.b2ShapeId;
 import org.box2d.jni.b2TreeStats;
 import org.box2d.jni.b2Vec2;
@@ -54,19 +65,28 @@ import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.MathFunctions.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
-import static org.box2d.jni.system.Pointer.NULL;
+import static org.box2d.jni.system.Pointer.*;
 
+import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.control.mover.DynamicMoverCastResult;
-import org.je3gl.box2d.control.mover.ShapeMover;
 import org.je3gl.box2d.util.Converter;
 import org.je3gl.box2d.util.MathUtils;
+import org.je3gl.box2d.control.mover.Center1Fcn;
+import org.je3gl.box2d.debug.Drawable;
+import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
+import org.je3gl.box2d.debug.batch.BatchSnapshot;
+import org.je3gl.box2d.listener.SpaceListener;
 
 
 /**
  *
  * @author wil
  */
-public class CharacterBody2D extends PhysicsBody2D {
+public class CharacterBody2D extends PhysicsBody2D implements Drawable {
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(CharacterBody2D.class.getName());
+    
+    protected final List<b2BodyId> contacts = new ArrayList<>();
     
     /**
      * Velocity of the moving body
@@ -103,11 +123,11 @@ public class CharacterBody2D extends PhysicsBody2D {
     // Surfaces steeper than this are not ground.
     protected float minGroundNormalY;
 
-    protected ShapeMover<?> shape;
+    protected Center1Fcn center1Fcn;
     protected b2Filter filter;
 
     protected b2WorldId worldId;
-    protected b2BodyId moverId;
+    protected b2BodyId groundId;
     protected b2JointId moverJointId;
     protected b2JointId pogoJointId;
 
@@ -130,15 +150,6 @@ public class CharacterBody2D extends PhysicsBody2D {
     protected Vector3f pogoTranslation;
     protected float pogoFraction;
     protected boolean pogoHit;
-    
-    private final b2CastResultFcnI CastCallback = (b2ShapeId shapeId, b2Pos point, b2Vec2 normal, float fraction, long context) -> {
-        castResult.point = Converter.toVector3f(point, getPhysicsSpace().getAxisType());
-        castResult.normal = Converter.toVector3f(normal, getPhysicsSpace().getAxisType());
-        castResult.bodyId = b2Shape_GetBody(shapeId, b2BodyId.malloc());
-        castResult.fraction = fraction;
-        castResult.hit = true;
-        return fraction;
-    };
 
     public CharacterBody2D() {
         jumpSpeed = 5.0f;
@@ -158,8 +169,6 @@ public class CharacterBody2D extends PhysicsBody2D {
 	pogoTensionScale = 100.0f;
 	minGroundNormalY = 0.7f;
 
-	filter = b2DefaultFilter(b2Filter.malloc());
-
 	velocity = new Vector2f();
 	onGround = false;
 	walkable = false;
@@ -176,7 +185,121 @@ public class CharacterBody2D extends PhysicsBody2D {
 	pogoHit = false;
 
 	castResult = new DynamicMoverCastResult();
+        bodyDef.motionLocks().angularZ(true);
+        bodyDef.enableSleep(false);
+        addSpaceListener(spaceListener);
     }
+
+    public void addContact(b2BodyId id) {
+        if (bodyId == id) {
+            throw new IllegalStateException();
+        }
+        if (id == null) {
+            throw new NullPointerException();
+        }
+        if (contacts.contains(id)) {
+            LOGGER.warning(() -> "This body already exists as a possible contact: " + id);
+        } else {
+            contacts.add(id);
+        }
+    }
+
+    public void removeContact(b2BodyId id) {
+        contacts.remove(id);
+    }
+    
+    private final b2CastResultFcnI CastCallback = (b2ShapeId shapeId, b2Pos point, b2Vec2 normal, float fraction, long context) -> {
+        castResult.point = Converter.toVector3f(point, getPhysicsSpace().getAxisType());
+        castResult.normal = Converter.toVector3f(normal, getPhysicsSpace().getAxisType());
+        castResult.bodyId = b2Shape_GetBody(shapeId, b2BodyId.malloc());
+        castResult.fraction = fraction;
+        castResult.hit = true;
+        return fraction;
+    };
+
+    private final b2PreSolveFcnI PreSolveStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold, long context) -> {
+        preSolve(shapeIdA, shapeIdB, manifold);
+    };
+    
+    protected void preSolve( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold ) {
+        try (ArenaAlloc arena = allocPush()) {
+            b2BodyId idA = b2Shape_GetBody(shapeIdA, b2BodyId.calloc(arena));
+            b2BodyId idB = b2Shape_GetBody(shapeIdB, b2BodyId.calloc(arena));
+
+            for (b2BodyId id : contacts) {
+                if (B2_ID_EQUALS(idA, id) && B2_ID_EQUALS(idB, bodyId)) {
+                    if (manifold.normal().y() < 0.0f) {
+                        manifold.pointCount(0);
+                    }
+                    break;
+                } else if (B2_ID_EQUALS(idA, bodyId) && B2_ID_EQUALS(idB, id)) {
+                    if (manifold.normal().y() > 0.0f) {
+                        manifold.pointCount(0);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    private final b2PreContinuousFcnI PreContinuousStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Pos point, b2Vec2 normal, long context) -> {
+        return preContinuous(shapeIdA, shapeIdB, point, normal);
+    };
+
+    protected boolean preContinuous( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Pos point, b2Vec2 normal ) {
+        try (ArenaAlloc arena = allocPush()) {
+            b2BodyId idA = b2Shape_GetBody(shapeIdA, b2BodyId.calloc(arena));
+            b2BodyId idB = b2Shape_GetBody(shapeIdB, b2BodyId.calloc(arena));
+
+            for (b2BodyId id : contacts) {
+                if (B2_ID_EQUALS(idA, id) && B2_ID_EQUALS(idB, bodyId)) {
+                    if (normal.y() < 0.0f) {
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                if (B2_ID_EQUALS(idA, bodyId) && B2_ID_EQUALS(idB, id)) {
+                    if (normal.y() > 0.0f) {
+                        return false;
+                    }
+
+                    return true;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    private final SpaceListener spaceListener = new SpaceListener() {
+        @Override
+        public void spaceAttached(PhysicsSpace physicsSpace) {
+            worldId = physicsSpace.getWorldId();
+            try (ArenaAlloc arena = allocPush()) {
+                b2BodyDef groundDef = b2DefaultBodyDef(b2BodyDef.calloc(arena));
+                groundId = b2CreateBody(worldId, groundDef, b2BodyId.malloc());
+
+                b2MoverJointDef moverDef = b2DefaultMoverJointDef(b2MoverJointDef.calloc(arena));
+                moverDef.linearVelocity(Converter.toB2Vec2(velocity, b2Vec2.calloc(arena)));
+                moverDef.maxVelocityForce(b2Vec2.calloc(arena).set(maxGroundForce, 0.0f));
+                moverDef.base().bodyIdA(groundId);
+                moverDef.base().bodyIdB(bodyId);
+                moverDef.base().collideConnected(true);
+                moverJointId = b2CreateMoverJoint(worldId, moverDef, b2JointId.malloc());
+            }
+            b2World_SetPreSolveCallback( worldId, PreSolveStatic, PreContinuousStatic, NULL );
+            physicsSpace.addDrawable(CharacterBody2D.this);
+        }
+
+        @Override
+        public void spaceDetached(PhysicsSpace physicsSpace) {
+            physicsSpace.removeDrawable(CharacterBody2D.this);
+            nb2World_SetPreSolveCallback( worldId.address(), NULL, NULL, NULL );
+            worldId = null;
+        }
+    };
 
     public boolean jump() {
         if (onGround == false || walkable == false) {
@@ -193,12 +316,12 @@ public class CharacterBody2D extends PhysicsBody2D {
         }
 
         try (ArenaAlloc arena = allocPush()) {
-            float mass = b2Body_GetMass(moverId);
-            float vy = b2Body_GetLinearVelocity(moverId, b2Vec2.calloc(arena)).y();
+            float mass = b2Body_GetMass(bodyId);
+            float vy = b2Body_GetLinearVelocity(bodyId, b2Vec2.calloc(arena)).y();
 
             // Remove the pogo constraint velocity but add the surface velocity.
             float dv = b2MaxFloat(0.0f, jumpSpeed - vy) + surfaceVelocity;
-            b2Body_ApplyLinearImpulseToCenter(moverId, b2Vec2.calloc(arena).set(0.0f, mass * dv), true);
+            b2Body_ApplyLinearImpulseToCenter(bodyId, b2Vec2.calloc(arena).set(0.0f, mass * dv), true);
 
             // This removes the pogo step down on the next update.
             onGround = false;
@@ -217,8 +340,8 @@ public class CharacterBody2D extends PhysicsBody2D {
             float rayLength = onGround ? pogoRestLength + stepDownLength : pogoRestLength;
             b2Vec2 translation = b2Vec2.calloc(arena).set(0.0f, -rayLength);
 
-            b2Pos position = b2Body_GetPosition(moverId, b2Pos.calloc(arena));
-            b2Pos origin = MathUtils.sum(position, shape.center1(), b2Pos.calloc(arena));
+            b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));
+            b2Pos origin = MathUtils.sum(position, center1Fcn.center1(arena), b2Pos.calloc(arena));
 
             b2QueryFilter queryFilter = b2QueryFilter.calloc(arena)
                     .categoryBits(filter.categoryBits())
@@ -254,7 +377,7 @@ public class CharacterBody2D extends PhysicsBody2D {
                 walkable = false;
             }
 
-            velocity = Converter.toVector2f(b2Body_GetLinearVelocity(moverId, b2Vec2.calloc(arena)));
+            velocity = Converter.toVector2f(b2Body_GetLinearVelocity(bodyId, b2Vec2.calloc(arena)));
 
             // Friction
             if (onGround) {
@@ -313,15 +436,15 @@ public class CharacterBody2D extends PhysicsBody2D {
             }
 
             if (castResult.hit == true) {
-                float moverMass = b2Body_GetMass(moverId);
+                float moverMass = b2Body_GetMass(bodyId);
                 float moverWeight = gravityScale * b2Length(b2World_GetGravity(worldId, b2Vec2.calloc(arena))) * moverMass;
 
                 b2PogoJointDef pogoDef = b2DefaultPogoJointDef(b2PogoJointDef.calloc(arena));
                 pogoDef.base().localFrameA().p(b2Body_GetLocalPoint(castResult.bodyId, Converter.toB2Pos(castResult.point, b2Pos.calloc(arena)), b2Vec2.calloc(arena)));
-                pogoDef.base().localFrameB().p(shape.center1());
+                pogoDef.base().localFrameB().p(center1Fcn.center1(arena));
                 pogoDef.normal(Converter.toB2Vec2(castResult.normal, b2Vec2.calloc(arena)));
                 pogoDef.base().bodyIdA(castResult.bodyId);
-                pogoDef.base().bodyIdB(moverId);
+                pogoDef.base().bodyIdB(bodyId);
                 pogoDef.base().collideConnected(true);
                 pogoDef.restLength(pogoRestLength);
                 pogoDef.hertz(pogoHertz);
@@ -353,13 +476,331 @@ public class CharacterBody2D extends PhysicsBody2D {
     @Override
     public void close() {
         super.close();
-        if (moverId != null && B2_IS_NON_NULL(moverId)) {
-            b2DestroyBody(moverId);
+        if (groundId != null && B2_IS_NON_NULL(groundId)) {
+            b2DestroyBody(groundId);
+            groundId.close();
+            groundId = null;
         }
-        moverId = null;
-
         // Joints are implicitly destroyed.
-        moverJointId = null;
-        pogoJointId = null;
+        if (moverJointId != null) {
+            b2DestroyJoint(moverJointId);
+            moverJointId.close();
+            moverJointId = null;
+        }
+        if (pogoJointId != null) {
+            b2DestroyJoint(pogoJointId);
+            pogoJointId.close();            
+            pogoJointId = null;
+        }
+    }
+
+    /**
+     * The ground probe is a point, a circle, or a segment, all carried by the proxy.
+     * 
+     * @param draw BatchSnapshot
+     * @param origin Vector3f
+     * @param translation Vector3f
+     * @param fraction float
+     * @param hit boolean
+     */
+    private void drawPogo(BatchSnapshot draw, Vector3f origin, Vector3f translation, float fraction, boolean hit) {
+        int color = hit ? b2_colorPlum : b2_colorGray;
+        Vector3f delta = translation.mult(fraction);
+
+        draw.drawLine(origin.x, origin.y, origin.x + delta.x, origin.y + delta.y, b2_colorGray);
+        draw.drawPoint(origin.x + delta.x, origin.y + delta.y, 10.0f, color);
+    }
+
+    @Override
+    public void rawDrawing(PhysicsDebugSceneProcessor processor, BatchSnapshot snapshot) {
+//        drawPogo( snapshot, pogoOrigin, pogoTranslation, pogoFraction, pogoHit );
+//        try (ArenaAlloc arena = allocPush()) {
+//            b2Pos position = b2Body_GetPosition( bodyId, b2Pos.calloc(arena) );
+//            
+//            int color = onGround ? b2_colorOrange : b2_colorAquamarine;
+//            snapshot.drawLine(position.x().floatValue(), position.y().floatValue(), position.x().floatValue() + velocity.x, position.y().floatValue() + velocity.y, color);
+//        }
+    }
+
+    public void setJumpSpeed(float jumpSpeed) {
+        this.jumpSpeed = jumpSpeed;
+    }
+
+    public void setMaxSpeed(float maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public void setMinSpeed(float minSpeed) {
+        this.minSpeed = minSpeed;
+    }
+
+    public void setStopSpeed(float stopSpeed) {
+        this.stopSpeed = stopSpeed;
+    }
+
+    public void setAccelerate(float accelerate) {
+        this.accelerate = accelerate;
+    }
+
+    public void setAirSteer(float airSteer) {
+        this.airSteer = airSteer;
+    }
+
+    public void setFriction(float friction) {
+        this.friction = friction;
+    }
+
+    @Override
+    public void setGravityScale(float gravityScale) {
+        super.setGravityScale(gravityScale);
+        this.gravityScale = gravityScale;
+    }
+
+    public void setMaxGroundForce(float maxGroundForce) {
+        this.maxGroundForce = maxGroundForce;
+    }
+
+    public void setMaxAirForce(float maxAirForce) {
+        this.maxAirForce = maxAirForce;
+    }
+
+    public void setPogoRestLength(float pogoRestLength) {
+        this.pogoRestLength = pogoRestLength;
+    }
+
+    public void setPogoHertz(float pogoHertz) {
+        this.pogoHertz = pogoHertz;
+    }
+
+    public void setPogoDampingRatio(float pogoDampingRatio) {
+        this.pogoDampingRatio = pogoDampingRatio;
+    }
+
+    public void setPogoCompressionScale(float pogoCompressionScale) {
+        this.pogoCompressionScale = pogoCompressionScale;
+    }
+
+    public void setPogoTensionScale(float pogoTensionScale) {
+        this.pogoTensionScale = pogoTensionScale;
+    }
+
+    public void setMinGroundNormalY(float minGroundNormalY) {
+        this.minGroundNormalY = minGroundNormalY;
+    }
+
+    public void setCenter1Fcn(Center1Fcn center1Fcn) {
+        this.center1Fcn = center1Fcn;
+    }
+
+    public void setFilter(b2Filter filter) {
+        this.filter = filter;
+    }
+
+    public void setWorldId(b2WorldId worldId) {
+        this.worldId = worldId;
+    }
+
+    public void setGroundId(b2BodyId groundId) {
+        this.groundId = groundId;
+    }
+
+    public void setMoverJointId(b2JointId moverJointId) {
+        this.moverJointId = moverJointId;
+    }
+
+    public void setPogoJointId(b2JointId pogoJointId) {
+        this.pogoJointId = pogoJointId;
+    }
+
+    public void setCastResult(DynamicMoverCastResult castResult) {
+        this.castResult = castResult;
+    }
+
+    public void setVelocity(Vector2f velocity) {
+        this.velocity = velocity;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
+    public void setWalkable(boolean walkable) {
+        this.walkable = walkable;
+    }
+
+    public void setJumping(boolean jumping) {
+        this.jumping = jumping;
+    }
+
+    public void setJumpTicks(int jumpTicks) {
+        this.jumpTicks = jumpTicks;
+    }
+
+    public void setPogoImpulse(float pogoImpulse) {
+        this.pogoImpulse = pogoImpulse;
+    }
+
+    public void setPogoVelocity(float pogoVelocity) {
+        this.pogoVelocity = pogoVelocity;
+    }
+
+    public void setPogoLength(float pogoLength) {
+        this.pogoLength = pogoLength;
+    }
+
+    public void setPogoOrigin(Vector3f pogoOrigin) {
+        this.pogoOrigin = pogoOrigin;
+    }
+
+    public void setPogoTranslation(Vector3f pogoTranslation) {
+        this.pogoTranslation = pogoTranslation;
+    }
+
+    public void setPogoFraction(float pogoFraction) {
+        this.pogoFraction = pogoFraction;
+    }
+
+    public void setPogoHit(boolean pogoHit) {
+        this.pogoHit = pogoHit;
+    }
+
+    public float getJumpSpeed() {
+        return jumpSpeed;
+    }
+
+    public float getMaxSpeed() {
+        return maxSpeed;
+    }
+
+    public float getMinSpeed() {
+        return minSpeed;
+    }
+
+    public float getStopSpeed() {
+        return stopSpeed;
+    }
+
+    public float getAccelerate() {
+        return accelerate;
+    }
+
+    public float getAirSteer() {
+        return airSteer;
+    }
+
+    public float getFriction() {
+        return friction;
+    }
+
+    public float getGravityScale() {
+        return gravityScale;
+    }
+
+    public float getMaxGroundForce() {
+        return maxGroundForce;
+    }
+
+    public float getMaxAirForce() {
+        return maxAirForce;
+    }
+
+    public float getPogoRestLength() {
+        return pogoRestLength;
+    }
+
+    public float getPogoHertz() {
+        return pogoHertz;
+    }
+
+    public float getPogoDampingRatio() {
+        return pogoDampingRatio;
+    }
+
+    public float getPogoCompressionScale() {
+        return pogoCompressionScale;
+    }
+
+    public float getPogoTensionScale() {
+        return pogoTensionScale;
+    }
+
+    public float getMinGroundNormalY() {
+        return minGroundNormalY;
+    }
+
+    public Center1Fcn getCenter1Fcn() {
+        return center1Fcn;
+    }
+
+    public b2Filter getFilter() {
+        return filter;
+    }
+
+    public b2WorldId getWorldId() {
+        return worldId;
+    }
+
+    public b2BodyId getGroundId() {
+        return groundId;
+    }
+
+    public b2JointId getMoverJointId() {
+        return moverJointId;
+    }
+
+    public b2JointId getPogoJointId() {
+        return pogoJointId;
+    }
+
+    public DynamicMoverCastResult getCastResult() {
+        return castResult;
+    }
+
+    public Vector2f getVelocity() {
+        return velocity;
+    }
+
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public boolean isWalkable() {
+        return walkable;
+    }
+
+    public boolean isJumping() {
+        return jumping;
+    }
+
+    public int getJumpTicks() {
+        return jumpTicks;
+    }
+
+    public float getPogoImpulse() {
+        return pogoImpulse;
+    }
+
+    public float getPogoVelocity() {
+        return pogoVelocity;
+    }
+
+    public float getPogoLength() {
+        return pogoLength;
+    }
+
+    public Vector3f getPogoOrigin() {
+        return pogoOrigin;
+    }
+
+    public Vector3f getPogoTranslation() {
+        return pogoTranslation;
+    }
+
+    public float getPogoFraction() {
+        return pogoFraction;
+    }
+
+    public boolean isPogoHit() {
+        return pogoHit;
     }
 }

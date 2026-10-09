@@ -91,11 +91,11 @@ public class BatchSnapshot {
     }
 
     public void drawLineTransform(float x0, float y0, float x1, float y1, int color) {
-        batchTransform.addLine(x0, y0, x1, y1, color);
+//        batchTransform.addLine(x0, y0, x1, y1, color);
     }
 
     public void drawLineBounds(float x0, float y0, float x1, float y1, int color) {
-        batchBounds.addLine(x0, y0, x1, y1, color);
+//        batchBounds.addLine(x0, y0, x1, y1, color);
     }
 
     public void flushDraw(RenderManager renderManager) {

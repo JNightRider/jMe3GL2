@@ -31,15 +31,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.control.mover;
 
 import org.box2d.jni.b2Vec2;
-import org.box2d.jni.system.Struct;
+import org.box2d.jni.system.ArenaAlloc;
 
 /**
  *
  * @author wil
  */
-public class ShapeMover<SHAPE extends Struct<SHAPE>> {
+@FunctionalInterface
+public interface Center1Fcn {
     
-    public b2Vec2 center1() {
-        return null;
-    }
+    b2Vec2 center1(ArenaAlloc arena);
 }

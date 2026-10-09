@@ -34,8 +34,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 
 import org.je3gl.box2d.PhysicsSpace;
-import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
-import org.je3gl.box2d.debug.batch.BatchSnapshot;
 
 /**
  * An Interface in charge of managing the control of the physical bodies used by
@@ -55,12 +53,6 @@ public interface PhysicsControl extends Control {
      * @return object
      */
     <T extends Spatial> T getJmeObject();
-
-    /**
-     * 
-     * @param physicsProcessor
-     */
-    default void flushProjectedDraw(PhysicsDebugSceneProcessor physicsProcessor) { }
 
     /**
      * Establishes the physical space to which this physical control belongs.
