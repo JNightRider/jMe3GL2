@@ -34,30 +34,31 @@ package org.je3gl.util;
  * Class responsible for managing the value of an argument (method).
  * 
  * @author wil
- * @version 1.0.1
+ * @version 1.1.0
  * @since 3.1.0
  * 
  * @param <T> type
  */
 public class Arg<T> {
-    
+
     /**
      * Build a list of {@code Arg} based on objects as values.
-     * 
+     *
      * @param args values
      * @return {@code Arg[]}
      */
     @SuppressWarnings("unchecked")
-    public static Arg[] buildArgs(Object ...args) {
+    public static Arg[] buildArgs(Object... args) {
         Arg[] list = new Arg[args.length];
         for (int i = 0; i < args.length; i++) {
             list[i] = new Arg(args[i]);
         }
         return list;
     }
-    
+
     /** The value. */
     private final T source;
+
     /**
      * Constructor (privaye)
      * @param source  value
@@ -65,31 +66,58 @@ public class Arg<T> {
     private Arg(T source) {
         this.source = source;
     }
-    
+
     /**
-     * Returns the value as: float 
+     * Returns the value as: float
+     *
      * @return float
      */
     public float getFloat() {
         if (source instanceof Number) {
             return ((Number) source).floatValue();
         }
-        throw new UnsupportedOperationException("<float>");
+        throw new UnsupportedOperationException("typeof " + source);
     }
 
     /**
-     * Returns the value as: double 
+     * Returns the value as: double
+     *
      * @return double
      */
     public double getDouble() {
         if (source instanceof Number) {
             return ((Number) source).doubleValue();
         }
-        throw new UnsupportedOperationException("<float>");
+        throw new UnsupportedOperationException("typeof " + source);
+    }
+
+    /**
+     * Returns the value as: int
+     *
+     * @return int
+     */
+    public int getInt() {
+        if (source instanceof Number) {
+            return ((Number) source).intValue();
+        }
+        throw new UnsupportedOperationException("typeof " + source);
+    }
+
+    /**
+     * Returns the value as: Number
+     *
+     * @return Number
+     */
+    public Number getNumber() {
+        if (source instanceof Number) {
+            return ((Number) source);
+        }
+        throw new UnsupportedOperationException("typeof " + source);
     }
 
     /**
      * Returns the value as: native (Object)
+     *
      * @return native|Object
      */
     public T getSource() {
