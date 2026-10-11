@@ -35,15 +35,16 @@ import com.jme3.math.Vector3f;
 
 /**
  * Class <code>Circle2D</code> in charge of generating a circle shape.
+ *
  * @author wil
  * @version 1.1.0
  * @since 2.5.0
  */
-public class Circle2D extends AbstractShape2D {
-    
+public class Circle2D extends AbstractPolygon2D {
+
     /** 2 * PI constant */
     public static final float TWO_PI = 2.0F * FastMath.PI;
-    
+
     /** Default counter to generate a circle. */
     public static final int COUNT = 54;
 
@@ -57,25 +58,64 @@ public class Circle2D extends AbstractShape2D {
     /**
      * Class constructor <code>Circle2D</code> where the values will be set to
      * generate a circular shape.
-     * 
+     *
+     * @param mode mode of this mesh {@link Mode2D}
+     * @param count number of polygons
+     */
+    public Circle2D(Mode2D mode, int count) {
+        super(mode, count);
+    }
+
+    /**
+     * Class constructor <code>Circle2D</code> where the values will be set to
+     * generate a circular shape.
+     *
      * @param count number of polygons
      * @param radius radius of the circle
      * @param theta theta value
      */
     public Circle2D(int count, float radius, float theta) {
-        Circle2D.this.updateGeometry(count, radius, theta);
+        this(Mode2D.OUTLINE, count, radius, theta);
+    }
+
+    /**
+     * Class constructor <code>Circle2D</code> where the values will be set to
+     * generate a circular shape.
+     *
+     * @param mode mode of this mesh {@link Mode2D}
+     * @param count number of polygons
+     * @param radius radius of the circle
+     * @param theta theta value
+     */
+    public Circle2D(Mode2D mode, int count, float radius, float theta) {
+        this(mode, count);
+        Circle2D.this.updatePoints(count, radius, theta);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
+     * @param count int
+     * @param radius float
+     * @param theta float
+     *
+     * @deprecated Use {@link #updatePoints(int, float, float) }
+     */
+    @Deprecated
+    public void updateGeometry(int count, float radius, float theta) {
+        updatePoints(count, radius, theta);
     }
 
     /**
      * Method in charge of updating the geometry of this circular mesh.
-     * 
+     *
      * @param count number of vertices/polygons
      * @param radius radius of the circle
      * @param theta a theta for the circle
      */
-    public void updateGeometry(int count, float radius, float theta) {
+    public void updatePoints(int count, float radius, float theta) {
         // Calculate the angular increment
-        final float pin = TWO_PI / (float)count;
+        final float pin = TWO_PI / (float) count;
         // Make sure the resulting output is an even number of vertices
         final Vector3f[] myVertices = new Vector3f[count];
 
@@ -99,7 +139,6 @@ public class Circle2D extends AbstractShape2D {
             x = c * x - s * y;
             y = s * t + c * y;
         }
-        setMode(Mode.LineLoop);
         updatePoints(myVertices);
     }
 }

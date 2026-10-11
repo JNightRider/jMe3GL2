@@ -86,7 +86,7 @@ public abstract class AbstractPolygon2D extends Mesh {
         if (mode2D == Mode2D.FILLED) {
             setBuffer(VertexBuffer.Type.Index, 3, BufferUtils.createShortBuffer((count - 2) * 3));
         } else {
-            setBuffer(VertexBuffer.Type.Index, 3, BufferUtils.createShortBuffer(count * 2));
+            setBuffer(VertexBuffer.Type.Index, 2, BufferUtils.createShortBuffer(count * 2));
         }
         setMode(mode2D.mode);
         this.mode2D = mode2D;
@@ -126,7 +126,7 @@ public abstract class AbstractPolygon2D extends Mesh {
             for (int i = 0; i < vertices.length; i++) {
                 int next = (i + 1) % vertices.length;
                 index.put((short) i)
-                      .put((short) next);
+                     .put((short) next);
             }
         }
         index.flip();
