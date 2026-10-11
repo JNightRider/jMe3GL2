@@ -46,14 +46,14 @@ public class Capsule2D extends AbstractPolygon2D {
     public static final int COUNT = 12;
 
     /**
-     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * Class constructor <code>Capsule2D</code> where the shape of a capsule is
      * generated.
      */
     public Capsule2D() {
     }
 
      /**
-     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * Class constructor <code>Capsule2D</code> where the shape of a capsule is
      * generated.
      *
      * @param mode mode of this mesh {@link Mode2D}
@@ -66,7 +66,7 @@ public class Capsule2D extends AbstractPolygon2D {
     }
 
      /**
-     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * Class constructor <code>Capsule2D</code> where the shape of a capsule is
      * generated.
      *
      * @param count number of 'pins' for the circular borders, the higher the
@@ -80,7 +80,7 @@ public class Capsule2D extends AbstractPolygon2D {
     }
 
     /**
-     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * Class constructor <code>Capsule2D</code> where the shape of a capsule is
      * generated.
      *
      * @param mode mode of this mesh {@link Mode2D}

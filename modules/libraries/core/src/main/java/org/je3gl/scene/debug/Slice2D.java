@@ -46,14 +46,14 @@ public class Slice2D extends AbstractPolygon2D {
     public static final int COUNT = 24;
 
     /**
-     * Class constructor <code>Circle2D</code> where the values will be set to
+     * Class constructor <code>Slice2D</code> where the values will be set to
      * generate a slice form.
      */
     public Slice2D() {
     }
 
     /**
-     * Class constructor <code>Circle2D</code> where the values will be set to
+     * Class constructor <code>Slice2D</code> where the values will be set to
      * generate a slice form.
      *
      * @param mode mode of this mesh {@link Mode2D}
@@ -64,7 +64,7 @@ public class Slice2D extends AbstractPolygon2D {
     }
 
     /**
-     * Class constructor <code>Circle2D</code> where the values will be set to
+     * Class constructor <code>Slice2D</code> where the values will be set to
      * generate a slice form.
      *
      * @param count number of polygons
@@ -76,7 +76,7 @@ public class Slice2D extends AbstractPolygon2D {
     }
 
     /**
-     * Class constructor <code>Circle2D</code> where the values will be set to
+     * Class constructor <code>Slice2D</code> where the values will be set to
      * generate a slice form.
      *
      * @param mode mode of this mesh {@link Mode2D}
