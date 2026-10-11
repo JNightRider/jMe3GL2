@@ -27,7 +27,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.scene.debug;
 
 import com.jme3.math.FastMath;
@@ -35,12 +35,13 @@ import com.jme3.math.Vector3f;
 
 /**
  * Class <code>Capsule2D</code> in charge of generating a capsule shape.
+ *
  * @author wil
  * @version 1.1.0
  * @since 2.5.0
  */
-public class Capsule2D extends AbstractShape2D {
-    
+public class Capsule2D extends AbstractPolygon2D {
+
     /** Default counter for capsule edges / half circles. */
     public static final int COUNT = 12;
 
@@ -51,10 +52,23 @@ public class Capsule2D extends AbstractShape2D {
     public Capsule2D() {
     }
 
-    /**
+     /**
      * Class constructor <code>GLCapsule</code> where the shape of a capsule is
      * generated.
-     * 
+     *
+     * @param mode mode of this mesh {@link Mode2D}
+     * @param count number of 'pins' for the circular borders, the higher the
+     *              number the better the semicircle. Be careful as the higher the number the
+     *               more vertices are used
+     */
+    public Capsule2D(Mode2D mode, int count) {
+        super(mode, 4 + 2 * count);
+    }
+
+     /**
+     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * generated.
+     *
      * @param count number of 'pins' for the circular borders, the higher the
      *              number the better the semicircle. Be careful as the higher the number the
      *               more vertices are used
@@ -62,18 +76,49 @@ public class Capsule2D extends AbstractShape2D {
      * @param height height of the form
      */
     public Capsule2D(int count, float width, float height) {
-        Capsule2D.this.updateGeometry(count, width, height);
+        this(Mode2D.OUTLINE, count, width, height);
+    }
+
+    /**
+     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * generated.
+     *
+     * @param mode mode of this mesh {@link Mode2D}
+     * @param count number of 'pins' for the circular borders, the higher the
+     *              number the better the semicircle. Be careful as the higher the number the
+     *               more vertices are used
+     * @param width width of the form
+     * @param height height of the form
+     */
+    public Capsule2D(Mode2D mode, int count, float width, float height) {
+        this(mode, count);
+        Capsule2D.this.updatePoints(count, width, height);
     }
 
     /**
      * Method in charge of updating the geometries of this mesh.
+     *
+     * @param count int
+     * @param width float
+     * @param height float
+     *
+     * @deprecated Use {@link #updatePoints(int, float, float) }
+     */
+    @Deprecated
+    public void updateGeometry(int count, float width, float height) {
+        updatePoints(count, width, height);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
      * @param count number of 'pins' for the circular borders, the higher the
      *              number the better the semicircle. Be careful as the higher the number the
      *              more vertices are used
      * @param width width of the form
      * @param height height of the form
      */
-    public void updateGeometry(int count, float width, float height) {
+    public void updatePoints(int count, float width, float height) {
         // Calculate the angular increment
         final float pin = FastMath.PI / (count + 1);
         // 4 straight verts plus 2 * half-round verts
@@ -154,8 +199,7 @@ public class Capsule2D extends AbstractShape2D {
             myVertices[n++] = new Vector3f(-ox, -radius, deep);
             myVertices[n++] = new Vector3f(ox, -radius, deep);
         }
-        
-        setMode(Mode.Lines);
+
         updatePoints(myVertices);
     }
 }
