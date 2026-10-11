@@ -40,7 +40,7 @@ import com.jme3.math.Vector3f;
  * @version 1.0.5
  * @since 2.5.0
  */
-public class Slice2D extends AbstractPolygon2D {
+public class Slice2D extends AbstractShape2D {
 
     /** Default counter to generate a slice. */
     public static final int COUNT = 24;

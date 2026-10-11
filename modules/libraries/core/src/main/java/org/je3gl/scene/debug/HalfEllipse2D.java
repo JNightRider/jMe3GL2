@@ -41,7 +41,7 @@ import com.jme3.math.Vector3f;
  * @version 1.1.0
  * @since 2.5.0
  */
-public class HalfEllipse2D extends AbstractPolygon2D {
+public class HalfEllipse2D extends AbstractShape2D {
 
     /** Minimum amount of polygons for a decent ellipse. */
     public static final int COUNT = 15;

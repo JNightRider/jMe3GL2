@@ -40,7 +40,7 @@ import com.jme3.math.Vector3f;
  * @version 1.1.0
  * @since 2.5.0
  */
-public class Capsule2D extends AbstractPolygon2D {
+public class Capsule2D extends AbstractShape2D {
 
     /** Default counter for capsule edges / half circles. */
     public static final int COUNT = 12;

@@ -40,7 +40,7 @@ import com.jme3.math.Vector3f;
  * @version 1.1.0
  * @since 2.5.0
  */
-public class Circle2D extends AbstractPolygon2D {
+public class Circle2D extends AbstractShape2D {
 
     /** 2 * PI constant */
     public static final float TWO_PI = 2.0F * FastMath.PI;
