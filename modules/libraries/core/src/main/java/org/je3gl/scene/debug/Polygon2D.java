@@ -56,7 +56,7 @@ public class Polygon2D extends AbstractShape2D {
      * @param vertices vertices
      */
     public Polygon2D(boolean fill, Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices, fill);
+//        Polygon2D.this.updateGeometry(vertices, fill);
     }
 
     /* (non-Javadoc)
@@ -69,6 +69,6 @@ public class Polygon2D extends AbstractShape2D {
     /* (non-Javadoc)
      */
     public void updateGeometry(boolean fill, Vector3f ...vertices) {
-        super.updateGeometry(vertices, fill);
+//        super.updateGeometry(vertices, fill);
     }
 }

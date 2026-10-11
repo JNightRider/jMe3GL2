@@ -34,12 +34,13 @@ import com.jme3.export.*;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
-import com.jme3.util.BufferUtils;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.Objects;
+
+import org.je3gl.util.ObjectPool;
+import org.je3gl.util.pool.BufferPoolHandler;
 
 /**
  * Abstract class <code>AbstractShape2D</code> in charge of implementing the basis
@@ -48,25 +49,35 @@ import java.util.Objects;
  * <b>Lines</b> are used to generate the shapes.
  * 
  * @author wil
- * @version 1.2.0
+ * @version 2.0.0
  * @since 2.5.0
  */
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
+
+    /**
+     * Arrangement of the mesh vertices.
+     */
+    protected Vector3f[] vertices = new Vector3f[0];
+
+    protected Boolean fill = null;
     
-    /**Arrangement of the mesh vertices. */
-    protected Vector3f[] vertices;
-        
+    protected final ObjectPool<FloatBuffer> floatsPool = new ObjectPool<>(new BufferPoolHandler<>(BufferPoolHandler.FLOAT));
+    protected final ObjectPool<ShortBuffer> shortsPool = new ObjectPool<>(new BufferPoolHandler<>(BufferPoolHandler.SHORT));
+
     /**
      * Default internal constructor.
      */
     protected AbstractShape2D() {
         AbstractShape2D.this.setMode(Mode.LineLoop);
+        setBuffer(VertexBuffer.Type.Position, 3, floatsPool.takePush(3));
+        setBuffer(VertexBuffer.Type.Index, 1, shortsPool.takePush(3));
         setDynamic();
     }
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.scene.Mesh#deepClone() 
+     *
+     * @see com.jme3.scene.Mesh#deepClone()
      * @return this
      */
     @Override
@@ -81,7 +92,8 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.scene.Mesh#clone() 
+     *
+     * @see com.jme3.scene.Mesh#clone()
      * @return this
      */
     @Override
@@ -90,15 +102,16 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
         shape.vertices = vertices.clone();
         return shape;
     }
-        
+
     /**
      * Method responsible for updating the geometry of this mesh to generate the 
      * new coordinates of the <code>lines</code>.
      * 
      * @param vertices new arrangement of the vertices
      */
+    @Deprecated
     protected void updateGeometry(final Vector3f[] vertices) {
-        updateGeometry(vertices, false);
+        updatePoints(vertices);
     }
     
     /**
@@ -106,76 +119,81 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      * new coordinates of the <code>lines</code>.
      * 
      * @param vertices new arrangement of the vertices
-     * @param fill full mesh
+     * @return 
      */
-    protected void updateGeometry(final Vector3f[] vertices, boolean fill) {
+    protected AbstractShape2D updatePoints(Vector3f... vertices) {
+        // ----- Check vertices ----
         if (vertices == null) {
-            throw new NullPointerException("vertices is null.");
+            throw new NullPointerException("The vertices cannot be null.");
         }
-        if (Objects.deepEquals(this.vertices,  vertices)) {
-            return;
-        }
-        this.vertices = vertices;
-
-        // ----- Position buffer -----
-        FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
-        clearBuffer(VertexBuffer.Type.Position);
-        if (pb == null || pb.capacity() < (vertices.length * 3)) {
-            if (pb != null) {
-                BufferUtils.destroyDirectBuffer(pb);
-            }
-            pb = BufferUtils.createFloatBuffer(vertices.length * 3);
-        }
-        pb.rewind();
-        for (Vector3f v : vertices) {
-            pb.put(v.x).put(v.y).put(v.z);
-        }
-        pb.flip();
-        setBuffer(VertexBuffer.Type.Position, 3, pb);
-
-        fill(fill);
-        updateCounts();
-        updateBound();
-    }
-    
-    public void fill(boolean isFill) {
+        
         // ----- Index buffer -----
-        ShortBuffer index = getShortBuffer(VertexBuffer.Type.Index);
-        int len = isFill ? (vertices.length - 2) * 3 : vertices.length;
-        if (index == null || (index.capacity() < len)) {
-            if (index != null) {
-                BufferUtils.destroyDirectBuffer(index);
-            }
-            index = BufferUtils.createShortBuffer(len);
+        VertexBuffer buffPosition = getBuffer(VertexBuffer.Type.Position);
+        FloatBuffer position = (FloatBuffer) buffPosition.getData();
+
+        int newLimit = vertices.length * 3;
+        if (position.limit() != newLimit) {
+            floatsPool.takePop(position);
+            position = floatsPool.takePush(newLimit);
         }
-        index.clear();
-        clearBuffer(VertexBuffer.Type.Index);
-        if (isFill) {            
+
+        position.rewind();
+        for (Vector3f point : vertices) {
+            position.put(point.x).put(point.y).put(point.z);
+        }
+        buffPosition.updateData(position);
+        updateBound();
+        fill(false);
+        this.vertices = vertices;
+        return this;
+    }
+
+    public boolean fill(boolean isFill) {
+        // ------ Check fill ------
+        if (fill != null && fill == isFill) {
+            return false;
+        }
+
+        // ----- Index buffer -----
+        VertexBuffer idxBuff = getBuffer(VertexBuffer.Type.Index);
+        ShortBuffer index = (ShortBuffer) idxBuff.getData();
+
+        int newLimit = isFill ? (vertices.length - 2) * 3 : vertices.length;
+        if (index.limit() != newLimit) {
+            shortsPool.takePop(index);
+            index = shortsPool.takePush(newLimit);
+        }
+
+        index.rewind();
+        if (isFill) {
             setMode(Mode.Triangles);
             for (short i = 1; i < vertices.length - 1; i++) {
-                index.put((short)0);
-                index.put(i);
-                index.put((short) (i + 1));
+                index.put((short) 0)
+                     .put(i)
+                     .put((short) (i + 1));
             }
             index.flip();
-            setBuffer(VertexBuffer.Type.Index, 3,
-                    index);
+            idxBuff.resetObject();
+            idxBuff.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.UnsignedShort, index);
         } else {
             setMode(Mode.LineLoop);
             for (short i = 0; i < vertices.length; i++) {
-                index.put((short)i);
+                index.put((short) i);
             }
             index.flip();
-            setBuffer(VertexBuffer.Type.Index, 1,
-                    index);
+            idxBuff.resetObject();
+            idxBuff.setupData(VertexBuffer.Usage.Dynamic, 1, VertexBuffer.Format.UnsignedShort, index);
         }
-        updateBound();
+        updateCounts();
+        this.fill = isFill;
+        return true;
     }
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
-     * 
+     *
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter)
+     *
      * @param im {@link com.jme3.export.JmeImporter}
      * @throws IOException throws
      */
@@ -183,15 +201,16 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     public void read(JmeImporter im) throws IOException {
         final InputCapsule in = im.getCapsule(this);
         super.read(im);
-        
+
         vertices = (Vector3f[]) 
                 in.readSavableArray("vertices", vertices);
     }
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
-     * 
+     *
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter)
+     *
      * @param ex {@link com.jme3.export.JmeExporter}
      * @throws IOException throws
      */
@@ -199,7 +218,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     public void write(JmeExporter ex) throws IOException {
         final OutputCapsule out = ex.getCapsule(this);
         super.write(ex);
-        
+
         out.write(vertices, "vertices", null);
     }
 }

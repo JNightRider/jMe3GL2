@@ -43,7 +43,14 @@ public class Slice2D extends AbstractShape2D {
 
     /** Default counter to generate a slice. */
     public static final int COUNT = 24;
-    
+
+    /**
+     * Class constructor <code>Circle2D</code> where the values will be set to
+     * generate a slice form.
+     */
+    public Slice2D() {
+    }
+
     /**
      * Class constructor <code>Circle2D</code> where the values will be set to
      * generate a slice form.
@@ -93,6 +100,6 @@ public class Slice2D extends AbstractShape2D {
 
         // End by adding the origin
         myVertices[count + 2] = new Vector3f();
-        this.updateGeometry(myVertices);
+        this.updatePoints(myVertices);
     }
 }

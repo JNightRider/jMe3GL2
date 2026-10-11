@@ -36,13 +36,20 @@ import com.jme3.math.Vector3f;
 /**
  * Class <code>Capsule2D</code> in charge of generating a capsule shape.
  * @author wil
- * @version 1.0.5 
+ * @version 1.1.0
  * @since 2.5.0
  */
 public class Capsule2D extends AbstractShape2D {
     
     /** Default counter for capsule edges / half circles. */
     public static final int COUNT = 12;
+
+    /**
+     * Class constructor <code>GLCapsule</code> where the shape of a capsule is
+     * generated.
+     */
+    public Capsule2D() {
+    }
 
     /**
      * Class constructor <code>GLCapsule</code> where the shape of a capsule is
@@ -149,6 +156,6 @@ public class Capsule2D extends AbstractShape2D {
         }
         
         setMode(Mode.Lines);
-        updateGeometry(myVertices);
+        updatePoints(myVertices);
     }
 }

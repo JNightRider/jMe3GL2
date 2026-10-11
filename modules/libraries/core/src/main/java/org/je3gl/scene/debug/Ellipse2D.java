@@ -36,13 +36,20 @@ import com.jme3.math.Vector3f;
 /**
  * Class <code>Ellipse2D</code> in charge of generating an ellipse shape.
  * @author wil
- * @version 1.0.5
+ * @version 1.1.0
  * @since 2.5.0
  */
 public class Ellipse2D extends AbstractShape2D {
     
     /** Minimum amount of polygons for a decent ellipse. */
     public static final int COUNT = 30;
+
+    /**
+     * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
+     * with a depth set for all/or the vertices.
+     */
+    public Ellipse2D() {
+    }
 
     /**
      * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
@@ -91,6 +98,6 @@ public class Ellipse2D extends AbstractShape2D {
             }
             myVertices[j++] = new Vector3f(x, y, deep);
         }
-        this.updateGeometry(myVertices);
+        this.updatePoints(myVertices);
     }
 }

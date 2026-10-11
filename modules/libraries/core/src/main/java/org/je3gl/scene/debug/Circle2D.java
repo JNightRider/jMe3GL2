@@ -36,7 +36,7 @@ import com.jme3.math.Vector3f;
 /**
  * Class <code>Circle2D</code> in charge of generating a circle shape.
  * @author wil
- * @version 1.0.5
+ * @version 1.1.0
  * @since 2.5.0
  */
 public class Circle2D extends AbstractShape2D {
@@ -46,7 +46,14 @@ public class Circle2D extends AbstractShape2D {
     
     /** Default counter to generate a circle. */
     public static final int COUNT = 54;
-    
+
+    /**
+     * Class constructor <code>Circle2D</code> where the values will be set to
+     * generate a circular shape.
+     */
+    public Circle2D() {
+    }
+
     /**
      * Class constructor <code>Circle2D</code> where the values will be set to
      * generate a circular shape.
@@ -93,6 +100,6 @@ public class Circle2D extends AbstractShape2D {
             y = s * t + c * y;
         }
         setMode(Mode.LineLoop);
-        updateGeometry(myVertices);
+        updatePoints(myVertices);
     }
 }

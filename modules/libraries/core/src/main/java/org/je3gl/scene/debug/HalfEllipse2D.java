@@ -36,13 +36,20 @@ import com.jme3.math.Vector3f;
 /**
  * Class <code>HalfEllipse2D</code> in charge of generating an half-elliptical shape.
  * @author wil
- * @version 1.0.5
+ * @version 1.1.0
  * @since 2.5.0
  */
 public class HalfEllipse2D extends AbstractShape2D {
     
     /** Minimum amount of polygons for a decent ellipse. */
     public static final int COUNT = 15;
+
+    /**
+     * Class constructor <code>HalfEllipse</code> to generate a '2D'
+     * half-ellipse shape with a depth set for all/or the vertices.
+     */
+    public HalfEllipse2D() {
+    }
 
     /**
      * Class constructor <code>HalfEllipse</code> to generate a '2D' half-ellipse
@@ -90,6 +97,6 @@ public class HalfEllipse2D extends AbstractShape2D {
             final float y = b * FastMath.sin(t);
             myVertices[i] = new Vector3f(x, y, deep);
         }
-        this.updateGeometry(myVertices);
+        this.updatePoints(myVertices);
     }
 }
