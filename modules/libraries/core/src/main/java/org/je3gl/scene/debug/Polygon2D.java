@@ -27,48 +27,68 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.scene.debug;
 
 import com.jme3.math.Vector3f;
 
 /**
  * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
  * @version 1.0.5
  * @since 2.5.0
  */
-public class Polygon2D extends AbstractShape2D {
+public class Polygon2D extends AbstractPolygon2D {
 
     /**
      * Class constructor <code>Polygon2D</code> where a polygonal shape is
      * initialized.
-     * @param vertices vertices
      */
-    public Polygon2D(Vector3f ...vertices) {
-        this(false, vertices);
+    public Polygon2D() {
     }
 
     /**
      * Class constructor <code>Polygon2D</code> where a polygonal shape is
      * initialized.
-     * @param fill full mesh
-     * @param vertices vertices
+     *
+     * @param mode mode of this mesh {@link Mode2D}
+     * @param count Number of vertices
      */
-    public Polygon2D(boolean fill, Vector3f ...vertices) {
-//        Polygon2D.this.updateGeometry(vertices, fill);
+    public Polygon2D(Mode2D mode, int count) {
+        super(mode, count);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Class constructor <code>Polygon2D</code> where a polygonal shape is
+     * initialized.
+     *
+     * @param vertices vertices
      */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
+    public Polygon2D(Vector3f... vertices) {
+        this(Mode2D.OUTLINE, vertices);
     }
-    
-    /* (non-Javadoc)
+
+    /**
+     * Class constructor <code>Polygon2D</code> where a polygonal shape is
+     * initialized.
+     *
+     * @param mode mode of this mesh {@link Mode2D}
+     * @param vertices vertices
      */
-    public void updateGeometry(boolean fill, Vector3f ...vertices) {
-//        super.updateGeometry(vertices, fill);
+    public Polygon2D(Mode2D mode, Vector3f... vertices) {
+        this(mode, vertices.length);
+        Polygon2D.this.updatePoints(vertices);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
+     * @param vertices {@code Vector3f[]}
+     * @deprecated Use {@link #updatePoints(int, float, float) }
+     */
+    @Deprecated
+    public void updateGeometry(Vector3f... vertices) {
+        updatePoints(vertices);
     }
 }
