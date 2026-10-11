@@ -35,11 +35,12 @@ import com.jme3.math.Vector3f;
 
 /**
  * Class <code>Slice2D</code> responsible for generating a slice shape.
+ *
  * @author wil
  * @version 1.0.5
  * @since 2.5.0
  */
-public class Slice2D extends AbstractShape2D {
+public class Slice2D extends AbstractPolygon2D {
 
     /** Default counter to generate a slice. */
     public static final int COUNT = 24;
@@ -54,23 +55,62 @@ public class Slice2D extends AbstractShape2D {
     /**
      * Class constructor <code>Circle2D</code> where the values will be set to
      * generate a slice form.
-     * 
+     *
+     * @param mode mode of this mesh {@link Mode2D}
+     * @param count number of polygons
+     */
+    public Slice2D(Mode2D mode, int count) {
+        super(mode, count + 3);
+    }
+
+    /**
+     * Class constructor <code>Circle2D</code> where the values will be set to
+     * generate a slice form.
+     *
      * @param count number of polygons
      * @param radius radius of the circle
      * @param theta theta value
      */
     public Slice2D(int count, float radius, float theta) {
-        Slice2D.this.updateGeometry(count, radius, theta);
+        this(Mode2D.OUTLINE, count, radius, theta);
     }
 
     /**
-     * Method in charge of updating the geometry of this circular mesh.
-     * 
+     * Class constructor <code>Circle2D</code> where the values will be set to
+     * generate a slice form.
+     *
+     * @param mode mode of this mesh {@link Mode2D}
      * @param count number of polygons
      * @param radius radius of the circle
      * @param theta theta value
      */
-    public void updateGeometry(int count, float radius, float theta) {
+    public Slice2D(Mode2D mode, int count, float radius, float theta) {
+        this(mode, count);
+        Slice2D.this.updatePoints(count, radius, theta);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
+     * @param count int
+     * @param width float
+     * @param height float
+     *
+     * @deprecated Use {@link #updatePoints(int, float, float) }
+     */
+    @Deprecated
+    public void updateGeometry(int count, float width, float height) {
+        updatePoints(count, width, height);
+    }
+
+    /**
+     * Method in charge of updating the geometry of this circular mesh.
+     *
+     * @param count number of polygons
+     * @param radius radius of the circle
+     * @param theta theta value
+     */
+    public void updatePoints(int count, float radius, float theta) {
         // Calculate the angular increment
         final float pin = theta / (count + 1);
         // Make sure the resulting output is an even number of vertices
