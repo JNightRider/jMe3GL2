@@ -57,10 +57,10 @@ public class HalfEllipse2D extends AbstractShape2D {
      * Class constructor <code>HalfEllipse</code> to generate a '2D'
      * half-ellipse shape with a depth set for all/or the vertices.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of vertices/polygons to use
      */
-    public HalfEllipse2D(Mode2D mode, int count) {
+    public HalfEllipse2D(ShapeMode2D mode, int count) {
         super(mode, count + 2);
     }
 
@@ -73,19 +73,19 @@ public class HalfEllipse2D extends AbstractShape2D {
      * @param height height of the ellipse
      */
     public HalfEllipse2D(int count, float width, float height) {
-        this(Mode2D.OUTLINE, count, width, height);
+        this(ShapeMode2D.OUTLINE, count, width, height);
     }
 
     /**
      * Class constructor <code>HalfEllipse</code> to generate a '2D'
      * half-ellipse shape with a depth set for all/or the vertices.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of vertices/polygons to use
      * @param width width of the ellipse
      * @param height height of the ellipse
      */
-    public HalfEllipse2D(Mode2D mode, int count, float width, float height) {
+    public HalfEllipse2D(ShapeMode2D mode, int count, float width, float height) {
         this(mode, count);
         HalfEllipse2D.this.updatePoints(count, width, height);
     }

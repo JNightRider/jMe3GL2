@@ -62,23 +62,12 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      */
     private static final Logger LOGGER = Logger.getLogger(AbstractShape2D.class.getName());
 
-    public static enum Mode2D {
-        FILLED(Mode.Triangles),
-        OUTLINE(Mode.Lines);
-
-        final Mode mode;
-
-        private Mode2D(Mode mode) {
-            this.mode = mode;
-        }
-    }
-
     /**
      * Arrangement of the mesh vertices.
      */
     protected Vector3f[] vertices;
 
-    private Mode2D mode2D;
+    private ShapeMode2D mode2D;
     private int count;
 
     /**
@@ -90,10 +79,10 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     /**
      * constructor {@code AbstractPolygon2D}
      *
-     * @param mode2D mode of this mesh {@link Mode2D}
+     * @param mode2D mode of this mesh {@link ShapeMode2D}
      * @param count vertext count
      */
-    public AbstractShape2D(Mode2D mode2D, int count) {
+    public AbstractShape2D(ShapeMode2D mode2D, int count) {
         AbstractShape2D.this.updateGeometry(mode2D, count);
     }
 
@@ -127,9 +116,9 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     /**
      * Returns mesh mode.
      *
-     * @return Mode2D
+     * @return ShapeMode2D
      */
-    public Mode2D getMode2D() {
+    public ShapeMode2D getMode2D() {
         return mode2D;
     }
 
@@ -145,12 +134,12 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     /**
      * Updates the geometry buffers.
      *
-     * @param mode2D mode of this mesh {@link Mode2D}
+     * @param mode2D mode of this mesh {@link ShapeMode2D}
      * @param count vertext count
      */
-    public void updateGeometry(Mode2D mode2D, int count) {
+    public void updateGeometry(ShapeMode2D mode2D, int count) {
         setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(count * 3));
-        if (mode2D == Mode2D.FILLED) {
+        if (mode2D == ShapeMode2D.FILLED) {
             setBuffer(VertexBuffer.Type.Index, 3, BufferUtils.createShortBuffer((count - 2) * 3));
         } else {
             setBuffer(VertexBuffer.Type.Index, 2, BufferUtils.createShortBuffer(count * 2));
@@ -189,7 +178,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
         ShortBuffer index = (ShortBuffer) idxBuff.getData();
         index.rewind();
 
-        if (mode2D == Mode2D.FILLED) {
+        if (mode2D == ShapeMode2D.FILLED) {
             for (short i = 1; i < vertices.length - 1; i++) {
                 index.put((short) 0)
                         .put(i)

@@ -52,10 +52,10 @@ public class Polygon2D extends AbstractShape2D {
      * Class constructor <code>Polygon2D</code> where a polygonal shape is
      * initialized.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count Number of vertices
      */
-    public Polygon2D(Mode2D mode, int count) {
+    public Polygon2D(ShapeMode2D mode, int count) {
         super(mode, count);
     }
 
@@ -66,17 +66,17 @@ public class Polygon2D extends AbstractShape2D {
      * @param vertices vertices
      */
     public Polygon2D(Vector3f... vertices) {
-        this(Mode2D.OUTLINE, vertices);
+        this(ShapeMode2D.OUTLINE, vertices);
     }
 
     /**
      * Class constructor <code>Polygon2D</code> where a polygonal shape is
      * initialized.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param vertices vertices
      */
-    public Polygon2D(Mode2D mode, Vector3f... vertices) {
+    public Polygon2D(ShapeMode2D mode, Vector3f... vertices) {
         this(mode, vertices.length);
         Polygon2D.this.updatePoints(vertices);
     }

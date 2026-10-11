@@ -56,10 +56,10 @@ public class Ellipse2D extends AbstractShape2D {
      * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
      * with a depth set for all/or the vertices.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of vertices/polygons to use
      */
-    public Ellipse2D(Mode2D mode, int count) {
+    public Ellipse2D(ShapeMode2D mode, int count) {
         super(mode, count);
     }
 
@@ -72,19 +72,19 @@ public class Ellipse2D extends AbstractShape2D {
      * @param height height of the ellipse.
      */
     public Ellipse2D(int count, float width, float height) {
-        this(Mode2D.OUTLINE, count, width, height);
+        this(ShapeMode2D.OUTLINE, count, width, height);
     }
 
     /**
      * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
      * with a depth set for all/or the vertices.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of vertices/polygons to use
      * @param width width of the ellipse.
      * @param height height of the ellipse.
      */
-    public Ellipse2D(Mode2D mode, int count, float width, float height) {
+    public Ellipse2D(ShapeMode2D mode, int count, float width, float height) {
         this(mode, count);
         Ellipse2D.this.updatePoints(count, width, height);
     }

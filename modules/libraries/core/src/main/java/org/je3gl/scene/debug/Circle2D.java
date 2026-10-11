@@ -59,10 +59,10 @@ public class Circle2D extends AbstractShape2D {
      * Class constructor <code>Circle2D</code> where the values will be set to
      * generate a circular shape.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of polygons
      */
-    public Circle2D(Mode2D mode, int count) {
+    public Circle2D(ShapeMode2D mode, int count) {
         super(mode, count);
     }
 
@@ -75,19 +75,19 @@ public class Circle2D extends AbstractShape2D {
      * @param theta theta value
      */
     public Circle2D(int count, float radius, float theta) {
-        this(Mode2D.OUTLINE, count, radius, theta);
+        this(ShapeMode2D.OUTLINE, count, radius, theta);
     }
 
     /**
      * Class constructor <code>Circle2D</code> where the values will be set to
      * generate a circular shape.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of polygons
      * @param radius radius of the circle
      * @param theta theta value
      */
-    public Circle2D(Mode2D mode, int count, float radius, float theta) {
+    public Circle2D(ShapeMode2D mode, int count, float radius, float theta) {
         this(mode, count);
         Circle2D.this.updatePoints(count, radius, theta);
     }

@@ -56,12 +56,12 @@ public class Capsule2D extends AbstractShape2D {
      * Class constructor <code>Capsule2D</code> where the shape of a capsule is
      * generated.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of 'pins' for the circular borders, the higher the
      *              number the better the semicircle. Be careful as the higher the number the
      *               more vertices are used
      */
-    public Capsule2D(Mode2D mode, int count) {
+    public Capsule2D(ShapeMode2D mode, int count) {
         super(mode, 4 + 2 * count);
     }
 
@@ -76,21 +76,21 @@ public class Capsule2D extends AbstractShape2D {
      * @param height height of the form
      */
     public Capsule2D(int count, float width, float height) {
-        this(Mode2D.OUTLINE, count, width, height);
+        this(ShapeMode2D.OUTLINE, count, width, height);
     }
 
     /**
      * Class constructor <code>Capsule2D</code> where the shape of a capsule is
      * generated.
      *
-     * @param mode mode of this mesh {@link Mode2D}
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of 'pins' for the circular borders, the higher the
      *              number the better the semicircle. Be careful as the higher the number the
      *               more vertices are used
      * @param width width of the form
      * @param height height of the form
      */
-    public Capsule2D(Mode2D mode, int count, float width, float height) {
+    public Capsule2D(ShapeMode2D mode, int count, float width, float height) {
         this(mode, count);
         Capsule2D.this.updatePoints(count, width, height);
     }
