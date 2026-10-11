@@ -27,7 +27,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.scene.debug;
 
 import com.jme3.math.Vector3f;
@@ -36,6 +36,7 @@ import com.jme3.scene.VertexBuffer;
 import java.nio.FloatBuffer;
 
 /**
+ * Class <code>Point2D</code> in charge of generating a capsule shape.
  *
  * @author wil
  * @version 1.0.0
@@ -43,15 +44,32 @@ import java.nio.FloatBuffer;
  */
 public class Point2D extends Mesh {
 
+    /**
+     * Class constructor {@code Point2D} where the shape of a capsule is
+     * generated.
+     */
     public Point2D() {
         this(new Vector3f(), 1f);
     }
-    
+
+    /**
+     * Class constructor {@code Point2D} where the shape of a capsule is
+     * generated.
+     *
+     * @param p point position
+     * @param size point size
+     */
     public Point2D(Vector3f p, float size) {
         setMode(Mode.Points);
         Point2D.this.updateGeometry(p, size);
     }
-    
+
+    /**
+     * Updates the geometry buffers.
+     *
+     * @param p point position
+     * @param size point size
+     */
     protected void updateGeometry(Vector3f p, float size) {
         setBuffer(VertexBuffer.Type.Position, 3, new float[]{
             p.x, p.y, p.z
@@ -61,23 +79,29 @@ public class Point2D extends Mesh {
         });
         updateBound();
     }
-    
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
+     * @param p point position
+     * @param size point size
+     */
     public void updatePoints(Vector3f p, float size) {
         VertexBuffer posBuf = getBuffer(VertexBuffer.Type.Position);
         VertexBuffer sizeBuf = getBuffer(VertexBuffer.Type.Size);
-        
+
         FloatBuffer fb = (FloatBuffer) posBuf.getData();
         FloatBuffer zb = (FloatBuffer) sizeBuf.getData();
-        
+
         fb.rewind();
         zb.rewind();
-        
+
         fb.put(p.x).put(p.y).put(p.z);
         zb.put(size);
-        
+
         posBuf.updateData(fb);
         sizeBuf.updateData(zb);
-        
+
         updateBound();
     }
 }
