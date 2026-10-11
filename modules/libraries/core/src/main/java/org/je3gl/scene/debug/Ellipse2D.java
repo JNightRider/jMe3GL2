@@ -86,7 +86,7 @@ public class Ellipse2D extends AbstractPolygon2D {
      */
     public Ellipse2D(Mode2D mode, int count, float width, float height) {
         this(mode, count);
-        Ellipse2D.this.updateGeometry(count, width, height);
+        Ellipse2D.this.updatePoints(count, width, height);
     }
 
     /**
