@@ -92,12 +92,12 @@ public class BatchCapsule {
             drawable.updateModelBound();
             
             if (data.isSolid()) {
-                capsule.fill(true);                
+//                capsule.fill(true);                
                 mat.setColor("Color", data.getColor().setAlpha(0.5f));
                 mat.getAdditionalRenderState().setWireframe(false);
                 renderManager.renderGeometry(drawable);
                 
-                capsule.fill(false);
+//                capsule.fill(false);
             }
             
             mat.setColor("Color", data.getColor().setAlpha(1f));

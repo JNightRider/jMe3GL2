@@ -30,22 +30,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.je3gl.box2d.debug;
 
+import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
-import com.jme3.math.Vector3f;
 import com.jme3.post.SceneProcessor;
 import com.jme3.profile.AppProfiler;
+import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Node;
 import com.jme3.texture.FrameBuffer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
 
-import org.je3gl.box2d.debug.batch.BatchSnapshot;
-import org.je3gl.box2d.debug.batch.TextData;
+import org.box2d.jni.b2DebugDraw;
+import org.box2d.jni.draw.DrawBoundsFcnI;
+import org.box2d.jni.draw.DrawCircleFcnI;
+import org.box2d.jni.draw.DrawLineFcnI;
+import org.box2d.jni.draw.DrawPointFcnI;
+import org.box2d.jni.draw.DrawPolygonFcnI;
+import org.box2d.jni.draw.DrawSolidCapsuleFcnI;
+import org.box2d.jni.draw.DrawSolidCircleFcnI;
+import org.box2d.jni.draw.DrawSolidPolygonFcnI;
+import org.box2d.jni.draw.DrawStringFcnI;
+import org.box2d.jni.draw.DrawTransformFcnI;
+
+import org.je3gl.box2d.Box2dAppState;
+import org.je3gl.box2d.DrawSettings;
+import org.je3gl.box2d.PhysicsSpace;
+import org.je3gl.box2d.debug.draw.Drawables;
+import org.je3gl.box2d.util.LockObject;
+import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
  *
@@ -53,58 +68,156 @@ import org.je3gl.box2d.debug.batch.TextData;
  */
 public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
-    private final Object lock = new Object();
+    /**
+     * Class logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(PhysicsDebugSceneProcessor.class.getName());
 
-    private final AtomicReference<BatchSnapshot> snapshot = new AtomicReference<>(null);
-    private final AtomicBoolean enabled = new AtomicBoolean(true);
-    private final List<TextData> listText = new ArrayList<>();
+    private final AssetManager assetManager;
+    private final AppStateManager stateManager;
+
+    private Box2dAppState box2dAppState;
+
+    private Drawables drawables;
     private RenderManager renderManager;
+    private DebugGraphics debugGraphics;
 
     private boolean initialized;
 
-    public PhysicsDebugSceneProcessor(AssetManager assetManager) {
-        snapshot.set(new BatchSnapshot(assetManager));
+    public PhysicsDebugSceneProcessor(AssetManager assetManager, AppStateManager stateManager) {
+        this.assetManager = assetManager;
+        this.stateManager = stateManager;
     }
 
-    public boolean isEnabled() {
-        return enabled.get();
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled.set(enabled);
-    }
-
-    public void setSnapshot(BatchSnapshot value) {
-        synchronized (lock) {
-            BatchSnapshot sb = snapshot.getAndSet(value);
-            if (sb != null) {
-                sb.clear();
-            }
+    //----------------------------------------------------------------------
+    //                              CALLBACKS
+    //----------------------------------------------------------------------
+    private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawPolygon(transform, vertices, vertexCount, color);
         }
-    }
+    };
 
-    public void addDrawString(float x, float y, int color, String value) {
-        TextData data = new TextData();
-        data.setColor(color);
-        data.setPosition(new Vector3f(x, y, 0f));
-        data.setText(value);
-        listText.add(data);
-    }
-    
-    public void clearDraw() {
-        snapshot.get().clear();
-        listText.clear();
-    }
-    
+    private final DrawSolidPolygonFcnI DrawSolidPolygonFcn = (transform, vertices, vertexCount, radius, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawSolidPolygon(transform, vertices, vertexCount, radius, color);
+        }
+    };
+
+    private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawCircle(center, radius, color);
+        }
+    };
+
+    private final DrawSolidCircleFcnI DrawSolidCircleFcn = (transform, center, radius, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawSolidCircle(transform, center, radius, color);
+        }
+    };
+
+    private final DrawSolidCapsuleFcnI DrawSolidCapsuleFcn = (p1, p2, radius, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawCapsule(p1, p2, radius, color, true);
+        }
+    };
+
+    private final DrawLineFcnI DrawLineFcn = (p1, p2, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawLine(p1, p2, color);
+        }
+    };
+
+    private final DrawTransformFcnI DrawTransformFcn = (transform, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawTransform(transform, 1.0f);
+        }
+    };
+
+    private final DrawPointFcnI DrawPointFcn = (p, size, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawPoint(p, size, color);
+        }
+    };
+
+    private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawString(p, s, color);
+        }
+    };
+
+    private final DrawBoundsFcnI DrawBoundsFcn = (aabb, color, context) -> {
+        synchronized (LockObject.LOCK) {
+            drawables.drawBounds(aabb, color);
+        }
+    };
+
     @Override
     public void initialize(RenderManager rm, ViewPort vp) {
+        box2dAppState = stateManager.getState(Box2dAppState.class);
+        PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
+
+        b2DebugDraw debugDraw = physicsSpace.getDebugDraw();
+        debugDraw.DrawBoundsFcn(DrawBoundsFcn)
+                .DrawCircleFcn(DrawCircleFcn)
+                .DrawSolidCircleFcn(DrawSolidCircleFcn)
+                .DrawLineFcn(DrawLineFcn)
+                .DrawPointFcn(DrawPointFcn)
+                .DrawPolygonFcn(DrawPolygonFcn)
+                .DrawSolidCapsuleFcn(DrawSolidCapsuleFcn)
+                .DrawSolidPolygonFcn(DrawSolidPolygonFcn)
+                .DrawTransformFcn(DrawTransformFcn)
+                .DrawStringFcn(DrawStringFcn);
+
+        applyDrawSettings(debugDraw, box2dAppState.getDrawSettings());
+        drawables = new Drawables(assetManager);
+        
+        if (debugGraphics == null) {
+            debugGraphics = new StringDebugGraphics(assetManager);
+        }
+        
         renderManager = rm;
         initialized = true;
     }
 
+    private void applyDrawSettings(b2DebugDraw debugDraw, DrawSettings settings) {
+        debugDraw.drawShapes(settings.drawShapes())
+                .drawBodyNames(settings.drawBodyNames())
+                .drawJoints(settings.drawJoints())
+                .drawAnchorA(settings.drawAnchorA())
+                .drawChainNormals(settings.drawChainNormals())
+                .drawContactFeatures(settings.drawContactFeatures())
+                .drawFrictionForces(settings.drawFrictionForces())
+                .drawContactNormals(settings.drawContactNormals())
+                .drawContacts(settings.drawContacts())
+                .drawGraphColors(settings.drawGraphColors())
+                .drawIslands(settings.drawIslands())
+                .drawJointExtras(settings.drawJointExtras())
+                .drawMass(settings.drawMass())
+                .drawBounds(settings.drawBounds());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("[jMe3GL2] :Charts for debugging Box2d-JNI bodies")
+                .append('\n').append(" * drawShapes: ").append(settings.drawShapes())
+                .append('\n').append(" * drawBodyNames: ").append(settings.drawBodyNames())
+                .append('\n').append(" * drawJoints: ").append(settings.drawJoints())
+                .append('\n').append(" * drawAnchorA: ").append(settings.drawAnchorA())
+                .append('\n').append(" * drawChainNormals: ").append(settings.drawChainNormals())
+                .append('\n').append(" * drawContactFeatures: ").append(settings.drawContactFeatures())
+                .append('\n').append(" * drawFrictionForces: ").append(settings.drawFrictionForces())
+                .append('\n').append(" * drawContactNormals: ").append(settings.drawContactNormals())
+                .append('\n').append(" * drawContacts: ").append(settings.drawContacts())
+                .append('\n').append(" * drawGraphColors: ").append(settings.drawGraphColors())
+                .append('\n').append(" * drawIslands: ").append(settings.drawIslands())
+                .append('\n').append(" * drawJointExtras: ").append(settings.drawJointExtras())
+                .append('\n').append(" * drawMass: ").append(settings.drawMass())
+                .append('\n').append(" * drawBounds: ").append(settings.drawBounds());
+        LOGGER.info(String.valueOf(sb));
+    }
+
     @Override
     public void reshape(ViewPort vp, int w, int h) {
-
+        
     }
 
     @Override
@@ -114,42 +227,48 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     @Override
     public void preFrame(float tpf) {
+        if (box2dAppState == null) {
+            return;
+        }
 
+        PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
+        DrawSettings settings = box2dAppState.getDrawSettings();
+        if (settings.isNeedUpdate()) {
+            settings.update();
+            applyDrawSettings(physicsSpace.getDebugDraw(), box2dAppState.getDrawSettings());
+        }
+    }
+    
+    public void updateUI(Node rootNode, Camera camera, int width, int height) {
+        if (!initialized) {
+            return;
+        }        
+        synchronized (LockObject.LOCK) {
+            drawables.render(debugGraphics,rootNode, camera, width, height);
+        }
     }
 
     @Override
     public void postQueue(RenderQueue rq) {
-        synchronized (lock) {
-            BatchSnapshot sb = snapshot.get();
-            if (sb != null && enabled.get()) {
-                sb.flushDraw(renderManager);
-            }
+        synchronized (LockObject.LOCK) {
+            drawables.render(renderManager);
+        }
+    }
+
+    public void flush() {
+        if (drawables != null) {
+            drawables.flush();
         }
     }
 
     @Override
     public void postFrame(FrameBuffer out) {
+
     }
 
     @Override
     public void cleanup() {
-        synchronized (lock) {
-            initialized = false;
-            listText.clear();
-            snapshot.get().clear();
-        }
-    }
 
-    public List<TextData> getListText() {
-        return listText;
-    }
-
-    public AtomicReference<BatchSnapshot> getSnapshot() {
-        return snapshot;
-    }
-
-    public Object getLock() {
-        return lock;
     }
 
     @Override

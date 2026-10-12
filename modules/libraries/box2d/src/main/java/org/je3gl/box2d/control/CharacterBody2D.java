@@ -333,6 +333,10 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     }
     
     public void update(float timeStep, float throttle) {
+        if (moverJointId == null) {
+            return;
+        }
+        
         try (ArenaAlloc arena = allocPush()) {
 
             // Reach further while grounded so the spring can find the ground over a step

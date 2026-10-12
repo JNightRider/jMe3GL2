@@ -51,6 +51,9 @@ import org.box2d.jni.system.Sys;
 import static org.box2d.jni.include.Base.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
+import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
+import static org.je3gl.box2d.debug.PhysicsDebugSceneProcessor.*;
+import org.je3gl.box2d.util.LockObject;
 
 /**
  * An object (an instance) of the class <code>Box2dAppState</code> is a state
@@ -111,14 +114,11 @@ public class Box2dAppState extends AbstractAppState {
     final private Callable<Boolean> parallelPhysicsUpdate = new Callable<Boolean>() {
         @Override
         public Boolean call() throws Exception {
-            if (debugAppState != null && debugAppState.isInitialized()) {
-                PhysicsDebugSceneProcessor processor = debugAppState.getDebugProcessor();
-                synchronized (processor.getLock()) {
-                    processor.clearDraw();
-                    physicsSpace.update(isEnabled() ? tpf * speed : 0f);
+            synchronized (LockObject.LOCK) {
+                if (debugAppState != null) {
+                    debugAppState.flush();
                 }
-            } else {
-                physicsSpace.update(isEnabled() ? tpf * speed : 0f);   
+                physicsSpace.update(isEnabled() ? tpf * speed : 0f);
             }
             return true;
         }
@@ -305,8 +305,8 @@ public class Box2dAppState extends AbstractAppState {
             case PARALLEL -> executor.submit(parallelPhysicsUpdate);
             case SEQUENTIAL -> {
                 final float timeStep = isEnabled() ? this.tpf * speed : 0;
-                if (debugAppState != null && debugAppState.isInitialized()) {
-                    debugAppState.getDebugProcessor().clearDraw();
+                if (debugAppState != null) {
+                    debugAppState.flush();
                 }
                 this.physicsSpace.update(timeStep);
             }
@@ -335,7 +335,7 @@ public class Box2dAppState extends AbstractAppState {
     @Override
     public void cleanup() {
         if (debugAppState != null) {
-            synchronized (debugAppState.getDebugProcessor().getLock()) {
+            synchronized (LockObject.LOCK) {
                 stateManager.detach(debugAppState);
                 this.debugAppState = null;
             }
@@ -430,5 +430,9 @@ public class Box2dAppState extends AbstractAppState {
             physicsSpace.setAxisType(axisType);
         }
         return axisType;
+    }
+
+    public ThreadingType getThreadingType() {
+        return threadingType;
     }
 }

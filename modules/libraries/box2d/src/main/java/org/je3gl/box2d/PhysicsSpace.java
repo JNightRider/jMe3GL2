@@ -109,9 +109,6 @@ public class PhysicsSpace implements AutoCloseable {
         b2World_Step(worldId, tpf, subStepCount);        
         if (enableDebugger.get()) {
             b2World_Draw(worldId, debugDraw);
-//            for (Drawable drawable : drawables.get()) {
-//                drawable.rawDrawing(debugAppState.getDebugProcessor(), debugAppState.getDebugProcessor().getSnapshot().get());
-//            }
         }
     }
 
@@ -133,6 +130,10 @@ public class PhysicsSpace implements AutoCloseable {
 
     public b2DebugDraw getDebugDraw() {
         return debugDraw;
+    }
+
+    public AtomicBoolean getEnableDebugger() {
+        return enableDebugger;
     }
     
     @Override

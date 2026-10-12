@@ -60,19 +60,19 @@ public final class DrawSettings extends HashMap<String, Boolean> {
     private static final Map<String, Boolean> DEFAULT = new HashMap<>();
     
     static {
-        DEFAULT.put(DRAW_ANCHOR_A, false);
-        DEFAULT.put(DRAW_BODY_NAMES, false);
-        DEFAULT.put(DRAW_BOUNDS, false);
-        DEFAULT.put(DRAW_CHAIN_NORMALS, false);
-        DEFAULT.put(DRAW_CONTACTS, false);
-        DEFAULT.put(DRAW_CONTACT_FEATURES, false);
-        DEFAULT.put(DRAW_CONTACT_NORMALS, false);
-        DEFAULT.put(DRAW_FRICTION_FORCES, false);
-        DEFAULT.put(DRAW_GRAPH_COLORS, false);
-        DEFAULT.put(DRAW_ISLANDS, false);
-        DEFAULT.put(DRAW_JOINTS, false);
-        DEFAULT.put(DRAW_JOINT_EXTRAS, false);
-        DEFAULT.put(DRAW_MASS, false);
+        DEFAULT.put(DRAW_ANCHOR_A, true);
+        DEFAULT.put(DRAW_BODY_NAMES, true);
+        DEFAULT.put(DRAW_BOUNDS, true);
+        DEFAULT.put(DRAW_CHAIN_NORMALS, true);
+        DEFAULT.put(DRAW_CONTACTS, true);
+        DEFAULT.put(DRAW_CONTACT_FEATURES, true);
+        DEFAULT.put(DRAW_CONTACT_NORMALS, true);
+        DEFAULT.put(DRAW_FRICTION_FORCES, true);
+        DEFAULT.put(DRAW_GRAPH_COLORS, true);
+        DEFAULT.put(DRAW_ISLANDS, true);
+        DEFAULT.put(DRAW_JOINTS, true);
+        DEFAULT.put(DRAW_JOINT_EXTRAS, true);
+        DEFAULT.put(DRAW_MASS, true);
         DEFAULT.put(DRAW_SHAPES, true);
     }
     

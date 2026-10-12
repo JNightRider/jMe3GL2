@@ -224,8 +224,8 @@ public class Character2D extends SimpleApplication  {
         camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
         stateManager.attach(camera2DAppSate);
 
-        Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);
-        box2d.setDebugEnabled(true);
+        Box2dAppState box2d = new Box2dAppState(ThreadingType.SEQUENTIAL);
+        box2d.setDebugEnabled(box2d.getThreadingType() == ThreadingType.SEQUENTIAL);
         stateManager.attach(box2d);
 
         InputHandlerAppState inputHandlerAppState = new InputHandlerAppState();

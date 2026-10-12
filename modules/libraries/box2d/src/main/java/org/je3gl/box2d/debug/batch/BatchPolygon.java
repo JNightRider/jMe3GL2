@@ -52,12 +52,12 @@ public class BatchPolygon {
     
     private final List<PolygonData> polygonData = new ArrayList<>(POLYGON_BATCH_SIZE);
     
-    private final Geometry drawable;
-    private final Polygon2D polygon;
+//    private final Geometry drawable;
+//    private final Polygon2D polygon;
 
     public BatchPolygon(AssetManager assetManager) {
-        this.polygon = new Polygon2D();
-        this.drawable = Batch.newDrawable(assetManager, polygon);
+//        this.polygon = new Polygon2D(1);
+//        this.drawable = Batch.newDrawable(assetManager, polygon);
     }
 
     public void addPolygon(float x, float y, float angle, int color, Vector3f[] vertices, boolean solid) {
@@ -74,33 +74,33 @@ public class BatchPolygon {
     }
 
     public void flushPolygon(RenderManager renderManager) {
-        for (int i = 0; i < polygonData.size(); i++) {
-            PolygonData data = polygonData.get(i);
-            polygon.updateGeometry(true, data.getVertices());  
-            
-            Material mat = drawable.getMaterial();    
-            
-            TempVars vars = TempVars.get();
-            Quaternion q = vars.quat1;
-            drawable.setLocalTranslation(data.getPosition());
-            drawable.setLocalRotation(q.fromAngleAxis(data.getAngle(), Vector3f.UNIT_Z));
-            drawable.updateGeometricState();
-            drawable.updateModelBound();
-            
-            if (data.isSolid()) {
-                polygon.fill(true);
-                mat.setColor("Color", data.getColor().setAlpha(0.5f));
-                mat.getAdditionalRenderState().setWireframe(false);
-                renderManager.renderGeometry(drawable);
-                
-                polygon.fill(false);
-            }
-            
-            mat.setColor("Color", data.getColor().setAlpha(1f));
-            mat.getAdditionalRenderState().setWireframe(true);                
-            renderManager.renderGeometry(drawable);
-            vars.release();
-        }
+//        for (int i = 0; i < polygonData.size(); i++) {
+//            PolygonData data = polygonData.get(i);
+////            polygon.updateGeometry(true, data.getVertices());  
+//            
+//            Material mat = drawable.getMaterial();    
+//            
+//            TempVars vars = TempVars.get();
+//            Quaternion q = vars.quat1;
+//            drawable.setLocalTranslation(data.getPosition());
+//            drawable.setLocalRotation(q.fromAngleAxis(data.getAngle(), Vector3f.UNIT_Z));
+//            drawable.updateGeometricState();
+//            drawable.updateModelBound();
+//            
+//            if (data.isSolid()) {
+//                polygon.fill(true);
+//                mat.setColor("Color", data.getColor().setAlpha(0.5f));
+//                mat.getAdditionalRenderState().setWireframe(false);
+//                renderManager.renderGeometry(drawable);
+//                
+//                polygon.fill(false);
+//            }
+//            
+//            mat.setColor("Color", data.getColor().setAlpha(1f));
+//            mat.getAdditionalRenderState().setWireframe(true);                
+//            renderManager.renderGeometry(drawable);
+//            vars.release();
+//        }
     }
 
     public void clear() {

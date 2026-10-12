@@ -74,34 +74,34 @@ public class BatchCircle {
     }
 
     public void flushCircle(RenderManager renderManager) {
-        for (int i = 0; i < circleData.size(); i++) {
-            CircleData data = circleData.get(i);
-            circle.updateGeometry(Circle2D.COUNT, data.getRadius(), 0);
-
-            Material mat = drawable.getMaterial();    
-            
-
-            TempVars vars = TempVars.get();
-            Quaternion q = vars.quat1;
-            drawable.setLocalTranslation(data.getPosition());
-            drawable.setLocalRotation(q.fromAngleAxis(data.getAngle(), Vector3f.UNIT_Z));
-            drawable.updateGeometricState();
-            drawable.updateModelBound();
-            
-            if (data.isSolid()) {
-                circle.fill(true);                
-                mat.setColor("Color", data.getColor().setAlpha(0.5f));
-                mat.getAdditionalRenderState().setWireframe(false);
-                renderManager.renderGeometry(drawable);
-                
-                circle.fill(false);
-            }
-            
-            mat.setColor("Color", data.getColor().setAlpha(1f));
-            mat.getAdditionalRenderState().setWireframe(true);                
-            renderManager.renderGeometry(drawable);
-            vars.release();
-        }
+//        for (int i = 0; i < circleData.size(); i++) {
+//            CircleData data = circleData.get(i);
+//            circle.updateGeometry(Circle2D.COUNT, data.getRadius(), 0);
+//
+//            Material mat = drawable.getMaterial();    
+//            
+//
+//            TempVars vars = TempVars.get();
+//            Quaternion q = vars.quat1;
+//            drawable.setLocalTranslation(data.getPosition());
+//            drawable.setLocalRotation(q.fromAngleAxis(data.getAngle(), Vector3f.UNIT_Z));
+//            drawable.updateGeometricState();
+//            drawable.updateModelBound();
+//            
+//            if (data.isSolid()) {
+//                circle.fill(true);                
+//                mat.setColor("Color", data.getColor().setAlpha(0.5f));
+//                mat.getAdditionalRenderState().setWireframe(false);
+//                renderManager.renderGeometry(drawable);
+//                
+//                circle.fill(false);
+//            }
+//            
+//            mat.setColor("Color", data.getColor().setAlpha(1f));
+//            mat.getAdditionalRenderState().setWireframe(true);                
+//            renderManager.renderGeometry(drawable);
+//            vars.release();
+//        }
     }
 
     public void clear() {
