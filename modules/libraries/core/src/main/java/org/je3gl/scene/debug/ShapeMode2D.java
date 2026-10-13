@@ -33,19 +33,33 @@ package org.je3gl.scene.debug;
 import com.jme3.scene.Mesh.Mode;
 
 /**
+ * The drawing mode for debugging objects
  *
  * @author wil
  * @version 1.0.0
  * @since 3.2.0
  */
 public enum ShapeMode2D {
+
+    /**
+     * A mesh is created using triangles (fill),
+     */
     FILLED(Mode.Triangles),
+
+    /**
+     * Only the outline of the shape is drawn.
+     */
     OUTLINE(Mode.Lines);
 
+    /** mode  */
     final Mode mode;
 
+    /**
+     * Constructor
+     *
+     * @param mode {@link Mode}
+     */
     private ShapeMode2D(Mode mode) {
         this.mode = mode;
     }
-
 }
