@@ -27,27 +27,32 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.scene.debug;
 
 import com.jme3.export.*;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.mesh.IndexBuffer;
 import com.jme3.util.BufferUtils;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 /**
  * Class <code>Cross</code> responsible for generating a cross shape.
+ *
  * @author wil
- * @version 1.0.5
+ * @version 1.1.0
  * @since 2.5.0
  */
 public class Cross extends Mesh {
 
-    /** Number of segments. */
+    /**
+     * Number of segments.
+     */
     private float segmentSize;
 
     /**
@@ -57,7 +62,9 @@ public class Cross extends Mesh {
     }
 
     /**
-     * Main class constructor <code>Cross2D</code> to build an instance of a cross.
+     * Main class constructor <code>Cross2D</code> to build an instance of a
+     * cross.
+     *
      * @param segmentSize the size of the cross segment
      */
     public Cross(final float segmentSize) {
@@ -65,7 +72,9 @@ public class Cross extends Mesh {
     }
 
     /**
-     * Main class constructor <code>Cross2D</code> to build an instance of a cross.
+     * Main class constructor <code>Cross2D</code> to build an instance of a
+     * cross.
+     *
      * @param segmentSize the size of the cross segment
      * @param mode mode for this mesh.
      */
@@ -77,6 +86,7 @@ public class Cross extends Mesh {
 
     /**
      * Returns the size of the cross segment.
+     *
      * @return the size
      */
     public float getSegmentSize() {
@@ -85,11 +95,13 @@ public class Cross extends Mesh {
 
     /**
      * Reconstructs the cross based on a new set of parameters.
+     *
      * @param segmentSize the size of the cross segment
      */
-    public void updateGeometry(final float segmentSize) {
+    public void updateGeometry(float segmentSize) {
         // Create buffers
-        this.setBuffer(Type.Position, 3, 
+        this.segmentSize = segmentSize;
+        this.setBuffer(Type.Position, 3,
                 BufferUtils.createVector3Buffer(getFloatBuffer(Type.Position),
                         4));
         this.setBuffer(Type.Index, 1,
@@ -111,10 +123,43 @@ public class Cross extends Mesh {
         ib.put(3, 2);
         updateBound();
     }
+
+    /**
+     * Reconstructs the cross based;
+     *
+     * @param segmentSize the size of the cross segment
+     */
+    public void updatePoints(float segmentSize) {
+        this.segmentSize = segmentSize;
+        VertexBuffer posBuf = getBuffer(Type.Position);
+        VertexBuffer idxBuf = getBuffer(Type.Index);
+
+        // Set the vertices
+        FloatBuffer pb = (FloatBuffer) posBuf.getData();
+        pb.rewind();
+
+        pb.put(segmentSize).put(segmentSize).put(0);
+        pb.put(-segmentSize).put(segmentSize).put(0);
+        pb.put(segmentSize).put(-segmentSize).put(0);
+        pb.put(-segmentSize).put(-segmentSize).put(0);
+
+        posBuf.updateData(pb);
+
+        // Set the indexes
+        ShortBuffer ib = (ShortBuffer) idxBuf.getData();
+        ib.rewind();
+        ib.put((short) 0)
+                .put((short) 3)
+                .put((short) 1)
+                .put((short) 2);
+        updateBound();
+    }
+
     /**
      * (non-Javadoc)
-     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
-     * 
+     *
+     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter)
+     *
      * @param im {@link com.jme3.export.JmeImporter}
      * @throws IOException throws
      */
@@ -127,8 +172,9 @@ public class Cross extends Mesh {
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
-     * 
+     *
+     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter)
+     *
      * @param ex {@link com.jme3.export.JmeExporter}
      * @throws IOException throws
      */
