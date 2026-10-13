@@ -31,9 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.utilities;
 
 import com.jme3.math.Quaternion;
-import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Spatial;
 
 /**
  * Utility class responsible for providing transformation methods.
@@ -42,20 +40,6 @@ import com.jme3.scene.Spatial;
  * @since 3.0.0
  */
 public class TransformUtilities {
-
-    public static void worldReset(Spatial spatial) {
-        Transform transform = spatial.getWorldTransform();
-        transform.getTranslation().zero();
-        transform.getRotation().multLocal(0f);
-        transform.getScale().set(1f, 1f, 1f);
-    }
-
-    public static void localReset(Spatial spatial) {
-        Transform transform = spatial.getLocalTransform();
-        transform.getTranslation().zero();
-        transform.getRotation().multLocal(0f);
-        transform.getScale().set(1f, 1f, 1f);
-    }
 
     /**
      * Rotate the input vector using the specified quaternion.
