@@ -42,30 +42,44 @@ import com.jme3.math.ColorRGBA;
 public final class ColorUtilities {    
     /** Scale factor. */
     private static final float FACTOR = 0.7F;
-    
+
+    /** Private constructor. */
+    private ColorUtilities() { }
+
     /**
-     * Private constructor.
+     * Converts an integer into a {@code ColorRGBA} by breaking down its 3-digit
+     * values.
+     *
+     * @param color the integer ARGB value used to set this {@code ColorRGBA}
+     * @param alpha level of transparency
+     * @return {@code ColorRGBA}
      */
-    private ColorUtilities() {
-    }
-    
     public static final ColorRGBA fromIntRGBA(int color, float alpha) {
-        float r = ((byte)(color >> 16) & 0xFF) / 255f,
-              g = ((byte)(color >> 8) & 0xFF) / 255f,
+        float r = ((byte) (color >> 16) & 0xFF) / 255f,
+              g = ((byte) (color >> 8) & 0xFF) / 255f,
               b = ((byte) color & 0xFF) / 255f,
               a = (0xFF * alpha) / 255f;
         return new ColorRGBA(r, g, b, a);
     }
-    
+
+    /**
+     * Converts an integer into a {@code ColorRGBA} by breaking down its 3-digit
+     * values.
+     *
+     * @param color the integer ARGB value used to set this {@code ColorRGBA}
+     * @param alpha level of transparency
+     * @param store the color where it will be stored
+     * @return {@code ColorRGBA}
+     */
     public static final ColorRGBA fromIntRGBA(int color, float alpha, ColorRGBA store) {
-        float r = ((byte)(color >> 16) & 0xFF) / 255f,
-              g = ((byte)(color >> 8) & 0xFF) / 255f,
+        float r = ((byte) (color >> 16) & 0xFF) / 255f,
+              g = ((byte) (color >> 8) & 0xFF) / 255f,
               b = ((byte) color & 0xFF) / 255f,
               a = (0xFF * alpha) / 255f;
         store.set(r, g, b, a);
         return store;
     }
-    
+
     /**
      * Returns a darker color than the current color.
      * 
@@ -78,7 +92,7 @@ public final class ColorUtilities {
                              Math.max((color.getBlue()  * 255.0F) * FACTOR, 0) / 255.0F,
                              color.getAlpha());
     }
-    
+
     /**
      * Returns a lighter color than the current color.
      * 
