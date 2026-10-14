@@ -104,8 +104,8 @@ public class Character2D extends SimpleApplication  {
 
         // Get the resolution of the user's current screen.
         Jme3GL2DisplaySystem displaySystem = Jme3GL2DefaultDisplaySystem.getDisplaySystem();
-        JAWTResolution resolution = JAWTResolution.TEST_RESOLUTION;  //displaySystem.getFullScreenResolution();
-        //settings.setFullscreen(displaySystem.isFullScreenSupported());
+        JAWTResolution resolution = /*JAWTResolution.TEST_RESOLUTION;*/ displaySystem.getFullScreenResolution();
+        settings.setFullscreen(displaySystem.isFullScreenSupported());
         settings.setResolution(resolution.getWidth(), resolution.getHeight());
 
         app.setSettings(settings);
@@ -162,8 +162,12 @@ public class Character2D extends SimpleApplication  {
             }
 
             time += delta;
-            applyControls(delta);
             applyAnimation();
+        }
+
+        @Override
+        protected void physicsParallel(float delta) {
+            applyControls(delta);
         }
         
          /**
@@ -182,14 +186,14 @@ public class Character2D extends SimpleApplication  {
 
             if (VK_RIGHT.isActive()) {
                 throttle += 1.0f;
-                 sprite.flipH(false);
+                sprite.flipH(false);
             }
 
             if (VK_JUMP.isActiveButNotHandled()) {
                 VK_JUMP.setHasBeenHandled(true);
-                jump();
+                applyJump();
             }
-            update(delta, throttle);
+            applyMoveAndUpdate(delta, throttle);
         }
         
         /**
@@ -224,8 +228,8 @@ public class Character2D extends SimpleApplication  {
         camera2DAppSate.setUnitComparator(Vector3f.UNIT_Z, UnitComparator.UType.World, RenderQueue.Bucket.Translucent, RenderQueue.Bucket.Transparent);
         stateManager.attach(camera2DAppSate);
 
-        Box2dAppState box2d = new Box2dAppState(ThreadingType.SEQUENTIAL);
-        box2d.setDebugEnabled(box2d.getThreadingType() == ThreadingType.SEQUENTIAL);
+        Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);
+        box2d.setDebugEnabled(true);
         stateManager.attach(box2d);
 
         InputHandlerAppState inputHandlerAppState = new InputHandlerAppState();

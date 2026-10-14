@@ -246,7 +246,7 @@ public class Box2dAppState extends AbstractAppState {
         if (this.threadingType == ThreadingType.PARALLEL) {
             startPhysicsOnExecutor();
         } else {
-            this.physicsSpace = new PhysicsSpace(worldDef);
+            this.physicsSpace = new PhysicsSpace(worldDef, this);
         }
 
         Box2dTilePhysicsSystem.initialize();
@@ -264,7 +264,7 @@ public class Box2dAppState extends AbstractAppState {
         this.executor = new ScheduledThreadPoolExecutor(1);
 
         Callable<Boolean> call = () -> {
-            physicsSpace = new PhysicsSpace(worldDef);
+            physicsSpace = new PhysicsSpace(worldDef, this);
             return true;
         };
 
@@ -432,7 +432,7 @@ public class Box2dAppState extends AbstractAppState {
         return axisType;
     }
 
-    public ThreadingType getThreadingType() {
-        return threadingType;
+    public boolean isParallel() {
+        return threadingType == ThreadingType.PARALLEL;
     }
 }

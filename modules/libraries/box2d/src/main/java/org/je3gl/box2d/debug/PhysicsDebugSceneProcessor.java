@@ -58,7 +58,7 @@ import org.box2d.jni.draw.DrawTransformFcnI;
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.DrawSettings;
 import org.je3gl.box2d.PhysicsSpace;
-import org.je3gl.box2d.debug.draw.Drawables;
+import org.je3gl.box2d.debug.draw.Draw;
 import org.je3gl.box2d.util.LockObject;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
@@ -78,7 +78,7 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     private Box2dAppState box2dAppState;
 
-    private Drawables drawables;
+    private Draw drawables;
     private RenderManager renderManager;
     private DebugGraphics debugGraphics;
 
@@ -170,7 +170,7 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
                 .DrawStringFcn(DrawStringFcn);
 
         applyDrawSettings(debugDraw, box2dAppState.getDrawSettings());
-        drawables = new Drawables(assetManager);
+        drawables = new Draw(assetManager);
         
         if (debugGraphics == null) {
             debugGraphics = new StringDebugGraphics(assetManager);
@@ -274,5 +274,9 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
     @Override
     public void setProfiler(AppProfiler profiler) {
 
+    }
+
+    public Draw getDraw() {
+        return drawables;
     }
 }

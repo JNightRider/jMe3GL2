@@ -58,7 +58,7 @@ import org.je3gl.scene.debug.custom.DebugGraphics;
  *
  * @author wil
  */
-public final class Drawables {
+public final class Draw {
 
     public static final float ALPHA_FILL_COLOR = 0.5f;
     public static final float ALPHA_LINE_COLOR = 1.0f;
@@ -80,7 +80,7 @@ public final class Drawables {
     private final Geometry drawablepolygons;
     private final Geometry drawableTransforms;
 
-    public Drawables(AssetManager assetManager) {
+    public Draw(AssetManager assetManager) {
         texts = new DText();
         lines = new DLine();
         bounds = new DLine();

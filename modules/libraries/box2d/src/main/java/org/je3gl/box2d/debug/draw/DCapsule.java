@@ -138,14 +138,14 @@ public class DCapsule {
 
             // draw solid
             if (data.solid) {
-                mat.setColor("Color", data.color.setAlpha(Drawables.ALPHA_FILL_COLOR));
+                mat.setColor("Color", data.color.setAlpha(Draw.ALPHA_FILL_COLOR));
                 mat.getAdditionalRenderState().setWireframe(false);
                 renderManager.renderGeometry(drawable);
             }
 
             // draw lines
             drawable.setMesh(meshOutline);
-            mat.setColor("Color", data.color.setAlpha(Drawables.ALPHA_LINE_COLOR));
+            mat.setColor("Color", data.color.setAlpha(Draw.ALPHA_LINE_COLOR));
             mat.getAdditionalRenderState().setWireframe(true);
             renderManager.renderGeometry(drawable);
 

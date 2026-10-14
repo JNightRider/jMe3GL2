@@ -7,21 +7,37 @@ jar {
 dependencies {
     implementation project(':modules:libraries:jMe3GL2-core')
 
-    implementation(libs.box2djni)
-    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_aarch64Dp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_aarch64Sp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_x64Dp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('linux_x64Sp') })
-
-    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_aarch64Dp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_aarch64Sp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_x64Dp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('windows_x64Sp') })
-
-    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_aarch64Dp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_aarch64Sp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_x64Dp') })
-    runtimeOnly(variantOf(libs.box2djni){ classifier('osx_x64Sp') })
-
     implementation(libs.jme3.core)
+    implementation(libs.box2d.jni)
+
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('linux_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('linux_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('linux_x64Dp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('linux_x64Sp') })
+
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('windows_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('windows_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('windows_x64Dp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('windows_x64Sp') })
+
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('osx_aarch64Dp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('osx_aarch64Sp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('osx_x64Dp') })
+    runtimeOnly(variantOf(libs.box2d.jni){ classifier('osx_x64Sp') })
+
+    runtimeOnly(libs.box2d.jni) {
+        artifact {
+            classifier = 'android_Sp'
+            extension  = 'aar'
+            type = 'aar'
+
+        }
+    }
+    runtimeOnly(libs.box2d.jni) {
+        artifact {
+            classifier = 'android_Dp'
+            extension  = 'aar'
+            type = 'aar'
+        }
+    }
 }

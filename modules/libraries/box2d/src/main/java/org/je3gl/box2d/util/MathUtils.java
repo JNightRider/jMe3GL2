@@ -38,19 +38,25 @@ import org.box2d.jni.b2Vec2;
  * @author wil
  */
 public final class MathUtils {
-    
+
     public static b2Pos sum(b2Pos a, b2Pos b, b2Pos __result) {
-        __result.x(a.x().doubleValue()+ b.x().doubleValue());
-        __result.y(a.y().doubleValue()+ b.y().doubleValue());
+        __result.x(a.x().doubleValue() + b.x().doubleValue());
+        __result.y(a.y().doubleValue() + b.y().doubleValue());
         return __result;
     }
-    
+
     public static b2Pos product(b2Pos a, b2Pos b, b2Pos __result) {
         __result.x(a.x().doubleValue() * b.x().doubleValue());
         __result.y(a.y().doubleValue() * b.y().doubleValue());
         return __result;
     }
-    
+
+    public static b2Pos product(float a, b2Pos b, b2Pos __result) {
+        __result.x(a * b.x().doubleValue());
+        __result.y(a * b.y().doubleValue());
+        return __result;
+    }
+
     public static b2Vec2 product(float a, b2Vec2 b, b2Vec2 __result) {
         __result.x(a * b.x());
         __result.y(a * b.y());

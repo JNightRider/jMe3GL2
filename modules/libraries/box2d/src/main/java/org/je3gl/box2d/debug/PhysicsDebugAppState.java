@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.PhysicsSpace;
+import org.je3gl.box2d.ThreadingType;
 /**
  * Class <code>PhysicsDebugAppState</code> responsible for managing a state for
  * the debugging of the physical forms of the bodies that are added to the world
@@ -90,7 +91,6 @@ public class PhysicsDebugAppState extends AbstractAppState {
         box2dAppState = stateManager.getState(Box2dAppState.class);
         PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
         physicsSpace.setDebugAppState(this);
-        physicsSpace.setEnableDebugger(true);
 
         application = app;
         camera      = app.getCamera();
@@ -141,6 +141,10 @@ public class PhysicsDebugAppState extends AbstractAppState {
         if (debugProcessor != null) {
             debugProcessor.flush();
         }
+    }
+
+    public PhysicsDebugSceneProcessor getDebugProcessor() {
+        return debugProcessor;
     }
     
 }

@@ -27,13 +27,11 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.box2d.util;
 
 import com.jme3.math.Vector2f;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+
 import org.box2d.jni.b2Pos;
 
 /**
@@ -41,21 +39,7 @@ import org.box2d.jni.b2Pos;
  * @author wil
  */
 public final class ComparatorUtils {
-    
-    public static <T> T findMapKey(Map<T, ?> map, T target) {
-        if (map == null) {
-            return null;
-        }
-        @SuppressWarnings("unchecked")
-        Set<T> keys = map.keySet();
-        for (T next : keys) {
-            if ( Objects.equals(next, target) ) {
-                return next;
-            }
-        }
-        return null;
-    }
-    
+
     public static boolean equals(b2Pos a, b2Pos b) {
         if (a == null || b == null) {
             return false;
@@ -65,7 +49,7 @@ public final class ComparatorUtils {
         }
         return Double.compare(a.y().doubleValue(), b.y().doubleValue()) == 0;
     }
-    
+
     public static boolean equals(Vector2f a, b2Pos b) {
         if (a == null || b == null) {
             return false;

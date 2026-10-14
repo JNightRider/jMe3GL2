@@ -456,6 +456,9 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
         
         checkAppliedPhysicalTransformation();
         physicsProcess(tpf);
+        if (physicsSpace != null && physicsSpace.isParallel()) {
+            physicsSpace.enqueue(() -> physicsParallel(tpf));
+        }
     }
 
     /**
@@ -485,12 +488,18 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
 
     /** Data initialization for this body (optional). */
     protected void ready() {}
-    
+
     /**
      * Updating physical processes (optional).
      * @param delta time per frame (in seconds)
      */
     protected void physicsProcess(float delta) {}
+
+    /**
+     * Updating physical processes (parallel).
+     * @param delta time per frame (in seconds)
+     */
+    protected void physicsParallel(float delta) {}
 
     /**
      * Returns the body id.

@@ -73,8 +73,7 @@ import org.je3gl.box2d.util.Converter;
 import org.je3gl.box2d.util.MathUtils;
 import org.je3gl.box2d.control.mover.Center1Fcn;
 import org.je3gl.box2d.debug.Drawable;
-import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
-import org.je3gl.box2d.debug.batch.BatchSnapshot;
+import org.je3gl.box2d.debug.draw.Draw;
 import org.je3gl.box2d.listener.SpaceListener;
 
 
@@ -301,7 +300,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     };
 
-    public boolean jump() {
+    public boolean applyJump() {
         if (onGround == false || walkable == false) {
             return false;
         }
@@ -332,7 +331,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         return true;
     }
     
-    public void update(float timeStep, float throttle) {
+    public void applyMoveAndUpdate(float timeStep, float throttle) {
         if (moverJointId == null) {
             return;
         }
@@ -499,31 +498,40 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     }
 
     /**
-     * The ground probe is a point, a circle, or a segment, all carried by the proxy.
-     * 
-     * @param draw BatchSnapshot
-     * @param origin Vector3f
-     * @param translation Vector3f
+     * The ground probe is a point, a circle, or a segment, all carried by the
+     * proxy.
+     *
+     * @param draw Draw
+     * @param norigin Vector3f
+     * @param ntranslation Vector3f
      * @param fraction float
      * @param hit boolean
      */
-    private void drawPogo(BatchSnapshot draw, Vector3f origin, Vector3f translation, float fraction, boolean hit) {
-        int color = hit ? b2_colorPlum : b2_colorGray;
-        Vector3f delta = translation.mult(fraction);
+    private void drawPogo(Draw draw, Vector3f norigin, Vector3f ntranslation, float fraction, boolean hit) {
+        try (ArenaAlloc arena = allocPush()) {
+            b2Pos origin = Converter.toB2Pos(norigin, b2Pos.calloc(arena));
+            b2Pos translation = Converter.toB2Pos(ntranslation, b2Pos.calloc(arena));
+            
+            int color = hit ? b2_colorPlum : b2_colorGray;
+            b2Pos delta = MathUtils.product(fraction, translation, b2Pos.calloc(arena));
 
-        draw.drawLine(origin.x, origin.y, origin.x + delta.x, origin.y + delta.y, b2_colorGray);
-        draw.drawPoint(origin.x + delta.x, origin.y + delta.y, 10.0f, color);
+            b2Pos aux = MathUtils.sum(origin, delta, b2Pos.calloc(arena));
+            draw.drawLine(origin, aux, b2_colorGray);
+            draw.drawPoint(aux, 10.0f, color);
+
+        }
     }
 
     @Override
-    public void rawDrawing(PhysicsDebugSceneProcessor processor, BatchSnapshot snapshot) {
-//        drawPogo( snapshot, pogoOrigin, pogoTranslation, pogoFraction, pogoHit );
-//        try (ArenaAlloc arena = allocPush()) {
-//            b2Pos position = b2Body_GetPosition( bodyId, b2Pos.calloc(arena) );
-//            
-//            int color = onGround ? b2_colorOrange : b2_colorAquamarine;
-//            snapshot.drawLine(position.x().floatValue(), position.y().floatValue(), position.x().floatValue() + velocity.x, position.y().floatValue() + velocity.y, color);
-//        }
+    public void rawDrawing(Draw draw) {
+        drawPogo(draw, pogoOrigin, pogoTranslation, pogoFraction, pogoHit);
+        try (ArenaAlloc arena = allocPush()) {
+            b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));
+            b2Pos vel = b2Pos.calloc(arena).set(position.x().doubleValue() + velocity.x, position.y().doubleValue() + velocity.y);
+
+            int color = onGround ? b2_colorOrange : b2_colorAquamarine;
+            draw.drawLine(position, vel, color);
+        }
     }
 
     public void setJumpSpeed(float jumpSpeed) {

@@ -34,8 +34,11 @@ import org.je3gl.util.Arg;
 
 /**
  *
- * @param <T>
+ * @param <T> object type
+ *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public interface PoolHandler<T> {
 

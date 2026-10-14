@@ -1,7 +1,7 @@
 /*
 BSD 3-Clause License
 
-Copyright (c) 2023-2026, Night Rider (Wilson)
+Copyright (c) 2023-2025, Night Rider (Wilson)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -28,46 +28,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.je3gl.box2d.debug.batch;
-
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
-import org.je3gl.utilities.ColorUtilities;
 
 /**
- *
+ * Package containing the handlers for an {@code ObjectPool}.
+ * 
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class TextData {
-    
-    private Vector3f position;
-    private ColorRGBA color;
-    private String text;
-
-    public TextData() {
-    }
-
-    public void setPosition(Vector3f position) {
-        this.position = position;
-    }
-
-    public void setColor(int color) {
-        this.color = ColorUtilities.fromIntRGBA(color, 1f);
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public Vector3f getPosition() {
-        return position;
-    }
-
-    public ColorRGBA getColor() {
-        return color;
-    }
-
-    public String getText() {
-        return text;
-    }
-}
+package org.je3gl.util.pool;
