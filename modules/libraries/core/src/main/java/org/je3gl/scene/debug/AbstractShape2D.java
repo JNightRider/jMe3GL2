@@ -165,7 +165,9 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
 
         position.rewind();
         for (Vector3f point : vertices) {
-            position.put(point.x).put(point.y).put(point.z);
+            position.put(point.x)
+                    .put(point.y)
+                    .put(point.z);
         }
         buffPosition.updateData(position);
 
@@ -184,7 +186,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
             for (int i = 0; i < vertices.length; i++) {
                 int next = (i + 1) % vertices.length;
                 index.put((short) i)
-                        .put((short) next);
+                     .put((short) next);
             }
         }
         index.flip();
