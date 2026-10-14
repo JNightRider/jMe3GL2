@@ -43,7 +43,6 @@ import com.jme3.util.BufferUtils;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.logging.Logger;
 
 /**
  * Abstract class <code>AbstractShape2D</code> in charge of implementing the
@@ -58,16 +57,13 @@ import java.util.logging.Logger;
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
 
     /**
-     * Class logger.
-     */
-    private static final Logger LOGGER = Logger.getLogger(AbstractShape2D.class.getName());
-
-    /**
      * Arrangement of the mesh vertices.
      */
     protected Vector3f[] vertices;
 
+    /** mode */
     private ShapeMode2D mode2D;
+    /** size buffer */
     private int count;
 
     /**
@@ -207,10 +203,14 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      */
     @Override
     public void read(JmeImporter im) throws IOException {
-        final InputCapsule in = im.getCapsule(this);
         super.read(im);
+        InputCapsule in = im.getCapsule(this);
+        Vector3f[] vertices0 = (Vector3f[]) in.readSavableArray("vertices", vertices);
+        ShapeMode2D shapeMode2D = in.readEnum("mode2D", ShapeMode2D.class, ShapeMode2D.OUTLINE);
+        int size = in.readInt("count2D", 0);
 
-        vertices = (Vector3f[]) in.readSavableArray("vertices", vertices);
+        updateGeometry(shapeMode2D, size);
+        updatePoints(vertices0);
     }
 
     /**
@@ -221,9 +221,10 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
-        final OutputCapsule out = ex.getCapsule(this);
         super.write(ex);
-
+        OutputCapsule out = ex.getCapsule(this);
         out.write(vertices, "vertices", null);
+        out.write(mode2D, "mode2D", ShapeMode2D.OUTLINE);
+        out.write(count, "count2D", 0);
     }
 }
