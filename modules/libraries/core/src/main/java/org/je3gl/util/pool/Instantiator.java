@@ -27,16 +27,28 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.util.pool;
 
 import org.je3gl.util.Arg;
 
 /**
+ * An interface responsible for creating new instances of an object from its
+ * parameters.
+ *
+ * @param <T> object type
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public interface Instantiator<T> {
-    
-    T newInstance(Arg... args);    
+
+    /**
+     * Generates a new instance.
+     *
+     * @param args object parameters
+     * @return the new instance
+     */
+    T newInstance(Arg... args);
 }

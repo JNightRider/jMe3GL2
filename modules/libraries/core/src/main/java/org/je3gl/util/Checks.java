@@ -27,7 +27,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.util;
 
 /**
@@ -39,6 +39,13 @@ package org.je3gl.util;
  */
 public final class Checks {
 
+    /**
+     * Compruebe si hay argumentos no válidos y verifique si el número de
+     * argumentos es el mínimo requerido o mayor.
+     *
+     * @param minSize int
+     * @param args Arg
+     */
     public static void checkArgs(int minSize, Arg... args) {
         if (args == null) {
             throw new NullPointerException("Arguments are required");
@@ -46,16 +53,5 @@ public final class Checks {
         if (args.length < minSize) {
             throw new IllegalStateException("The number of arguments does not meet the minimum of " + minSize);
         }
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> T checkTypeOf(Class<T> typeOf, Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (value.getClass().isAssignableFrom(typeOf)) {
-            return (T) value;
-        }
-        throw new IllegalArgumentException("The type does not match: (" + typeOf + " != " + value.getClass() + ')');
     }
 }

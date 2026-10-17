@@ -41,21 +41,45 @@ import org.je3gl.util.Arg;
 import org.je3gl.util.Checks;
 
 /**
- * @param <BUFFER>
+ * Class responsible for managing the {@link PoolHandler} for a group of
+ * {@code Buffer} objects within a pool of objects ({@code ObjectPool}).
+ *
+ * @param <BUFFER> type buffer
+ *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public final class BufferPoolHandler<BUFFER extends Buffer> implements PoolHandler<BUFFER> {
 
+    /** IntBuffer instantiato.r */
     public static final Instantiator<IntBuffer> INTEGER = (args) -> BufferUtils.createIntBuffer(args[0].getInt());
+    /** FloatBuffer instantiato.r */
     public static final Instantiator<FloatBuffer> FLOAT = (args) -> BufferUtils.createFloatBuffer(args[0].getInt());
+    /** ShortBuffer instantiato.r */
     public static final Instantiator<ShortBuffer> SHORT = (args) -> BufferUtils.createShortBuffer(args[0].getInt());
 
+    /**
+     * The handler or object responsible for creating new instances of a buffer
+     * type.
+     */
     private final Instantiator<BUFFER> handler;
 
+    /**
+     * Constructor
+     *
+     * @param handler Instantiator
+     */
     public BufferPoolHandler(Instantiator<BUFFER> handler) {
         this.handler = handler;
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param args Arg
+     * @return BUFFER
+     */
     @Override
     public BUFFER create(Arg... args) {
         Checks.checkArgs(1, args);
@@ -63,6 +87,13 @@ public final class BufferPoolHandler<BUFFER extends Buffer> implements PoolHandl
         return buffer;
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param value BUFFER
+     * @param args Arg
+     * @return boolean
+     */
     @Override
     public boolean validate(BUFFER value, Arg... args) {
         if (value == null) {
@@ -73,6 +104,11 @@ public final class BufferPoolHandler<BUFFER extends Buffer> implements PoolHandl
         return limit <= value.limit();
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param value BUFFER
+     */
     @Override
     public void destroy(BUFFER value) {
         if (value != null) {

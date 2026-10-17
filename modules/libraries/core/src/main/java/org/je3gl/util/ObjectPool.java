@@ -33,6 +33,7 @@ package org.je3gl.util;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.je3gl.util.pool.PoolHandler;
 
 /**
@@ -64,6 +65,10 @@ public class ObjectPool<T> {
     /** Map of objects that are unlocked, that is, available for use. */
     private Map<T, Long> unlock;
 
+    /**
+     * The handler or object responsible for creating new instances of a object
+     * type.
+     */
     private PoolHandler<T> poolHandler;
 
     /**

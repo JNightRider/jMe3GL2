@@ -27,12 +27,14 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.util.pool;
 
 import org.je3gl.util.Arg;
 
 /**
+ * An interface in charge of defining the methods to create the objects of a
+ * {@link ObjectPool}-
  *
  * @param <T> object type
  *
@@ -42,9 +44,28 @@ import org.je3gl.util.Arg;
  */
 public interface PoolHandler<T> {
 
+    /**
+     * Create a new object to use
+     *
+     * @param args arguments
+     * @return object
+     */
     T create(Arg... args);
-    
+
+    /**
+     * Validates the object using one or more parameters to determine whether it
+     * is usable.
+     *
+     * @param value object
+     * @param args arguments
+     * @return {@code boolean}
+     */
     boolean validate(T value, Arg... args);
-    
+
+    /**
+     * Destroys the object created by {@link #create(org.je3gl.util.Arg...) }
+     *
+     * @param value object
+     */
     void destroy(T value);
 }
