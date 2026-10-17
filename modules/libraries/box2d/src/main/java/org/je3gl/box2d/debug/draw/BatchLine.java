@@ -36,34 +36,63 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Line;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.box2d.jni.b2Pos;
+
 import org.je3gl.utilities.ColorUtilities;
 
 /**
+ * The class responsible for managing a batch of drawings of type {@code Line}.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public final class BatchLine {
 
+    /**
+     * Class responsible for storing the data required for the {@link BatchLine}
+     * batch.
+     */
     private static final class Data {
+
+        /**  Start point: Vector3f */
         final Vector3f p1;
+        /** End point: Vector3f */
         final Vector3f p2;
+        /** color: ColorRGBA  */
         final ColorRGBA color;
 
+        /**
+         * Constructor
+         *
+         * @param p1 Vector3f
+         * @param p2 Vector3f
+         * @param color ColorRGBA
+         */
         private Data(Vector3f p1, Vector3f p2, ColorRGBA color) {
             this.p1 = p1;
             this.p2 = p2;
             this.color = color;
         }
-        
+
+        /**
+         * Create a new data type for the draw batch using native Box2D data.
+         *
+         * @param p1 b2Pos
+         * @param p2 b2Pos
+         * @param color int
+         * @return Data
+         */
         static Data create(b2Pos p1, b2Pos p2, int color) {
             float x1 = p1.x().floatValue(),
-                  y1 = p1.y().floatValue();
+                    y1 = p1.y().floatValue();
 
             float x2 = p2.x().floatValue(),
-                  y2 = p2.y().floatValue();
+                    y2 = p2.y().floatValue();
             return new Data(
                     new Vector3f(x1, y1, 0.0f),
                     new Vector3f(x2, y2, 0.0f),
@@ -72,18 +101,36 @@ public final class BatchLine {
         }
     }
 
+    /** batch size. */
     public static final int LINE_BATCH_SIZE = (2 * 2048);
-
+    /** List or batch of data to render. */
     private final List<Data> dataList = new ArrayList<>(LINE_BATCH_SIZE);
+
+    /**
+     * A mesh that defines the 2D shape of the drawable object.
+     */
     private final Line mesh = new Line(new Vector3f(), new Vector3f());
 
-    public BatchLine() {
-    }
+    /** Constructor */
+    public BatchLine() { }
 
+    /**
+     * Add a new data point to the drawing batch.
+     *
+     * @param p1 b2Pos
+     * @param p2 b2Pos
+     * @param color int
+     */
     public void addData(b2Pos p1, b2Pos p2, int color) {
         dataList.add(Data.create(p1, p2, color));
     }
 
+    /**
+     * Draw the data as 2D shapes within the designated screen area.
+     *
+     * @param renderManager RenderManager
+     * @param drawable Geometry
+     */
     public void draw(RenderManager renderManager, Geometry drawable) {
         for (Data data : dataList) {
             mesh.updatePoints(data.p1, data.p2);
@@ -96,6 +143,9 @@ public final class BatchLine {
         }
     }
 
+    /**
+     * Clean the dataset
+     */
     public void clear() {
         dataList.clear();
     }

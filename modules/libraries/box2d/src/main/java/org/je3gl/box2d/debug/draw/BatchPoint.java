@@ -45,23 +45,49 @@ import org.je3gl.scene.debug.Point2D;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
+ * The class responsible for managing a batch of drawings of type
+ * {@code Point2D}.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class BatchPoint {
+public final class BatchPoint {
 
+    /**
+     * Class responsible for storing the data required for the {@link BatchPoint}
+     * batch.
+     */
     private static final class Data {
 
+        /** position: Vector3f */
         final Vector3f position;
+        /** size: float */
         final float size;
+        /** color: ColorRGBA*/
         final ColorRGBA color;
 
+        /**
+         * Constructor
+         *
+         * @param position Vector3f
+         * @param size float
+         * @param color ColorRGBA
+         */
         public Data(Vector3f position, float size, ColorRGBA color) {
             this.position = position;
             this.size = size;
             this.color = color;
         }
 
+        /**
+         * Create a new data type for the draw batch using native Box2D data.
+         *
+         * @param p b2Pos
+         * @param size float
+         * @param color int
+         * @return Data
+         */
         static Data create(b2Pos p, float size, int color) {
             return new Data(
                     new Vector3f(p.x().floatValue(), p.y().floatValue(), 0.0f),
@@ -71,18 +97,36 @@ public class BatchPoint {
         }
     }
 
+    /** batch size. */
     public static final int POINT_BATCH_SIZE = 2048;
-
+    /** List or batch of data to render. */
     private final List<Data> dataList = new ArrayList<>(POINT_BATCH_SIZE);
+
+    /**
+     * A mesh that defines the 2D shape of the drawable object.
+     */
     private final Point2D mesh = new Point2D();
 
-    public BatchPoint() {
-    }
+    /** Constructor */
+    public BatchPoint() { }
 
+    /**
+     * Add a new data point to the drawing batch.
+     *
+     * @param p b2Pos
+     * @param size float
+     * @param color int
+     */
     public void addData(b2Pos p, float size, int color) {
         dataList.add(Data.create(p, size, color));
     }
 
+    /**
+     * Draw the data as 2D shapes within the designated screen area.
+     *
+     * @param renderManager RenderManager
+     * @param drawable Geometry
+     */
     public void draw(RenderManager renderManager, Geometry drawable) {
         for (Data data : dataList) {
             Material mat = drawable.getMaterial();
@@ -96,6 +140,9 @@ public class BatchPoint {
         }
     }
 
+    /**
+     * Clean the dataset
+     */
     public void clear() {
         dataList.clear();
     }

@@ -55,20 +55,44 @@ import org.je3gl.scene.debug.ShapeMode2D;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
+ * The class responsible for managing a batch of drawings of type
+ * {@code Capsule2D}.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class BatchCapsule {
+public final class BatchCapsule {
 
+    /**
+     * Class responsible for storing the data required for the {@link BatchCapsule}
+     * batch.
+     */
     private static final class Data {
 
+        /** Vector3f */
         final Vector3f position;
+        /** float */
         final float angle;
+        /** float */
         final float radius;
+        /** float */
         final float length;
+        /** boolean */
         final boolean solid;
+        /** ColorRGBA */
         final ColorRGBA color;
 
+        /**
+         * Constructor
+         *
+         * @param position Vector3f
+         * @param angle float
+         * @param radius float
+         * @param length float
+         * @param solid boolean
+         * @param color ColorRGBA
+         */
         public Data(Vector3f position, float angle, float radius, float length, boolean solid, ColorRGBA color) {
             this.position = position;
             this.angle = angle;
@@ -78,6 +102,16 @@ public class BatchCapsule {
             this.color = color;
         }
 
+        /**
+         * Create a new data type for the draw batch using native Box2D data.
+         *
+         * @param p1 b2Pos
+         * @param p2 b2Pos
+         * @param radius float
+         * @param color int
+         * @param solid boolean
+         * @return Data
+         */
         static Data create(b2Pos p1, b2Pos p2, float radius, int color, boolean solid) {
             try (ArenaAlloc arena = allocPush()) {
                 b2Vec2 d = b2SubPos(p1, p2, b2Vec2.calloc(arena));
@@ -106,19 +140,48 @@ public class BatchCapsule {
         }
     }
 
+    /** batch size. */
     public static final int APSULE_BATCH_SIZE = 2048;
-
+    /** List or batch of data to render. */
     private final List<Data> dataList = new ArrayList<>(APSULE_BATCH_SIZE);
+
+    /**
+     * A mesh that defines the 2D shape of the drawable object; the resulting
+     * object is solid (filled).
+     */
     private final Capsule2D meshFilled  = new Capsule2D(ShapeMode2D.FILLED, Capsule2D.COUNT);
+
+    /**
+     * A mesh that defines the 2D shape of the drawable object; the resulting
+     * object is outline (only the edges are drawn).
+     */
     private final Capsule2D meshOutline = new Capsule2D(ShapeMode2D.OUTLINE, Capsule2D.COUNT);
 
-    public BatchCapsule() {
-    }
+    /** Constructor */
+    public BatchCapsule() { }
 
+    /**
+     * Add a new data point to the drawing batch.
+     *
+     * @param p1 b2Pos
+     * @param p2 b2Pos
+     * @param radius float
+     * @param color int
+     * @param solid boolean
+     */
     public void addData(b2Pos p1, b2Pos p2, float radius, int color, boolean solid) {
-        dataList.add(Data.create(p1, p2, radius, color, solid));
+        Data data = Data.create(p1, p2, radius, color, solid);
+        if (data != null) {
+            dataList.add(data);
+        }
     }
 
+    /**
+     * Draw the data as 2D shapes within the designated screen area.
+     *
+     * @param renderManager RenderManager
+     * @param drawable Geometry
+     */
     public void draw(RenderManager renderManager, Geometry drawable) {
         for (Data data : dataList) {
             TempVars vars = TempVars.get();
@@ -126,8 +189,8 @@ public class BatchCapsule {
 
             float radius = data.radius;
             float length = data.length;
-            meshFilled.updateGeometry(Capsule2D.COUNT, radius * 2, length + (radius * 2));
-            meshOutline.updateGeometry(Capsule2D.COUNT, radius * 2, length + (radius * 2));
+            meshFilled.updatePoints(Capsule2D.COUNT, radius * 2, length + (radius * 2));
+            meshOutline.updatePoints(Capsule2D.COUNT, radius * 2, length + (radius * 2));
             drawable.setMesh(meshFilled);
 
             Quaternion q = vars.quat1;
@@ -153,6 +216,9 @@ public class BatchCapsule {
         }
     }
 
+    /**
+     * Clean the dataset
+     */
     public void clear() {
         dataList.clear();
     }

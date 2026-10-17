@@ -27,7 +27,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.box2d.debug.draw;
 
 import com.jme3.material.Material;
@@ -52,19 +52,41 @@ import org.je3gl.scene.debug.ShapeMode2D;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
+ * The class responsible for managing a batch of drawings of type
+ * {@code Circle2D}.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class BatchCircle {
-    
+public final class BatchCircle {
+
+    /**
+     * Class responsible for storing the data required for the {@link BatchCircle}
+     * batch.
+     */
     private static final class Data {
 
+        /** Vector3f */
         final Vector3f position;
+        /** float*/
         final float angle;
+        /** float*/
         final float radius;
+        /** boolean*/
         final boolean solid;
+        /** ColorRGBA */
         final ColorRGBA color;
 
+        /**
+         * Constructor
+         *
+         * @param position Vector3f
+         * @param angle float
+         * @param radius float
+         * @param solid boolean
+         * @param color ColorRGBA
+         */
         public Data(Vector3f position, float angle, float radius, boolean solid, ColorRGBA color) {
             this.position = position;
             this.angle = angle;
@@ -73,6 +95,16 @@ public class BatchCircle {
             this.color = color;
         }
 
+        /**
+         * Create a new data type for the draw batch using native Box2D data.
+         *
+         * @param transform b2WorldTransform
+         * @param center b2Pos
+         * @param radius float
+         * @param color int
+         * @param solid boolean
+         * @return Data
+         */
         static Data create(b2WorldTransform transform, b2Pos center, float radius, int color, boolean solid) {
             b2Rot rot = transform.q();
             b2Pos pos = transform.p();
@@ -85,6 +117,15 @@ public class BatchCircle {
             );
         }
 
+        /**
+         * Create a new data type for the draw batch using native Box2D data.
+         *
+         * @param center b2Pos
+         * @param radius float
+         * @param color int
+         * @param solid boolean
+         * @return Data
+         */
         static Data create(b2Pos center, float radius, int color, boolean solid) {
             return new Data(
                     new Vector3f(center.x().floatValue(), center.y().floatValue(), 0.0f),
@@ -96,27 +137,61 @@ public class BatchCircle {
         }
     }
 
+    /** batch size. */
     public static final int CIRCLE_BATCH_SIZE = 2048;
-
+    /** List or batch of data to render. */
     private final List<Data> dataList = new ArrayList<>(CIRCLE_BATCH_SIZE);
-    private final Circle2D meshFilled  = new Circle2D(ShapeMode2D.FILLED, Circle2D.COUNT);
+
+    /**
+     * A mesh that defines the 2D shape of the drawable object; the resulting
+     * object is solid (filled).
+     */
+    private final Circle2D meshFilled = new Circle2D(ShapeMode2D.FILLED, Circle2D.COUNT);
+
+    /**
+     * A mesh that defines the 2D shape of the drawable object; the resulting
+     * object is outline (only the edges are drawn).
+     */
     private final Circle2D meshOutline = new Circle2D(ShapeMode2D.OUTLINE, Circle2D.COUNT);
 
-    public BatchCircle() {
-    }
+    /** Constructor */
+    public BatchCircle() { }
 
+    /**
+     * Add a new data point to the drawing batch.
+     *
+     * @param transform b2WorldTransform
+     * @param center b2Pos
+     * @param radius float
+     * @param color int
+     * @param solid boolean
+     */
     public void addData(b2WorldTransform transform, b2Pos center, float radius, int color, boolean solid) {
         dataList.add(Data.create(transform, center, radius, color, solid));
     }
-    
+
+    /**
+     * Add a new data point to the drawing batch.
+     *
+     * @param center b2Pos
+     * @param radius float
+     * @param color int
+     * @param solid boolean
+     */
     public void addData(b2Pos center, float radius, int color, boolean solid) {
         dataList.add(Data.create(center, radius, color, solid));
     }
 
+    /**
+     * Draw the data as 2D shapes within the designated screen area.
+     *
+     * @param renderManager RenderManager
+     * @param drawable Geometry
+     */
     public void draw(RenderManager renderManager, Geometry drawable) {
         for (Data data : dataList) {
             TempVars vars = TempVars.get();
-            Material mat  = drawable.getMaterial();
+            Material mat = drawable.getMaterial();
 
             meshFilled.updatePoints(Circle2D.COUNT, data.radius, 0);
             meshOutline.updatePoints(Circle2D.COUNT, data.radius, 0);
@@ -145,6 +220,9 @@ public class BatchCircle {
         }
     }
 
+    /**
+     * Clean the dataset
+     */
     public void clear() {
         dataList.clear();
     }

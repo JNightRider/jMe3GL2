@@ -48,23 +48,49 @@ import org.je3gl.util.ObjectPool;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
+ * The class responsible for managing a batch of drawings of type
+ * {@code String}.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class BatchText {
+public final class BatchText {
 
+    /**
+     * Class responsible for storing the data required for the {@link BatchText}
+     * batch.
+     */
     private static final class Data {
 
+        /** Vector3f */
         final Vector3f position;
+        /** ColorRGBA */
         final ColorRGBA color;
+        /** String */
         final String text;
 
+        /**
+         * Constructor
+         *
+         * @param position Vector3f
+         * @param color ColorRGBA
+         * @param text String
+         */
         private Data(Vector3f position, ColorRGBA color, String text) {
             this.position = position;
             this.color = color;
             this.text = text;
         }
 
+        /**
+         * Create a new data type for the draw batch using native Box2D data.
+         *
+         * @param p b2Pos
+         * @param s long
+         * @param color int
+         * @return {@link Data}
+         */
         static Data create(b2Pos p, long s, int color) {
             return new Data(
                     new Vector3f(p.x().floatValue(), p.y().floatValue(), 0.0f),
@@ -74,24 +100,48 @@ public class BatchText {
         }
     }
 
+    /** List or batch of data to render. */
     private final List<Data> dataList = new ArrayList<>();
-
+    /** Typography graphics manager. */
     private DebugGraphics graphics;
 
+    /** A manager for a pool of {@code BitmapText} objects. */
     private final ObjectPool<BitmapText> textPool = new ObjectPool<>(new BitmapTextHandler());
+    /** Cached list of {@code BitmapText}. */
     private List<BitmapText> textList = new ArrayList<>();
 
+    /** Constructor */
     public BatchText() {
     }
 
+    /**
+     * Sets the glyph manager for the font.
+     *
+     * @param graphics DebugGraphics
+     */
     public void setGraphics(DebugGraphics graphics) {
         this.graphics = graphics;
     }
 
+    /**
+     * Add a new data point to the drawing batch.
+     *
+     * @param p b2Pos
+     * @param s long (address)
+     * @param color int (RGB)
+     */
     public void addData(b2Pos p, long s, int color) {
         dataList.add(Data.create(p, s, color));
     }
 
+    /**
+     * Draw the data as 2D shapes within the designated screen area.
+     *
+     * @param rootNode Node
+     * @param camera Camera
+     * @param width int
+     * @param height int
+     */
     public void draw(Node rootNode, Camera camera, int width, int height) {
         List<BitmapText> cache = textList;
         textList = new ArrayList<>();
@@ -129,6 +179,9 @@ public class BatchText {
         }
     }
 
+    /**
+     * Clean the dataset
+     */
     public void clear() {
         dataList.clear();
     }
