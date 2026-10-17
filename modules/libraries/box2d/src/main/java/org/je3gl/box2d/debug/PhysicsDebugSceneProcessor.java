@@ -63,27 +63,55 @@ import org.je3gl.box2d.util.LockObject;
 import org.je3gl.scene.debug.custom.DebugGraphics;
 
 /**
+ * Class responsible for processing physical shapes from the Box2D debugger for
+ * visualization on screen.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
-public class PhysicsDebugSceneProcessor implements SceneProcessor {
-
-    /**
-     * Class logger.
-     */
+public final class PhysicsDebugSceneProcessor implements SceneProcessor {
+    /** Class logger */
     private static final Logger LOGGER = Logger.getLogger(PhysicsDebugSceneProcessor.class.getName());
 
+    /** AssetManager */
     private final AssetManager assetManager;
+    /** AppStateManager */
     private final AppStateManager stateManager;
 
+    /**
+     * Box2dAppState
+     *
+     * @see Box2dAppState
+     */
     private Box2dAppState box2dAppState;
 
+    /**
+     * The object responsible for managing the batch of drawables.
+     */
     private Draw drawables;
+    /** RenderManager */
     private RenderManager renderManager;
+    /** DebugGraphics */
     private DebugGraphics debugGraphics;
 
-    private boolean initialized;
+    /**
+     * A flag that is responsible for determining whether this processed post
+     * has been initialized or not.
+     */
+    private boolean initialized = false;
 
+    /**
+     * A flag that indicates whether this post-processing is enabled or not.
+     */
+    private boolean enabled = true;
+
+    /**
+     * Constructor.
+     *
+     * @param assetManager AssetManager
+     * @param stateManager AppStateManager
+     */
     public PhysicsDebugSceneProcessor(AssetManager assetManager, AppStateManager stateManager) {
         this.assetManager = assetManager;
         this.stateManager = stateManager;
@@ -92,71 +120,131 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
     //----------------------------------------------------------------------
     //                              CALLBACKS
     //----------------------------------------------------------------------
+
+    /**
+     * {@code DrawPolygonFcnI}
+     */
     private final DrawPolygonFcnI DrawPolygonFcn = (transform, vertices, vertexCount, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawPolygon(transform, vertices, vertexCount, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawPolygon(transform, vertices, vertexCount, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawSolidPolygonFcnI}
+     */
     private final DrawSolidPolygonFcnI DrawSolidPolygonFcn = (transform, vertices, vertexCount, radius, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawSolidPolygon(transform, vertices, vertexCount, radius, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawSolidPolygon(transform, vertices, vertexCount, radius, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawCircleFcnI}
+     */
     private final DrawCircleFcnI DrawCircleFcn = (center, radius, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawCircle(center, radius, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawCircle(center, radius, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawSolidCircleFcnI}
+     */
     private final DrawSolidCircleFcnI DrawSolidCircleFcn = (transform, center, radius, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawSolidCircle(transform, center, radius, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawSolidCircle(transform, center, radius, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawSolidCapsuleFcnI}
+     */
     private final DrawSolidCapsuleFcnI DrawSolidCapsuleFcn = (p1, p2, radius, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawCapsule(p1, p2, radius, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawCapsule(p1, p2, radius, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawLineFcnI}
+     */
     private final DrawLineFcnI DrawLineFcn = (p1, p2, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawLine(p1, p2, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawLine(p1, p2, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawTransformFcnI}
+     */
     private final DrawTransformFcnI DrawTransformFcn = (transform, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawTransform(transform, 1.0f);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawTransform(transform, 1.0f);
+            }
         }
     };
 
+    /**
+     * {@code DrawPointFcnI}
+     */
     private final DrawPointFcnI DrawPointFcn = (p, size, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawPoint(p, size, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawPoint(p, size, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawStringFcnI}
+     */
     private final DrawStringFcnI DrawStringFcn = (p, s, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawString(p, s, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawString(p, s, color);
+            }
         }
     };
 
+    /**
+     * {@code DrawBoundsFcnI}
+     */
     private final DrawBoundsFcnI DrawBoundsFcn = (aabb, color, context) -> {
-        synchronized (LockObject.LOCK) {
-            drawables.drawBounds(aabb, color);
+        if (checkProcess()) {
+            synchronized (LockObject.LOCK) {
+                drawables.drawBounds(aabb, color);
+            }
         }
     };
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param rm RenderManager
+     * @param vp ViewPort
+     */
     @Override
     public void initialize(RenderManager rm, ViewPort vp) {
         box2dAppState = stateManager.getState(Box2dAppState.class);
-        PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
+        if (box2dAppState == null) {
+            throw new NullPointerException("Box2dAppState");
+        }
 
+        PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
         b2DebugDraw debugDraw = physicsSpace.getDebugDraw();
         debugDraw.DrawBoundsFcn(DrawBoundsFcn)
                 .DrawCircleFcn(DrawCircleFcn)
@@ -171,15 +259,21 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
         applyDrawSettings(debugDraw, box2dAppState.getDrawSettings());
         drawables = new Draw(assetManager);
-        
+
         if (debugGraphics == null) {
             debugGraphics = new StringDebugGraphics(assetManager);
         }
-        
+
         renderManager = rm;
         initialized = true;
     }
 
+    /**
+     * Apply the settings to the Box2D debugger.
+     *
+     * @param debugDraw b2DebugDraw
+     * @param settings DrawSettings
+     */
     private void applyDrawSettings(b2DebugDraw debugDraw, DrawSettings settings) {
         debugDraw.drawShapes(settings.drawShapes())
                 .drawBodyNames(settings.drawBodyNames())
@@ -215,19 +309,36 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
         LOGGER.info(String.valueOf(sb));
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param vp ViewPort
+     * @param w int
+     * @param h int
+     */
     @Override
     public void reshape(ViewPort vp, int w, int h) {
-        
+
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @return 
+     */
     @Override
     public boolean isInitialized() {
         return initialized;
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param tpf float
+     */
     @Override
     public void preFrame(float tpf) {
-        if (box2dAppState == null) {
+        if (! checkProcess()) {
             return;
         }
 
@@ -238,16 +349,41 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
             applyDrawSettings(physicsSpace.getDebugDraw(), box2dAppState.getDrawSettings());
         }
     }
-    
+
+    /**
+     * Updates the text batch data; this method should only be invoked when it
+     * is necessary to draw or add text to the screen within a user interface
+     * (UI) node.
+     *
+     * @param rootNode Node
+     * @param camera Camera
+     * @param width int
+     * @param height int
+     */
     public void updateUI(Node rootNode, Camera camera, int width, int height) {
-        if (!initialized) {
+        if (! checkProcess()) {
             return;
-        }        
+        }
         synchronized (LockObject.LOCK) {
-            drawables.render(debugGraphics,rootNode, camera, width, height);
+            drawables.render(debugGraphics, rootNode, camera, width, height);
         }
     }
 
+    /**
+     * Verify that the process is valid to proceed.
+     *
+     * @return boolean
+     */
+    private boolean checkProcess() {
+        return enabled && initialized
+                && box2dAppState != null && box2dAppState.isInitialized();
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @param rq RenderQueue
+     */
     @Override
     public void postQueue(RenderQueue rq) {
         synchronized (LockObject.LOCK) {
@@ -255,27 +391,68 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
         }
     }
 
+    /**
+     * Clear the canvas (drawing space or data batches)
+     */
     public void flush() {
         if (drawables != null) {
             drawables.flush();
         }
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param out FrameBuffer
+     */
     @Override
     public void postFrame(FrameBuffer out) {
 
     }
 
+    /**
+     * (non-Javadoc)
+     */
     @Override
     public void cleanup() {
-
+        synchronized (LockObject.LOCK) {
+            flush();
+        }
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param profiler AppProfiler
+     */
     @Override
     public void setProfiler(AppProfiler profiler) {
 
     }
 
+    /**
+     * Enable or disable this post-processing
+     *
+     * @param enabled boolean
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    /**
+     * Returns the enabled state flag
+     *
+     * @return boolean
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Returns the batch of drawables
+     *
+     * @return Draw
+     */
     public Draw getDraw() {
         return drawables;
     }
