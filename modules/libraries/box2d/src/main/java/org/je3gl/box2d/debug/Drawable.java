@@ -36,6 +36,7 @@ import org.je3gl.box2d.debug.draw.Draw;
  *
  * @author wil
  */
+@FunctionalInterface
 public interface Drawable {
 
     void rawDrawing(Draw draw);

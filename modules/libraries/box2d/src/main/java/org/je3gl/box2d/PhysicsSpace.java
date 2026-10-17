@@ -47,6 +47,7 @@ import static org.box2d.jni.system.Callbacks.*;
 import org.je3gl.box2d.control.PhysicsBody2D;
 import org.je3gl.box2d.debug.Drawable;
 import org.je3gl.box2d.debug.PhysicsDebugAppState;
+import org.je3gl.box2d.listener.PhysicsProcess;
 import org.je3gl.listener.VoidCallable;
 
 /**
@@ -59,6 +60,7 @@ public class PhysicsSpace implements AutoCloseable {
 
     private final AtomicReference<List<Drawable>> drawables = new AtomicReference<>(new ArrayList<>());
     private final ConcurrentLinkedQueue<AppTask<?>> taskQueue = new ConcurrentLinkedQueue<>();
+    private final List<PhysicsProcess> physicsProcesses = new ArrayList<>();
 
     private int subStepCount = 4;
 
@@ -78,6 +80,14 @@ public class PhysicsSpace implements AutoCloseable {
         box2dAppState = appState;
         worldId = b2CreateWorld(worldDef, b2WorldId.malloc());
         debugDraw = b2DefaultDebugDraw(b2DebugDraw.calloc());
+    }
+
+    public void addPhysicsProcess(PhysicsProcess physicsProcess) {
+        this.physicsProcesses.add(physicsProcess);
+    }
+
+    public void removePhysicsProcess(PhysicsProcess physicsProcess) {
+        this.physicsProcesses.remove(physicsProcess);
     }
 
     public void setDebugAppState(PhysicsDebugAppState debugAppState) {
@@ -130,14 +140,26 @@ public class PhysicsSpace implements AutoCloseable {
         }
     }
 
+    protected final void firePhysicsProcess(float tpf) {
+        for (final PhysicsProcess process : physicsProcesses) {
+            process.invokeProcess(tpf);
+        }
+    }
+
     public void update(float tpf) {
-        runQueuedTasks();
-        b2World_Step(worldId, tpf, subStepCount);
-        if (isEnableDebugger()) {
-            b2World_Draw(worldId, debugDraw);
-            if (debugAppState.isInitialized() && debugAppState.getDebugProcessor().isInitialized()) {
-                for (Drawable drawable : drawables.get()) {
-                    drawable.rawDrawing(debugAppState.getDebugProcessor().getDraw());
+        if (tpf > 0) {
+            // ejecutar las tareas
+            runQueuedTasks();
+            firePhysicsProcess(tpf);
+
+            // actualizar y dibujar las físicas
+            b2World_Step(worldId, tpf, subStepCount);
+            if (isEnableDebugger()) {
+                b2World_Draw(worldId, debugDraw);
+                if (debugAppState.isInitialized() && debugAppState.getDebugProcessor().isInitialized()) {
+                    for (Drawable drawable : drawables.get()) {
+                        drawable.rawDrawing(debugAppState.getDebugProcessor().getDraw());
+                    }
                 }
             }
         }
