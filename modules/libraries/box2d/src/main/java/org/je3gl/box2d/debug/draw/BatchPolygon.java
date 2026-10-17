@@ -27,11 +27,12 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.box2d.debug.draw;
 
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -43,11 +44,12 @@ import java.util.List;
 
 import org.box2d.jni.b2Pos;
 import org.box2d.jni.b2Rot;
+import org.box2d.jni.b2Vec2;
 import org.box2d.jni.b2WorldTransform;
 
 import static org.box2d.jni.include.MathFunctions.*;
 
-import org.je3gl.scene.debug.Circle2D;
+import org.je3gl.scene.debug.Polygon2D;
 import org.je3gl.scene.debug.ShapeMode2D;
 import org.je3gl.utilities.ColorUtilities;
 
@@ -55,76 +57,76 @@ import org.je3gl.utilities.ColorUtilities;
  *
  * @author wil
  */
-public class DCircle {
-    
+public class BatchPolygon {
+
     private static final class Data {
 
+        final Vector3f[] vertices;
         final Vector3f position;
         final float angle;
-        final float radius;
         final boolean solid;
         final ColorRGBA color;
 
-        public Data(Vector3f position, float angle, float radius, boolean solid, ColorRGBA color) {
+        private Data(Vector3f[] vertices, Vector3f position, float angle, boolean solid, ColorRGBA color) {
+            this.vertices = vertices;
             this.position = position;
             this.angle = angle;
-            this.radius = radius;
             this.solid = solid;
             this.color = color;
         }
 
-        static Data create(b2WorldTransform transform, b2Pos center, float radius, int color, boolean solid) {
-            b2Rot rot = transform.q();
+        static Data create(b2WorldTransform transform, long vertices, int vertexCount, int color, boolean solid) {
+            b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
+            Vector3f[] vs = new Vector3f[vertexCount];
+            int index = 0;
+            for (b2Vec2 vec2 : buffer) {
+                vs[index++] = new Vector3f(vec2.x(), vec2.y(), 0.0f);
+            }
             b2Pos pos = transform.p();
+            b2Rot rot = transform.q();
             return new Data(
+                    vs,
                     new Vector3f(pos.x().floatValue(), pos.y().floatValue(), 0.0f),
                     b2Rot_GetAngle(rot),
-                    radius,
                     solid,
                     ColorUtilities.fromIntRGBA(color, 1.0f)
             );
         }
 
-        static Data create(b2Pos center, float radius, int color, boolean solid) {
-            return new Data(
-                    new Vector3f(center.x().floatValue(), center.y().floatValue(), 0.0f),
-                    0f,
-                    radius,
-                    solid,
-                    ColorUtilities.fromIntRGBA(color, 1.0f)
-            );
+        static Data create(b2WorldTransform transform, long vertices, int vertexCount, float radius, int color, boolean solid) {
+            return create(transform, vertices, vertexCount, color, solid);
         }
     }
 
-    public static final int CIRCLE_BATCH_SIZE = 2048;
+    public static final int POLYGON_BATCH_SIZE = 2048;
 
-    private final List<Data> dataList = new ArrayList<>(CIRCLE_BATCH_SIZE);
-    private final Circle2D meshFilled  = new Circle2D(ShapeMode2D.FILLED, Circle2D.COUNT);
-    private final Circle2D meshOutline = new Circle2D(ShapeMode2D.OUTLINE, Circle2D.COUNT);
+    private final List<Data> dataList = new ArrayList<>();
+    private final Polygon2D meshFilled  = new Polygon2D(ShapeMode2D.FILLED, POLYGON_BATCH_SIZE);
+    private final Polygon2D meshOutline = new Polygon2D(ShapeMode2D.OUTLINE, POLYGON_BATCH_SIZE);
 
-    public DCircle() {
+    public BatchPolygon() {
     }
 
-    public void addData(b2WorldTransform transform, b2Pos center, float radius, int color, boolean solid) {
-        dataList.add(Data.create(transform, center, radius, color, solid));
+    public void addData(b2WorldTransform transform, long vertices, int vertexCount, int color, boolean solid) {
+        dataList.add(Data.create(transform, vertices, vertexCount, color, solid));
     }
-    
-    public void addData(b2Pos center, float radius, int color, boolean solid) {
-        dataList.add(Data.create(center, radius, color, solid));
+
+    public void addData(b2WorldTransform transform, long vertices, int vertexCount, float radius, int color, boolean solid) {
+        dataList.add(Data.create(transform, vertices, vertexCount, radius, color, solid));
     }
 
     public void draw(RenderManager renderManager, Geometry drawable) {
         for (Data data : dataList) {
+            Material mat = drawable.getMaterial();
             TempVars vars = TempVars.get();
-            Material mat  = drawable.getMaterial();
 
-            meshFilled.updatePoints(Circle2D.COUNT, data.radius, 0);
-            meshOutline.updatePoints(Circle2D.COUNT, data.radius, 0);
+            meshFilled.updatePoints(data.vertices);
+            meshOutline.updatePoints(data.vertices);
             drawable.setMesh(meshFilled);
 
             Quaternion q = vars.quat1;
             drawable.setLocalTranslation(data.position);
-            drawable.setLocalRotation(q.fromAngleAxis(data.angle, Vector3f.UNIT_Z));
+            drawable.setLocalRotation(q.fromAngleAxis(data.angle + FastMath.PI, Vector3f.UNIT_Z));
             drawable.updateGeometricState();
             drawable.updateModelBound();
 

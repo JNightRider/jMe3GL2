@@ -51,7 +51,7 @@ import org.je3gl.utilities.ColorUtilities;
  *
  * @author wil
  */
-public class DText {
+public class BatchText {
 
     private static final class Data {
 
@@ -81,7 +81,7 @@ public class DText {
     private final ObjectPool<BitmapText> textPool = new ObjectPool<>(new BitmapTextHandler());
     private List<BitmapText> textList = new ArrayList<>();
 
-    public DText() {
+    public BatchText() {
     }
 
     public void setGraphics(DebugGraphics graphics) {

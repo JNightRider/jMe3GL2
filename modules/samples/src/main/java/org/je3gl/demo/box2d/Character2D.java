@@ -32,43 +32,33 @@ package org.je3gl.demo.box2d;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Line;
 import com.jme3.system.AppSettings;
-import java.nio.FloatBuffer;
+
 import java.util.logging.Logger;
+
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.ThreadingType;
 import org.je3gl.renderer.Camera2DAppSate;
 import org.je3gl.renderer.UnitComparator;
-import org.je3gl.utilities.ColorUtilities;
 
 import org.box2d.jni.*;
 import org.box2d.jni.system.*;
 
 import static org.box2d.jni.b2BodyType.*;
-import static org.box2d.jni.b2HexColor.*;
-
 import static org.box2d.jni.include.Box2d.*;
 import static org.box2d.jni.include.Collision.*;
 import static org.box2d.jni.include.Id.*;
-import static org.box2d.jni.include.MathFunctions.*;
 import static org.box2d.jni.include.MathTypes.*;
 import static org.box2d.jni.include.Types.*;
-import static org.box2d.jni.libc.LibCMath.cosf;
+import static org.box2d.jni.libc.LibCMath.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
-import static org.box2d.jni.system.MemoryUtil.*;
-import static org.box2d.jni.system.Pointer.NULL;
-import org.je3gl.box2d.PhysicsSpace;
+
 import org.je3gl.box2d.control.CharacterBody2D;
 import org.je3gl.box2d.util.MathUtils;
 import org.je3gl.box2d.util.ParsePath;
@@ -92,7 +82,7 @@ import org.je3gl.scene.shape.Sprite;
 public class Character2D extends SimpleApplication  {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Character2D.class.getName());
-    
+
     /**
      * The main method; uses zero arguments in args array
      * @param args command line arguments
@@ -119,23 +109,23 @@ public class Character2D extends SimpleApplication  {
     /** Object in charge of managing the 'SPACE' key */
     private static final BooleanStateKeyboardInputHandler VK_JUMP = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_SPACE, "jump"));
 
-    private static final b2Vec2 elevatorBase = b2Vec2.malloc().set( 112.0f, 10.0f );
+    private static final b2Vec2 elevatorBase = b2Vec2.malloc().set(112.0f, 10.0f);
     private static final float elevatorAmplitude = 4.0f;
-    
+
     public static final long
-                StaticBit = 0x0001,
-                MoverBit = 0x0002,
-                DynamicBit = 0x0004,
-                AllBits = ~0;
-    
+                StaticBit   = 0x0001,
+                MoverBit    = 0x0002,
+                DynamicBit  = 0x0004,
+                AllBits     = ~0;
+ 
     /**
      * Control of the character (player) in the scene.
      */
     private static class Player extends CharacterBody2D {
-        
+
         private b2BodyId elevatorId;
         private float time;
-        
+
         public Player() {
         }
 
@@ -143,7 +133,6 @@ public class Character2D extends SimpleApplication  {
             this.elevatorId = elevatorId;
         }
 
-        
         @Override
         protected void ready() {
             addContact(elevatorId);
@@ -169,10 +158,10 @@ public class Character2D extends SimpleApplication  {
         protected void physicsParallel(float delta) {
             applyControls(delta);
         }
-        
-         /**
+
+        /**
          * Apply controls to activate different player actions.
-         * 
+         *
          * @param delta float
          */
         private void applyControls(float delta) {
@@ -195,7 +184,7 @@ public class Character2D extends SimpleApplication  {
             }
             applyMoveAndUpdate(delta, throttle);
         }
-        
+
         /**
          * Depending on the player's status, an animation will be activated.
          */
@@ -212,9 +201,8 @@ public class Character2D extends SimpleApplication  {
         }
     }
 
-    
     private final Player body2D = new Player();
-    
+
     /*(non-Javadoc)
      */
     @Override
@@ -251,7 +239,7 @@ public class Character2D extends SimpleApplication  {
         Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
         Camera2DAppSate camera2DAppSate = stateManager.getState(Camera2DAppSate.class);
         b2WorldId worldId = box2dAppState.getPhysicsSpace().getWorldId();
-        
+
         Spatial player = assetManager.loadModel("Models/Rabbit.j3o");
         player.getControl(AnimatedSprite2D.class).playAnimation("walk", 10);
         ((Sprite) ((Geometry) player).getMesh()).applyScale(2.5f);
@@ -422,7 +410,7 @@ public class Character2D extends SimpleApplication  {
             b2Circle circle = b2Circle.malloc().set(b2Vec2_zero, 0.25f);
             b2CreateCircleShape(bodyId, shapeDef, circle, b2ShapeId.malloc());
         }
- 
+
         {
             b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
             bodyDef.type(b2_kinematicBody);

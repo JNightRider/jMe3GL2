@@ -43,13 +43,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.box2d.jni.b2Pos;
-import org.box2d.jni.b2Rot;
+import org.box2d.jni.b2Transform;
 import org.box2d.jni.b2Vec2;
-import org.box2d.jni.b2WorldTransform;
 
+import org.box2d.jni.system.ArenaAlloc;
 import static org.box2d.jni.include.MathFunctions.*;
+import static org.box2d.jni.system.ArenaAlloc.*;
 
-import org.je3gl.scene.debug.Polygon2D;
+import org.je3gl.scene.debug.Capsule2D;
 import org.je3gl.scene.debug.ShapeMode2D;
 import org.je3gl.utilities.ColorUtilities;
 
@@ -57,76 +58,81 @@ import org.je3gl.utilities.ColorUtilities;
  *
  * @author wil
  */
-public class DPolygon {
+public class BatchCapsule {
 
     private static final class Data {
 
-        final Vector3f[] vertices;
         final Vector3f position;
         final float angle;
+        final float radius;
+        final float length;
         final boolean solid;
         final ColorRGBA color;
 
-        private Data(Vector3f[] vertices, Vector3f position, float angle, boolean solid, ColorRGBA color) {
-            this.vertices = vertices;
+        public Data(Vector3f position, float angle, float radius, float length, boolean solid, ColorRGBA color) {
             this.position = position;
             this.angle = angle;
+            this.radius = radius;
+            this.length = length;
             this.solid = solid;
             this.color = color;
         }
 
-        static Data create(b2WorldTransform transform, long vertices, int vertexCount, int color, boolean solid) {
-            b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
-            Vector3f[] vs = new Vector3f[vertexCount];
-            int index = 0;
-            for (b2Vec2 vec2 : buffer) {
-                vs[index++] = new Vector3f(vec2.x(), vec2.y(), 0.0f);
+        static Data create(b2Pos p1, b2Pos p2, float radius, int color, boolean solid) {
+            try (ArenaAlloc arena = allocPush()) {
+                b2Vec2 d = b2SubPos(p1, p2, b2Vec2.calloc(arena));
+                float length = b2Length(d);
+                if (length < 0.001f) {
+                    System.err.println("sample app: capsule too short!");
+                    return null;
+                }
+
+                b2Vec2 axis = b2Vec2.calloc(arena).set(d.x() / length, d.y() / length);
+                b2Transform transform = b2Transform.calloc(arena);
+
+                transform.p(b2Lerp(b2ToVec2(p1, b2Vec2.calloc(arena)), b2ToVec2(p2, b2Vec2.calloc(arena)), 0.5f, b2Vec2.calloc(arena)));
+                transform.q().c(axis.x());
+                transform.q().s(axis.y());
+
+                return new Data(
+                        new Vector3f(transform.p().x(), transform.p().y(), 0.0f),
+                        b2Rot_GetAngle(transform.q()),
+                        radius,
+                        length,
+                        solid,
+                        ColorUtilities.fromIntRGBA(color, 1.0f)
+                );
             }
-            b2Pos pos = transform.p();
-            b2Rot rot = transform.q();
-            return new Data(
-                    vs,
-                    new Vector3f(pos.x().floatValue(), pos.y().floatValue(), 0.0f),
-                    b2Rot_GetAngle(rot),
-                    solid,
-                    ColorUtilities.fromIntRGBA(color, 1.0f)
-            );
-        }
-
-        static Data create(b2WorldTransform transform, long vertices, int vertexCount, float radius, int color, boolean solid) {
-            return create(transform, vertices, vertexCount, color, solid);
         }
     }
 
-    public static final int POLYGON_BATCH_SIZE = 2048;
+    public static final int APSULE_BATCH_SIZE = 2048;
 
-    private final List<Data> dataList = new ArrayList<>();
-    private final Polygon2D meshFilled  = new Polygon2D(ShapeMode2D.FILLED, POLYGON_BATCH_SIZE);
-    private final Polygon2D meshOutline = new Polygon2D(ShapeMode2D.OUTLINE, POLYGON_BATCH_SIZE);
+    private final List<Data> dataList = new ArrayList<>(APSULE_BATCH_SIZE);
+    private final Capsule2D meshFilled  = new Capsule2D(ShapeMode2D.FILLED, Capsule2D.COUNT);
+    private final Capsule2D meshOutline = new Capsule2D(ShapeMode2D.OUTLINE, Capsule2D.COUNT);
 
-    public DPolygon() {
+    public BatchCapsule() {
     }
 
-    public void addData(b2WorldTransform transform, long vertices, int vertexCount, int color, boolean solid) {
-        dataList.add(Data.create(transform, vertices, vertexCount, color, solid));
-    }
-
-    public void addData(b2WorldTransform transform, long vertices, int vertexCount, float radius, int color, boolean solid) {
-        dataList.add(Data.create(transform, vertices, vertexCount, radius, color, solid));
+    public void addData(b2Pos p1, b2Pos p2, float radius, int color, boolean solid) {
+        dataList.add(Data.create(p1, p2, radius, color, solid));
     }
 
     public void draw(RenderManager renderManager, Geometry drawable) {
         for (Data data : dataList) {
-            Material mat = drawable.getMaterial();
             TempVars vars = TempVars.get();
+            Material mat  = drawable.getMaterial();
 
-            meshFilled.updatePoints(data.vertices);
-            meshOutline.updatePoints(data.vertices);
+            float radius = data.radius;
+            float length = data.length;
+            meshFilled.updateGeometry(Capsule2D.COUNT, radius * 2, length + (radius * 2));
+            meshOutline.updateGeometry(Capsule2D.COUNT, radius * 2, length + (radius * 2));
             drawable.setMesh(meshFilled);
 
             Quaternion q = vars.quat1;
             drawable.setLocalTranslation(data.position);
-            drawable.setLocalRotation(q.fromAngleAxis(data.angle + FastMath.PI, Vector3f.UNIT_Z));
+            drawable.setLocalRotation(q.fromAngleAxis(data.angle + FastMath.PI / 2, Vector3f.UNIT_Z));
             drawable.updateGeometricState();
             drawable.updateModelBound();
 

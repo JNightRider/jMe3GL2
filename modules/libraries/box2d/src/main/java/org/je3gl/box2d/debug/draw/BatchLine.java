@@ -35,62 +35,62 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
-
+import com.jme3.scene.shape.Line;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.box2d.jni.b2Pos;
-
-import org.je3gl.scene.debug.Point2D;
 import org.je3gl.utilities.ColorUtilities;
 
 /**
  *
  * @author wil
  */
-public class DPoint {
+public final class BatchLine {
 
     private static final class Data {
-
-        final Vector3f position;
-        final float size;
+        final Vector3f p1;
+        final Vector3f p2;
         final ColorRGBA color;
 
-        public Data(Vector3f position, float size, ColorRGBA color) {
-            this.position = position;
-            this.size = size;
+        private Data(Vector3f p1, Vector3f p2, ColorRGBA color) {
+            this.p1 = p1;
+            this.p2 = p2;
             this.color = color;
         }
+        
+        static Data create(b2Pos p1, b2Pos p2, int color) {
+            float x1 = p1.x().floatValue(),
+                  y1 = p1.y().floatValue();
 
-        static Data create(b2Pos p, float size, int color) {
+            float x2 = p2.x().floatValue(),
+                  y2 = p2.y().floatValue();
             return new Data(
-                    new Vector3f(p.x().floatValue(), p.y().floatValue(), 0.0f),
-                    size,
+                    new Vector3f(x1, y1, 0.0f),
+                    new Vector3f(x2, y2, 0.0f),
                     ColorUtilities.fromIntRGBA(color, 1.0f)
             );
         }
     }
 
-    public static final int POINT_BATCH_SIZE = 2048;
+    public static final int LINE_BATCH_SIZE = (2 * 2048);
 
-    private final List<Data> dataList = new ArrayList<>(POINT_BATCH_SIZE);
-    private final Point2D mesh = new Point2D();
+    private final List<Data> dataList = new ArrayList<>(LINE_BATCH_SIZE);
+    private final Line mesh = new Line(new Vector3f(), new Vector3f());
 
-    public DPoint() {
+    public BatchLine() {
     }
 
-    public void addData(b2Pos p, float size, int color) {
-        dataList.add(Data.create(p, size, color));
+    public void addData(b2Pos p1, b2Pos p2, int color) {
+        dataList.add(Data.create(p1, p2, color));
     }
 
     public void draw(RenderManager renderManager, Geometry drawable) {
         for (Data data : dataList) {
-            Material mat = drawable.getMaterial();
-            mat.getAdditionalRenderState().setWireframe(false);
-            mat.setColor("Color", data.color);
-            mat.setFloat("PointSize", data.size);
+            mesh.updatePoints(data.p1, data.p2);
 
-            mesh.updatePoints(data.position, data.size);
+            Material mat = drawable.getMaterial();
+            mat.setColor("Color", data.color);
+
             drawable.setMesh(mesh);
             renderManager.renderGeometry(drawable);
         }

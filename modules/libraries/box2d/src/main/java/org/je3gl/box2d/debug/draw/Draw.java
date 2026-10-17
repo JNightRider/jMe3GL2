@@ -70,21 +70,21 @@ public final class Draw {
     public static final float ALPHA_LINE_COLOR = 1.0f;
 
     /** Batch of drawings of type: {@code Text} */
-    private final DText texts;
+    private final BatchText texts;
     /** Batch of drawings of type: {@code Line} */
-    private final DLine
+    private final BatchLine
             lines,      // Lienes
             bounds,     // Bounds
             transforms; // Math/Transforms
 
     /** Batch of drawings of type: {@code Point} */
-    private final DPoint points;
+    private final BatchPoint points;
     /** Batch of drawings of type: {@code Circle} */
-    private final DCircle circles;
+    private final BatchCircle circles;
     /** Batch of drawings of type: {@code Capsule} */
-    private final DCapsule capsules;
+    private final BatchCapsule capsules;
     /** Batch of drawings of type: {@code Polygon} */
-    private final DPolygon polygons;
+    private final BatchPolygon polygons;
 
     /** Drawable geometry for the {@link #lines} batch. */
     private final Geometry drawableLines;
@@ -107,14 +107,14 @@ public final class Draw {
      * @param assetManager AssetManager
      */
     public Draw(AssetManager assetManager) {
-        texts = new DText();
-        lines = new DLine();
-        bounds = new DLine();
-        points = new DPoint();
-        circles = new DCircle();
-        transforms = new DLine();
-        capsules = new DCapsule();
-        polygons = new DPolygon();
+        texts = new BatchText();
+        lines = new BatchLine();
+        bounds = new BatchLine();
+        points = new BatchPoint();
+        circles = new BatchCircle();
+        transforms = new BatchLine();
+        capsules = new BatchCapsule();
+        polygons = new BatchPolygon();
 
         drawableLines = newDrawable(assetManager);
         drawableBounds = newDrawable(assetManager);
