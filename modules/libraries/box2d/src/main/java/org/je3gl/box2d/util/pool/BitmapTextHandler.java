@@ -27,25 +27,36 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.box2d.util.pool;
 
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
+
 import org.je3gl.scene.debug.custom.DebugGraphics;
 import org.je3gl.util.Arg;
 import org.je3gl.util.Checks;
 import org.je3gl.util.pool.PoolHandler;
 
 /**
+ * Class responsible for managing the {@link PoolHandler} for a group of
+ * {@code BitmapText} objects within a pool of objects ({@code ObjectPool}).
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class BitmapTextHandler implements PoolHandler<BitmapText> {
 
-    public BitmapTextHandler() {
-    }
+    /** Constructor */
+    public BitmapTextHandler() { }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param args Arg
+     * @return BitmapText
+     */
     @Override
     public BitmapText create(Arg... args) {
         Checks.checkArgs(1, args);
@@ -54,6 +65,13 @@ public class BitmapTextHandler implements PoolHandler<BitmapText> {
         return graphics.createBitmapText(font, null);
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param o BitmapText
+     * @param args Arg
+     * @return boolean
+     */
     @Override
     public boolean validate(BitmapText o, Arg... args) {
         if (o == null) {
@@ -62,8 +80,13 @@ public class BitmapTextHandler implements PoolHandler<BitmapText> {
         return o.getParent() == null;
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param o BitmapText
+     */
     @Override
     public void destroy(BitmapText o) {
         o.removeFromParent();
-    }    
+    }
 }

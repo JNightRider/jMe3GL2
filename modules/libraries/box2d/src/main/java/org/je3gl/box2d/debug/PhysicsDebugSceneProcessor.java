@@ -118,7 +118,7 @@ public class PhysicsDebugSceneProcessor implements SceneProcessor {
 
     private final DrawSolidCapsuleFcnI DrawSolidCapsuleFcn = (p1, p2, radius, color, context) -> {
         synchronized (LockObject.LOCK) {
-            drawables.drawCapsule(p1, p2, radius, color, true);
+            drawables.drawCapsule(p1, p2, radius, color);
         }
     };
 

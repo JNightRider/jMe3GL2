@@ -64,11 +64,9 @@ public final class Converter {
         float y = actual == AxisType.AXIS_XYO ? in.y : in.z;
         float z = actual == AxisType.AXIS_XYO ? in.z : in.y;
         if (out == AxisType.AXIS_XYO) {
-            in.setY(y)
-                    .setZ(z);
+            in.setY(y).setZ(z);
         } else {
-            in.setY(z)
-                    .setZ(y);
+            in.setY(z).setZ(y);
         }
     }
 
@@ -103,20 +101,41 @@ public final class Converter {
     public static b2Pos toB2Pos(Vector3f vec3) {
         return toB2Pos(vec3, b2Pos.malloc());
     }
-    
+
+    /**
+     * Convert a {@code Vector3f} to a {@link b2Pos}.
+     *
+     * @param vec3 value
+     * @param __result b2Pos
+     * @return A {@link b2Pos} object
+     */
     public static b2Pos toB2Pos(Vector3f vec3, b2Pos __result) {
         __result.set(vec3.x, vec3.y);
         return __result;
     }
 
+    /**
+     * Convert a {@code Vector3f} to a {@link b2Vec2}.
+     *
+     * @param vec3 value
+     * @param __result b2Vec2
+     * @return A {@link b2Vec2} object
+     */
     public static b2Vec2 toB2Vec2(Vector3f vec3, b2Vec2 __result) {
         return __result.set(vec3.x, vec3.y);
     }
-    
+
+    /**
+     * Convert a {@code Vector2f} to a {@link b2Vec2}.
+     *
+     * @param vec2 Vector2f
+     * @param __result b2Vec2
+     * @return A {@link b2Vec2} object
+     */
     public static b2Vec2 toB2Vec2(Vector2f vec2, b2Vec2 __result) {
         return __result.set(vec2.x, vec2.y);
     }
-    
+
     /**
      * Convert a {@code Vector2f} to a {@link Vector3f}.
      *

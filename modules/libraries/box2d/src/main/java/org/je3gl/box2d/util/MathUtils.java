@@ -34,29 +34,66 @@ import org.box2d.jni.b2Pos;
 import org.box2d.jni.b2Vec2;
 
 /**
+ * A utility class for Box2D's mathematical structures.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public final class MathUtils {
+    /** private constructor*/
+    private MathUtils() {}
 
+    /**
+     * {@code b2Pos __result = (b2Pos)a + (b2Pos)b; }
+     *
+     * @param a b2Pos
+     * @param b b2Pos
+     * @param __result b2Pos
+     * @return b2Pos
+     */
     public static b2Pos sum(b2Pos a, b2Pos b, b2Pos __result) {
         __result.x(a.x().doubleValue() + b.x().doubleValue());
         __result.y(a.y().doubleValue() + b.y().doubleValue());
         return __result;
     }
 
+    /**
+     * {@code b2Pos __result = (b2Pos)a * (b2Pos)b; }
+     *
+     * @param a b2Pos
+     * @param b b2Pos
+     * @param __result b2Pos
+     * @return b2Pos
+     */
     public static b2Pos product(b2Pos a, b2Pos b, b2Pos __result) {
         __result.x(a.x().doubleValue() * b.x().doubleValue());
         __result.y(a.y().doubleValue() * b.y().doubleValue());
         return __result;
     }
 
+    /**
+     * {@code b2Pos __result = (float)a * (b2Pos)b; }
+     *
+     * @param a b2Pos
+     * @param b b2Pos
+     * @param __result b2Pos
+     * @return b2Pos
+     */
     public static b2Pos product(float a, b2Pos b, b2Pos __result) {
         __result.x(a * b.x().doubleValue());
         __result.y(a * b.y().doubleValue());
         return __result;
     }
 
+    /**
+     * {@code b2Vec2 __result = (float)a + (b2Vec2)b; }
+     *
+     * @param a b2Vec2
+     * @param b b2Vec2
+     * @param __result b2Vec2
+     * @return b2Vec2
+     */
     public static b2Vec2 product(float a, b2Vec2 b, b2Vec2 __result) {
         __result.x(a * b.x());
         __result.y(a * b.y());

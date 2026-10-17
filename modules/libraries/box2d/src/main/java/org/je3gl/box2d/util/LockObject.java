@@ -31,9 +31,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.util;
 
 /**
+ * Class responsible for storing the synchronization object.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public final class LockObject {
+    /**  Object lock */
     public static final Object LOCK = new Object();
 }

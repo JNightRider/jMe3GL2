@@ -126,6 +126,12 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      */
     protected b2BodyDef bodyDef;
 
+    /**
+     * The function that executes within the line (thread) of physical space,
+     * this holds true only as long as the body remains within the world.
+     * 
+     * @see PhysicsSpace#update(float) 
+     */
     private final PhysicsProcess process = this::physicsParallel;
 
     /**
@@ -497,30 +503,24 @@ public abstract class PhysicsBody2D extends AbstractControl implements PhysicsCo
      * It is used to initialize data when it is certain that the body is in sync
      * with the model.
      */
-    protected void postReady() {
-    }
-
-    ;
+    protected void postReady() { }
 
     /** Data initialization for this body (optional). */
-    protected void ready() {
-    }
+    protected void ready() {}
 
     /**
      * Updating physical processes (optional).
      *
      * @param delta time per frame (in seconds)
      */
-    protected void physicsProcess(float delta) {
-    }
+    protected void physicsProcess(float delta) { }
 
     /**
      * Updating physical processes (parallel).
      *
      * @param delta time per frame (in seconds)
      */
-    protected void physicsParallel(float delta) {
-    }
+    protected void physicsParallel(float delta) { }
 
     /**
      * Returns the body id.

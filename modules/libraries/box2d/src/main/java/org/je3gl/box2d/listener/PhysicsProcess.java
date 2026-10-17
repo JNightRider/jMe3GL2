@@ -27,15 +27,24 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.box2d.listener;
 
 /**
+ * An interface responsible for updating the state of the physical space before
+ * updating the Box2D world.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 @FunctionalInterface
 public interface PhysicsProcess {
-    
+
+    /**
+     * Update the processes.
+     *
+     * @param delta float
+     */
     void invokeProcess(float delta);
 }
