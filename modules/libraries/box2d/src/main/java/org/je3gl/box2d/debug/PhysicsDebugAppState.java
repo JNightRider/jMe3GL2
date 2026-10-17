@@ -40,11 +40,9 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 
-import java.util.logging.Logger;
-
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.PhysicsSpace;
-import org.je3gl.box2d.ThreadingType;
+
 /**
  * Class <code>PhysicsDebugAppState</code> responsible for managing a state for
  * the debugging of the physical forms of the bodies that are added to the world
@@ -57,32 +55,42 @@ import org.je3gl.box2d.ThreadingType;
  */
 public class PhysicsDebugAppState extends AbstractAppState {
 
-    /** Class logger. */
-    private static final Logger LOGGER = Logger.getLogger(PhysicsDebugAppState.class.getName());
-
+    /** Box2dAppState */
     private Box2dAppState box2dAppState;
+    /** PhysicsDebugSceneProcessor */
     private PhysicsDebugSceneProcessor debugProcessor;
 
     /**
      * Debugger view.
      */
     protected ViewPort viewPort;
-    /** <code>JME3</code> renderer.
-     */
+    /** <code>JME3</code> renderer. */
     protected RenderManager rm;
-    private Application application;
-
+    /** <code>JME3</code> Camera. */
     private Camera camera;
 
+    /**
+     * A node responsible for managing the text that can be used to generate the
+     * Box2D debugger on the screen.
+     */
     private Node ui;
 
+    /** Screen - width */
     private int width;
+    /** Screen - height */
     private int height;
 
+    /** Constructor */
     public PhysicsDebugAppState() {
 
     }
 
+    /**
+     * (non-javadoc)
+     *
+     * @param stateManager AppStateManager
+     * @param app Application
+     */
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         AssetManager assetManager   = app.getAssetManager();
@@ -92,7 +100,6 @@ public class PhysicsDebugAppState extends AbstractAppState {
         PhysicsSpace physicsSpace = box2dAppState.getPhysicsSpace();
         physicsSpace.setDebugAppState(this);
 
-        application = app;
         camera      = app.getCamera();
         rm          = renderManager;
         ui          = new Node("Box2d-JNI UI");
@@ -105,12 +112,18 @@ public class PhysicsDebugAppState extends AbstractAppState {
 
         viewPort = renderManager.createMainView("Physics Debug Overlay", app.getCamera());
         viewPort.setClearFlags(false, true, true);
-
-        debugProcessor = new PhysicsDebugSceneProcessor(assetManager, stateManager);
+        if (debugProcessor == null) {
+            debugProcessor = new PhysicsDebugSceneProcessor(assetManager, stateManager);
+        }
         viewPort.addProcessor(debugProcessor);
         super.initialize(stateManager, app);
     }
 
+    /**
+     * (non-javadoc)
+     * 
+     * @param tpf float
+     */
     @Override
     public void update(float tpf) {
         if (debugProcessor != null && debugProcessor.isInitialized()) {
@@ -118,33 +131,49 @@ public class PhysicsDebugAppState extends AbstractAppState {
         }
     }
 
-
+    /**
+     * (non-javadoc)
+     * 
+     * @param enabled boolean
+     */
     @Override
     public void setEnabled(boolean enabled) {
-//        if (isInitialized()) {
-//            debugProcessor.setEnabled(enabled);
-//        }
+        if (isInitialized()) {
+            debugProcessor.setEnabled(enabled);
+        }
         super.setEnabled(enabled);
     }
 
+    /**
+     * (non-javadoc)
+     */
     @Override
     public void cleanup() {
         super.cleanup();
         
         ui.detachAllChildren();
+        ui.removeFromParent();
 
         viewPort.removeProcessor(debugProcessor);
         rm.removeMainView(viewPort);
     }
 
+    /**
+     * Clear the canvas (drawing space or data batches)
+     */
     public void flush() {
         if (debugProcessor != null) {
             debugProcessor.flush();
         }
     }
 
+    /**
+     * Returns the post-processing effect that renders the physical shapes for
+     * the debugger.
+     *
+     * @return PhysicsDebugSceneProcessor
+     */
     public PhysicsDebugSceneProcessor getDebugProcessor() {
         return debugProcessor;
     }
-    
 }
