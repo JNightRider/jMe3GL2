@@ -34,14 +34,18 @@ import com.jme3.math.Vector3f;
 import org.box2d.jni.b2BodyId;
 
 /**
+ * Una clase que se encarga de almacenar el resultado de un 'Func'.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class DynamicMoverCastResult {
 
     public Vector3f point;
     public Vector3f normal;
     public b2BodyId bodyId;
+    public long userMaterialId;;
     public float fraction;
     public boolean hit;
 
@@ -64,6 +68,7 @@ public class DynamicMoverCastResult {
         point.zero();
         normal.zero();        
         fraction = 0.0f;
+        userMaterialId = 0L;
         hit = false;
     }
 }

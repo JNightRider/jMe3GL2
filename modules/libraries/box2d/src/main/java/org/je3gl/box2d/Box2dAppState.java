@@ -207,17 +207,17 @@ public class Box2dAppState extends AbstractAppState {
     /**
      * A callback function for: b2AllocFcn
      */
-    protected final b2AllocFcnI allocFcn = (size, alignment) -> naligned_alloc(alignment, size);
+    protected final b2AllocCallbackFcnI allocFcn = (size, alignment) -> naligned_alloc(alignment, size);
 
     /**
      * A callback function for: b2FreeFcn
      */
-    protected final b2FreeFcnI freeFcn = (mem, size) -> naligned_free(mem);
+    protected final b2FreeCallbackFcnI freeFcn = (mem, size) -> naligned_free(mem);
 
     /**
      * A callback function for: b2AssertFcn
      */
-    protected final b2AssertFcnI assertFcn = (condition, fileName, lineNumber) -> {
+    protected final b2AssertCallbackFcnI assertFcn = (condition, fileName, lineNumber) -> {
         LOGGER.log(Level.SEVERE, "{0}, {1}, line {2}", new Object[]{
             condition, fileName, lineNumber
         });
@@ -227,7 +227,7 @@ public class Box2dAppState extends AbstractAppState {
     /**
      * A callback function for: b2LogFcn
      */
-    protected final b2LogFcnI logFcn = (message) -> {
+    protected final b2LogCallbackFcnI logFcn = (message) -> {
         LOGGER.log(Level.WARNING, message);
     };
 
@@ -240,8 +240,8 @@ public class Box2dAppState extends AbstractAppState {
         }
         
         b2SetAllocator(allocFcn, freeFcn);
-        b2SetAssertFcn(assertFcn);
-        b2SetLogFcn(logFcn);
+        b2SetAssertCallback(assertFcn);
+        b2SetLogCallback(logFcn);
         
         if (this.threadingType == ThreadingType.PARALLEL) {
             startPhysicsOnExecutor();

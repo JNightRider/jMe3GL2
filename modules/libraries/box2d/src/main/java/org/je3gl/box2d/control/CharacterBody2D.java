@@ -40,23 +40,22 @@ import java.util.logging.Logger;
 import org.box2d.jni.b2BodyDef;
 
 import org.box2d.jni.b2BodyId;
-import org.box2d.jni.b2Capsule;
-import org.box2d.jni.b2CastResultFcnI;
+import org.box2d.jni.b2CastResultCallbackFcnI;
 import org.box2d.jni.b2Filter;
-import static org.box2d.jni.b2HexColor.*;
 import org.box2d.jni.b2JointId;
 import org.box2d.jni.b2Manifold;
 import org.box2d.jni.b2MoverJointDef;
 import org.box2d.jni.b2PogoJointDef;
 import org.box2d.jni.b2Pos;
-import org.box2d.jni.b2PreContinuousFcnI;
-import org.box2d.jni.b2PreSolveFcnI;
+import org.box2d.jni.b2PreContinuousCallbackFcnI;
+import org.box2d.jni.b2PreSolveCallbackFcnI;
 import org.box2d.jni.b2QueryFilter;
-import org.box2d.jni.b2ShapeDef;
 import org.box2d.jni.b2ShapeId;
 import org.box2d.jni.b2TreeStats;
 import org.box2d.jni.b2Vec2;
 import org.box2d.jni.b2WorldId;
+import static org.box2d.jni.b2HexColor.*;
+import org.box2d.jni.b2PreContinuousCallbackFcnI;
 
 import org.box2d.jni.system.ArenaAlloc;
 
@@ -65,7 +64,6 @@ import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.MathFunctions.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
-import static org.box2d.jni.system.Pointer.*;
 
 import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.control.mover.DynamicMoverCastResult;
@@ -207,7 +205,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         contacts.remove(id);
     }
     
-    private final b2CastResultFcnI CastCallback = (b2ShapeId shapeId, b2Pos point, b2Vec2 normal, float fraction, long context) -> {
+    private final b2CastResultCallbackFcnI CastCallback = (b2ShapeId shapeId, b2Pos point, b2Vec2 normal, float fraction, long context) -> {
         castResult.point = Converter.toVector3f(point, getPhysicsSpace().getAxisType());
         castResult.normal = Converter.toVector3f(normal, getPhysicsSpace().getAxisType());
         castResult.bodyId = b2Shape_GetBody(shapeId, b2BodyId.malloc());
@@ -216,7 +214,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         return fraction;
     };
 
-    private final b2PreSolveFcnI PreSolveStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold, long context) -> {
+    private final b2PreSolveCallbackFcnI PreSolveStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold, long context) -> {
         preSolve(shapeIdA, shapeIdB, manifold);
     };
     
@@ -241,7 +239,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
-    private final b2PreContinuousFcnI PreContinuousStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Pos point, b2Vec2 normal, long context) -> {
+    private final b2PreContinuousCallbackFcnI PreContinuousStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Pos point, b2Vec2 normal, long context) -> {
         return preContinuous(shapeIdA, shapeIdB, point, normal);
     };
 
@@ -429,9 +427,9 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 
             // The pogo joint is rebuilt every solve because it may land on a different body
             if (pogoJointId != null && b2Joint_IsValid(pogoJointId)) {
-                pogoLength = b2PogoJoint_GetLength(pogoJointId);
-                pogoImpulse = b2PogoJoint_GetImpulse(pogoJointId);
-                pogoVelocity = b2PogoJoint_GetVelocity(pogoJointId);
+//                pogoLength = b2PogoJoint_GetLength(pogoJointId);
+//                pogoImpulse = b2PogoJoint_GetImpulse(pogoJointId);
+//                pogoVelocity = b2PogoJoint_GetVelocity(pogoJointId);
 
                 b2DestroyJoint(pogoJointId);
                 pogoJointId.close();
@@ -523,7 +521,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     }
 
     @Override
-    public void rawDrawing(Draw draw) {
+    public void draw(Draw draw) {
         drawPogo(draw, pogoOrigin, pogoTranslation, pogoFraction, pogoHit);
         try (ArenaAlloc arena = allocPush()) {
             b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));

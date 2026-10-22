@@ -158,7 +158,7 @@ public class PhysicsSpace implements AutoCloseable {
                 b2World_Draw(worldId, debugDraw);
                 if (debugAppState.isInitialized() && debugAppState.getDebugProcessor().isInitialized()) {
                     for (Drawable drawable : drawables.get()) {
-                        drawable.rawDrawing(debugAppState.getDebugProcessor().getDraw());
+                        drawable.draw(debugAppState.getDebugProcessor().getDraw());
                     }
                 }
             }

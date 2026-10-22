@@ -33,11 +33,21 @@ package org.je3gl.box2d.debug;
 import org.je3gl.box2d.debug.draw.Draw;
 
 /**
+ * An interface that defines an object as drawable, which may have access to the
+ * canvas or an object that manages a collection of drawable elements, allowing
+ * shapes to be added to that collection in a safe manner.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 @FunctionalInterface
 public interface Drawable {
 
-    void rawDrawing(Draw draw);
+    /**
+     * Draw the objects.
+     *
+     * @param draw Draw
+     */
+    void draw(Draw draw);
 }
