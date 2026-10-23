@@ -33,6 +33,8 @@ package org.je3gl.box2d.control.mover;
 import com.jme3.math.Vector3f;
 import org.box2d.jni.b2BodyId;
 
+import static org.box2d.jni.system.Pointer.*;
+
 /**
  * Una clase que se encarga de almacenar el resultado de un 'Func'.
  *
@@ -41,7 +43,7 @@ import org.box2d.jni.b2BodyId;
  * @since 3.2.0
  */
 public class DynamicMoverCastResult {
-
+    
     public Vector3f point;
     public Vector3f normal;
     public b2BodyId bodyId;
@@ -50,25 +52,26 @@ public class DynamicMoverCastResult {
     public boolean hit;
 
     public DynamicMoverCastResult() {
-        this(new Vector3f(), new Vector3f(), null, 0.0f, false);
+        this(new Vector3f(), new Vector3f(), null, NULL, 0.0f, false);
     }
 
-    public DynamicMoverCastResult(Vector3f point, Vector3f normal, b2BodyId bodyId, float fraction, boolean hit) {
+    public DynamicMoverCastResult(Vector3f point, Vector3f normal, b2BodyId bodyId, long userMaterialId, float fraction, boolean hit) {
         this.point = point;
         this.normal = normal;
         this.bodyId = bodyId;
+        this.userMaterialId = userMaterialId;
         this.fraction = fraction;
         this.hit = hit;
     }
-    
-    public void reset() {
+
+    public void free() {
         if (bodyId != null)
             bodyId.close();
 
         point.zero();
         normal.zero();        
         fraction = 0.0f;
-        userMaterialId = 0L;
+        userMaterialId = NULL;
         hit = false;
     }
 }

@@ -37,8 +37,8 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import org.box2d.jni.b2BodyDef;
 
+import org.box2d.jni.b2BodyDef;
 import org.box2d.jni.b2BodyId;
 import org.box2d.jni.b2CastResultCallbackFcnI;
 import org.box2d.jni.b2Filter;
@@ -47,29 +47,35 @@ import org.box2d.jni.b2Manifold;
 import org.box2d.jni.b2MoverJointDef;
 import org.box2d.jni.b2PogoJointDef;
 import org.box2d.jni.b2Pos;
-import org.box2d.jni.b2PreContinuousCallbackFcnI;
 import org.box2d.jni.b2PreSolveCallbackFcnI;
 import org.box2d.jni.b2QueryFilter;
 import org.box2d.jni.b2ShapeId;
 import org.box2d.jni.b2TreeStats;
 import org.box2d.jni.b2Vec2;
 import org.box2d.jni.b2WorldId;
-import static org.box2d.jni.b2HexColor.*;
 import org.box2d.jni.b2PreContinuousCallbackFcnI;
 
 import org.box2d.jni.system.ArenaAlloc;
 
+import static org.box2d.jni.b2BodyType.*;
+import static org.box2d.jni.b2HexColor.*;
+
 import static org.box2d.jni.include.Box2d.*;
 import static org.box2d.jni.include.Id.*;
 import static org.box2d.jni.include.MathFunctions.*;
+import static org.box2d.jni.include.MathTypes.b2Vec2_zero;
 import static org.box2d.jni.include.Types.*;
+import static org.box2d.jni.libc.LibCFloat.FLT_MAX;
 import static org.box2d.jni.system.ArenaAlloc.*;
 
+import org.je3gl.box2d.AxisType;
 import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.control.mover.DynamicMoverCastResult;
 import org.je3gl.box2d.util.Converter;
 import org.je3gl.box2d.util.MathUtils;
 import org.je3gl.box2d.control.mover.Center1Fcn;
+import org.je3gl.box2d.control.mover.DynamicMoverProbe;
+import org.je3gl.box2d.control.mover.RadiusFcn;
 import org.je3gl.box2d.debug.Drawable;
 import org.je3gl.box2d.debug.draw.Draw;
 import org.je3gl.box2d.listener.SpaceListener;
@@ -83,17 +89,19 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(CharacterBody2D.class.getName());
     
+    public static final long USE_CAST_RESULT = 0x0001L;
+    public static final long USE_RESULT = 0x0002L;
+    
     protected final List<b2BodyId> contacts = new ArrayList<>();
     
     /**
      * Velocity of the moving body
      */
-    protected float
-            jumpSpeed,
-            maxSpeed,
-            minSpeed,
-            stopSpeed,
-            accelerate;
+    protected float jumpSpeed;
+    protected float maxSpeed;
+    protected float minSpeed;
+    protected float stopSpeed;
+    protected float accelerate;
 
     // Fraction of the ground acceleration available in the air.
     protected float airSteer;
@@ -117,18 +125,26 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     protected float pogoCompressionScale;
     protected float pogoTensionScale;
 
+    // Enables extra ray casts when the central one misses.
+    protected boolean enableSidePogo;
+
+    // Used for the pogo to detect moving platforms.
+    protected long platformMaterialId;
+
     // Surfaces steeper than this are not ground.
     protected float minGroundNormalY;
 
     protected Center1Fcn center1Fcn;
+    protected RadiusFcn radiusFcn;
+    
     protected b2Filter filter;
 
-    protected b2WorldId worldId;
     protected b2BodyId groundId;
     protected b2JointId moverJointId;
     protected b2JointId pogoJointId;
 
     protected DynamicMoverCastResult castResult;
+    protected DynamicMoverCastResult result;
 
     protected Vector2f velocity;
     protected boolean onGround;
@@ -141,12 +157,10 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     protected float pogoVelocity;
     protected float pogoLength;
 
-    // Ground probe from the last solve, kept for debug drawing. The probe ends at
-    // the origin plus the fraction of the translation.
-    protected Vector3f pogoOrigin;
-    protected Vector3f pogoTranslation;
-    protected float pogoFraction;
-    protected boolean pogoHit;
+    // Pogo ray cast results for drawing.
+    protected DynamicMoverProbe[] probes;
+    protected int probeCount;
+    protected int selectedProbe;
 
     public CharacterBody2D() {
         jumpSpeed = 5.0f;
@@ -164,7 +178,11 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 	pogoDampingRatio = 0.8f;
 	pogoCompressionScale = 100.0f;
 	pogoTensionScale = 100.0f;
+	enableSidePogo = false;
+	platformMaterialId = 0;
 	minGroundNormalY = 0.7f;
+
+	filter = b2DefaultFilter(b2Filter.malloc());
 
 	velocity = new Vector2f();
 	onGround = false;
@@ -176,12 +194,16 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 	pogoVelocity = 0.0f;
 	pogoLength = 0.0f;
 
-	pogoOrigin = new Vector3f();
-	pogoTranslation = new Vector3f();
-	pogoFraction = 1.0f;
-	pogoHit = false;
+        probes = new DynamicMoverProbe[3];
+	for (int i = 0; i < probes.length; i++) {
+            probes[i] = new DynamicMoverProbe(new Vector3f(), new Vector3f(), 1.0f, false);
+	}
+
+	probeCount = 0;
+	selectedProbe = 0;
 
 	castResult = new DynamicMoverCastResult();
+        result = new DynamicMoverCastResult();
         bodyDef.motionLocks().angularZ(true);
         bodyDef.enableSleep(false);
         addSpaceListener(spaceListener);
@@ -206,11 +228,21 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     }
     
     private final b2CastResultCallbackFcnI CastCallback = (b2ShapeId shapeId, b2Pos point, b2Vec2 normal, float fraction, long context) -> {
-        castResult.point = Converter.toVector3f(point, getPhysicsSpace().getAxisType());
-        castResult.normal = Converter.toVector3f(normal, getPhysicsSpace().getAxisType());
-        castResult.bodyId = b2Shape_GetBody(shapeId, b2BodyId.malloc());
-        castResult.fraction = fraction;
-        castResult.hit = true;
+        if (context == USE_CAST_RESULT) {
+            castResult.point = Converter.toVector3f(point, getPhysicsSpace().getAxisType());
+            castResult.normal = Converter.toVector3f(normal, getPhysicsSpace().getAxisType());
+            castResult.bodyId = b2Shape_GetBody(shapeId, b2BodyId.malloc());
+            castResult.userMaterialId = b2Shape_GetUserMaterial(shapeId);
+            castResult.fraction = fraction;
+            castResult.hit = true;
+        } else {
+            result.point = Converter.toVector3f(point, getPhysicsSpace().getAxisType());
+            result.normal = Converter.toVector3f(normal, getPhysicsSpace().getAxisType());
+            result.bodyId = b2Shape_GetBody(shapeId, b2BodyId.malloc());
+            result.userMaterialId = b2Shape_GetUserMaterial(shapeId);
+            result.fraction = fraction;
+            result.hit = true;
+        }
         return fraction;
     };
 
@@ -273,30 +305,40 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     private final SpaceListener spaceListener = new SpaceListener() {
         @Override
         public void spaceAttached(PhysicsSpace physicsSpace) {
-            worldId = physicsSpace.getWorldId();
+            CharacterBody2D.this.physicsSpace = physicsSpace;
             try (ArenaAlloc arena = allocPush()) {
                 b2BodyDef groundDef = b2DefaultBodyDef(b2BodyDef.calloc(arena));
-                groundId = b2CreateBody(worldId, groundDef, b2BodyId.malloc());
+                groundId = b2CreateBody(physicsSpace.getWorldId(), groundDef, b2BodyId.malloc());
 
-                b2MoverJointDef moverDef = b2DefaultMoverJointDef(b2MoverJointDef.calloc(arena));
-                moverDef.linearVelocity(Converter.toB2Vec2(velocity, b2Vec2.calloc(arena)));
-                moverDef.maxVelocityForce(b2Vec2.calloc(arena).set(maxGroundForce, 0.0f));
-                moverDef.base().bodyIdA(groundId);
-                moverDef.base().bodyIdB(bodyId);
-                moverDef.base().collideConnected(true);
-                moverJointId = b2CreateMoverJoint(worldId, moverDef, b2JointId.malloc());
+                createMoverJoint( groundId, b2Vec2.calloc(arena).set( maxGroundForce, 0.0f ) );
             }
-            b2World_SetPreSolveCallback( worldId, PreSolveStatic, PreContinuousStatic, NULL );
+            b2World_SetPreSolveCallback( physicsSpace.getWorldId(), PreSolveStatic, PreContinuousStatic, NULL );
             physicsSpace.addDrawable(CharacterBody2D.this);
         }
 
         @Override
         public void spaceDetached(PhysicsSpace physicsSpace) {
             physicsSpace.removeDrawable(CharacterBody2D.this);
-            nb2World_SetPreSolveCallback( worldId.address(), NULL, NULL, NULL );
-            worldId = null;
+            nb2World_SetPreSolveCallback( physicsSpace.getWorldId().address(), NULL, NULL, NULL );
         }
     };
+    
+    protected void createMoverJoint( b2BodyId baseId, b2Vec2 maxForce )
+    {
+        try (ArenaAlloc arena = allocPush()) {
+            b2MoverJointDef moverDef = b2DefaultMoverJointDef(b2MoverJointDef.calloc(arena));
+            moverDef.linearVelocity(Converter.toB2Vec2(velocity, b2Vec2.calloc(arena)));
+            moverDef.maxVelocityForce(maxForce);
+            moverDef.base().bodyIdA(baseId);
+            moverDef.base().bodyIdB(bodyId);
+            moverDef.base().collideConnected(true);
+            if (moverJointId != null)
+            {
+                moverJointId.close();
+            }
+            moverJointId = b2CreateMoverJoint( physicsSpace.getWorldId(), moverDef, b2JointId.malloc() );
+        }
+    }
 
     public boolean applyJump() {
         if (onGround == false || walkable == false) {
@@ -330,12 +372,14 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     }
     
     public void applyMoveAndUpdate(float timeStep, float throttle) {
-        if (moverJointId == null) {
-            return;
-        }
-        
-        try (ArenaAlloc arena = allocPush()) {
+        applyMoveAndUpdate(timeStep, throttle, 1.0f);
+    }
 
+    public void applyMoveAndUpdate(float timeStep, float throttle, float speedScale) {
+        b2WorldId worldId = physicsSpace.getWorldId();
+        AxisType axis = physicsSpace.getAxisType();
+
+        try (ArenaAlloc arena = allocPush()) {
             // Reach further while grounded so the spring can find the ground over a step
             float stepDownLength = pogoRestLength;
             float rayLength = onGround ? pogoRestLength + stepDownLength : pogoRestLength;
@@ -348,13 +392,45 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
                     .categoryBits(filter.categoryBits())
                     .maskBits(filter.maskBits());
 
-            castResult.reset();
-            b2World_CastRay(worldId, origin, translation, queryFilter, CastCallback, NULL, b2TreeStats.calloc(arena));
+            castResult.free();
+            castResult = new DynamicMoverCastResult();
+            b2World_CastRay(worldId, origin, translation, queryFilter, CastCallback, USE_CAST_RESULT, b2TreeStats.calloc(arena));
 
-            pogoOrigin = Converter.toVector3f(origin, getPhysicsSpace().getAxisType());
-            pogoTranslation = Converter.toVector3f(translation, getPhysicsSpace().getAxisType());
-            pogoFraction = castResult.hit ? castResult.fraction : 1.0f;
-            pogoHit = castResult.hit;
+            probes[0].set(origin, translation, castResult.hit ? castResult.fraction : 1.0f, castResult.hit, axis);
+            probeCount = 1;
+            selectedProbe = 0;
+
+            b2Vec2 pogoOffset =  b2Vec2_zero;
+
+            if (castResult.hit == false && enableSidePogo) {
+                float direction = b2Body_GetLinearVelocity(bodyId, b2Vec2.calloc(arena)).x() < 0.0f ? -1.0f : 1.0f;
+                b2Vec2 offsets[] = {
+                    b2Vec2.calloc(arena).set(direction * radiusFcn.radius(), 0.0f),
+                    b2Vec2.calloc(arena).set(-direction * radiusFcn.radius(), 0.0f)
+                };
+
+                float bestDisplacement = FLT_MAX;
+                for (b2Vec2 offset : offsets) {
+                    result = new DynamicMoverCastResult();
+                    b2Pos sideOrigin = MathUtils.sum(origin, offset, b2Pos.calloc(arena));
+                    b2World_CastRay(worldId, sideOrigin, translation, queryFilter, CastCallback, USE_RESULT, b2TreeStats.calloc(arena));
+
+                    probes[probeCount].set(sideOrigin, translation, result.hit ? result.fraction : 1.0f, result.hit, axis);
+
+                    // Use the result that causes the least movement.
+                    if (result.hit) {
+                        float displacement = b2AbsFloat(result.fraction * rayLength - pogoRestLength);
+                        if (displacement < bestDisplacement) {
+                            bestDisplacement = displacement;
+                            castResult = result;
+                            selectedProbe = probeCount;
+                            pogoOffset = offset;
+                        }
+                    }
+
+                    probeCount += 1;
+                }
+            }
 
             // Should jumping end?
             if (jumping) {
@@ -378,7 +454,25 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
                 walkable = false;
             }
 
-            velocity = Converter.toVector2f(b2Body_GetLinearVelocity(bodyId, b2Vec2.calloc(arena)));
+            // Connect the mover joint to platform. Acts like friction.
+            b2BodyId baseId = groundId;
+            if (castResult.hit && platformMaterialId != 0 && castResult.userMaterialId == platformMaterialId
+                    && b2Body_GetType(castResult.bodyId) == b2_kinematicBody) {
+                baseId = castResult.bodyId;
+            }
+
+            if (B2_ID_EQUALS(b2Joint_GetBodyA(moverJointId, b2BodyId.calloc(arena)), baseId) == false) {
+                b2Vec2 maxForce = b2MoverJoint_GetMaxVelocityForce(moverJointId, b2Vec2.calloc(arena));
+                b2DestroyJoint(moverJointId);
+                createMoverJoint(baseId, maxForce);
+            }
+
+            b2Vec2 velocity0 = MathUtils.diff(
+                    b2Body_GetLinearVelocity(bodyId, b2Vec2.calloc(arena)),
+                    b2Body_GetLinearVelocity(baseId, b2Vec2.calloc(arena)),
+                    b2Vec2.calloc(arena)
+            );
+            velocity = Converter.toVector2f(velocity0);
 
             // Friction
             if (onGround) {
@@ -404,12 +498,13 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
                 b2MoverJoint_SetMaxVelocityForce(moverJointId, b2Vec2.calloc(arena).set(maxAirForce, 0.0f));
             }
 
-            b2Vec2 desiredVelocity = b2Vec2.calloc(arena).set(maxSpeed * throttle, 0.0f);
+            float maxSpeed0 = speedScale * maxSpeed;
+            b2Vec2 desiredVelocity = b2Vec2.calloc(arena).set(maxSpeed0 * throttle, 0.0f);
             FloatBuffer desiredSpeed = arena.callocFloat(1);
             b2Vec2 desiredDirection = b2GetLengthAndNormalize(desiredSpeed, desiredVelocity, b2Vec2.calloc(arena));
 
-            if (desiredSpeed.get(0) > maxSpeed) {
-                desiredSpeed.put(0, maxSpeed);
+            if (desiredSpeed.get(0) > maxSpeed0) {
+                desiredSpeed.put(0, maxSpeed0);
             }
 
             // Accelerate
@@ -417,7 +512,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
             float addSpeed = desiredSpeed.get(0) - currentSpeed;
             if (addSpeed > 0.0f) {
                 float steer = walkable ? 1.0f : airSteer;
-                float accelSpeed = steer * accelerate * maxSpeed * timeStep;
+                float accelSpeed = steer * accelerate * maxSpeed0 * timeStep;
                 if (accelSpeed > addSpeed) {
                     accelSpeed = addSpeed;
                 }
@@ -427,9 +522,9 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 
             // The pogo joint is rebuilt every solve because it may land on a different body
             if (pogoJointId != null && b2Joint_IsValid(pogoJointId)) {
-//                pogoLength = b2PogoJoint_GetLength(pogoJointId);
-//                pogoImpulse = b2PogoJoint_GetImpulse(pogoJointId);
-//                pogoVelocity = b2PogoJoint_GetVelocity(pogoJointId);
+                pogoLength = b2PogoJoint_GetCurrentLength(pogoJointId);
+                pogoImpulse = b2PogoJoint_GetImpulse(pogoJointId);
+                pogoVelocity = b2PogoJoint_GetCurrentSpeed(pogoJointId);
 
                 b2DestroyJoint(pogoJointId);
                 pogoJointId.close();
@@ -442,7 +537,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 
                 b2PogoJointDef pogoDef = b2DefaultPogoJointDef(b2PogoJointDef.calloc(arena));
                 pogoDef.base().localFrameA().p(b2Body_GetLocalPoint(castResult.bodyId, Converter.toB2Pos(castResult.point, b2Pos.calloc(arena)), b2Vec2.calloc(arena)));
-                pogoDef.base().localFrameB().p(center1Fcn.center1(arena));
+                pogoDef.base().localFrameB().p(MathUtils.sum(center1Fcn.center1(arena), pogoOffset, b2Vec2.calloc(arena)));
                 pogoDef.normal(Converter.toB2Vec2(castResult.normal, b2Vec2.calloc(arena)));
                 pogoDef.base().bodyIdA(castResult.bodyId);
                 pogoDef.base().bodyIdB(bodyId);
@@ -522,14 +617,27 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 
     @Override
     public void draw(Draw draw) {
-        drawPogo(draw, pogoOrigin, pogoTranslation, pogoFraction, pogoHit);
-        try (ArenaAlloc arena = allocPush()) {
-            b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));
-            b2Pos vel = b2Pos.calloc(arena).set(position.x().doubleValue() + velocity.x, position.y().doubleValue() + velocity.y);
+//        for (int i = 0 ; i < probeCount; i++) {
+//            DynamicMoverProbe probe = probes[i];
+//            boolean selected = probe.hit && i == selectedProbe;
+//            
+//            drawPogo( draw, probe.origin, probe.translation, probe.fraction, selected );
+//        }
+//        try (ArenaAlloc arena = allocPush()) {
+//            b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));
+//            b2Pos vel = b2Pos.calloc(arena).set(position.x().doubleValue() + velocity.x, position.y().doubleValue() + velocity.y);
+//
+//            int color = onGround ? b2_colorOrange : b2_colorAquamarine;
+//            draw.drawLine(position, vel, color);
+//        }
+    }
 
-            int color = onGround ? b2_colorOrange : b2_colorAquamarine;
-            draw.drawLine(position, vel, color);
-        }
+    public void setEnableSidePogo(boolean enableSidePogo) {
+        this.enableSidePogo = enableSidePogo;
+    }
+
+    public void setPlatformMaterialId(long platformMaterialId) {
+        this.platformMaterialId = platformMaterialId;
     }
 
     public void setJumpSpeed(float jumpSpeed) {
@@ -602,12 +710,12 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         this.center1Fcn = center1Fcn;
     }
 
-    public void setFilter(b2Filter filter) {
-        this.filter = filter;
+    public void setRadiusFcn(RadiusFcn radiusFcn) {
+        this.radiusFcn = radiusFcn;
     }
 
-    public void setWorldId(b2WorldId worldId) {
-        this.worldId = worldId;
+    public void setFilter(b2Filter filter) {
+        this.filter = filter;
     }
 
     public void setGroundId(b2BodyId groundId) {
@@ -656,22 +764,6 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 
     public void setPogoLength(float pogoLength) {
         this.pogoLength = pogoLength;
-    }
-
-    public void setPogoOrigin(Vector3f pogoOrigin) {
-        this.pogoOrigin = pogoOrigin;
-    }
-
-    public void setPogoTranslation(Vector3f pogoTranslation) {
-        this.pogoTranslation = pogoTranslation;
-    }
-
-    public void setPogoFraction(float pogoFraction) {
-        this.pogoFraction = pogoFraction;
-    }
-
-    public void setPogoHit(boolean pogoHit) {
-        this.pogoHit = pogoHit;
     }
 
     public float getJumpSpeed() {
@@ -746,10 +838,6 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         return filter;
     }
 
-    public b2WorldId getWorldId() {
-        return worldId;
-    }
-
     public b2BodyId getGroundId() {
         return groundId;
     }
@@ -798,19 +886,23 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         return pogoLength;
     }
 
-    public Vector3f getPogoOrigin() {
-        return pogoOrigin;
+    public boolean isEnableSidePogo() {
+        return enableSidePogo;
     }
 
-    public Vector3f getPogoTranslation() {
-        return pogoTranslation;
+    public long getPlatformMaterialId() {
+        return platformMaterialId;
     }
 
-    public float getPogoFraction() {
-        return pogoFraction;
+    public DynamicMoverProbe[] getProbes() {
+        return probes;
     }
 
-    public boolean isPogoHit() {
-        return pogoHit;
+    public int getProbeCount() {
+        return probeCount;
+    }
+
+    public int getSelectedProbe() {
+        return selectedProbe;
     }
 }

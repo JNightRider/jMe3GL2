@@ -31,6 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.control.mover;
 
 import com.jme3.math.Vector3f;
+import org.box2d.jni.b2Pos;
+import org.je3gl.box2d.AxisType;
+import org.je3gl.box2d.util.Converter;
 
 /**
  *
@@ -44,7 +47,27 @@ public class DynamicMoverProbe {
     public boolean hit;
 
     public DynamicMoverProbe() {
+        this(new Vector3f(), new Vector3f(), 0.0f, false);
+    }
+
+    public DynamicMoverProbe(Vector3f origin, Vector3f translation, float fraction, boolean hit) {
+        this.origin = origin;
+        this.translation = translation;
+        this.fraction = fraction;
+        this.hit = hit;
     }
     
-    
+    public void set(b2Pos origin, b2Pos translation, float fraction, boolean hit, AxisType axis ) {
+        this.origin = Converter.toVector3f(origin, axis, this.origin);
+        this.translation = Converter.toVector3f(translation, axis, this.origin);;
+        this.fraction = fraction;
+        this.hit = hit;
+    }
+
+    public void reset() {
+        origin.zero();
+        translation.zero();
+        fraction = 0.0f;
+        hit = false;
+    }
 }

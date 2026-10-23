@@ -27,19 +27,15 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.box2d.control.mover;
 
 /**
  *
  * @author wil
- * @param <DEF>
  */
-public interface Mover2D<DEF extends Mover2DDef> {
+@FunctionalInterface
+public interface RadiusFcn {
     
-    void create(DEF def);
-    
-    void applyMoveAndUpdate(float timeStep, float throttle);
-    
-    boolean applyJump();
+    float radius();
 }

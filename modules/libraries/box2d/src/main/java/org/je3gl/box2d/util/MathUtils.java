@@ -45,6 +45,48 @@ public final class MathUtils {
     private MathUtils() {}
 
     /**
+     * {@code b2Vec2 __result = (b2Vec2)a - (b2Vec2)b; }
+     *
+     * @param a b2Vec2
+     * @param b b2Vec2
+     * @param __result b2Vec2
+     * @return b2Vec2
+     */
+    public static b2Vec2 diff(b2Vec2 a, b2Vec2 b, b2Vec2 __result) {
+        __result.x(a.x() - b.x());
+        __result.y(a.y() - b.y());
+        return __result;
+    }
+
+    /**
+     * {@code b2Pos __result = (b2Pos)a - (b2Pos)b; }
+     *
+     * @param a b2Pos
+     * @param b b2Pos
+     * @param __result b2Pos
+     * @return b2Pos
+     */
+    public static b2Pos diff(b2Pos a, b2Pos b, b2Pos __result) {
+        __result.x(a.x().doubleValue() - b.x().doubleValue());
+        __result.y(a.y().doubleValue() - b.y().doubleValue());
+        return __result;
+    }
+
+    /**
+     * {@code b2Vec2 __result = (b2Vec2)a + (b2Vec2)b; }
+     *
+     * @param a b2Vec2
+     * @param b b2Vec2
+     * @param __result b2Vec2
+     * @return b2Vec2
+     */
+    public static b2Vec2 sum(b2Vec2 a, b2Vec2 b, b2Vec2 __result) {
+        __result.x(a.x() + b.x());
+        __result.y(a.y() + b.y());
+        return __result;
+    }
+
+    /**
      * {@code b2Pos __result = (b2Pos)a + (b2Pos)b; }
      *
      * @param a b2Pos

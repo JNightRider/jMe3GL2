@@ -94,8 +94,8 @@ public class Character2D extends SimpleApplication  {
 
         // Get the resolution of the user's current screen.
         Jme3GL2DisplaySystem displaySystem = Jme3GL2DefaultDisplaySystem.getDisplaySystem();
-        JAWTResolution resolution = /*JAWTResolution.TEST_RESOLUTION;*/ displaySystem.getFullScreenResolution();
-        settings.setFullscreen(displaySystem.isFullScreenSupported());
+        JAWTResolution resolution = JAWTResolution.TEST_RESOLUTION;// displaySystem.getFullScreenResolution();
+//        settings.setFullscreen(displaySystem.isFullScreenSupported());
         settings.setResolution(resolution.getWidth(), resolution.getHeight());
 
         app.setSettings(settings);
@@ -201,7 +201,10 @@ public class Character2D extends SimpleApplication  {
         }
     }
 
+    private static final boolean FLAG = false;
     private final Player body2D = new Player();
+
+    private b2BodyId elevatorId;
 
     /*(non-Javadoc)
      */
@@ -267,24 +270,27 @@ public class Character2D extends SimpleApplication  {
 
             body2D.setFilter(filter);
             body2D.setCenter1Fcn((arena) -> capsule.center1());
+            body2D.setRadiusFcn(() -> capsule.radius());
+            body2D.setPlatformMaterialId(1);
             body2D.addCapsuleShape(shapeDef, capsule);
+            body2D.setElevatorId(elevatorId);
             player.addControl(body2D);
             camera2DAppSate.setTarget(player);
         }
-
-        {
-            b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-            bodyDef.type(b2_dynamicBody);
-            bodyDef.position(b2Pos.malloc().set(9.0f, 10.0f));
-            b2BodyId bodyId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
-
-            b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
-            shapeDef.material().restitution(0.7f);
-            shapeDef.material().rollingResistance(0.2f);
-
-            b2Circle circle = b2Circle.malloc().set(b2Vec2_zero, 0.3f);
-            b2CreateCircleShape(bodyId, shapeDef, circle, b2ShapeId.malloc());
-        }
+////
+//        {
+//            b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
+//            bodyDef.type(b2_dynamicBody);
+//            bodyDef.position(b2Pos.malloc().set(9.0f, 10.0f));
+//            b2BodyId bodyId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
+//
+//            b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
+//            shapeDef.material().restitution(0.7f);
+//            shapeDef.material().rollingResistance(0.2f);
+//
+//            b2Circle circle = b2Circle.malloc().set(b2Vec2_zero, 0.3f);
+//            b2CreateCircleShape(bodyId, shapeDef, circle, b2ShapeId.malloc());
+//        }
     }
 
     private void prepareGround() {
@@ -297,66 +303,74 @@ public class Character2D extends SimpleApplication  {
             try (ArenaAlloc arena = allocPush()) {
                 bodyDef.name(arena.nUTF("svg"));
             }
-            bodyDef.position(b2Vec2.malloc().set(0.0f, 0.0f));
-            groundId1 = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
+            bodyDef.position(b2Pos.malloc().set( 0.0f, 0.0f ));
+            groundId1 = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
 
-            String path = """                 
-                        M -34.395834,201.08333 H 293.68751 v -47.625 h -2.64584 l -10.58333,7.9375 -13.22916,7.9375 -13.24648,5.29167 
-                        -31.73269,7.9375 -21.16667,2.64583 -23.8125,13.22919 -15.875,2e-5 0,-6.61461 -17.19792,2e-5 v 2.64582 h 
-                        -17.19791 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32291 h -3.96875 v -1.32292 h 
-                        -3.96875 v -1.32292 h -3.96875 v -1.32291 h -3.968754 v -1.32292 h -3.96875 v -1.32292 h -3.968751 v -1.32291 h 
-                        -3.96875 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32291 h -3.96875 v -1.32292 h -3.96875 v -1.32292 h 
-                        -3.968751 v -1.32291 h -3.96875 l -2e-6,-1.32294 H 52.916669 L 39.6875,177.27083 h -5.291667 l 
-                        -7.937499,5.29167 H 15.875001 l -47.625002,-50.27083 v -26.45834 h -2.645834 l 10e-7,95.25
-                         """;
+            String path;
+            if (FLAG)
+            {
+                path = "M -34.4,201.08 H 293.69 V 34.4 L -21.17,198.44 H -31.75 l -0,-92.6 h -2.65 l 0,95.25";
+            }
+            else
+            {
+                path ="""
+                    M -34.395834,201.08333 H 293.68751 v -47.625 h -2.64584 l -10.58333,7.9375 -13.22916,7.9375 -13.24648,5.29167 
+                    -31.73269,7.9375 -21.16667,2.64583 -23.8125,13.22919 -15.875,2e-5 0,-6.61461 -17.19792,2e-5 v 2.64582 h 
+                    -17.19791 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32291 h -3.96875 v -1.32292 h  
+                    -3.96875 v -1.32292 h -3.96875 v -1.32291 h -3.968754 v -1.32292 h -3.96875 v -1.32292 h -3.968751 v -1.32291 h  
+                    -3.96875 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32291 h -3.96875 v -1.32292 h -3.96875 v -1.32292 h 
+                    -3.968751 v -1.32291 h -3.96875 l -2e-6,-1.32294 H 52.916669 L 39.6875,177.27083 h -5.291667 l 
+                    -7.937499,5.29167 H 15.875001 l -47.625002,-50.27083 v -26.45834 h -2.645834 l 10e-7,95.25 
+                    """;
+            }
 
             b2Vec2.Buffer points = b2Vec2.malloc(64);
 
-            b2Vec2 offset = b2Vec2.malloc().set(-50.0f, -200.0f);
+            b2Vec2 offset = b2Vec2.malloc().set( -50.0f, -200.0f );
             float scale = 0.2f;
 
-            int count = ParsePath.parse(path, offset, points, 64, scale, false);
+            int count = ParsePath.parse(path, offset, points, 64, scale, false );
 
             b2ChainDef chainDef = b2DefaultChainDef(b2ChainDef.malloc());
             chainDef.points(points);
             chainDef.pointCount(count);
             chainDef.isLoop(true);
 
-            b2CreateChain(groundId1, chainDef, b2ChainId.malloc());
+            b2CreateChain( groundId1, chainDef, b2ChainId.malloc() );
         }
 
         b2BodyId groundId2;
         {
             b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-            bodyDef.position(b2Vec2.malloc().set(98.0f, 0.0f));
-            groundId2 = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
+            bodyDef.position(b2Pos.malloc().set( 98.0f, 0.0f ));
+            groundId2 = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
 
-            String path = """ 
-                        M 2.6458333,201.08333 H 399.52085 v -23.8125 h -23.8125 l 21.16667,18.52084 -232.83335,-1e-5 -0.0575,2.64584 h 
-                        -5.29166 v -2.64583 l -7.86855,-1e-5 -0.0114,-2.64583 h -2.64583 l -2.64583,2.64584 h -7.9375 l 
-                        -2.64584,2.64583 -2.58891,-2.64584 -10.64031,2e-5 v -2.64583 l -7.9375,0 v -2.64584 l -7.9375,0 v -2.64583 l 
-                        -7.9375,0 v -2.64583 l -7.9375,0 v -2.64583 l -7.937501,-1e-5 v -2.64584 l -7.9375,1e-5 v -2.64583 l 
-                        -7.937501,-2e-5 V 174.625 l -7.937501,1e-5 v -2.64584 l -5.291669,0 -7.9375,-2.64584 -7.9375,-2.64583 
-                        -5.291667,-5.29167 H 21.166667 L 13.229167,158.75 5.2916668,153.45833 H 2.6458334 l -10e-8,47.625
-                        """;
+            String path = """
+                    M 2.6458333,201.08333 H 399.52085 v -23.8125 h -23.8125 l 21.16667,18.52084 -232.83335,-1e-5 -0.0575,2.64584 h 
+                    -5.29166 v -2.64583 l -7.86855,-1e-5 -0.0114,-2.64583 h -2.64583 l -2.64583,2.64584 h -7.9375 l 
+                    -2.64584,2.64583 -2.58891,-2.64584 -10.64031,2e-5 v -2.64583 l -7.9375,0 v -2.64584 l -7.9375,0 v -2.64583 l 
+                    -7.9375,0 v -2.64583 l -7.9375,0 v -2.64583 l -7.937501,-1e-5 v -2.64584 l -7.9375,1e-5 v -2.64583 l 
+                    -7.937501,-2e-5 V 174.625 l -7.937501,1e-5 v -2.64584 l -5.291669,0 -7.9375,-2.64584 -7.9375,-2.64583 
+                    -5.291667,-5.29167 H 21.166667 L 13.229167,158.75 5.2916668,153.45833 H 2.6458334 l -10e-8,47.625
+                    """;
 
             b2Vec2.Buffer points = b2Vec2.malloc(64);
 
-            b2Vec2 offset = b2Vec2.malloc().set(0.0f, -200.0f);
+            b2Vec2 offset = b2Vec2.malloc().set( 0.0f, -200.0f );
             float scale = 0.2f;
 
-            int count = ParsePath.parse(path, offset, points, 64, scale, false);
+            int count = ParsePath.parse(path, offset, points, 64, scale, false );
 
             b2ChainDef chainDef = b2DefaultChainDef(b2ChainDef.malloc());
             chainDef.points(points);
             chainDef.pointCount(count);
             chainDef.isLoop(true);
 
-            b2CreateChain(groundId2, chainDef, b2ChainId.malloc());
+            b2CreateChain( groundId2, chainDef, b2ChainId.malloc() );
         }
 
         {
-            b2Polygon box = b2MakeBox(0.55f, 0.125f, b2Polygon.malloc());
+            b2Polygon box = b2MakeBox( 0.55f, 0.125f, b2Polygon.malloc() );
             b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
 
             b2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef(b2RevoluteJointDef.malloc());
@@ -370,59 +384,65 @@ public class Character2D extends SimpleApplication  {
             float yBase = 9.2f;
             int count = 50;
             b2BodyId prevBodyId = groundId1;
-            for (int i = 0; i < count; ++i) {
+            for ( int i = 0; i < count; ++i )
+            {
                 b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
                 bodyDef.type(b2_dynamicBody);
-                bodyDef.position(b2Pos.malloc().set(xBase + 0.5f + 1.0f * i, yBase));
+                bodyDef.position(b2Pos.malloc().set( xBase + 0.5f + 1.0f * i, yBase ));
                 bodyDef.angularDamping(0.2f);
-                b2BodyId bodyId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
-                b2CreatePolygonShape(bodyId, shapeDef, box, b2ShapeId.malloc());
+                b2BodyId bodyId = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
+                b2CreatePolygonShape( bodyId, shapeDef, box, b2ShapeId.malloc() );
 
-                b2Pos pivot = b2Pos.malloc().set(xBase + 1.0f * i, yBase);
+                b2Pos pivot = b2Pos.malloc().set( xBase + 1.0f * i, yBase );
                 jointDef.base().bodyIdA(prevBodyId);
                 jointDef.base().bodyIdB(bodyId);
-                jointDef.base().localFrameA().p(b2Body_GetLocalPoint(jointDef.base().bodyIdA(), pivot, b2Vec2.malloc()));
-                jointDef.base().localFrameB().p(b2Body_GetLocalPoint(jointDef.base().bodyIdB(), pivot, b2Vec2.malloc()));
-                b2CreateRevoluteJoint(worldId, jointDef, b2JointId.malloc());
+                jointDef.base().localFrameA().p(b2Body_GetLocalPoint( jointDef.base().bodyIdA(), pivot, b2Vec2.malloc() ));
+                jointDef.base().localFrameB().p(b2Body_GetLocalPoint( jointDef.base().bodyIdB(), pivot, b2Vec2.malloc() ));
+                b2CreateRevoluteJoint( worldId, jointDef, b2JointId.malloc() );
 
                 prevBodyId = bodyId;
             }
 
-            b2Pos pivot = b2Pos.malloc().set(xBase + 1.0f * count, yBase);
+            b2Pos pivot = b2Pos.malloc().set( xBase + 1.0f * count, yBase );
             jointDef.base().bodyIdA(prevBodyId);
             jointDef.base().bodyIdB(groundId2);
-            jointDef.base().localFrameA().p(b2Body_GetLocalPoint(jointDef.base().bodyIdA(), pivot, b2Vec2.malloc()));
-            jointDef.base().localFrameB().p(b2Body_GetLocalPoint(jointDef.base().bodyIdB(), pivot, b2Vec2.malloc()));
-            b2CreateRevoluteJoint(worldId, jointDef, b2JointId.malloc());
+            jointDef.base().localFrameA().p(b2Body_GetLocalPoint( jointDef.base().bodyIdA(), pivot, b2Vec2.malloc() ));
+            jointDef.base().localFrameB().p(b2Body_GetLocalPoint( jointDef.base().bodyIdB(), pivot, b2Vec2.malloc() ));
+            b2CreateRevoluteJoint( worldId, jointDef, b2JointId.malloc() );
         }
 
-        for (int i = 0; i < 5; ++i) {
+        for ( int i = 0; i < 5; ++i )
+        {
             b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
             bodyDef.type(b2_dynamicBody);
-            bodyDef.position(b2Pos.malloc().set(7.0f, 8.0f + 0.5f * i));
-            b2BodyId bodyId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
+            bodyDef.position(b2Pos.malloc().set( 12.0f, 7.0f + 0.5f * i ));
+            b2BodyId bodyId = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
 
             b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
-            shapeDef.filter(b2Filter.malloc().set(DynamicBit, AllBits, 0));
+            shapeDef.filter(b2Filter.malloc().set( DynamicBit, AllBits, 0 ));
             shapeDef.material().restitution(0.7f);
             shapeDef.material().rollingResistance(0.2f);
 
-            b2Circle circle = b2Circle.malloc().set(b2Vec2_zero, 0.25f);
-            b2CreateCircleShape(bodyId, shapeDef, circle, b2ShapeId.malloc());
+            b2Circle circle = b2Circle.malloc().set( b2Vec2_zero, 0.25f );
+            b2CreateCircleShape( bodyId, shapeDef, circle, b2ShapeId.malloc() );
         }
 
         {
             b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
             bodyDef.type(b2_kinematicBody);
-            bodyDef.position(b2Pos.malloc().set(elevatorBase.x(), elevatorBase.y() - elevatorAmplitude));
-            b2BodyId elevatorId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
+            bodyDef.position(b2Pos.malloc().set( elevatorBase.x(), elevatorBase.y() - elevatorAmplitude ));
+            elevatorId = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
 
+//            m_elevatorShape = {
+//                    .maxPush = 0.1f,
+//                    .clipVelocity = true,
+//            };
             b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
-            shapeDef.filter(b2Filter.malloc().set(DynamicBit, AllBits, 0));
+            shapeDef.filter(b2Filter.malloc().set( DynamicBit, AllBits, 0 ));
+            //shapeDef.userData = &m_elevatorShape;
 
-            b2Polygon box = b2MakeBox(2.0f, 0.1f, b2Polygon.malloc());
-            b2CreatePolygonShape(elevatorId, shapeDef, box, b2ShapeId.malloc());
-            body2D.setElevatorId(elevatorId);
+            b2Polygon box = b2MakeBox( 2.0f, 0.1f, b2Polygon.malloc() );
+            b2CreatePolygonShape( elevatorId, shapeDef, box, b2ShapeId.malloc() );
         }
 
         {
@@ -442,7 +462,7 @@ public class Character2D extends SimpleApplication  {
 
         {
             b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-            bodyDef.position(b2Pos.malloc().set(160.0f, 4.0f));
+            bodyDef.position(b2Pos.malloc().set(160.0f, 5.0f));
             bodyDef.type(b2_dynamicBody);
             b2BodyId body = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
 
