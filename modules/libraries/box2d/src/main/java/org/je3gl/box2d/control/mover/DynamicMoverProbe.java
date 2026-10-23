@@ -59,7 +59,7 @@ public class DynamicMoverProbe {
     
     public void set(b2Pos origin, b2Pos translation, float fraction, boolean hit, AxisType axis ) {
         this.origin = Converter.toVector3f(origin, axis, this.origin);
-        this.translation = Converter.toVector3f(translation, axis, this.origin);;
+        this.translation = Converter.toVector3f(translation, axis, this.translation);
         this.fraction = fraction;
         this.hit = hit;
     }

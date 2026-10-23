@@ -36,6 +36,7 @@ import com.jme3.math.Vector3f;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.box2d.jni.b2BodyDef;
@@ -182,8 +183,6 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 	platformMaterialId = 0;
 	minGroundNormalY = 0.7f;
 
-	filter = b2DefaultFilter(b2Filter.malloc());
-
 	velocity = new Vector2f();
 	onGround = false;
 	walkable = false;
@@ -310,21 +309,20 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
                 b2BodyDef groundDef = b2DefaultBodyDef(b2BodyDef.calloc(arena));
                 groundId = b2CreateBody(physicsSpace.getWorldId(), groundDef, b2BodyId.malloc());
 
-                createMoverJoint( groundId, b2Vec2.calloc(arena).set( maxGroundForce, 0.0f ) );
+                createMoverJoint(groundId, b2Vec2.calloc(arena).set(maxGroundForce, 0.0f));
             }
-            b2World_SetPreSolveCallback( physicsSpace.getWorldId(), PreSolveStatic, PreContinuousStatic, NULL );
+            b2World_SetPreSolveCallback(physicsSpace.getWorldId(), PreSolveStatic, PreContinuousStatic, NULL);
             physicsSpace.addDrawable(CharacterBody2D.this);
         }
 
         @Override
         public void spaceDetached(PhysicsSpace physicsSpace) {
             physicsSpace.removeDrawable(CharacterBody2D.this);
-            nb2World_SetPreSolveCallback( physicsSpace.getWorldId().address(), NULL, NULL, NULL );
+            nb2World_SetPreSolveCallback(physicsSpace.getWorldId().address(), NULL, NULL, NULL);
         }
     };
-    
-    protected void createMoverJoint( b2BodyId baseId, b2Vec2 maxForce )
-    {
+
+    protected void createMoverJoint(b2BodyId baseId, b2Vec2 maxForce) {
         try (ArenaAlloc arena = allocPush()) {
             b2MoverJointDef moverDef = b2DefaultMoverJointDef(b2MoverJointDef.calloc(arena));
             moverDef.linearVelocity(Converter.toB2Vec2(velocity, b2Vec2.calloc(arena)));
@@ -332,11 +330,10 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
             moverDef.base().bodyIdA(baseId);
             moverDef.base().bodyIdB(bodyId);
             moverDef.base().collideConnected(true);
-            if (moverJointId != null)
-            {
+            if (moverJointId != null) {
                 moverJointId.close();
             }
-            moverJointId = b2CreateMoverJoint( physicsSpace.getWorldId(), moverDef, b2JointId.malloc() );
+            moverJointId = b2CreateMoverJoint(physicsSpace.getWorldId(), moverDef, b2JointId.malloc());
         }
     }
 
@@ -376,6 +373,15 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     }
 
     public void applyMoveAndUpdate(float timeStep, float throttle, float speedScale) {
+        if (filter == null) {
+            LOGGER.log(Level.WARNING, "Set a filter to proceed with updating this character's body.");
+            return;
+        }
+        if (moverJointId == null) {
+            LOGGER.log(Level.WARNING, "Inicialize b");
+            return;
+        }
+        
         b2WorldId worldId = physicsSpace.getWorldId();
         AxisType axis = physicsSpace.getAxisType();
 
@@ -411,6 +417,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 
                 float bestDisplacement = FLT_MAX;
                 for (b2Vec2 offset : offsets) {
+                    result.free();
                     result = new DynamicMoverCastResult();
                     b2Pos sideOrigin = MathUtils.sum(origin, offset, b2Pos.calloc(arena));
                     b2World_CastRay(worldId, sideOrigin, translation, queryFilter, CastCallback, USE_RESULT, b2TreeStats.calloc(arena));
@@ -600,36 +607,37 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
      * @param fraction float
      * @param hit boolean
      */
-    private void drawPogo(Draw draw, Vector3f norigin, Vector3f ntranslation, float fraction, boolean hit) {
+    private void drawPogo(Draw draw, b2Pos origin, b2Vec2 translation, float fraction, boolean hit) {
         try (ArenaAlloc arena = allocPush()) {
-            b2Pos origin = Converter.toB2Pos(norigin, b2Pos.calloc(arena));
-            b2Pos translation = Converter.toB2Pos(ntranslation, b2Pos.calloc(arena));
-            
             int color = hit ? b2_colorPlum : b2_colorGray;
-            b2Pos delta = MathUtils.product(fraction, translation, b2Pos.calloc(arena));
+            b2Vec2 delta = MathUtils.product(fraction, translation, b2Vec2.calloc(arena));
 
-            b2Pos aux = MathUtils.sum(origin, delta, b2Pos.calloc(arena));
-            draw.drawLine(origin, aux, b2_colorGray);
-            draw.drawPoint(aux, 10.0f, color);
-
+            draw.drawLine(origin, MathUtils.sum(origin, delta, b2Vec2.calloc(arena)), b2_colorGray);
+            draw.drawPoint(MathUtils.sum(origin, delta, b2Pos.calloc(arena)), 10.0f, color);
         }
     }
 
     @Override
     public void draw(Draw draw) {
-//        for (int i = 0 ; i < probeCount; i++) {
-//            DynamicMoverProbe probe = probes[i];
-//            boolean selected = probe.hit && i == selectedProbe;
-//            
-//            drawPogo( draw, probe.origin, probe.translation, probe.fraction, selected );
-//        }
-//        try (ArenaAlloc arena = allocPush()) {
-//            b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));
-//            b2Pos vel = b2Pos.calloc(arena).set(position.x().doubleValue() + velocity.x, position.y().doubleValue() + velocity.y);
-//
-//            int color = onGround ? b2_colorOrange : b2_colorAquamarine;
-//            draw.drawLine(position, vel, color);
-//        }
+        try (ArenaAlloc arena = allocPush()) {
+            for (int i = 0; i < probeCount; i++) {
+                DynamicMoverProbe probe = probes[i];
+                boolean selected = probe.hit && i == selectedProbe;
+                drawPogo(
+                        draw,
+                        Converter.toB2Pos(probe.origin, b2Pos.calloc(arena)),
+                        Converter.toB2Vec2(probe.translation, b2Vec2.calloc(arena)),
+                        probe.fraction,
+                        selected
+                );
+            }
+
+            b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));
+            b2Pos vel = b2Pos.calloc(arena).set(position.x().doubleValue() + velocity.x, position.y().doubleValue() + velocity.y);
+
+            int color = onGround ? b2_colorOrange : b2_colorAquamarine;
+            draw.drawLine(position, vel, color);
+        }
     }
 
     public void setEnableSidePogo(boolean enableSidePogo) {

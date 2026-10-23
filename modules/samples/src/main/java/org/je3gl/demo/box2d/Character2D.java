@@ -60,6 +60,7 @@ import static org.box2d.jni.libc.LibCMath.*;
 import static org.box2d.jni.system.ArenaAlloc.*;
 
 import org.je3gl.box2d.control.CharacterBody2D;
+import org.je3gl.box2d.control.KinematicBody2D;
 import org.je3gl.box2d.util.MathUtils;
 import org.je3gl.box2d.util.ParsePath;
 import org.je3gl.jawt.JAWTResolution;
@@ -70,6 +71,8 @@ import org.je3gl.plugins.input.InputHandlerAppState;
 import org.je3gl.plugins.input.Key;
 import org.je3gl.scene.control.AnimatedSprite2D;
 import org.je3gl.scene.shape.Sprite;
+
+import static org.je3gl.utilities.MaterialUtilities.*;
 
 /**
  * Class where a small platform game is exemplified and how it can be controlled 
@@ -82,6 +85,10 @@ import org.je3gl.scene.shape.Sprite;
 public class Character2D extends SimpleApplication  {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Character2D.class.getName());
+    
+    private static final boolean FLAG = false;
+    
+    private static final boolean FULL_SCREEN = true;
 
     /**
      * The main method; uses zero arguments in args array
@@ -94,8 +101,11 @@ public class Character2D extends SimpleApplication  {
 
         // Get the resolution of the user's current screen.
         Jme3GL2DisplaySystem displaySystem = Jme3GL2DefaultDisplaySystem.getDisplaySystem();
-        JAWTResolution resolution = JAWTResolution.TEST_RESOLUTION;// displaySystem.getFullScreenResolution();
-//        settings.setFullscreen(displaySystem.isFullScreenSupported());
+        JAWTResolution resolution = FULL_SCREEN 
+                ? displaySystem.getFullScreenResolution()
+                : JAWTResolution.TEST_RESOLUTION;
+
+        settings.setFullscreen(displaySystem.isFullScreenSupported() && FULL_SCREEN);
         settings.setResolution(resolution.getWidth(), resolution.getHeight());
 
         app.setSettings(settings);
@@ -118,39 +128,43 @@ public class Character2D extends SimpleApplication  {
                 DynamicBit  = 0x0004,
                 AllBits     = ~0;
  
-    /**
-     * Control of the character (player) in the scene.
-     */
-    private static class Player extends CharacterBody2D {
+    private static class Elevator extends KinematicBody2D {
 
-        private b2BodyId elevatorId;
         private float time;
-
-        public Player() {
+         
+        public Elevator() {
         }
-
-        public void setElevatorId(b2BodyId elevatorId) {
-            this.elevatorId = elevatorId;
-        }
-
-        @Override
-        protected void ready() {
-            addContact(elevatorId);
-        }
-
+        
         @Override
         protected void physicsProcess(float delta) {
-            if (B2_IS_NON_NULL(elevatorId)) {
+            if (B2_IS_NON_NULL(bodyId)) {
                 try (ArenaAlloc arena = allocPush()) {
                     b2Pos point = b2Pos.calloc(arena)
                             .x(elevatorBase.x())
                             .y(elevatorAmplitude * cosf(1.0f * time + B2_PI) + elevatorBase.y().doubleValue());
                     boolean wake = true;
-                    b2Body_SetTargetTransform(elevatorId, b2WorldTransform.malloc().set(point, b2Rot_identity), delta, wake);
+                    b2Body_SetTargetTransform(bodyId, b2WorldTransform.malloc().set(point, b2Rot_identity), delta, wake);
                 }
             }
-
             time += delta;
+        }
+    }
+    
+    /**
+     * Control of the character (player) in the scene.
+     */
+    private static class Player extends CharacterBody2D {
+
+        public Player() {
+        }
+
+        @Override
+        protected void ready() {
+            
+        }
+
+        @Override
+        protected void physicsProcess(float delta) {
             applyAnimation();
         }
 
@@ -201,10 +215,8 @@ public class Character2D extends SimpleApplication  {
         }
     }
 
-    private static final boolean FLAG = false;
-    private final Player body2D = new Player();
-
-    private b2BodyId elevatorId;
+    private Player body2D;
+    private Elevator elevator;
 
     /*(non-Javadoc)
      */
@@ -241,12 +253,14 @@ public class Character2D extends SimpleApplication  {
     private void prepareCharacter() {
         Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
         Camera2DAppSate camera2DAppSate = stateManager.getState(Camera2DAppSate.class);
-        b2WorldId worldId = box2dAppState.getPhysicsSpace().getWorldId();
 
         Spatial player = assetManager.loadModel("Models/Rabbit.j3o");
         player.getControl(AnimatedSprite2D.class).playAnimation("walk", 10);
         ((Sprite) ((Geometry) player).getMesh()).applyScale(2.5f);
         rootNode.attachChild(player);
+        
+        body2D = new Player();
+        body2D.addContact(elevator.getBodyId());
         box2dAppState.getPhysicsSpace().addBody(body2D);
 
         body2D.setType(b2_dynamicBody);
@@ -273,24 +287,9 @@ public class Character2D extends SimpleApplication  {
             body2D.setRadiusFcn(() -> capsule.radius());
             body2D.setPlatformMaterialId(1);
             body2D.addCapsuleShape(shapeDef, capsule);
-            body2D.setElevatorId(elevatorId);
             player.addControl(body2D);
             camera2DAppSate.setTarget(player);
         }
-////
-//        {
-//            b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-//            bodyDef.type(b2_dynamicBody);
-//            bodyDef.position(b2Pos.malloc().set(9.0f, 10.0f));
-//            b2BodyId bodyId = b2CreateBody(worldId, bodyDef, b2BodyId.malloc());
-//
-//            b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
-//            shapeDef.material().restitution(0.7f);
-//            shapeDef.material().rollingResistance(0.2f);
-//
-//            b2Circle circle = b2Circle.malloc().set(b2Vec2_zero, 0.3f);
-//            b2CreateCircleShape(bodyId, shapeDef, circle, b2ShapeId.malloc());
-//        }
     }
 
     private void prepareGround() {
@@ -428,21 +427,21 @@ public class Character2D extends SimpleApplication  {
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef(b2BodyDef.malloc());
-            bodyDef.type(b2_kinematicBody);
-            bodyDef.position(b2Pos.malloc().set( elevatorBase.x(), elevatorBase.y() - elevatorAmplitude ));
-            elevatorId = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
+            Geometry geom = new Geometry("Elevator", new Sprite(4, 0.1f));
+            geom.setMaterial(getUnshadedColorMaterialFromClassPath(assetManager, ColorRGBA.randomColor()));
+            rootNode.attachChild(geom);
+            
+            elevator = new Elevator();
+            elevator.setPosition(new Vector2f(elevatorBase.x(), elevatorBase.y() - elevatorAmplitude));
+            box2dAppState.getPhysicsSpace()
+                         .addBody(elevator);
 
-//            m_elevatorShape = {
-//                    .maxPush = 0.1f,
-//                    .clipVelocity = true,
-//            };
             b2ShapeDef shapeDef = b2DefaultShapeDef(b2ShapeDef.malloc());
             shapeDef.filter(b2Filter.malloc().set( DynamicBit, AllBits, 0 ));
-            //shapeDef.userData = &m_elevatorShape;
 
             b2Polygon box = b2MakeBox( 2.0f, 0.1f, b2Polygon.malloc() );
-            b2CreatePolygonShape( elevatorId, shapeDef, box, b2ShapeId.malloc() );
+            elevator.addPolygonShape(shapeDef, box);
+            geom.addControl(elevator);
         }
 
         {
