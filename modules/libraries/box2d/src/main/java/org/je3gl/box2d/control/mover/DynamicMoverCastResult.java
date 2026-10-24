@@ -36,7 +36,7 @@ import org.box2d.jni.b2BodyId;
 import static org.box2d.jni.system.Pointer.*;
 
 /**
- * Una clase que se encarga de almacenar el resultado de un 'Func'.
+ * A class responsible for storing the result of a {@code b2CastResultCallbackFcnI}.
  *
  * @author wil
  * @version 1.0.0
@@ -44,17 +44,35 @@ import static org.box2d.jni.system.Pointer.*;
  */
 public class DynamicMoverCastResult {
     
+    /**
+     * Point of the resulting lightning strike,
+     */
     public Vector3f point;
+    /** The normal of the impacted object. */
     public Vector3f normal;
+    /**The detected object. */
     public b2BodyId bodyId;
+    /** the {@code userMaterialId} */
     public long userMaterialId;;
+    /** fraction value */
     public float fraction;
+    /** An indicator of whether this {@link DynamicMoverCastResult} is valid or not. */
     public boolean hit;
 
     public DynamicMoverCastResult() {
         this(new Vector3f(), new Vector3f(), null, NULL, 0.0f, false);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param point Vector3f
+     * @param normal Vector3f
+     * @param bodyId b2BodyId
+     * @param userMaterialId long
+     * @param fraction float
+     * @param hit boolean
+     */
     public DynamicMoverCastResult(Vector3f point, Vector3f normal, b2BodyId bodyId, long userMaterialId, float fraction, boolean hit) {
         this.point = point;
         this.normal = normal;
@@ -64,6 +82,9 @@ public class DynamicMoverCastResult {
         this.hit = hit;
     }
 
+    /**
+     * Reset and free native objects if possible
+     */
     public void free() {
         if (bodyId != null)
             bodyId.close();

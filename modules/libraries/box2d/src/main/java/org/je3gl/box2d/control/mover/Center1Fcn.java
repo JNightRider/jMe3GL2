@@ -34,11 +34,21 @@ import org.box2d.jni.b2Vec2;
 import org.box2d.jni.system.ArenaAlloc;
 
 /**
+ * Function responsible for finding the center of the physical shape of a
+ * {@code CharacterBody2D}
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 @FunctionalInterface
 public interface Center1Fcn {
-    
+
+    /**
+     * Returns the center point
+     *
+     * @param arena ArenaAlloc
+     * @return b2Vec2
+     */
     b2Vec2 center1(ArenaAlloc arena);
 }

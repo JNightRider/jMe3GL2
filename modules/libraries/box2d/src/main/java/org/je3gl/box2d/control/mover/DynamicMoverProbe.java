@@ -36,20 +36,39 @@ import org.je3gl.box2d.AxisType;
 import org.je3gl.box2d.util.Converter;
 
 /**
+ *The metadata for the {@code Probe} that is drawn on screen during debugging.
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class DynamicMoverProbe {
 
+    /** Point of origin (the offset) */
     public Vector3f origin;
+    /** Translation point, the position in the virtual world */
     public Vector3f translation;
+
+    /** Friction value */
     public float fraction;
+    /** A state flag for this {@code Probe} */
     public boolean hit;
 
+    /**
+     * Constructor
+     */
     public DynamicMoverProbe() {
         this(new Vector3f(), new Vector3f(), 0.0f, false);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param origin Vector3f
+     * @param translation Vector3f
+     * @param fraction float
+     * @param hit boolean
+     */
     public DynamicMoverProbe(Vector3f origin, Vector3f translation, float fraction, boolean hit) {
         this.origin = origin;
         this.translation = translation;
@@ -57,6 +76,15 @@ public class DynamicMoverProbe {
         this.hit = hit;
     }
     
+    /**
+     * Set all the attribute values ​​for this class.
+     *
+     * @param origin b2Pos
+     * @param translation b2Pos
+     * @param fraction float
+     * @param hit boolean
+     * @param axis AxisType
+     */
     public void set(b2Pos origin, b2Pos translation, float fraction, boolean hit, AxisType axis ) {
         this.origin = Converter.toVector3f(origin, axis, this.origin);
         this.translation = Converter.toVector3f(translation, axis, this.translation);
@@ -64,6 +92,9 @@ public class DynamicMoverProbe {
         this.hit = hit;
     }
 
+    /**
+     * Reset the values
+     */
     public void reset() {
         origin.zero();
         translation.zero();

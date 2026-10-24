@@ -31,11 +31,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.control.mover;
 
 /**
+ * Function responsible for determining a radius based on the physical shape of
+ * a {@code CharacterBody2D}
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 @FunctionalInterface
 public interface RadiusFcn {
-    
+
+    /**
+     * Return the radius
+     *
+     * @return float
+     */
     float radius();
 }

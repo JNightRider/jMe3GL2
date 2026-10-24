@@ -74,9 +74,8 @@ import org.je3gl.box2d.PhysicsSpace;
 import org.je3gl.box2d.control.mover.DynamicMoverCastResult;
 import org.je3gl.box2d.util.Converter;
 import org.je3gl.box2d.util.MathUtils;
-import org.je3gl.box2d.control.mover.Center1Fcn;
 import org.je3gl.box2d.control.mover.DynamicMoverProbe;
-import org.je3gl.box2d.control.mover.RadiusFcn;
+import org.je3gl.box2d.control.mover.MoverBounds;
 import org.je3gl.box2d.debug.Drawable;
 import org.je3gl.box2d.debug.draw.Draw;
 import org.je3gl.box2d.listener.SpaceListener;
@@ -89,55 +88,72 @@ import org.je3gl.box2d.listener.SpaceListener;
 public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(CharacterBody2D.class.getName());
-    
-    public static final long USE_CAST_RESULT = 0x0001L;
-    public static final long USE_RESULT = 0x0002L;
-    
+
+    /** Cast result - types */
+    public static final long
+            USE_CAST_RESULT = 0x0001L,
+            USE_RESULT      = 0x0002L;
+
+    /**
+     * A list of contacts that exert a specific effect on the character's body;
+     * it is used to filter objects involved in a collision that are part of the
+     * environment's mechanics, such as elevators, stairs, or dynamic platforms.
+     */
     protected final List<b2BodyId> contacts = new ArrayList<>();
-    
+
     /**
      * Velocity of the moving body
      */
-    protected float jumpSpeed;
-    protected float maxSpeed;
-    protected float minSpeed;
-    protected float stopSpeed;
-    protected float accelerate;
+    protected float
+            jumpSpeed,
+            maxSpeed,
+            minSpeed,
+            stopSpeed,
+            accelerate;
 
-    // Fraction of the ground acceleration available in the air.
+    /** Fraction of the ground acceleration available in the air. */
     protected float airSteer;
-
-    // Ground friction in units of 1/time.
+    /** Ground friction in units of 1/time. */
     protected float friction;
-
-    // A character usually wants to fall faster than the rest of the world.
+    /** A character usually wants to fall faster than the rest of the world. */
     protected float gravityScale;
 
-    // Force budget the mover joint has for reaching the target velocity. The air value
-    // is small so the character keeps its momentum while jumping.
-    protected float maxGroundForce;
-    protected float maxAirForce;
+    /**
+     * Force budget the mover joint has for reaching the target velocity. The air value
+     * is small so the character keeps its momentum while jumping.
+     */
+    protected float
+            maxGroundForce,
+            maxAirForce;
 
     protected float pogoRestLength;
     protected float pogoHertz;
     protected float pogoDampingRatio;
 
-    // Pogo force limits as a multiple of the mover weight.
-    protected float pogoCompressionScale;
-    protected float pogoTensionScale;
+    /** 
+     * Pogo force limits as a multiple of the mover weight.
+     */
+    protected float
+            pogoCompressionScale,
+            pogoTensionScale;
 
-    // Enables extra ray casts when the central one misses.
+    /** Enables extra ray casts when the central one misses. */
     protected boolean enableSidePogo;
-
-    // Used for the pogo to detect moving platforms.
+    /** Used for the pogo to detect moving platforms.*/
     protected long platformMaterialId;
-
-    // Surfaces steeper than this are not ground.
+    /** Surfaces steeper than this are not ground. */
     protected float minGroundNormalY;
 
-    protected Center1Fcn center1Fcn;
-    protected RadiusFcn radiusFcn;
-    
+    /**
+     * An object that provides information about the physical bounds of the
+     * character's form.
+     */
+    protected MoverBounds moverBounds;
+
+    /**
+     * A filter is used to manage the impact of the rays employed to determine
+     * the body's position in physical space.
+     */
     protected b2Filter filter;
 
     protected b2BodyId groundId;
@@ -153,15 +169,18 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     protected boolean jumping;
     protected int jumpTicks;
 
-    // Pogo joint state, carried across the joint being recreated each solve.
-    protected float pogoImpulse;
-    protected float pogoVelocity;
-    protected float pogoLength;
+    /**
+     * Pogo joint state, carried across the joint being recreated each solve.
+     */
+    protected float
+            pogoImpulse,
+            pogoVelocity,
+            pogoLength;
 
     // Pogo ray cast results for drawing.
     protected DynamicMoverProbe[] probes;
-    protected int probeCount;
-    protected int selectedProbe;
+    protected int probeCount,
+                  selectedProbe;
 
     public CharacterBody2D() {
         jumpSpeed = 5.0f;
@@ -381,7 +400,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
             LOGGER.log(Level.WARNING, "Inicialize b");
             return;
         }
-        
+
         b2WorldId worldId = physicsSpace.getWorldId();
         AxisType axis = physicsSpace.getAxisType();
 
@@ -392,7 +411,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
             b2Vec2 translation = b2Vec2.calloc(arena).set(0.0f, -rayLength);
 
             b2Pos position = b2Body_GetPosition(bodyId, b2Pos.calloc(arena));
-            b2Pos origin = MathUtils.sum(position, center1Fcn.center1(arena), b2Pos.calloc(arena));
+            b2Pos origin = MathUtils.sum(position, moverBounds.center1(arena), b2Pos.calloc(arena));
 
             b2QueryFilter queryFilter = b2QueryFilter.calloc(arena)
                     .categoryBits(filter.categoryBits())
@@ -411,8 +430,8 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
             if (castResult.hit == false && enableSidePogo) {
                 float direction = b2Body_GetLinearVelocity(bodyId, b2Vec2.calloc(arena)).x() < 0.0f ? -1.0f : 1.0f;
                 b2Vec2 offsets[] = {
-                    b2Vec2.calloc(arena).set(direction * radiusFcn.radius(), 0.0f),
-                    b2Vec2.calloc(arena).set(-direction * radiusFcn.radius(), 0.0f)
+                    b2Vec2.calloc(arena).set(direction * moverBounds.radius(), 0.0f),
+                    b2Vec2.calloc(arena).set(-direction * moverBounds.radius(), 0.0f)
                 };
 
                 float bestDisplacement = FLT_MAX;
@@ -544,7 +563,7 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
 
                 b2PogoJointDef pogoDef = b2DefaultPogoJointDef(b2PogoJointDef.calloc(arena));
                 pogoDef.base().localFrameA().p(b2Body_GetLocalPoint(castResult.bodyId, Converter.toB2Pos(castResult.point, b2Pos.calloc(arena)), b2Vec2.calloc(arena)));
-                pogoDef.base().localFrameB().p(MathUtils.sum(center1Fcn.center1(arena), pogoOffset, b2Vec2.calloc(arena)));
+                pogoDef.base().localFrameB().p(MathUtils.sum(moverBounds.center1(arena), pogoOffset, b2Vec2.calloc(arena)));
                 pogoDef.normal(Converter.toB2Vec2(castResult.normal, b2Vec2.calloc(arena)));
                 pogoDef.base().bodyIdA(castResult.bodyId);
                 pogoDef.base().bodyIdB(bodyId);
@@ -714,12 +733,8 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         this.minGroundNormalY = minGroundNormalY;
     }
 
-    public void setCenter1Fcn(Center1Fcn center1Fcn) {
-        this.center1Fcn = center1Fcn;
-    }
-
-    public void setRadiusFcn(RadiusFcn radiusFcn) {
-        this.radiusFcn = radiusFcn;
+    public void setMoverBounds(MoverBounds moverBounds) {
+        this.moverBounds = moverBounds;
     }
 
     public void setFilter(b2Filter filter) {
@@ -838,8 +853,8 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         return minGroundNormalY;
     }
 
-    public Center1Fcn getCenter1Fcn() {
-        return center1Fcn;
+    public MoverBounds getMoverBounds() {
+        return moverBounds;
     }
 
     public b2Filter getFilter() {

@@ -61,6 +61,7 @@ import static org.box2d.jni.system.ArenaAlloc.*;
 
 import org.je3gl.box2d.control.CharacterBody2D;
 import org.je3gl.box2d.control.KinematicBody2D;
+import org.je3gl.box2d.control.mover.MoverBounds;
 import org.je3gl.box2d.util.MathUtils;
 import org.je3gl.box2d.util.ParsePath;
 import org.je3gl.jawt.JAWTResolution;
@@ -283,8 +284,7 @@ public class Character2D extends SimpleApplication  {
             shapeDef.filter(filter);
 
             body2D.setFilter(filter);
-            body2D.setCenter1Fcn((arena) -> capsule.center1());
-            body2D.setRadiusFcn(() -> capsule.radius());
+            body2D.setMoverBounds(new MoverBounds(capsule.center1(), capsule.radius()));
             body2D.setPlatformMaterialId(1);
             body2D.addCapsuleShape(shapeDef, capsule);
             player.addControl(body2D);
