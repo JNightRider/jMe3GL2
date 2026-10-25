@@ -80,10 +80,14 @@ import org.je3gl.box2d.debug.Drawable;
 import org.je3gl.box2d.debug.draw.Draw;
 import org.je3gl.box2d.listener.SpaceListener;
 
-
 /**
+ * Class <code>CharacterBody2D</code> in charge of managing the control of 2D
+ * characters where methods are provided to use to manage the different flags
+ * (floor, ceiling and wall).
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class CharacterBody2D extends PhysicsBody2D implements Drawable {
     /** Class logger. */
@@ -126,9 +130,11 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
             maxGroundForce,
             maxAirForce;
 
-    protected float pogoRestLength;
-    protected float pogoHertz;
-    protected float pogoDampingRatio;
+    /** Components used for each new {@code b2PogoJointDef} */
+    protected float
+            pogoRestLength,
+            pogoHertz,
+            pogoDampingRatio;
 
     /** 
      * Pogo force limits as a multiple of the mover weight.
@@ -156,9 +162,15 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
      */
     protected b2Filter filter;
 
+    /**
+     * An element that manages the ground level in relation to the character's
+     * body.
+     */
     protected b2BodyId groundId;
-    protected b2JointId moverJointId;
-    protected b2JointId pogoJointId;
+    /** The joints. */
+    protected b2JointId
+            moverJointId,
+            pogoJointId;
 
     protected DynamicMoverCastResult castResult;
     protected DynamicMoverCastResult result;
