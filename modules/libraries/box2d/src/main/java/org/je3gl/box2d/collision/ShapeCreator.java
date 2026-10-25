@@ -31,13 +31,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.je3gl.box2d.collision;
 
 import org.box2d.jni.b2BodyId;
+import org.box2d.jni.b2Capsule;
+import org.box2d.jni.b2ChainSegment;
+import org.box2d.jni.b2Circle;
 import org.box2d.jni.b2Polygon;
+import org.box2d.jni.b2Segment;
 import org.box2d.jni.b2ShapeDef;
 import org.box2d.jni.b2ShapeId;
 
-import static org.box2d.jni.include.Box2d.b2CreatePolygonShape;
+import static org.box2d.jni.include.Box2d.*;
 
 /**
+ * A functional interface responsible for creating a physical representation of
+ * a {@link CollisionShape} object.
+ *
  * @param <SHAPE> shape
  *
  * @author wil
@@ -46,10 +53,45 @@ import static org.box2d.jni.include.Box2d.b2CreatePolygonShape;
  */
 @FunctionalInterface
 public interface ShapeCreator<SHAPE> {
-    
-    ShapeCreator<b2Polygon> POLYGON = (bodyId, shapeDef, shape) -> {
-        return b2CreatePolygonShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
-    };
-    
+
+    /**
+     * For a physical shape of type {@code b2Circle}
+     */
+    ShapeCreator<b2Circle> CIRCLE = (bodyId, shapeDef, shape)
+            -> b2CreateCircleShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+
+    /**
+     * For a physical shape of type {@code b2Capsule}
+     */
+    ShapeCreator<b2Capsule> CAPSULE = (bodyId, shapeDef, shape)
+            -> b2CreateCapsuleShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+
+    /**
+     * For a physical shape of type {@code b2Segment}
+     */
+    ShapeCreator<b2Segment> SEGMENT = (bodyId, shapeDef, shape)
+            -> b2CreateSegmentShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+
+    /**
+     * For a physical shape of type {@code b2Polygon}
+     */
+    ShapeCreator<b2Polygon> POLYGON = (bodyId, shapeDef, shape)
+            -> b2CreatePolygonShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+
+    /**
+     * For a physical shape of type {@code b2ChainSegment}
+     */
+    ShapeCreator<b2ChainSegment> CHAIN_SEGMENT = (bodyId, shapeDef, shape)
+            -> b2CreateChainSegmentShape(bodyId, shapeDef, shape, b2ShapeId.malloc());
+
+    /**
+     * Method responsible for creating physical shape.
+     *
+     * @param bodyId the body to which the physical shape belongs
+     * @param shapeDef the default attributes of the shape
+     * @param shape the physical shape
+     *
+     * @return b2ShapeId
+     */
     b2ShapeId create(b2BodyId bodyId, b2ShapeDef shapeDef, SHAPE shape);
 }

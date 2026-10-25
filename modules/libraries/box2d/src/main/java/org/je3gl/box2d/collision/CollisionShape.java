@@ -40,6 +40,8 @@ import org.box2d.jni.b2BodyId;
 import org.box2d.jni.b2Polygon;
 import org.box2d.jni.b2ShapeDef;
 import org.box2d.jni.b2ShapeId;
+import org.box2d.jni.b2ShapeType;
+import org.box2d.jni.include.Box2d;
 
 import org.box2d.jni.system.Struct;
 import static org.box2d.jni.include.Types.*;
@@ -59,6 +61,8 @@ public class CollisionShape<E extends Struct<E>> implements Savable, Cloneable, 
 
     /** shape. */
     private E shape;
+    
+    private b2ShapeType shapeType;
     
     private b2ShapeDef shapeDef;
     
@@ -88,6 +92,7 @@ public class CollisionShape<E extends Struct<E>> implements Savable, Cloneable, 
     public CollisionShape(E shape, b2ShapeDef shapeDef) {
         this.shape = shape;
         this.shapeDef = shapeDef;
+        
         if (shape instanceof b2Polygon) {
             creator = (ShapeCreator<E>) ShapeCreator.POLYGON;
         }
