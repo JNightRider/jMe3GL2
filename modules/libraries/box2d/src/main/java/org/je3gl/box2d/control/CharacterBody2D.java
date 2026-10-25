@@ -177,11 +177,17 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
             pogoVelocity,
             pogoLength;
 
-    // Pogo ray cast results for drawing.
+    /**
+     * Pogo ray cast results for drawing.
+     */
     protected DynamicMoverProbe[] probes;
+    /** Pogo ray cast results for drawing. */
     protected int probeCount,
                   selectedProbe;
 
+    /**
+     * Constructor
+     */
     public CharacterBody2D() {
         jumpSpeed = 5.0f;
 	maxSpeed = 6.0f;
@@ -227,6 +233,11 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         addSpaceListener(spaceListener);
     }
 
+    /**
+     * Add a new contact.
+     *
+     * @param id b2BodyId
+     */
     public void addContact(b2BodyId id) {
         if (bodyId == id) {
             throw new IllegalStateException();
@@ -241,10 +252,18 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
+    /**
+     * Remove an existing contact.
+     *
+     * @param id b2BodyId
+     */
     public void removeContact(b2BodyId id) {
         contacts.remove(id);
     }
-    
+
+    /**
+     * {@code b2CastResultCallbackFcn}
+     */
     private final b2CastResultCallbackFcnI CastCallback = (b2ShapeId shapeId, b2Pos point, b2Vec2 normal, float fraction, long context) -> {
         if (context == USE_CAST_RESULT) {
             castResult.point = Converter.toVector3f(point, getPhysicsSpace().getAxisType());
@@ -264,10 +283,20 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         return fraction;
     };
 
+    /**
+     * {@code b2PreSolveCallbackFcn}
+     */
     private final b2PreSolveCallbackFcnI PreSolveStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold, long context) -> {
         preSolve(shapeIdA, shapeIdB, manifold);
     };
-    
+
+    /**
+     * Handler {@link #PreSolveStatic}
+     *
+     * @param shapeIdA b2ShapeId
+     * @param shapeIdB b2ShapeId
+     * @param manifold b2Manifold
+     */
     protected void preSolve( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold ) {
         try (ArenaAlloc arena = allocPush()) {
             b2BodyId idA = b2Shape_GetBody(shapeIdA, b2BodyId.calloc(arena));
@@ -289,10 +318,23 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
+    /**
+     * {@code b2PreContinuousCallbackFcn}
+     */
     private final b2PreContinuousCallbackFcnI PreContinuousStatic = (b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Pos point, b2Vec2 normal, long context) -> {
         return preContinuous(shapeIdA, shapeIdB, point, normal);
     };
 
+    /**
+     * Handler {@link #PreContinuousStatic}}
+     *
+     * @param shapeIdA b2ShapeId
+     * @param shapeIdB b2ShapeId
+     * @param point b2Pos
+     * @param normal b2Vec2
+     *
+     * @return boolean
+     */
     protected boolean preContinuous( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Pos point, b2Vec2 normal ) {
         try (ArenaAlloc arena = allocPush()) {
             b2BodyId idA = b2Shape_GetBody(shapeIdA, b2BodyId.calloc(arena));
@@ -320,6 +362,9 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
+    /**
+     * {@code SpaceListener}
+     */
     private final SpaceListener spaceListener = new SpaceListener() {
         @Override
         public void spaceAttached(PhysicsSpace physicsSpace) {
@@ -341,6 +386,12 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     };
 
+    /**
+     * Create a new joint with the physical form and the mobile platform.
+     *
+     * @param baseId b2BodyId
+     * @param maxForce b2Vec2
+     */
     protected void createMoverJoint(b2BodyId baseId, b2Vec2 maxForce) {
         try (ArenaAlloc arena = allocPush()) {
             b2MoverJointDef moverDef = b2DefaultMoverJointDef(b2MoverJointDef.calloc(arena));
@@ -356,6 +407,11 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
+    /**
+     * Apply force to jump.
+     *
+     * @return boolean
+     */
     public boolean applyJump() {
         if (onGround == false || walkable == false) {
             return false;
@@ -386,18 +442,33 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
         return true;
     }
-    
+
+    /**
+     * Refresh and move your body within the physical space.
+     *
+     * @param timeStep time per frame per second
+     * @param throttle body direction: -1 if moving backward, +1 if moving
+     * forward, and 0 if remaining stationary
+     */
     public void applyMoveAndUpdate(float timeStep, float throttle) {
         applyMoveAndUpdate(timeStep, throttle, 1.0f);
     }
 
+    /**
+     * Refresh and move your body within the physical space.
+     *
+     * @param timeStep time per frame per second
+     * @param throttle body direction: -1 if moving backward, +1 if moving
+     * forward, and 0 if remaining stationary
+     * @param speedScale speed multiplier
+     */
     public void applyMoveAndUpdate(float timeStep, float throttle, float speedScale) {
         if (filter == null) {
             LOGGER.log(Level.WARNING, "Set a filter to proceed with updating this character's body.");
             return;
         }
         if (moverJointId == null) {
-            LOGGER.log(Level.WARNING, "Inicialize b");
+            LOGGER.log(Level.WARNING, "Inicialize control body");
             return;
         }
 
@@ -595,6 +666,9 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
+    /**
+     * (non-Javadoc)
+     */
     @Override
     public void close() {
         super.close();
@@ -636,6 +710,11 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param draw Draw
+     */
     @Override
     public void draw(Draw draw) {
         try (ArenaAlloc arena = allocPush()) {
@@ -659,273 +738,401 @@ public class CharacterBody2D extends PhysicsBody2D implements Drawable {
         }
     }
 
+    /**
+     * Sets the value of attribute {@code enableSidePogo}
+     *
+     * @param enableSidePogo boolean
+     */
     public void setEnableSidePogo(boolean enableSidePogo) {
         this.enableSidePogo = enableSidePogo;
     }
 
+    /**
+     * Sets the value of attribute {@code platformMaterialId}
+     * 
+     * @param platformMaterialId  long
+     */
     public void setPlatformMaterialId(long platformMaterialId) {
         this.platformMaterialId = platformMaterialId;
     }
 
+    /**
+     * Sets the value of attribute {@code jumpSpeed}
+     *
+     * @param jumpSpeed float
+     */
     public void setJumpSpeed(float jumpSpeed) {
         this.jumpSpeed = jumpSpeed;
     }
 
+    /**
+     * Sets the value of attribute {@code maxSpeed}
+     *
+     * @param maxSpeed float
+     */
     public void setMaxSpeed(float maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
 
+    /**
+     * Sets the value of attribute {@code minSpeed}
+     * 
+     * @param minSpeed float
+     */
     public void setMinSpeed(float minSpeed) {
         this.minSpeed = minSpeed;
     }
 
+    /**
+     * Sets the value of attribute {@code stopSpeed}
+     * 
+     * @param stopSpeed float
+     */
     public void setStopSpeed(float stopSpeed) {
         this.stopSpeed = stopSpeed;
     }
 
+    /**
+     * Sets the value of attribute {@code accelerate}
+     * 
+     * @param accelerate float
+     */
     public void setAccelerate(float accelerate) {
         this.accelerate = accelerate;
     }
 
+    /**
+     * Sets the value of attribute {@code airSteer}
+     * 
+     * @param airSteer float
+     */
     public void setAirSteer(float airSteer) {
         this.airSteer = airSteer;
     }
 
+    /**
+     * Sets the value of attribute {@code friction}
+     * 
+     * @param friction float
+     */
     public void setFriction(float friction) {
         this.friction = friction;
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param gravityScale float
+     */
     @Override
     public void setGravityScale(float gravityScale) {
         super.setGravityScale(gravityScale);
         this.gravityScale = gravityScale;
     }
 
+    /**
+     * Sets the value of attribute {@code maxGroundForce}
+     *
+     * @param maxGroundForce float
+     */
     public void setMaxGroundForce(float maxGroundForce) {
         this.maxGroundForce = maxGroundForce;
     }
 
+    /**
+     * Sets the value of attribute {@code maxAirForce}
+     *
+     * @param maxAirForce float
+     */
     public void setMaxAirForce(float maxAirForce) {
         this.maxAirForce = maxAirForce;
     }
 
-    public void setPogoRestLength(float pogoRestLength) {
-        this.pogoRestLength = pogoRestLength;
-    }
-
-    public void setPogoHertz(float pogoHertz) {
-        this.pogoHertz = pogoHertz;
-    }
-
+    /**
+     * Sets the value of attribute {@code pogoDampingRatio}
+     *
+     * @param pogoDampingRatio float
+     */
     public void setPogoDampingRatio(float pogoDampingRatio) {
         this.pogoDampingRatio = pogoDampingRatio;
     }
 
+    /**
+     * Sets the value of attribute {@code pogoCompressionScale}
+     *
+     * @param pogoCompressionScale float
+     */
     public void setPogoCompressionScale(float pogoCompressionScale) {
         this.pogoCompressionScale = pogoCompressionScale;
     }
 
+    /**
+     * Sets the value of attribute {@code pogoTensionScale}
+     *
+     * @param pogoTensionScale float
+     */
     public void setPogoTensionScale(float pogoTensionScale) {
         this.pogoTensionScale = pogoTensionScale;
     }
 
+    /**
+     * Sets the value of attribute {@code minGroundNormalY}
+     * 
+     * @param minGroundNormalY float
+     */
     public void setMinGroundNormalY(float minGroundNormalY) {
         this.minGroundNormalY = minGroundNormalY;
     }
 
+    /**
+     * Sets the value of attribute {@code moverBounds}
+     * 
+     * @param moverBounds MoverBounds
+     */
     public void setMoverBounds(MoverBounds moverBounds) {
         this.moverBounds = moverBounds;
     }
 
+    /**
+     * Sets the value of attribute {@code filter}
+     * 
+     * @param filter b2Filter
+     */
     public void setFilter(b2Filter filter) {
         this.filter = filter;
     }
 
-    public void setGroundId(b2BodyId groundId) {
-        this.groundId = groundId;
-    }
-
-    public void setMoverJointId(b2JointId moverJointId) {
-        this.moverJointId = moverJointId;
-    }
-
-    public void setPogoJointId(b2JointId pogoJointId) {
-        this.pogoJointId = pogoJointId;
-    }
-
-    public void setCastResult(DynamicMoverCastResult castResult) {
-        this.castResult = castResult;
-    }
-
+    /**
+     * Sets the value of attribute {@code velocity}
+     * 
+     * @param velocity Vector2f
+     */
     public void setVelocity(Vector2f velocity) {
         this.velocity = velocity;
     }
 
-    public void setOnGround(boolean onGround) {
-        this.onGround = onGround;
-    }
-
-    public void setWalkable(boolean walkable) {
-        this.walkable = walkable;
-    }
-
-    public void setJumping(boolean jumping) {
-        this.jumping = jumping;
-    }
-
-    public void setJumpTicks(int jumpTicks) {
-        this.jumpTicks = jumpTicks;
-    }
-
-    public void setPogoImpulse(float pogoImpulse) {
-        this.pogoImpulse = pogoImpulse;
-    }
-
-    public void setPogoVelocity(float pogoVelocity) {
-        this.pogoVelocity = pogoVelocity;
-    }
-
-    public void setPogoLength(float pogoLength) {
-        this.pogoLength = pogoLength;
-    }
-
+    /**
+     * Returns the current value of the {@code jumpSpeed} attribute
+     *
+     * @return the value
+     */
     public float getJumpSpeed() {
         return jumpSpeed;
     }
 
+    /**
+     * Returns the current value of the {@code maxSpeed} attribute
+     *
+     * @return the value
+     */
     public float getMaxSpeed() {
         return maxSpeed;
     }
 
+    /**
+     * Returns the current value of the {@code minSpeed} attribute
+     *
+     * @return the value
+     */
     public float getMinSpeed() {
         return minSpeed;
     }
 
+    /**
+     * Returns the current value of the {@code stopSpeed} attribute
+     *
+     * @return the value
+     */
     public float getStopSpeed() {
         return stopSpeed;
     }
 
+    /**
+     * Returns the current value of the {@code accelerate} attribute
+     *
+     * @return the value
+     */
     public float getAccelerate() {
         return accelerate;
     }
 
+    /**
+     * Returns the current value of the {@code airSteer} attribute
+     *
+     * @return the value
+     */
     public float getAirSteer() {
         return airSteer;
     }
 
+    /**
+     * Returns the current value of the {@code friction} attribute
+     *
+     * @return the value
+     */
     public float getFriction() {
         return friction;
     }
 
+    /**
+     * Returns the current value of the {@code gravityScale} attribute
+     *
+     * @return the value
+     */
     public float getGravityScale() {
         return gravityScale;
     }
 
+    /**
+     * Returns the current value of the {@code maxGroundForce} attribute
+     *
+     * @return the value
+     */
     public float getMaxGroundForce() {
         return maxGroundForce;
     }
 
+    /**
+     * Returns the current value of the {@code maxAirForce} attribute
+     *
+     * @return the value
+     */
     public float getMaxAirForce() {
         return maxAirForce;
     }
 
+    /**
+     * Returns the current value of the {@code pogoRestLength} attribute
+     *
+     * @return the value
+     */
     public float getPogoRestLength() {
         return pogoRestLength;
     }
 
+    /**
+     * Returns the current value of the {@code pogoHertz} attribute
+     *
+     * @return the value
+     */
     public float getPogoHertz() {
         return pogoHertz;
     }
 
-    public float getPogoDampingRatio() {
-        return pogoDampingRatio;
-    }
-
-    public float getPogoCompressionScale() {
-        return pogoCompressionScale;
-    }
-
-    public float getPogoTensionScale() {
-        return pogoTensionScale;
-    }
-
+    /**
+     * Returns the current value of the {@code minGroundNormalY} attribute
+     *
+     * @return the value
+     */
     public float getMinGroundNormalY() {
         return minGroundNormalY;
     }
 
+    /**
+     * Returns the current value of the {@code moverBounds} attribute
+     *
+     * @return the value
+     */
     public MoverBounds getMoverBounds() {
         return moverBounds;
     }
 
+    /**
+     * Returns the current value of the {@code filter} attribute
+     *
+     * @return the value
+     */
     public b2Filter getFilter() {
         return filter;
     }
 
-    public b2BodyId getGroundId() {
-        return groundId;
-    }
-
-    public b2JointId getMoverJointId() {
-        return moverJointId;
-    }
-
-    public b2JointId getPogoJointId() {
-        return pogoJointId;
-    }
-
-    public DynamicMoverCastResult getCastResult() {
-        return castResult;
-    }
-
+    /**
+     * Returns the current value of the {@code velocity} attribute
+     *
+     * @return the value
+     */
     public Vector2f getVelocity() {
         return velocity;
     }
 
+    /**
+     * Returns the current value of the {@code onGround} attribute
+     *
+     * @return the value
+     */
     public boolean isOnGround() {
         return onGround;
     }
 
+    /**
+     * Returns the current value of the {@code walkable} attribute
+     *
+     * @return the value
+     */
     public boolean isWalkable() {
         return walkable;
     }
 
+    /**
+     * Returns the current value of the {@code jumping} attribute
+     *
+     * @return the value
+     */
     public boolean isJumping() {
         return jumping;
     }
 
+    /**
+     * Returns the current value of the {@code jumpTicks} attribute
+     *
+     * @return the value
+     */
     public int getJumpTicks() {
         return jumpTicks;
     }
 
+    /**
+     * Returns the current value of the {@code pogoImpulse} attribute
+     *
+     * @return the value
+     */
     public float getPogoImpulse() {
         return pogoImpulse;
     }
 
+    /**
+     * Returns the current value of the {@code pogoVelocity} attribute
+     *
+     * @return the value
+     */
     public float getPogoVelocity() {
         return pogoVelocity;
     }
 
+    /**
+     * Returns the current value of the {@code pogoLength} attribute
+     *
+     * @return the value
+     */
     public float getPogoLength() {
         return pogoLength;
     }
 
+    /**
+     * Returns the current value of the {@code enableSidePogo} attribute
+     *
+     * @return the value
+     */
     public boolean isEnableSidePogo() {
         return enableSidePogo;
     }
 
+    /**
+     * Returns the current value of the {@code platformMaterialId} attribute
+     *
+     * @return the value
+     */
     public long getPlatformMaterialId() {
         return platformMaterialId;
-    }
-
-    public DynamicMoverProbe[] getProbes() {
-        return probes;
-    }
-
-    public int getProbeCount() {
-        return probeCount;
-    }
-
-    public int getSelectedProbe() {
-        return selectedProbe;
     }
 }
