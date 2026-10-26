@@ -40,7 +40,7 @@ import com.jme3.math.Vector3f;
  * @since 3.0.0
  */
 public class TransformUtilities {
-    
+
     /**
      * Rotate the input vector using the specified quaternion.
      * <p>
@@ -91,7 +91,7 @@ public class TransformUtilities {
 
         return result;
     }
-    
+
     /**
      * Return the squared length of the argument.
      * <p>

@@ -34,36 +34,84 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 
 /**
- * Class <code>HalfEllipse2D</code> in charge of generating an half-elliptical shape.
+ * Class <code>HalfEllipse2D</code> in charge of generating an half-elliptical
+ * shape.
+ *
  * @author wil
- * @version 1.0.5
+ * @version 1.1.0
  * @since 2.5.0
  */
 public class HalfEllipse2D extends AbstractShape2D {
-    
+
     /** Minimum amount of polygons for a decent ellipse. */
     public static final int COUNT = 15;
 
     /**
-     * Class constructor <code>HalfEllipse</code> to generate a '2D' half-ellipse
-     * shape with a depth set for all/or the vertices.
-     * 
+     * Class constructor <code>HalfEllipse</code> to generate a '2D'
+     * half-ellipse shape with a depth set for all/or the vertices.
+     */
+    public HalfEllipse2D() {
+    }
+
+    /**
+     * Class constructor <code>HalfEllipse</code> to generate a '2D'
+     * half-ellipse shape with a depth set for all/or the vertices.
+     *
+     * @param mode mode of this mesh {@link ShapeMode2D}
+     * @param count number of vertices/polygons to use
+     */
+    public HalfEllipse2D(ShapeMode2D mode, int count) {
+        super(mode, count + 2);
+    }
+
+    /**
+     * Class constructor <code>HalfEllipse</code> to generate a '2D'
+     * half-ellipse shape with a depth set for all/or the vertices.
+     *
      * @param count number of vertices/polygons to use
      * @param width width of the ellipse
      * @param height height of the ellipse
      */
     public HalfEllipse2D(int count, float width, float height) {
-        HalfEllipse2D.this.updateGeometry(count, width, height);
+        this(ShapeMode2D.OUTLINE, count, width, height);
     }
 
     /**
-     * Method in charge of updating the geometries of this mesh.
-     * 
+     * Class constructor <code>HalfEllipse</code> to generate a '2D'
+     * half-ellipse shape with a depth set for all/or the vertices.
+     *
+     * @param mode mode of this mesh {@link ShapeMode2D}
      * @param count number of vertices/polygons to use
      * @param width width of the ellipse
      * @param height height of the ellipse
      */
+    public HalfEllipse2D(ShapeMode2D mode, int count, float width, float height) {
+        this(mode, count);
+        HalfEllipse2D.this.updatePoints(count, width, height);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
+     * @param count int
+     * @param width float
+     * @param height float
+     *
+     * @deprecated Use {@link #updatePoints(int, float, float) }
+     */
+    @Deprecated
     public void updateGeometry(int count, float width, float height) {
+        updatePoints(count, width, height);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
+     * @param count number of vertices/polygons to use
+     * @param width width of the ellipse
+     * @param height height of the ellipse
+     */
+    public void updatePoints(int count, float width, float height) {
         final float a = width * 0.5f;
         final float b = height * 0.5f;
         float deep = 0;
@@ -76,13 +124,13 @@ public class HalfEllipse2D extends AbstractShape2D {
         // Set the initial and final vertices
         myVertices[0] = new Vector3f(a, 0, deep);
         myVertices[count + 1] = new Vector3f(-a, 0, deep);
-        
+
         // Use parametric equations:
         // x = a * cos(t)
         // y = b * sin(t)
         for (int i = 1; i < count + 1; i++) {
             final float t = inc * i;
-            
+
             // Since the bottom side of the ellipse is the same as the top side,
             // with only a y negated, let's save some time by creating the bottom
             // side at the same time.
@@ -90,6 +138,6 @@ public class HalfEllipse2D extends AbstractShape2D {
             final float y = b * FastMath.sin(t);
             myVertices[i] = new Vector3f(x, y, deep);
         }
-        this.updateGeometry(myVertices);
+        this.updatePoints(myVertices);
     }
 }

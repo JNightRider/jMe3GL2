@@ -6,7 +6,7 @@ plugins {
 allprojects {
 
     group = 'org.j3gl'
-    version = '3.1.1'
+    version = '3.2.0'
 
     repositories {
         mavenCentral()
@@ -16,6 +16,11 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 
     if (project.name.startsWith("jMe3GL2")) {
         apply plugin: 'maven-publish'

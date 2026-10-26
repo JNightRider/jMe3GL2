@@ -27,13 +27,14 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.scene.debug;
 
 import com.jme3.math.Vector3f;
 
 /**
  * Class <code>Polygon2D</code> in charge of generating a polygonal shape.
+ *
  * @author wil
  * @version 1.0.5
  * @since 2.5.0
@@ -43,17 +44,51 @@ public class Polygon2D extends AbstractShape2D {
     /**
      * Class constructor <code>Polygon2D</code> where a polygonal shape is
      * initialized.
-     * @param vertices vertices
      */
-    public Polygon2D(Vector3f ...vertices) {
-        Polygon2D.this.updateGeometry(vertices);
+    public Polygon2D() {
     }
 
-    /* (non-Javadoc)
-     * @see org.je3gl.scene.debug.AbstractShape2D#updateGeometry(com.jme3.math.Vector3f[]) 
+    /**
+     * Class constructor <code>Polygon2D</code> where a polygonal shape is
+     * initialized.
+     *
+     * @param mode mode of this mesh {@link ShapeMode2D}
+     * @param count Number of vertices
      */
-    @Override
-    public void updateGeometry(Vector3f ...vertices) {
-        super.updateGeometry(vertices);
+    public Polygon2D(ShapeMode2D mode, int count) {
+        super(mode, count);
+    }
+
+    /**
+     * Class constructor <code>Polygon2D</code> where a polygonal shape is
+     * initialized.
+     *
+     * @param vertices vertices
+     */
+    public Polygon2D(Vector3f... vertices) {
+        this(ShapeMode2D.OUTLINE, vertices);
+    }
+
+    /**
+     * Class constructor <code>Polygon2D</code> where a polygonal shape is
+     * initialized.
+     *
+     * @param mode mode of this mesh {@link ShapeMode2D}
+     * @param vertices vertices
+     */
+    public Polygon2D(ShapeMode2D mode, Vector3f... vertices) {
+        this(mode, vertices.length);
+        Polygon2D.this.updatePoints(vertices);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
+     * @param vertices {@code Vector3f[]}
+     * @deprecated Use {@link #updatePoints(int, float, float) }
+     */
+    @Deprecated
+    public void updateGeometry(Vector3f... vertices) {
+        updatePoints(vertices);
     }
 }

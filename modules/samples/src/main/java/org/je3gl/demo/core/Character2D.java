@@ -33,9 +33,7 @@ package org.je3gl.demo.core;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
@@ -43,7 +41,6 @@ import com.jme3.scene.Spatial;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
-import org.je3gl.math.Rect;
 
 import org.je3gl.physics.Dyn4jAppState;
 import org.je3gl.physics.ThreadingType;

@@ -1,0 +1,98 @@
+/*
+BSD 3-Clause License
+
+Copyright (c) 2023-2026, Night Rider (Wilson)
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+package org.je3gl.box2d;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.box2d.jni.system.PipelineStream;
+
+/**
+ * A {@link PipelineStream} for {@code Box2d-JNI} logs
+ *
+ * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
+ */
+public class Box2dPipelineStream implements PipelineStream {
+    /** Class logger. */
+    private static final Logger LOGGER = Logger.getLogger(Box2dPipelineStream.class.getName());
+
+    /**  A flag that indicates whether logs are stored in a buffer or not. */
+    private static final AtomicBoolean AUTO_FLUSH = new AtomicBoolean(false);
+    /** The buffer. s*/
+    private static final StringBuilder STREAM_BUFFER = new StringBuilder();
+
+    static {
+        reset();
+    }
+
+    /**
+     * Clear the buffer and print
+     */
+    public static void autoFlush() {
+        boolean flush = AUTO_FLUSH.get();
+        if (! flush) {
+            String msg = String.valueOf(STREAM_BUFFER);
+            LOGGER.info(msg.substring(0, msg.length() - 1));
+            AUTO_FLUSH.set(true);
+        }
+    }
+
+    /**
+     * Restart buffer usage
+     */
+    public static void reset() {
+        AUTO_FLUSH.set(false);
+        STREAM_BUFFER.delete(0, STREAM_BUFFER.length());
+        STREAM_BUFFER.append("[jMe3GL2] :Box2d-JNI initialize")
+                     .append('\n');
+    }
+
+    /** Constructor. */
+    public Box2dPipelineStream() {
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @param string message
+     */
+    @Override
+    public void print(String string) {
+        if (AUTO_FLUSH.get()) {
+            LOGGER.log(Level.INFO, string);
+        } else {
+            STREAM_BUFFER.append(" * ").append(string);
+        }
+    }
+}

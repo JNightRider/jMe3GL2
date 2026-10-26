@@ -27,44 +27,64 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.je3gl.scene.debug;
 
-import com.jme3.export.*;
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
+import com.jme3.export.Savable;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
-import com.jme3.scene.mesh.IndexBuffer;
 import com.jme3.util.BufferUtils;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 /**
- * Abstract class <code>AbstractShape2D</code> in charge of implementing the basis
- * for generating primitive shapes.
+ * Abstract class <code>AbstractShape2D</code> in charge of implementing the
+ * basis for generating primitive shapes.
  * <p>
  * <b>Lines</b> are used to generate the shapes.
- * 
+ *
  * @author wil
- * @version 1.0.5
+ * @version 2.0.0
  * @since 2.5.0
  */
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
-    
-    /**Arrangement of the mesh vertices. */
+
+    /**
+     * Arrangement of the mesh vertices.
+     */
     protected Vector3f[] vertices;
-    
+
+    /** mode */
+    private ShapeMode2D mode2D;
+    /** size buffer */
+    private int count;
+
     /**
      * Default internal constructor.
      */
     protected AbstractShape2D() {
-        AbstractShape2D.this.setMode(Mode.LineLoop);
+    }
+
+    /**
+     * constructor {@code AbstractPolygon2D}
+     *
+     * @param mode2D mode of this mesh {@link ShapeMode2D}
+     * @param count vertext count
+     */
+    public AbstractShape2D(ShapeMode2D mode2D, int count) {
+        AbstractShape2D.this.updateGeometry(mode2D, count);
     }
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.scene.Mesh#deepClone() 
+     *
      * @return this
      */
     @Override
@@ -79,7 +99,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.scene.Mesh#clone() 
+     *
      * @return this
      */
     @Override
@@ -88,66 +108,125 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
         shape.vertices = vertices.clone();
         return shape;
     }
-        
+
     /**
-     * Method responsible for updating the geometry of this mesh to generate the 
+     * Returns mesh mode.
+     *
+     * @return ShapeMode2D
+     */
+    public ShapeMode2D getMode2D() {
+        return mode2D;
+    }
+
+    /**
+     * Returns the number of vertices used.
+     *
+     * @return int
+     */
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * Updates the geometry buffers.
+     *
+     * @param mode2D mode of this mesh {@link ShapeMode2D}
+     * @param count vertext count
+     */
+    public void updateGeometry(ShapeMode2D mode2D, int count) {
+        setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(count * 3));
+        if (mode2D == ShapeMode2D.FILLED) {
+            setBuffer(VertexBuffer.Type.Index, 3, BufferUtils.createShortBuffer((count - 2) * 3));
+        } else {
+            setBuffer(VertexBuffer.Type.Index, 2, BufferUtils.createShortBuffer(count * 2));
+        }
+        setMode(mode2D.mode);
+        this.mode2D = mode2D;
+        this.count = count;
+    }
+
+    /**
+     * Method responsible for updating the geometry of this mesh to generate the
      * new coordinates of the <code>lines</code>.
-     * 
+     *
      * @param vertices new arrangement of the vertices
      */
-    protected void updateGeometry(final Vector3f[] vertices) {
-        if (vertices == null ) {
-            throw new NullPointerException("vertices is null.");
+    public void updatePoints(Vector3f... vertices) {
+        if (vertices == null) {
+            throw new NullPointerException("The vertices cannot be null.");
         }
-        
-        this.vertices = vertices;
-        this.setBuffer(VertexBuffer.Type.Position, 3,
-                BufferUtils.createVector3Buffer(getFloatBuffer(VertexBuffer.Type.Position), this.vertices.length));
-
-        this.setBuffer(VertexBuffer.Type.Index, 1, 
-                BufferUtils.createShortBuffer(getShortBuffer(VertexBuffer.Type.Index), this.vertices.length));
-
-        final FloatBuffer pb = getFloatBuffer(VertexBuffer.Type.Position);
-        final IndexBuffer ib = getIndexBuffer();
-
-        for (int i = 0; i < this.vertices.length; i++) {
-            final Vector3f vertice = vertices[i];
-            
-            pb.put(vertice.getX()).put(vertice.getY()).put(vertice.getZ());
-            ib.put(i, i);
+        if (count < vertices.length) {
+            throw new IllegalStateException("The memory is insufficient for the new vertices.");
         }
-        
+
+        // ----- Index buffer -----
+        VertexBuffer buffPosition = getBuffer(VertexBuffer.Type.Position);
+        FloatBuffer position = (FloatBuffer) buffPosition.getData();
+
+        position.rewind();
+        for (Vector3f point : vertices) {
+            position.put(point.x)
+                    .put(point.y)
+                    .put(point.z);
+        }
+        buffPosition.updateData(position);
+
+        // ----- Index buffer -----
+        VertexBuffer idxBuff = getBuffer(VertexBuffer.Type.Index);
+        ShortBuffer index = (ShortBuffer) idxBuff.getData();
+        index.rewind();
+
+        if (mode2D == ShapeMode2D.FILLED) {
+            for (short i = 1; i < vertices.length - 1; i++) {
+                index.put((short) 0)
+                        .put(i)
+                        .put((short) (i + 1));
+            }
+        } else {
+            for (int i = 0; i < vertices.length; i++) {
+                int next = (i + 1) % vertices.length;
+                index.put((short) i)
+                     .put((short) next);
+            }
+        }
+        index.flip();
+        idxBuff.updateData(index);
+
         updateBound();
+        updateCounts();
+        this.vertices = vertices;
     }
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.export.Savable#read(com.jme3.export.JmeImporter) 
-     * 
-     * @param im {@link com.jme3.export.JmeImporter}
+     *
+     * @param im JmeImporter
      * @throws IOException throws
      */
     @Override
     public void read(JmeImporter im) throws IOException {
-        final InputCapsule in = im.getCapsule(this);
         super.read(im);
-        
-        vertices = (Vector3f[]) 
-                in.readSavableArray("vertices", vertices);
+        InputCapsule in = im.getCapsule(this);
+        Vector3f[] vertices0 = (Vector3f[]) in.readSavableArray("vertices", vertices);
+        ShapeMode2D shapeMode2D = in.readEnum("mode2D", ShapeMode2D.class, ShapeMode2D.OUTLINE);
+        int size = in.readInt("count2D", 0);
+
+        updateGeometry(shapeMode2D, size);
+        updatePoints(vertices0);
     }
 
     /**
      * (non-Javadoc)
-     * @see com.jme3.export.Savable#write(com.jme3.export.JmeExporter) 
-     * 
-     * @param ex {@link com.jme3.export.JmeExporter}
+     *
+     * @param ex JmeExporter
      * @throws IOException throws
      */
     @Override
     public void write(JmeExporter ex) throws IOException {
-        final OutputCapsule out = ex.getCapsule(this);
         super.write(ex);
-        
+        OutputCapsule out = ex.getCapsule(this);
         out.write(vertices, "vertices", null);
+        out.write(mode2D, "mode2D", ShapeMode2D.OUTLINE);
+        out.write(count, "count2D", 0);
     }
 }

@@ -35,35 +35,82 @@ import com.jme3.math.Vector3f;
 
 /**
  * Class <code>Ellipse2D</code> in charge of generating an ellipse shape.
+ *
  * @author wil
- * @version 1.0.5
+ * @version 1.1.0
  * @since 2.5.0
  */
 public class Ellipse2D extends AbstractShape2D {
-    
+
     /** Minimum amount of polygons for a decent ellipse. */
     public static final int COUNT = 30;
 
     /**
      * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
      * with a depth set for all/or the vertices.
-     * 
+     */
+    public Ellipse2D() {
+    }
+
+    /**
+     * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
+     * with a depth set for all/or the vertices.
+     *
+     * @param mode mode of this mesh {@link ShapeMode2D}
+     * @param count number of vertices/polygons to use
+     */
+    public Ellipse2D(ShapeMode2D mode, int count) {
+        super(mode, count);
+    }
+
+    /**
+     * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
+     * with a depth set for all/or the vertices.
+     *
      * @param count number of vertices/polygons to use
      * @param width width of the ellipse.
      * @param height height of the ellipse.
      */
     public Ellipse2D(int count, float width, float height) {
-        Ellipse2D.this.updateGeometry(count, width, height);
+        this(ShapeMode2D.OUTLINE, count, width, height);
+    }
+
+    /**
+     * Class constructor <code>Ellipse2D</code> to generate a '2D' ellipse shape
+     * with a depth set for all/or the vertices.
+     *
+     * @param mode mode of this mesh {@link ShapeMode2D}
+     * @param count number of vertices/polygons to use
+     * @param width width of the ellipse.
+     * @param height height of the ellipse.
+     */
+    public Ellipse2D(ShapeMode2D mode, int count, float width, float height) {
+        this(mode, count);
+        Ellipse2D.this.updatePoints(count, width, height);
     }
 
     /**
      * Method in charge of updating the geometries of this mesh.
-     * 
+     *
+     * @param count int
+     * @param width float
+     * @param height float
+     *
+     * @deprecated Use {@link #updatePoints(int, float, float) }
+     */
+    @Deprecated
+    public void updateGeometry(int count, float width, float height) {
+        updatePoints(count, width, height);
+    }
+
+    /**
+     * Method in charge of updating the geometries of this mesh.
+     *
      * @param count number of vertices/polygons to use
      * @param width width of the ellipse
      * @param height height of the ellipse
      */
-    public void updateGeometry(int count, float width, float height) {
+    public void updatePoints(int count, float width, float height) {
         final float a = width * 0.5f;
         final float b = height * 0.5f;
 
@@ -73,14 +120,14 @@ public class Ellipse2D extends AbstractShape2D {
         // Make sure that the resulting output is an even number of vertices
         final Vector3f[] myVertices = new Vector3f[n2 * 2];
         float deep = 0;
-        
+
         // Use parametric equations:
         // x = a * cos(t)
         // y = b * sin(t)
         int j = 0;
         for (int i = 0; i < n2 + 1; i++) {
             final float t = pin2 * i;
-            
+
             //Since the bottom side of the ellipse is the same as the top side,
             //with only a y negated, let's save some time by creating the bottom
             //side at the same time.
@@ -91,6 +138,6 @@ public class Ellipse2D extends AbstractShape2D {
             }
             myVertices[j++] = new Vector3f(x, y, deep);
         }
-        this.updateGeometry(myVertices);
+        this.updatePoints(myVertices);
     }
 }
