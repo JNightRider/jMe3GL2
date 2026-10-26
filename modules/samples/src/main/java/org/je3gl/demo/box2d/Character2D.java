@@ -40,8 +40,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 
-import java.util.logging.Logger;
-
 import org.je3gl.box2d.Box2dAppState;
 import org.je3gl.box2d.ThreadingType;
 import org.je3gl.renderer.Camera2DAppSate;
