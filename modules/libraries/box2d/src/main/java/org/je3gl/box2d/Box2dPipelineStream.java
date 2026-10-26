@@ -37,20 +37,28 @@ import java.util.logging.Logger;
 import org.box2d.jni.system.PipelineStream;
 
 /**
+ * A {@link PipelineStream} for {@code Box2d-JNI} logs
  *
  * @author wil
+ * @version 1.0.0
+ * @since 3.2.0
  */
 public class Box2dPipelineStream implements PipelineStream {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Box2dPipelineStream.class.getName());
 
+    /**  A flag that indicates whether logs are stored in a buffer or not. */
     private static final AtomicBoolean AUTO_FLUSH = new AtomicBoolean(false);
+    /** The buffer. s*/
     private static final StringBuilder STREAM_BUFFER = new StringBuilder();
 
     static {
         reset();
     }
 
+    /**
+     * Clear the buffer and print
+     */
     public static void autoFlush() {
         boolean flush = AUTO_FLUSH.get();
         if (! flush) {
@@ -60,6 +68,9 @@ public class Box2dPipelineStream implements PipelineStream {
         }
     }
 
+    /**
+     * Restart buffer usage
+     */
     public static void reset() {
         AUTO_FLUSH.set(false);
         STREAM_BUFFER.delete(0, STREAM_BUFFER.length());
@@ -67,9 +78,15 @@ public class Box2dPipelineStream implements PipelineStream {
                      .append('\n');
     }
 
+    /** Constructor. */
     public Box2dPipelineStream() {
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @param string message
+     */
     @Override
     public void print(String string) {
         if (AUTO_FLUSH.get()) {
