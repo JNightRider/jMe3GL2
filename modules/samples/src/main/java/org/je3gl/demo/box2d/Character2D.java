@@ -86,9 +86,11 @@ import static org.je3gl.utilities.MaterialUtilities.*;
 public class Character2D extends SimpleApplication  {
     /** Class logger. */
     private static final Logger LOGGER = Logger.getLogger(Character2D.class.getName());
-    
-    private static final boolean FLAG = false;
-    
+
+    /**
+     * {@code True} if in full-screen mode; otherwise, the application will run
+     * in windowed mode.
+     */
     private static final boolean FULL_SCREEN = true;
 
     /**
@@ -120,22 +122,36 @@ public class Character2D extends SimpleApplication  {
     /** Object in charge of managing the 'SPACE' key */
     private static final BooleanStateKeyboardInputHandler VK_JUMP = new BooleanStateKeyboardInputHandler(new Key(KeyInput.KEY_SPACE, "jump"));
 
+    /** The base of the {@link Elevator} */
     private static final b2Vec2 elevatorBase = b2Vec2.malloc().set(112.0f, 10.0f);
+    /** elevator-amplitude */
     private static final float elevatorAmplitude = 4.0f;
 
+    /**
+     * Object masks (filters) for distinguishing one physical body from another.
+     */
     public static final long
                 StaticBit   = 0x0001,
                 MoverBit    = 0x0002,
                 DynamicBit  = 0x0004,
                 AllBits     = ~0;
  
+    /**
+     * A platform that floats.
+     */
     private static class Elevator extends KinematicBody2D {
-
+        /**  accumulated time. */
         private float time;
-         
+
+        /** Constructor. */
         public Elevator() {
         }
-        
+
+        /**
+         * Update.
+         *
+         * @param delta float
+         */
         @Override
         protected void physicsProcess(float delta) {
             if (B2_IS_NON_NULL(bodyId)) {
@@ -150,25 +166,30 @@ public class Character2D extends SimpleApplication  {
             time += delta;
         }
     }
-    
+
     /**
      * Control of the character (player) in the scene.
      */
     private static class Player extends CharacterBody2D {
-
+        /** Constructor. */
         public Player() {
         }
 
-        @Override
-        protected void ready() {
-            
-        }
-
+        /**
+         * (non-Javadoc)
+         *
+         * @param delta float
+         */
         @Override
         protected void physicsProcess(float delta) {
             applyAnimation();
         }
 
+        /**
+         * (non-Javadoc)
+         *
+         * @param delta float
+         */
         @Override
         protected void physicsParallel(float delta) {
             applyControls(delta);
@@ -216,7 +237,9 @@ public class Character2D extends SimpleApplication  {
         }
     }
 
+    /** The player. */
     private Player body2D;
+    /** A mobile platform. */
     private Elevator elevator;
 
     /*(non-Javadoc)
@@ -305,14 +328,7 @@ public class Character2D extends SimpleApplication  {
             bodyDef.position(b2Pos.malloc().set( 0.0f, 0.0f ));
             groundId1 = b2CreateBody( worldId, bodyDef, b2BodyId.malloc() );
 
-            String path;
-            if (FLAG)
-            {
-                path = "M -34.4,201.08 H 293.69 V 34.4 L -21.17,198.44 H -31.75 l -0,-92.6 h -2.65 l 0,95.25";
-            }
-            else
-            {
-                path ="""
+            String path ="""
                     M -34.395834,201.08333 H 293.68751 v -47.625 h -2.64584 l -10.58333,7.9375 -13.22916,7.9375 -13.24648,5.29167 
                     -31.73269,7.9375 -21.16667,2.64583 -23.8125,13.22919 -15.875,2e-5 0,-6.61461 -17.19792,2e-5 v 2.64582 h 
                     -17.19791 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32292 h -3.96875 v -1.32291 h -3.96875 v -1.32292 h  
@@ -321,7 +337,6 @@ public class Character2D extends SimpleApplication  {
                     -3.968751 v -1.32291 h -3.96875 l -2e-6,-1.32294 H 52.916669 L 39.6875,177.27083 h -5.291667 l 
                     -7.937499,5.29167 H 15.875001 l -47.625002,-50.27083 v -26.45834 h -2.645834 l 10e-7,95.25 
                     """;
-            }
 
             b2Vec2.Buffer points = b2Vec2.malloc(64);
 
