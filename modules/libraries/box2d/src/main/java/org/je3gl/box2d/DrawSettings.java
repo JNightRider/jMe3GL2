@@ -34,13 +34,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Class responsible for managing Box2D debugger settings.
  *
  * @author wil
  * @version 1.0.0
  * @since 3.2.0
  */
 public final class DrawSettings extends HashMap<String, Boolean> {
-    
+
+    /*  Names of the settings supported by the Box2D debugger. */
     public static final String
             DRAW_SHAPES             = "drawShapes",
             DRAW_BODY_NAMES         = "drawBodyNames",
@@ -57,8 +59,11 @@ public final class DrawSettings extends HashMap<String, Boolean> {
             DRAW_MASS               = "drawMass",
             DRAW_BOUNDS             = "drawBounds";
 
+    /**
+     * A map with the debugger's default settings.
+     */
     private static final Map<String, Boolean> DEFAULT = new HashMap<>();
-    
+
     static {
         DEFAULT.put(DRAW_ANCHOR_A, false);
         DEFAULT.put(DRAW_BODY_NAMES, false);
@@ -75,150 +80,85 @@ public final class DrawSettings extends HashMap<String, Boolean> {
         DEFAULT.put(DRAW_MASS, false);
         DEFAULT.put(DRAW_SHAPES, true);
     }
-    
+
+    /**
+     * An indicator that signals to the debugger manager whether an update has
+     * occurred.
+     *
+     * <p>
+     * A value of {@code true} means that an indicator has changed, while a
+     * value of {@code false} indicates that no change has taken place.
+     * </p>
+     */
     private boolean needUpdate = false;
-    
+
+    /** Constructor. */
     public DrawSettings() {
         putAll(DEFAULT);
     }
+
+    // -----------------------------------
+
+    public DrawSettings drawShapes(boolean value)          { put(DRAW_SHAPES, value); return this;           }
+    public DrawSettings drawBodyNames(boolean value)       { put(DRAW_BODY_NAMES, value); return this;       }
+    public DrawSettings drawJoints(boolean value)          { put(DRAW_JOINTS, value); return this;           }
+    public DrawSettings drawJointExtras(boolean value)     { put(DRAW_JOINT_EXTRAS, value); return this;     }
+    public DrawSettings drawAnchorA(boolean value)         { put(DRAW_ANCHOR_A, value); return this;         }
+    public DrawSettings drawChainNormals(boolean value)    { put(DRAW_CHAIN_NORMALS, value); return this;    }
+    public DrawSettings drawContacts(boolean value)        { put(DRAW_CONTACTS, value); return this;         }
+    public DrawSettings drawContactFeatures(boolean value) { put(DRAW_CONTACT_FEATURES, value); return this; }
+    public DrawSettings drawContactNormals(boolean value)  { put(DRAW_CONTACT_NORMALS, value); return this;  }
+    public DrawSettings drawFrictionForces(boolean value)  { put(DRAW_FRICTION_FORCES, value); return this;  }
+    public DrawSettings drawGraphColors(boolean value)     { put(DRAW_GRAPH_COLORS, value); return this;     }
+    public DrawSettings drawIslands(boolean value)         { put(DRAW_ISLANDS, value); return this;          }
+    public DrawSettings drawMass(boolean value)            { put(DRAW_MASS, value); return this;             }
+    public DrawSettings drawBounds(boolean value)          { put(DRAW_BOUNDS, value); return this;           }
     
-    public DrawSettings drawShapes(boolean value) {
-        put(DRAW_SHAPES, value);
-        return this;
-    }
-    
-    public boolean drawShapes() {
-        return get(DRAW_SHAPES);
-    }
+    public boolean drawShapes()          { return get(DRAW_SHAPES);           }
+    public boolean drawBodyNames()       { return get(DRAW_BODY_NAMES);       }
+    public boolean drawJoints()          { return get(DRAW_JOINTS);           }
+    public boolean drawJointExtras()     { return get(DRAW_JOINT_EXTRAS);     }
+    public boolean drawAnchorA()         { return get(DRAW_ANCHOR_A);         }
+    public boolean drawChainNormals()    { return get(DRAW_CHAIN_NORMALS);    }
+    public boolean drawContacts()        { return get(DRAW_CONTACTS);         }
+    public boolean drawContactFeatures() { return get(DRAW_CONTACT_FEATURES); }
+    public boolean drawContactNormals()  { return get(DRAW_CONTACT_NORMALS);  }
+    public boolean drawFrictionForces()  { return get(DRAW_FRICTION_FORCES);  }
+    public boolean drawGraphColors()     { return get(DRAW_GRAPH_COLORS);     }
+    public boolean drawIslands()         { return get(DRAW_ISLANDS);          }
+    public boolean drawMass()            { return get(DRAW_MASS);             }
+    public boolean drawBounds()          { return get(DRAW_BOUNDS);           }
 
-    public DrawSettings drawBodyNames(boolean value) {
-        put(DRAW_BODY_NAMES, value);
-        return this;
-    }
+    // -----------------------------------
 
-    public boolean drawBodyNames() {
-        return get(DRAW_BODY_NAMES);
-    }
-
-    public DrawSettings drawJoints(boolean value) {
-        put(DRAW_JOINTS, value);
-        return this;
-    }
-
-    public boolean drawJoints() {
-        return get(DRAW_JOINTS);
-    }
-
-    public DrawSettings drawJointExtras(boolean value) {
-        put(DRAW_JOINT_EXTRAS, value);
-        return this;
-    }
-
-    public boolean drawJointExtras() {
-        return get(DRAW_JOINT_EXTRAS);
-    }
-
-    public DrawSettings drawAnchorA(boolean value) {
-        put(DRAW_ANCHOR_A, value);
-        return this;
-    }
-
-    public boolean drawAnchorA() {
-        return get(DRAW_ANCHOR_A);
-    }
-
-    public DrawSettings drawChainNormals(boolean value) {
-        put(DRAW_CHAIN_NORMALS, value);
-        return this;
-    }
-
-    public boolean drawChainNormals() {
-        return get(DRAW_CHAIN_NORMALS);
-    }
-
-    public DrawSettings drawContacts(boolean value) {
-        put(DRAW_CONTACTS, value);
-        return this;
-    }
-
-    public boolean drawContacts() {
-        return get(DRAW_CONTACTS);
-    }
-
-    public DrawSettings drawContactFeatures(boolean value) {
-        put(DRAW_CONTACT_FEATURES, value);
-        return this;
-    }
-
-    public boolean drawContactFeatures() {
-        return get(DRAW_CONTACT_FEATURES);
-    }
-
-    public DrawSettings drawContactNormals(boolean value) {
-        put(DRAW_CONTACT_NORMALS, value);
-        return this;
-    }
-
-    public boolean drawContactNormals() {
-        return get(DRAW_CONTACT_NORMALS);
-    }
-
-    public DrawSettings drawFrictionForces(boolean value) {
-        put(DRAW_FRICTION_FORCES, value);
-        return this;
-    }
-
-    public boolean drawFrictionForces() {
-        return get(DRAW_FRICTION_FORCES);
-    }
-
-    public DrawSettings drawGraphColors(boolean value) {
-        put(DRAW_GRAPH_COLORS, value);
-        return this;
-    }
-
-    public boolean drawGraphColors() {
-        return get(DRAW_GRAPH_COLORS);
-    }
-
-    public DrawSettings drawIslands(boolean value) {
-        put(DRAW_ISLANDS, value);
-        return this;
-    }
-
-    public boolean drawIslands() {
-        return get(DRAW_ISLANDS);
-    }
-
-    public DrawSettings drawMass(boolean value) {
-        put(DRAW_MASS, value);
-        return this;
-    }
-
-    public boolean drawMass() {
-        return get(DRAW_MASS);
-    }
-
-    public DrawSettings drawBounds(boolean value) {
-        put(DRAW_BOUNDS, value);
-        return this;
-    }
-
-    public boolean drawBounds() {
-        return get(DRAW_BOUNDS);
-    }
-
+    /**
+     * (non-Javadoc)
+     * 
+     * @param key String
+     * @param value Boolean
+     * @return Boolean
+     */
     @Override
     public Boolean put(String key, Boolean value) {
         needUpdate = true;
         return super.put(key, value);
     }
-    
+
+    /**
+     * Sets the flag indicating that changes have been applied to the debugger.
+     *
+     * @return DrawSettings
+     */
     public DrawSettings update() {
         needUpdate = true;
         return this;
     }
 
+    /**
+     * Check if there are any changes to apply.
+     * 
+     * @return boolean
+     */
     public boolean isNeedUpdate() {
         return needUpdate;
     }
