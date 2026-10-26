@@ -286,7 +286,6 @@ public class Character2D extends SimpleApplication  {
     /**
      * Prepare the character (2D model) and animations.
      */
-    @SuppressWarnings("unchecked")
     private void prepareCharacter() {
         Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
         Camera2DAppSate camera2DAppSate = stateManager.getState(Camera2DAppSate.class);

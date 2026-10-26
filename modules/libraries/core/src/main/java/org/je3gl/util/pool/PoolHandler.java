@@ -34,7 +34,7 @@ import org.je3gl.util.Arg;
 
 /**
  * An interface in charge of defining the methods to create the objects of a
- * {@link ObjectPool}-
+ * {@code ObjectPool}-
  *
  * @param <T> object type
  *

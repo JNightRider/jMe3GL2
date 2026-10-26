@@ -85,7 +85,7 @@ public class Polygon2D extends AbstractShape2D {
      * Method in charge of updating the geometries of this mesh.
      *
      * @param vertices {@code Vector3f[]}
-     * @deprecated Use {@link #updatePoints(int, float, float) }
+     * @deprecated Use {@link #updatePoints(Vector3f...)}  }
      */
     @Deprecated
     public void updateGeometry(Vector3f... vertices) {
