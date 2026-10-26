@@ -91,7 +91,7 @@ public class Character2D extends SimpleApplication  {
      * {@code True} if in full-screen mode; otherwise, the application will run
      * in windowed mode.
      */
-    private static final boolean FULL_SCREEN = true;
+    private static final boolean FULL_SCREEN = false;
 
     /**
      * The main method; uses zero arguments in args array

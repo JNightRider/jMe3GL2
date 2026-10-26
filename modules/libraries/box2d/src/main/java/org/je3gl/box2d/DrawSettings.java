@@ -150,7 +150,7 @@ public final class DrawSettings extends HashMap<String, Boolean> {
      * @return DrawSettings
      */
     public DrawSettings update() {
-        needUpdate = true;
+        needUpdate = false;
         return this;
     }
 
