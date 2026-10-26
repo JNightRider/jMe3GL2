@@ -257,6 +257,21 @@ public class Character2D extends SimpleApplication  {
 
         Box2dAppState box2d = new Box2dAppState(ThreadingType.PARALLEL);
         box2d.setDebugEnabled(true);
+        box2d.getDrawSettings()
+                .drawAnchorA(true)
+                .drawBodyNames(true)
+                .drawBounds(true)
+                .drawChainNormals(true)
+                .drawContactFeatures(true)
+                .drawContactNormals(true)
+                .drawContacts(true)
+                .drawFrictionForces(true)
+                .drawGraphColors(true)
+                .drawIslands(true)
+                .drawJointExtras(true)
+                .drawJoints(true)
+                .drawMass(true)
+                .drawShapes(true);
         stateManager.attach(box2d);
 
         InputHandlerAppState inputHandlerAppState = new InputHandlerAppState();
