@@ -84,8 +84,6 @@ import static org.je3gl.utilities.MaterialUtilities.*;
  * @since 3.2.0
  */
 public class Character2D extends SimpleApplication  {
-    /** Class logger. */
-    private static final Logger LOGGER = Logger.getLogger(Character2D.class.getName());
 
     /**
      * {@code True} if in full-screen mode; otherwise, the application will run
@@ -330,6 +328,9 @@ public class Character2D extends SimpleApplication  {
         }
     }
 
+    /**
+     * Prepare a simple terrain.
+     */
     private void prepareGround() {
         Box2dAppState box2dAppState = stateManager.getState(Box2dAppState.class);
         b2WorldId worldId = box2dAppState.getPhysicsSpace().getWorldId();
