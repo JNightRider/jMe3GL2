@@ -42,8 +42,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.je3gl.box2d.debug.PhysicsDebugAppState;
-import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
 import org.je3gl.box2d.scene.tile.Box2dTilePhysicsSystem;
+import org.je3gl.box2d.util.LockObject;
 
 import org.box2d.jni.*;
 import org.box2d.jni.system.Sys;
@@ -51,9 +51,6 @@ import org.box2d.jni.system.Sys;
 import static org.box2d.jni.include.Base.*;
 import static org.box2d.jni.include.Types.*;
 import static org.box2d.jni.libc.LibCStdlib.*;
-import org.je3gl.box2d.debug.PhysicsDebugSceneProcessor;
-import static org.je3gl.box2d.debug.PhysicsDebugSceneProcessor.*;
-import org.je3gl.box2d.util.LockObject;
 
 /**
  * An object (an instance) of the class <code>Box2dAppState</code> is a state
@@ -398,10 +395,6 @@ public class Box2dAppState extends AbstractAppState {
         return this.physicsSpace;
     }
 
-    public Application getApplication() {
-        return app;
-    }
-
     /**
      * Set the axis that will be used in the physical space.
      *
@@ -430,9 +423,5 @@ public class Box2dAppState extends AbstractAppState {
             physicsSpace.setAxisType(axisType);
         }
         return axisType;
-    }
-
-    public boolean isParallel() {
-        return threadingType == ThreadingType.PARALLEL;
     }
 }
