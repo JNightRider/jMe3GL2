@@ -14,43 +14,54 @@ to create wonderful 2D worlds.
 
 **Some features provided by this library:**
 1. Creation of 2D models using a *Sprite* mesh.
-2. Integration of the Dyn4J engine through *Dyn4jAppState*.
+2. Integration with physics engines (**Box2D** and **Dyn4j**)
 3. Control to manage 2D animations.
 4. Support for strongly customized *TileMap*
 5. Support for exporting and importing 2D (binary) models.
 6. Has a built-in debugger.
 
-## Dyn4j
-As mentioned, jMe3GL2 uses Dyn4J as its physics engine. If you are not familiar 
-with this topic, we advise you to check out the following resources:
+## How to use Box2D-JNI in projects
 
-- **[Documentation](https://dyn4j.org/pages/getting-started)**
-- **[Samples](https://github.com/dyn4j/dyn4j-samples)**
-  
-## Requirements
-- Java 17 or higher.
-- jMonkeyEngine3 version 3.8.1-stable.
-- Dyn4J version 5.0.2
+[Go to the test example](./modules/samples/src/main/java/org/je3gl/demo/core/Sprite2D.java)
+
+[Some examples of games](https://github.com/JNightRider/jMe3GL2-examples)
+
+## External links
+
+[jMonkeyEngine3 graphics engine](https://jmonkeyengine.org/)
+
+[Official Dyn4j repository on GitHub](https://github.com/dyn4j/dyn4j)
+
+[Official Dyn4j documentation](https://dyn4j.org/pages/getting-started)
+
+[Official Box2D-JNI repository on GitHub](https://github.com/JNightRider/box2d-jni)
+
+[Official Box2D documentation](https://box2d.org/documentation/)
 
 ## Building with jMe3GL2
 
 jMe3GL2 can be added as a normal dependency using the [stable](https://github.com/JNightRider/jMe3GL2/releases/tag/v3.1.1) 
 jar files or using Maven as follows:
 
-**Add the necessary dependencies**
+**1. Add the necessary dependencies**
 
 ```gradle
-    implementation(platform("io.github.jnightrider:jMe3GL2-core:3.1.1"))
-    implementation(platform("io.github.jnightrider:jMe3GL2-dyn4j:3.1.1"))
-    implementation(platform("io.github.jnightrider:jMe3GL2-jawt:3.1.1"))
-    implementation(platform("io.github.jnightrider:jMe3GL2-plugins:3.1.1"))
+project.ext.jme3gl2Version = "3.2.0"
+
+dependencies {
+    implementation("io.github.jnightrider:jMe3GL2-core:$jme3gl2Version")
+    implementation("io.github.jnightrider:jMe3GL2-dyn4j:$jme3gl2Version")
+    implementation("io.github.jnightrider:jMe3GL2-box2d:$jme3gl2Version")
+    implementation("io.github.jnightrider:jMe3GL2-jawt:$jme3gl2Version")
+    implementation("io.github.jnightrider:jMe3GL2-plugins:$jme3gl2Version")
+}
 ```
 
-**Starting jMe3GL2**
+**2. Starting jMe3GL2**
 
 If this is your first time using jMe3GL2, you can consult some of these resources 
 to guide you in using this great library.
 
 - [Complete examples](https://github.com/JNightRider/jMe3GL2-examples)
 - [Go to tutorial](https://github.com/JNightRider/jMe3GL2-examples/wiki)
-- [Samples](https://github.com/JNightRider/jMe3GL2/tree/master/modules/samples/src/main/java/org/je3gl/demo/core)
+
