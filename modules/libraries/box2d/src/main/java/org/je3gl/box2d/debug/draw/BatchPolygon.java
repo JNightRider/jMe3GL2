@@ -32,7 +32,6 @@ package org.je3gl.box2d.debug.draw;
 
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -58,7 +57,7 @@ import org.je3gl.utilities.ColorUtilities;
  * {@code Polygon2D}.
  *
  * @author wil
- * @version 1.0.0
+ * @version 1.0.1
  * @since 3.2.0
  */
 public final class BatchPolygon {
@@ -103,17 +102,21 @@ public final class BatchPolygon {
          * @param transform b2WorldTransform
          * @param vertices long
          * @param vertexCount int
+         * @param radius float
          * @param color int
          * @param solid boolean
          *
          * @return Data
          */
-        static Data create(b2WorldTransform transform, long vertices, int vertexCount, int color, boolean solid) {
-            b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, vertexCount);
-            Vector3f[] vs = new Vector3f[vertexCount];
-            int index = 0;
-            for (b2Vec2 vec2 : buffer) {
-                vs[index++] = new Vector3f(vec2.x(), vec2.y(), 0.0f);
+        static Data create(b2WorldTransform transform, long vertices, int vertexCount, float radius, int color, boolean solid) {
+            int n = vertexCount < 8 ? vertexCount : 8;
+            Vector3f[] vs = new Vector3f[n];
+
+            b2Vec2.Buffer buffer = b2Vec2.createSafe(vertices, n);
+            for ( int i = 0; i < n; ++i )
+            {
+                b2Vec2 vec2 = buffer.get(i);
+                vs[i] = new Vector3f(vec2.x(), vec2.y(), 0.0f);
             }
             b2Pos pos = transform.p();
             b2Rot rot = transform.q();
@@ -124,22 +127,6 @@ public final class BatchPolygon {
                     solid,
                     ColorUtilities.fromIntRGBA(color, 1.0f)
             );
-        }
-
-        /**
-         * Create a new data type for the draw batch using native Box2D data.
-         *
-         * @param transform b2WorldTransform
-         * @param vertices long
-         * @param vertexCount int
-         * @param radius float
-         * @param color int
-         * @param solid boolean
-         *
-         * @return Data
-         */
-        static Data create(b2WorldTransform transform, long vertices, int vertexCount, float radius, int color, boolean solid) {
-            return create(transform, vertices, vertexCount, color, solid);
         }
     }
 
@@ -152,29 +139,16 @@ public final class BatchPolygon {
      * A mesh that defines the 2D shape of the drawable object; the resulting
      * object is solid (filled).
      */
-    private final Polygon2D meshFilled = new Polygon2D(ShapeMode2D.FILLED, POLYGON_BATCH_SIZE);
+    private final Polygon2D meshFilled = new Polygon2D(ShapeMode2D.FILLED, 10);
 
     /**
      * A mesh that defines the 2D shape of the drawable object; the resulting
      * object is outline (only the edges are drawn).
      */
-    private final Polygon2D meshOutline = new Polygon2D(ShapeMode2D.OUTLINE, POLYGON_BATCH_SIZE);
+    private final Polygon2D meshOutline = new Polygon2D(ShapeMode2D.OUTLINE, 10);
 
     /** Constructor */
     public BatchPolygon() { }
-
-    /**
-     * Add a new data point to the drawing batch.
-     *
-     * @param transform b2WorldTransform
-     * @param vertices long
-     * @param vertexCount int
-     * @param color int
-     * @param solid boolean
-     */
-    public void addData(b2WorldTransform transform, long vertices, int vertexCount, int color, boolean solid) {
-        dataList.add(Data.create(transform, vertices, vertexCount, color, solid));
-    }
 
     /**
      * Add a new data point to the drawing batch.
@@ -207,7 +181,7 @@ public final class BatchPolygon {
 
             Quaternion q = vars.quat1;
             drawable.setLocalTranslation(data.position);
-            drawable.setLocalRotation(q.fromAngleAxis(data.angle + FastMath.PI, Vector3f.UNIT_Z));
+            drawable.setLocalRotation(q.fromAngleAxis(data.angle, Vector3f.UNIT_Z));
             drawable.updateGeometricState();
             drawable.updateModelBound();
 

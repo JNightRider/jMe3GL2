@@ -51,7 +51,7 @@ import java.nio.ShortBuffer;
  * <b>Lines</b> are used to generate the shapes.
  *
  * @author wil
- * @version 2.0.0
+ * @version 2.0.1
  * @since 2.5.0
  */
 public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable {
@@ -136,7 +136,7 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
     public void updateGeometry(ShapeMode2D mode2D, int count) {
         setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(count * 3));
         if (mode2D == ShapeMode2D.FILLED) {
-            setBuffer(VertexBuffer.Type.Index, 3, BufferUtils.createShortBuffer((count - 2) * 3));
+            setBuffer(VertexBuffer.Type.Index, 3, BufferUtils.createShortBuffer(count * 3));
         } else {
             setBuffer(VertexBuffer.Type.Index, 2, BufferUtils.createShortBuffer(count * 2));
         }
@@ -155,15 +155,18 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
         if (vertices == null) {
             throw new NullPointerException("The vertices cannot be null.");
         }
-        if (count < vertices.length) {
-            throw new IllegalStateException("The memory is insufficient for the new vertices.");
+        if (vertices.length > count) {
+            throw new IllegalStateException("Insufficient vertex capacity: allocated=" + count + ", requested=" + vertices.length);
+        }
+        if (vertices.length < 2) {
+            throw new IllegalArgumentException("At least 2 vertices are required.");
         }
 
         // ----- Index buffer -----
         VertexBuffer buffPosition = getBuffer(VertexBuffer.Type.Position);
         FloatBuffer position = (FloatBuffer) buffPosition.getData();
 
-        position.rewind();
+        position.clear();
         for (Vector3f point : vertices) {
             position.put(point.x)
                     .put(point.y)
@@ -174,19 +177,36 @@ public abstract class AbstractShape2D extends Mesh implements Savable, Cloneable
         // ----- Index buffer -----
         VertexBuffer idxBuff = getBuffer(VertexBuffer.Type.Index);
         ShortBuffer index = (ShortBuffer) idxBuff.getData();
-        index.rewind();
+        index.clear();
+
+        int n = vertices.length;
+        int required = mode2D == ShapeMode2D.FILLED
+                ? Math.max(0, n - 2) * 3
+                : n * 2;
+
+        // The buffer must have sufficient memory.
+        if (required > index.capacity()) {
+            throw new IllegalStateException(
+                    "The index buffer does not have enough memory:"
+                    + " capacity=" + index.capacity()
+                    + ", required=" + required
+                    + ", count=" + count
+                    + ", vertices=" + n
+                    + ", mode=" + mode2D
+            );
+        }
 
         if (mode2D == ShapeMode2D.FILLED) {
             for (short i = 1; i < vertices.length - 1; i++) {
-                index.put((short) 0)
-                        .put(i)
-                        .put((short) (i + 1));
+                index.put((short) 0);
+                index.put(i);
+                index.put((short) (i + 1));
             }
         } else {
             for (int i = 0; i < vertices.length; i++) {
                 int next = (i + 1) % vertices.length;
-                index.put((short) i)
-                     .put((short) next);
+                index.put((short) i);
+                index.put((short) next);
             }
         }
         index.flip();

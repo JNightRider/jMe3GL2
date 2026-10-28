@@ -59,7 +59,7 @@ import org.je3gl.scene.debug.custom.DebugGraphics;
  * the Box2D debugger.
  *
  * @author wil
- * @version 1.0.0
+ * @version 1.0.1
  * @since 3.2.0
  */
 public final class Draw {
@@ -73,9 +73,10 @@ public final class Draw {
     private final BatchText texts;
     /** Batch of drawings of type: {@code Line} */
     private final BatchLine
-            lines,      // Lienes
-            bounds,     // Bounds
-            transforms; // Math/Transforms
+            lines,          // Lienes
+            bounds,         // Bounds
+            transforms,     // Math/Transforms
+            polygonsLine;   // Polygon
 
     /** Batch of drawings of type: {@code Point} */
     private final BatchPoint points;
@@ -100,6 +101,8 @@ public final class Draw {
     private final Geometry drawablepolygons;
     /** Drawable geometry for the {@link #transforms} batch. */
     private final Geometry drawableTransforms;
+    /** Drawable geometry for the {@link #polygonsLine} batch. */
+    private final Geometry drawablepolygonsLine;
 
     /**
      * Constructor
@@ -113,6 +116,7 @@ public final class Draw {
         points = new BatchPoint();
         circles = new BatchCircle();
         transforms = new BatchLine();
+        polygonsLine = new BatchLine();
         capsules = new BatchCapsule();
         polygons = new BatchPolygon();
 
@@ -123,6 +127,7 @@ public final class Draw {
         drawableCapsules = newDrawable(assetManager);
         drawablepolygons = newDrawable(assetManager);
         drawableTransforms = newDrawable(assetManager);
+        drawablepolygonsLine = newDrawable(assetManager);
     }
 
     /**
@@ -209,7 +214,17 @@ public final class Draw {
      * @param color int
      */
     public void drawPolygon(b2WorldTransform transform, long vertices, int vertexCount, int color) {
-        polygons.addData(transform, vertices, vertexCount, color, false);
+        try (ArenaAlloc arna = allocPush()) {
+            b2Vec2.Buffer ptr = b2Vec2.createSafe(vertices, vertexCount);
+
+            b2Transform xf = b2ToRelativeTransform(transform, b2Vec2_zero, b2Transform.calloc(arna));
+            b2Vec2 p1 = b2TransformPoint(xf, ptr.get(vertexCount - 1), b2Vec2.calloc(arna));
+            for (int i = 0; i < vertexCount; ++i) {
+                b2Vec2 p2 = b2TransformPoint(xf, ptr.get(i), b2Vec2.calloc(arna));
+                polygonsLine.addData(p1, p2, color);
+                p1 = p2;
+            }
+        }
     }
 
     /**
@@ -292,6 +307,7 @@ public final class Draw {
         capsules.draw(rm, drawableCapsules);
         polygons.draw(rm, drawablepolygons);
         transforms.draw(rm, drawableTransforms);
+        polygonsLine.draw(rm, drawablepolygonsLine);
     }
 
     /**
@@ -320,5 +336,6 @@ public final class Draw {
         capsules.clear();
         polygons.clear();
         transforms.clear();
+        polygonsLine.clear();
     }
 }
