@@ -46,7 +46,7 @@ jar files or using Maven as follows:
 **1. Add the necessary dependencies**
 
 ```gradle
-project.ext.jme3gl2Version = "3.2.1"
+project.ext.jme3gl2Version = "3.2.2"
 
 dependencies {
     implementation("io.github.jnightrider:jMe3GL2-core:$jme3gl2Version")
