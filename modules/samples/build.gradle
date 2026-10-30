@@ -15,6 +15,10 @@ application {
     if (System.getProperty("os.name").toLowerCase().contains("mac")) {
         applicationDefaultJvmArgs = ['-XstartOnFirstThread'] // this is when using a Mac as a development machine which requires the AppKit main UI thread to be used for GUI applications
     }
+    def runClass = providers.gradleProperty('runClass')
+    if (runClass) {
+        mainClass = runClass
+    }
 }
 
 dependencies {
