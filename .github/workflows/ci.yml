@@ -48,4 +48,5 @@ jobs:
           java -version
 
       - name: Build and Test
+        shell: bash
         run: ./gradlew -PrunClass=org.je3gl.demo.box2d.Character2D :modules:samples:run --args="-stop -delay=1000"
