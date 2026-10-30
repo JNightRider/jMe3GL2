@@ -1,0 +1,50 @@
+## YAML Template.
+---
+# GitHub Actions workflow for commits pushed to the box2d-jni repo - all branches
+
+name: CI at GitHub
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build - ${{ matrix.os }} - ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            arch: x64
+          - os: ubuntu-24.04-arm
+            arch: arm64
+
+          - os: windows-2025
+            arch: x64
+          - os: windows-11-arm
+            arch: arm64
+
+          - os: macos-26-intel
+            arch: x64
+          - os: macos-26
+            arch: arm64
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+      - uses: actions/checkout@v7
+
+      - name: Setup Java
+      - uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 21
+
+      - name: Display environment
+        run: |
+          java -version
+
+      - name: Build and Test
+        run: mvn --batch-mode clean verify

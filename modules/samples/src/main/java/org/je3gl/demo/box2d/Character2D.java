@@ -62,6 +62,7 @@ import org.je3gl.box2d.control.KinematicBody2D;
 import org.je3gl.box2d.control.mover.MoverBounds;
 import org.je3gl.box2d.util.MathUtils;
 import org.je3gl.box2d.util.ParsePath;
+import org.je3gl.demo.check.AppCheck;
 import org.je3gl.jawt.JAWTResolution;
 import org.je3gl.jawt.Jme3GL2DefaultDisplaySystem;
 import org.je3gl.jawt.Jme3GL2DisplaySystem;
@@ -109,6 +110,9 @@ public class Character2D extends SimpleApplication  {
 
         app.setSettings(settings);
         app.start();
+
+        // Check if the application closes on its own automatically.
+        AppCheck.checkStop(args, app);
     }
 
     /** Object in charge of managing the 'A' key */
