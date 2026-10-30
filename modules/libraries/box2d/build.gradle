@@ -8,7 +8,7 @@ dependencies {
     implementation project(':modules:libraries:jMe3GL2-core')
 
     implementation(libs.jme3.core)
-    implementation(libs.box2d.jni)
+    api(libs.box2d.jni)
 
     runtimeOnly(variantOf(libs.box2d.jni){ classifier('linux_aarch64Dp') })
     runtimeOnly(variantOf(libs.box2d.jni){ classifier('linux_aarch64Sp') })
